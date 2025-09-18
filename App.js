@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AuthScreen } from './fontend/auth.js';
+import { AuthScreen } from './src/fontend/auth.js';
 import {
   TouchableOpacity,
   StyleSheet,
@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
-import {styles} from './fontend/style.js'
+import {styles} from './src/fontend/style.js'
 const backgroundImage = require('./assets/main_background.png');
 const logo = require('./assets/main_logo.png');
 const { width, height } = Dimensions.get('window');
