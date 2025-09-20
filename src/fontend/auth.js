@@ -3,9 +3,10 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, Text, TextInput,Alert, StyleSheet, Dimensions } from 'react-native';
 import {styles} from './style.js'
 import {authStyle} from './style.js'
-
+import { Auth } from '../backend/auth.js';  
 const { width } = Dimensions.get('window');
-export  const AuthScreen= () => {
+export const AuthScreen= () => {
+  const auth = new Auth()
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [email,setEmail] = useState('');
@@ -15,18 +16,21 @@ export  const AuthScreen= () => {
   const [displayName, setDisplayName] = useState('');
   const [alert, setAlertType] = useState('');
   const [showAlert, setShowAleart] = useState(false);
+  const [alertColor,setAlertColor] =useState('#FF0000')
   const [passwordMissingList, setPassWordMissingList] = useState([]);
   const [showPasswordMissingList,setShowPML] = useState(false);
   
-  const submitRequest = ({action})=>{
+  const submitRequest = async ({action})=>{
     setShowAleart(false);
     if(action ==='Login'){
       if(username.trim()===''||password.trim()===''){
          Alert.alert('Error', 'Please Fill out all the requirement!');
          setAlertType("Please Fill out all the requirement!");
         setShowAleart(true);
+      
       return;
     }
+    const respond =await auth.requestLogin(username,password);
     }
     else if(action ==="Signup"){
       setShowPML(false);
@@ -63,6 +67,15 @@ export  const AuthScreen= () => {
         setShowPML(true);
         return;
       }
+      const response = await auth.requestSignup(email,displayName,username,password);
+      if(response.Message!='Successfully'){
+        setAlertType(response.Message);
+        setShowAleart(true);
+        return;
+      }
+      setShowSignup(false);
+      setShowLogin(true);
+      
     }
 }
   return (
@@ -91,7 +104,7 @@ export  const AuthScreen= () => {
           <TouchableOpacity style={authStyle.submitButton} onPress ={()=>submitRequest({action:'Login'})}> 
              <Text style={authStyle.submitButtonText}>Submit</Text>
           </TouchableOpacity>
-          {showAlert&&(<Text style={{textAlign:'center',marginTop: 10, color:'#FF0000'}}>{alert}</Text>)}
+          {showAlert&&(<Text style={{textAlign:'center',marginTop: 10, color:{alertColor}}}>{alert}</Text>)}
           <TouchableOpacity onPress={() => { setShowLogin(false); setShowSignup(true); }}>
             <Text style={{ textAlign: 'center', marginTop: 10 }}>Create Account</Text>
           </TouchableOpacity>
@@ -125,7 +138,7 @@ export  const AuthScreen= () => {
               ))}
             </View>
           )}
-          {showAlert&&(<Text style={{textAlign:'center',marginTop: 10, color:'#FF0000'}}>{alert}</Text>)}
+          {showAlert&&(<Text style={{textAlign:'center',marginTop: 10, color:alertColor}}>{alert}</Text>)}
         </OverlayCard>
       )}
 

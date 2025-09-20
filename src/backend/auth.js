@@ -1,18 +1,18 @@
-class Auth{
+export class Auth{
     constructor(){};
     async requestLogin(username,password){
-        const request = await fetch('/POST/authverify',{
+        const request = await fetch('http://127.0.0.1:5000/login',{
             method: "POST", 
             headers:{"Content-Type":"application/json"}, 
             body: JSON.stringify({
             username:username,
             password:password 
         })});
-        const respond = request.json();
-        
+        const respond = await request.json();
+        console.log(respond)
      } 
     async requestSignup(email,displayName,username,password){
-        const request = await fetch('/POST/authsignup',{
+        const request = await fetch('http://127.0.0.1:5000/signup',{
             method: "POST", 
             headers:{"Content-Type":"application/json"}, 
             body: JSON.stringify({
@@ -21,6 +21,8 @@ class Auth{
             username:username,
             password:password 
         })});
-        const respond = request.json();
+        const respond = await request.json();
+        console.log(respond)
+        return respond;
     }   
     }
