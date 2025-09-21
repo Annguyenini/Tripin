@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { AuthScreen } from './src/fontend/auth.js';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import {
   TouchableOpacity,
   StyleSheet,
@@ -17,6 +19,7 @@ import {styles} from './src/fontend/style.js'
 const backgroundImage = require('./assets/main_background.png');
 const logo = require('./assets/main_logo.png');
 const { width, height } = Dimensions.get('window');
+const Stack = createStackNavigator();
 
 export default function App() {
   const [loaded] = useFonts({
@@ -29,8 +32,13 @@ export default function App() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
           <Image source={logo} style={styles.logo} />
-          <AuthScreen/>
-        </ImageBackground>
+      {/* <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Auth" component={AuthScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>        */}
+    <AuthScreen/>
+      </ImageBackground>
       </ScrollView>
     </SafeAreaProvider>
   );

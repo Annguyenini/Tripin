@@ -18,17 +18,28 @@ class Server:
         app = self.app
         self.app.add_url_rule("/login", view_func=self.login, methods=["POST"])
         self.app.add_url_rule("/signup", view_func=self.signup, methods=["POST"])
+        self.app.add_url_rule("/login/token", view_func=self.signup, methods=["POST"])
     
+    def login_via_token(self):
+        print("called login_via_token")
+        data= request.json
+        token = data.get("Authorization")
+        status, message = self.jwt_verify(token)
+        if not status:
+            return jsonify({"Message":message}), 401
+        return jsonify({"Message":message}), 200
+
     def login(self):
         print("connect to login")
 
         data = request.json
         username = data.get("username")
         password = data.get("password")
-        status, data = self.auth.login(username=username,password=password)
+        status, message,userdatas = self.auth.login(username=username,password=password)
         if not status:
-            return jsonify({"Message":data})
-        return jsonify({"successfully":data})
+            return jsonify({"Message":message}),401
+        
+        return jsonify({"successfully":message,"userdatas":userdatas}),200
 
     def signup(self):
         print("connect to signup")
@@ -38,10 +49,10 @@ class Server:
         username = data.get("username")
         password = data.get("password")
         print(display_name)
-        status,data = self.auth.signup(email=email,display_name=display_name,username=username,password=password)
+        status,message = self.auth.signup(email=email,display_name=display_name,username=username,password=password)
         if not status:
-            return jsonify({"Message":data})
-        return jsonify({"Message":data})
+            return jsonify({"Message":message}),401
+        return jsonify({"Message":message}),200
 
 
 

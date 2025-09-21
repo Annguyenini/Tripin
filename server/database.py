@@ -22,7 +22,7 @@ class Database:
         cur.execute('''
         CREATE TABLE IF NOT EXISTS refresh_tokens (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id TEXT NOT NULL,
+            username TEXT NOT NULL,
             token TEXT NOT NULL,
             issued_at DATETIME NOT NULL,
             expires_at DATETIME NOT NULL,

@@ -6,31 +6,26 @@ class Auth:
     def __init__(self):
         self.db = Database()
         self.authdb_path = Config.instance().get_authbd_path()
-    def generate_jwt(self, item, key,**kwargs_time): #days:00 // hours:00 // minutes:00
-        #encode token using key and HS256
-            SECRET_KEY =key 
-            token = jwt.encode({
-                "user":item.get['username'],
-                "exp":datetime.datetime.utcnow() + datetime.timedelta(**kwargs_time) 
-            },
-            SECRET_KEY,
-            algorithm='HS256'
-            )
-            return token
-
-        # def jwt_verify(token,type):
-        # def insert_token_into_db(self,**kwargs): 
-        #     #kwargs =>> type,token,issuePeriod,expPeriod
-        #     # type(access,refresh) token (jwt)  issuePeriod(00_00_00:00_00) expPeriod(00_00_00:00_00)
     def login(self,**kwargs):
         username = kwargs.get("username")
         password = kwargs.get("password")
         row = self.db.find_item_in_sql('username',username)
         if row is None:
-            return False,"Wrong username"
+            return False,"Wrong username",None
         elif password != row [4]: # password
-            return False,"Wrong password"
-        return True, row[2]
+            return False,"Wrong password",None
+
+        refresh_token = self.generate_jwt(id=row[0],username=row[3])
+        access_token = self.generate_jwt(id=row[0],username=row[3],exp_time={"hours":1})
+        self.insert_token_into_db(
+            username=username,
+            refresh_token=refresh_token,
+            issued_at=datetime.datetime.utcnow(),
+            expires_at = datetime.datetime.utcnow() + timedelta(days=30),
+            revoked = False
+            )
+        data = {'userid':row[0],'displayname':row[2],'username':row[3],'refresh_token':refresh_token,'access_token':access_token}
+        return True,message,data
 
     def signup(self,**kwargs):
         email = kwargs.get("email")
@@ -49,4 +44,48 @@ class Auth:
         con.close()
         if cur.rowcount < 0:
             return False,"Unable to resolve request!"
-        return True, "Successfully"
+        return True, "Successfully", refresh_token,access_token
+
+    def generate_jwt(self, **kwargs): #days:00 // hours:00 // minutes:00
+        #encode token using key and HS256
+        exp_time = kwargs.pop("exp_time",{"days":30})
+        SECRET_KEY =Config.instance().get_private_key() 
+        token = jwt.encode({
+            "id":kwargs.get("id"),
+            "user":kwargs.get("username"),
+            "issue":datetime.datetime.utcnow(),
+            "exp":datetime.datetime.utcnow() + datetime.timedelta(**exp_time) 
+        },
+        SECRET_KEY,
+        algorithm='RS256'
+        )
+        return token
+
+    def jwt_verify(self,token):
+        PUBLIC_KEY = Config.instance().get_public_key()
+        try:
+            payload = jwt.decode(token,PUBLIC_KEY,algorithm=["RS256"])
+        except jwt.ExpiredSignatureError:
+            return False,"Token Expired!"
+        except jwt.InvalidTokenError:
+            return False,"Token Invalid!"
+        return True,"Successfully!" 
+
+    def insert_token_into_db(self,**kwargs): 
+        #kwargs =>> type,token,issuePeriod,expPeriod
+        #type(access,refresh) token (jwt)  issuePeriod(00_00_00:00_00) expPeriod(00_00_00:00_00)
+        username =kwargs.username
+        token = kwargs.token
+        issued_at = kwargs.issued_at
+        expires_at = kwargs.expires_at
+        revoked = kwargs.revoked
+        con,cur = self.db.connect_db(Config.instance().get_authbd_path)
+        cur.execute(f'INSERT INTO refresh_tokens (username,token,issued_at,expires_at,revoked) VALUES (?,?,?,?,?)',(username,token,issued_at,expires_at,revoked,))
+        con.commit()
+        if(cur,rowcount<0):
+            return False, "Error insert to db"
+
+        return True
+
+
+        
