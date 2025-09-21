@@ -7,7 +7,7 @@ class Config:
         self.config = configparser.ConfigParser()
         self.config.read('Confignure.ini')
         self.private_keep_path = self.config.get('paths','private_key',fallback=None)
-        self.public_keep_path = self.config.get('paths','private_key',fallback=None)
+        self.public_keep_path = self.config.get('paths','public_key',fallback=None)
         self.authdb_path =self.config.get('paths', 'authdb', fallback=None)
 
         if not os.path.exists(self.authdb_path):

@@ -1,5 +1,5 @@
 import jwt
-import datetime
+from datetime import datetime,timedelta
 from database import Database
 from config import Config
 class Auth:
@@ -9,7 +9,7 @@ class Auth:
     def login(self,**kwargs):
         username = kwargs.get("username")
         password = kwargs.get("password")
-        row = self.db.find_item_in_sql('username',username)
+        row = self.db.find_item_in_sql('user_name',username)
         if row is None:
             return False,"Wrong username",None
         elif password != row [4]: # password
@@ -18,33 +18,35 @@ class Auth:
         refresh_token = self.generate_jwt(id=row[0],username=row[3])
         access_token = self.generate_jwt(id=row[0],username=row[3],exp_time={"hours":1})
         self.insert_token_into_db(
+            userid =row[0],
             username=username,
             refresh_token=refresh_token,
-            issued_at=datetime.datetime.utcnow(),
-            expires_at = datetime.datetime.utcnow() + timedelta(days=30),
-            revoked = False
+            issued_at=datetime.utcnow(),
+            expires_at = datetime.utcnow() + timedelta(days=30),
+            revoked = 0
             )
+        
         data = {'userid':row[0],'displayname':row[2],'username':row[3],'refresh_token':refresh_token,'access_token':access_token}
-        return True,message,data
+        
+        return True,"Sucessfully",data
 
     def signup(self,**kwargs):
         email = kwargs.get("email")
         display_name = kwargs.get("display_name")
         username = kwargs.get("username")
         password = kwargs.get("password")
-        print(display_name)
         if(self.db.find_item_in_sql("email",email)):
             return False, "Email already exists!"
-        if(self.db.find_item_in_sql("username",username)):
+        if(self.db.find_item_in_sql("user_name",username)):
             return False, "Username already exists!"
         
         con,cur= self.db.connect_db(self.authdb_path)
-        cur.execute(f'INSERT INTO auth (email,display_name,username,password) VALUES(?,?,?,?)',(email,display_name,username,password))
+        cur.execute(f'INSERT INTO auth (email,display_name,user_name,password) VALUES(?,?,?,?)',(email,display_name,username,password))
         con.commit()
         con.close()
         if cur.rowcount < 0:
             return False,"Unable to resolve request!"
-        return True, "Successfully", refresh_token,access_token
+        return True, "Successfully"
 
     def generate_jwt(self, **kwargs): #days:00 // hours:00 // minutes:00
         #encode token using key and HS256
@@ -53,8 +55,8 @@ class Auth:
         token = jwt.encode({
             "id":kwargs.get("id"),
             "user":kwargs.get("username"),
-            "issue":datetime.datetime.utcnow(),
-            "exp":datetime.datetime.utcnow() + datetime.timedelta(**exp_time) 
+            "issue":int((datetime.utcnow().timestamp())),
+            "exp":int((datetime.utcnow() + timedelta(**exp_time)).timestamp()) 
         },
         SECRET_KEY,
         algorithm='RS256'
@@ -74,15 +76,17 @@ class Auth:
     def insert_token_into_db(self,**kwargs): 
         #kwargs =>> type,token,issuePeriod,expPeriod
         #type(access,refresh) token (jwt)  issuePeriod(00_00_00:00_00) expPeriod(00_00_00:00_00)
-        username =kwargs.username
-        token = kwargs.token
-        issued_at = kwargs.issued_at
-        expires_at = kwargs.expires_at
-        revoked = kwargs.revoked
-        con,cur = self.db.connect_db(Config.instance().get_authbd_path)
-        cur.execute(f'INSERT INTO refresh_tokens (username,token,issued_at,expires_at,revoked) VALUES (?,?,?,?,?)',(username,token,issued_at,expires_at,revoked,))
+        userid = kwargs.get("userid")
+        username =kwargs.get("username")
+        token = kwargs.get("refresh_token")
+        issued_at = kwargs.get("issued_at")
+        expires_at = kwargs.get("expires_at")
+        revoked = kwargs.get("revoked")
+        print(kwargs)
+        con,cur = self.db.connect_db(Config.instance().get_authbd_path())
+        cur.execute(f'INSERT INTO refresh_tokens (user_id,user_name,token,issued_at,expires_at,revoked) VALUES (?,?,?,?,?,?)',(userid,username,token,issued_at,expires_at,revoked,))
         con.commit()
-        if(cur,rowcount<0):
+        if(cur.rowcount<0):
             return False, "Error insert to db"
 
         return True

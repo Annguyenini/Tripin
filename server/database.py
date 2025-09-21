@@ -17,12 +17,13 @@ class Database:
         con,cur = self.connect_db(self.authdb_path)
         con.execute('PRAGMA journal_mode=WAL;') #WAL mode
 
-        cur.execute('CREATE TABLE IF NOT EXISTS auth (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT,display_name TEXT, username TEXT, password TEXT)')
+        cur.execute('CREATE TABLE IF NOT EXISTS auth (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT,display_name TEXT, user_name TEXT, password TEXT)')
         con.commit()
         cur.execute('''
         CREATE TABLE IF NOT EXISTS refresh_tokens (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL,
+           id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            user_name TEXT NOT NULL,
             token TEXT NOT NULL,
             issued_at DATETIME NOT NULL,
             expires_at DATETIME NOT NULL,
