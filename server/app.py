@@ -3,6 +3,7 @@ from flask_cors import CORS
 from config import Config
 from database import Database
 from auth import Auth
+from tokenservice import TokenService
 import json
 import io
 
@@ -10,6 +11,7 @@ import io
 class Server:
     def __init__(self):
         self.auth = Auth()
+        self.tk = TokenService()
         self.app = Flask(__name__)
         CORS(self.app)
         self.AuthRoute()
@@ -18,13 +20,12 @@ class Server:
         app = self.app
         self.app.add_url_rule("/login", view_func=self.login, methods=["POST"])
         self.app.add_url_rule("/signup", view_func=self.signup, methods=["POST"])
-        self.app.add_url_rule("/login/token", view_func=self.signup, methods=["POST"])
-    
+        self.app.add_url_rule("/login/token", view_func=self.login_via_token, methods=["POST"])
+        self.app.add_url_rul("/auth/access", view_func=self.request_new_access_token, method =["POST"])  
     def login_via_token(self):
         print("called login_via_token")
-        data= request.json
-        token = data.get("Authorization")
-        status, message = self.jwt_verify(token)
+        token = request.headers.get("Authorization")
+        status, message = self.tk.jwt_verify(token)
         if not status:
             return jsonify({"Message":message}), 401
         return jsonify({"Message":message}), 200
@@ -42,18 +43,22 @@ class Server:
         return jsonify({"successfully":message,"userdatas":userdatas}),200
 
     def signup(self):
-        print("connect to signup")
         data = request.json
         email = data.get("email")
         display_name = data.get("displayName")
         username = data.get("username")
         password = data.get("password")
-        print(display_name)
         status,message = self.auth.signup(email=email,display_name=display_name,username=username,password=password)
         if not status:
             return jsonify({"Message":message}),401
         return jsonify({"Message":message}),200
 
+    def request_new_access_token(self):
+        token = request.header.get("Authorization")
+        status , token = self.auth.request_new_access_token(token)
+        if not satus:
+            return jsonify({"Message":"Could not finish the request!"}),401
+        return jsonify({"Massage":"Successfully","token":token}),200
 
 
 

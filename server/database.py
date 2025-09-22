@@ -36,9 +36,23 @@ class Database:
         con = sqlite3.connect(path,check_same_thread=False,isolation_level=None)
         cur= con.cursor()
         return con, cur
-    def find_item_in_sql(self, item,value):
-        
+    def find_item_in_sql(self, **kwargs):
+        options = kwargs.pop("option","fetchone")
+        table = kwargs.get("table")
+        item = kwargs.get("item")
+        value = kwargs.get("value")
         con,cur = self.connect_db(self.authdb_path)
-        cur.execute (f'SELECT * FROM auth WHERE {item}=?',(value,))
-        item = cur.fetchone()
+        cur.execute (f'SELECT * FROM {table} WHERE {item}=?',(value,))
+        if options ="fetchall":
+            time = cur.fetchall()
+        else:
+            item = cur.fetchone()
         return item
+    def update_db(self,**kwargs):
+        table = kwargs.get("table")
+        item = kwargs.get ("item")
+        value = kwargs.get("value")
+        item_to_update = kwargs.get("item_to_update")
+        value_to_update = kwargs.get("value_to_update")
+        con,cur = self.connect_db(self.authdb_path)
+        cur.execute(f'UPDATE {table} SET {item_to_update} =? WHERE {item} = ?',(value_to_update,value,))

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { AuthScreen } from './src/fontend/auth.js';
+import React, { useState,useEffect } from 'react';
+import { AuthScreen, loginWithAccessToken} from './src/fontend/auth.js';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import {
@@ -25,6 +25,9 @@ export default function App() {
   const [loaded] = useFonts({
     mainfont: require('./assets/fonts/mainfont.otf'),
   });
+    useEffect(() => {
+    loginWithAccessToken(); // run on mount
+  }, []);
   if (!loaded) return null;
 
   return (
@@ -37,6 +40,7 @@ export default function App() {
         <Stack.Screen name="Auth" component={AuthScreen} />
       </Stack.Navigator>
     </NavigationContainer>        */}
+
     <AuthScreen/>
       </ImageBackground>
       </ScrollView>

@@ -8,17 +8,16 @@ import {authStyle} from './style.js'
 import { Auth } from '../backend/auth.js';  
 const { width } = Dimensions.get('window');
 
-export const AuthScreen= ({navigation} ) => {
-  
-  const auth = new Auth()
-  const loginWithAccessToken = async () =>{
-    const res_access = await auth.authenticateToken("access_key");
+export const loginWithAccessToken = async () =>{
+  const auth = new Auth();
+    const res = await auth.authenticateToken("access_token");
+    console.log(res)
     if (res.message === "Token Expired!"){
-      if (auth.authenticateToken("refresh_key").status === 401){
+      if (auth.authenticateToken("refresh_token").status === 401){
         auth.forceDeleteKeys();
         return;
       }
-      else if(auth.authenticateToken("refresh_key").status === 200){
+      else if(auth.authenticateToken("refresh_token").status === 200){
         auth.requestNewAccessToken();
         navigation.navigate('Main');
         return;
@@ -30,7 +29,9 @@ export const AuthScreen= ({navigation} ) => {
       return;
     }
   }
-  loginWithAccessToken();
+export const AuthScreen= ({navigation} ) => {
+  
+  const auth = new Auth()
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [email,setEmail] = useState('');
@@ -45,20 +46,6 @@ export const AuthScreen= ({navigation} ) => {
   const [showPasswordMissingList,setShowPML] = useState(false);
   const specialRegex = /[^A-Za-z0-9]/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const signupRules = ()=>{
-    let res=[];
-    if(!emailRegex.test(email)) res.push('Invalid Email');
-    if(!/\d/.test(password)) res.push('Missing Number!');
-    if(password.length<8) res.push('Password have to be longer than 8!');
-    if(!specialRegex.test(password)) res.push("Missing special character!");
-    if(!/[A-Z]/.test(password)) res.push('Missing upper letter!');
-    if(confirmPassword!=password) res.push("Confirm password doesnt match!")
-      if(res.length>0){
-        setPassWordMissingList (res);
-        setShowPML(true);
-        return;
-      }
-  }
   const submitRequest = async ({action})=>{
     
     setShowAleart(false);
@@ -73,7 +60,7 @@ export const AuthScreen= ({navigation} ) => {
 
     if(action ==='Login'){
       const respond =await auth.requestLogin(username,password);
-      if(respond===200){
+      if(respond===401){
         setAlertType('Account not found!')
         setShowAleart(true);
       }
@@ -86,15 +73,26 @@ export const AuthScreen= ({navigation} ) => {
         setShowAleart(true);
       return;
       };
-      signupRules();
-      const response = await auth.requestSignup(email,displayName,username,password);
-      if(response.status===200){
-        setAlertType(response.message);
-        setShowAleart(true);
-        return;
-      }
-      setShowSignup(false);
-      setShowLogin(true);
+    let res=[];
+    if(!emailRegex.test(email)) res.push('Invalid Email');
+    if(!/\d/.test(password)) res.push('Missing Number!');
+    if(password.length<8) res.push('Password have to be longer than 8!');
+    if(!specialRegex.test(password)) res.push("Missing special character!");
+    if(!/[A-Z]/.test(password)) res.push('Missing upper letter!');
+    if(confirmPassword!=password) res.push("Confirm password doesnt match!")
+    if(res.length>0){
+      setPassWordMissingList (res);
+      setShowPML(true);
+      return;
+    }
+    const response = await auth.requestSignup(email,displayName,username,password);
+    if(response.status===401){
+      setAlertType(response.message);
+      setShowAleart(true);
+      return;
+    }
+    setShowSignup(false);
+    setShowLogin(true);
       
     }
 }
