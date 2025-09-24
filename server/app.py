@@ -21,18 +21,16 @@ class Server:
         self.app.add_url_rule("/login", view_func=self.login, methods=["POST"])
         self.app.add_url_rule("/signup", view_func=self.signup, methods=["POST"])
         self.app.add_url_rule("/login/token", view_func=self.login_via_token, methods=["POST"])
-        self.app.add_url_rul("/auth/access", view_func=self.request_new_access_token, method =["POST"])  
+        self.app.add_url_rule("/auth/access", view_func=self.request_new_access_token, methods =["POST"])  
     def login_via_token(self):
-        print("called login_via_token")
-        token = request.headers.get("Authorization")
+        data = request.headers.get("Authorization")
+        token=data.replace("Bearer ","")
         status, message = self.tk.jwt_verify(token)
         if not status:
             return jsonify({"Message":message}), 401
         return jsonify({"Message":message}), 200
 
     def login(self):
-        print("connect to login")
-
         data = request.json
         username = data.get("username")
         password = data.get("password")

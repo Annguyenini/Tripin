@@ -19,31 +19,30 @@ export class Auth{
             password:password 
         })});
         const respond = await request.json();
+        console.log(respond)
         if (Platform.OS === 'web') {
-            await AsyncStorage.deleteItem("refresh_token");
+            await AsyncStorage.removeItem("access_token");
             await AsyncStorage.setItem("refresh_token", respond.userdatas.refresh_token);
             await AsyncStorage.setItem("access_token", respond.userdatas.access_token);
 
         }
         else{
-            SecureStore.deleteItemAsync("refresh_token");
+            SecureStore.deleteItemAsync("access_token");
             SecureStore.setItemAsync("refresh_token",respond.userdatas.refresh_token)
             SecureStore.setItemAsync("access_token",respond.userdatas.access_token)
         }
         return request.status;
      } 
     async forceDeleteToken(key){
-        
         if(Platform.OS==='web'){
             await AsyncStorage.deleteItem(key)
         }
         else{
             await SecureStore.deleteItemAsync(key)
         }
-
     }
     async requestNewAccessToken(){
-        const refresh_token = Platform.OS ==='web'?await AsyncStorage.getItem("refresh_token"):await SecureStore.getItemAsync("refresh_token";)
+        const refresh_token = Platform.OS ==='web'? await AsyncStorage.getItem("refresh_token"): await SecureStore.getItemAsync("refresh_token")
         const res = await fetch (API.REQUEST_NEW_ACCESS_TOKEN_API,{
             method :'POST',
             headers:{"Content-Type":"application/json",
@@ -60,7 +59,6 @@ export class Auth{
         }
     }
     async authenticateToken(key){
-        console.log(key)
         const access_token = Platform.OS==='web'? await AsyncStorage.getItem(key) :await SecureStore.getItemAsync(key);
         const respond = await fetch(API.LOGIN_TOKEN_API,{
             method : "POST",

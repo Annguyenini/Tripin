@@ -21,16 +21,17 @@ class TokenService:
         return token
 
     def jwt_verify(self,token):
+ 
         PUBLIC_KEY = Config.instance().get_public_key()
         try:
-            payload = jwt.decode(token,PUBLIC_KEY,algorithm=["RS256"])
+            payload = jwt.decode(token,PUBLIC_KEY,algorithms=["RS256"])
         except jwt.ExpiredSignatureError:
             return False,"Token Expired!"
         except jwt.InvalidTokenError:
             return False,"Token Invalid!"
         return True,"Successfully!" 
     def refresh_token_verify(self,row):
-        if row[6] =1:
+        if row[6] ==1:
             return False
         if datetime.now() >= row[5]:
             self.revoked_refresh_token(userid=row[1])
@@ -50,7 +51,6 @@ class TokenService:
         issued_at = kwargs.get("issued_at")
         expires_at = kwargs.get("expires_at")
         revoked = kwargs.get("revoked")
-        print(kwargs)
         con,cur = self.db.connect_db(Config.instance().get_authbd_path())
         cur.execute(f'INSERT INTO refresh_tokens (user_id,user_name,token,issued_at,expires_at,revoked) VALUES (?,?,?,?,?,?)',(userid,username,token,issued_at,expires_at,revoked,))
         con.commit()

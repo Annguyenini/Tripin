@@ -43,7 +43,7 @@ class Database:
         value = kwargs.get("value")
         con,cur = self.connect_db(self.authdb_path)
         cur.execute (f'SELECT * FROM {table} WHERE {item}=?',(value,))
-        if options ="fetchall":
+        if options =="fetchall":
             time = cur.fetchall()
         else:
             item = cur.fetchone()

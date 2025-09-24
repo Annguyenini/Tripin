@@ -6,30 +6,38 @@ import { createStackNavigator } from '@react-navigation/stack';
 import {styles} from './style.js'
 import {authStyle} from './style.js'
 import { Auth } from '../backend/auth.js';  
+import { useNavigation  } from '@react-navigation/native';
+import { navigate } from './navigationService.js';
+
 const { width } = Dimensions.get('window');
 
-export const loginWithAccessToken = async () =>{
+export const loginWithAccessToken = async () => {
   const auth = new Auth();
-    const res = await auth.authenticateToken("access_token");
-    console.log(res)
-    if (res.message === "Token Expired!"){
-      if (auth.authenticateToken("refresh_token").status === 401){
-        auth.forceDeleteKeys();
-        return;
-      }
-      else if(auth.authenticateToken("refresh_token").status === 200){
-        auth.requestNewAccessToken();
-        navigation.navigate('Main');
-        return;
-      }
-      return;
-    }
-    else if(res.message === "Token Invalid!"){
-      auth.forceDeleteKeys();
-      return;
+  const res = await auth.authenticateToken("access_token");
+
+  if (res.message === "Token Expired!") {
+    const refreshRes = await auth.authenticateToken("refresh_token");
+
+    if (refreshRes.status === 401) {
+      auth.forceDeleteToken();
+      return false;
+    } else if (refreshRes.status === 200) {
+      await auth.requestNewAccessToken();
+      return await loginWithAccessToken(); 
     }
   }
-export const AuthScreen= ({navigation} ) => {
+
+  if (res.message === "Token Invalid!") {
+    auth.forceDeleteToken();
+    return false;
+  }
+
+  // only navigate if navigation is ready
+  navigate('Main');
+  return true;
+};
+export const AuthScreen= ( ) => {
+    const navigation = useNavigation();
   
   const auth = new Auth()
   const [showLogin, setShowLogin] = useState(false);
@@ -63,7 +71,9 @@ export const AuthScreen= ({navigation} ) => {
       if(respond===401){
         setAlertType('Account not found!')
         setShowAleart(true);
+        return;
       }
+      navigation.navigate('Main');
     }
     else if(action ==="Signup"){
       setShowPML(false);
@@ -78,6 +88,7 @@ export const AuthScreen= ({navigation} ) => {
     if(!/\d/.test(password)) res.push('Missing Number!');
     if(password.length<8) res.push('Password have to be longer than 8!');
     if(!specialRegex.test(password)) res.push("Missing special character!");
+    if(specialRegex.test(username)) res.push("Username should not contain special characters!")
     if(!/[A-Z]/.test(password)) res.push('Missing upper letter!');
     if(confirmPassword!=password) res.push("Confirm password doesnt match!")
     if(res.length>0){

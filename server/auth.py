@@ -1,3 +1,4 @@
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime,timedelta
 from database import Database
 from config import Config
@@ -13,7 +14,7 @@ class Auth:
         row = self.db.find_item_in_sql(table="auth",item="user_name",value=username)
         if row is None:
             return False,"Wrong username",None
-        elif password != row [4]: # password
+        elif not check_password_hash(row[4],password): # password
             return False,"Wrong password",None
         self.tokenService.revoked_refresh_token(userid=row[0])
         refresh_token = self.tokenService.generate_jwt(id=row[0],username=row[3])
@@ -28,7 +29,6 @@ class Auth:
             )
         
         data = {'userid':row[0],'displayname':row[2],'username':row[3],'refresh_token':refresh_token,'access_token':access_token}
-        
         return True,"Sucessfully",data
 
     def signup(self,**kwargs): 
@@ -36,20 +36,21 @@ class Auth:
         display_name = kwargs.get("display_name")
         username = kwargs.get("username")
         password = kwargs.get("password")
+        hashed_passwords = generate_password_hash(password)
+
         if(self.db.find_item_in_sql(table="auth",item="email",value=email)):
             return False, "Email already exists!"
         if(self.db.find_item_in_sql(table="auth",item="user_name",value=username)):
             return False, "Username already exists!"
         
         con,cur= self.db.connect_db(self.authdb_path)
-        cur.execute(f'INSERT INTO auth (email,display_name,user_name,password) VALUES(?,?,?,?)',(email,display_name,username,password))
+        cur.execute(f'INSERT INTO auth (email,display_name,user_name,password) VALUES(?,?,?,?)',(email,display_name,username,hashed_passwords))
         con.commit()
         con.close()
         if cur.rowcount < 0:
             return False,"Unable to resolve request!"
         return True, "Successfully"
 
-   
 
 
         
