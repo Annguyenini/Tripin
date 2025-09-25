@@ -5,7 +5,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { navigationRef } from './src/frontend/navigationService';
-
 import {
   TouchableOpacity,
   StyleSheet,
@@ -19,7 +18,8 @@ import {
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
-import {styles,mainScreenStyle} from './src/frontend/style.js'
+import {styles,mainScreenStyle,cameraStyle} from './src/frontend/style.js'
+import {CameraApp} from './src/frontend/camera.js'
 const backgroundImage = require('./assets/image/main_background.png');
 const logo = require('./assets/image/main_logo.png');
 const { width, height } = Dimensions.get('window');
@@ -56,6 +56,7 @@ export default function App() {
 />
             <Stack.Screen name="Main" component={MainLayout}   options={{ headerShown: false }} // ← hides the "Auth" text
 />
+            <Stack.Screen name ="Camera" component={CameraLayout} options={{headerShown: false}}/>
           </Stack.Navigator>
         </NavigationContainer>
 
@@ -88,4 +89,10 @@ function MainLayout() {
     </ScrollView>
   );
 }
-
+function CameraLayout(){
+  return(
+    <View style={cameraStyle.container}>
+        <CameraApp/>
+    </View>
+  )
+}

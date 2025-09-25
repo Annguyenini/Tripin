@@ -52,8 +52,8 @@ class Server:
         return jsonify({"Message":message}),200
 
     def request_new_access_token(self):
-        token = request.header.get("Authorization")
-        status , token = self.auth.request_new_access_token(token)
+        token = request.headers.get("Authorization")
+        status , token = self.tokenService.request_new_access_token(token)
         if not satus:
             return jsonify({"Message":"Could not finish the request!"}),401
         return jsonify({"Massage":"Successfully","token":token}),200

@@ -5,10 +5,16 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import {mainScreenStyle,footer} from './style.js'
 import { Button } from 'react-native-web';
+import { navigate } from './navigationService.js';
 const homeIcon = require('../../assets/image/home_icon.png')
 const cameraIcon = require('../../assets/image/camera_icon.png')
 const galleryIcon = require('../../assets/image/gallery_icon.png')
 export const MainScreen = () =>{
+  const callCamera= ()=>{
+  const res = navigate("Camera");
+}
+
+
     return(
         <SafeAreaProvider>
   <SafeAreaView style={{ flex: 1 }}>
@@ -39,7 +45,7 @@ export const MainScreen = () =>{
         <TouchableOpacity style={footer.fotterbutton}>
             <Image source = {homeIcon} style ={footer.fottericon}/>
         </TouchableOpacity>
-        <TouchableOpacity style={footer.fotterbutton}>
+        <TouchableOpacity style={footer.fotterbutton} onPress={callCamera} >
             <Image source = {cameraIcon} style ={footer.fottericon}/>
         </TouchableOpacity>
         <TouchableOpacity style={footer.fotterbutton}>

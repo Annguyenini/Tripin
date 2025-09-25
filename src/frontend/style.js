@@ -1,6 +1,6 @@
 import {  StyleSheet, Dimensions } from 'react-native';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 
 export const styles = StyleSheet.create({
@@ -229,3 +229,67 @@ export const footer = StyleSheet.create({
     width: '80%',                // span full width
   },
 })
+
+
+
+
+export const cameraStyle = StyleSheet.create({
+  camera: {
+    position: 'absolute', 
+    top: 0, 
+    left: 0, width, height
+   
+  },
+
+  container: {
+    flex: 1,
+    // backgroundColor: 'black',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+  },
+  text: {
+    color: 'white',
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  controls: {
+    position: 'absolute',
+    bottom: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    paddingHorizontal: 40,
+  },
+  flipButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'white',
+  },
+  captureButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  captureText: {
+    fontSize: 20,
+  },
+});
