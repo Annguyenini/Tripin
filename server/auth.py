@@ -11,7 +11,7 @@ class Auth:
     def login(self,**kwargs):
         username = kwargs.get("username")
         password = kwargs.get("password")
-        row = self.db.find_item_in_sql(table="auth",item="user_name",value=username)
+        row = self.db.find_item_in_sql(table="tripin_auth.auth",item="user_name",value=username)
         if row is None:
             return False,"Wrong username",None
         elif not check_password_hash(row[4],password): # password
@@ -19,13 +19,13 @@ class Auth:
         self.tokenService.revoked_refresh_token(userid=row[0])
         refresh_token = self.tokenService.generate_jwt(id=row[0],username=row[3])
         access_token = self.tokenService.generate_jwt(id=row[0],username=row[3],exp_time={"hours":1})
-        self.tokenService.insert_token_into_db(
+        self.db.insert_token_into_db(
             userid =row[0],
             username=username,
             refresh_token=refresh_token,
             issued_at=datetime.utcnow(),
             expires_at = datetime.utcnow() + timedelta(days=30),
-            revoked = 0
+            revoked = False
             )
         
         data = {'userid':row[0],'displayname':row[2],'username':row[3],'refresh_token':refresh_token,'access_token':access_token}
@@ -38,16 +38,12 @@ class Auth:
         password = kwargs.get("password")
         hashed_passwords = generate_password_hash(password)
 
-        if(self.db.find_item_in_sql(table="auth",item="email",value=email)):
+        if(self.db.find_item_in_sql(table="tripin_auth.auth",item="email",value=email)):
             return False, "Email already exists!"
-        if(self.db.find_item_in_sql(table="auth",item="user_name",value=username)):
+        if(self.db.find_item_in_sql(table="tripin_auth.auth",item="user_name",value=username)):
             return False, "Username already exists!"
-        
-        con,cur= self.db.connect_db(self.authdb_path)
-        cur.execute(f'INSERT INTO auth (email,display_name,user_name,password) VALUES(?,?,?,?)',(email,display_name,username,hashed_passwords))
-        con.commit()
-        con.close()
-        if cur.rowcount < 0:
+        res = self.db.insert_to_database_singup(email=email, display_name=display_name,username=username,password=hashed_passwords)
+        if res< 0:
             return False,"Unable to resolve request!"
         return True, "Successfully"
 
