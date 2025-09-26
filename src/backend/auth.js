@@ -67,6 +67,7 @@ export class Auth{
             } 
             
         });
+        console.log(access_token);
         const message = await respond.json();
         if(message.status==401){
             if (message.Message==="Token Invalid!"){

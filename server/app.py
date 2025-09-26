@@ -11,7 +11,7 @@ import io
 class Server:
     def __init__(self):
         self.auth = Auth()
-        self.tk = TokenService()
+        self.token_service = TokenService()
         self.app = Flask(__name__)
         CORS(self.app)
         self.AuthRoute()
@@ -25,7 +25,7 @@ class Server:
     def login_via_token(self):
         data = request.headers.get("Authorization")
         token=data.replace("Bearer ","")
-        status, message = self.tk.jwt_verify(token)
+        status, message = self.token_service.jwt_verify(token)
         if not status:
             return jsonify({"Message":message}), 401
         return jsonify({"Message":message}), 200
@@ -53,7 +53,7 @@ class Server:
 
     def request_new_access_token(self):
         token = request.headers.get("Authorization")
-        status , token = self.tokenService.request_new_access_token(token)
+        status , token = self.token_service.request_new_access_token(token)
         if not satus:
             return jsonify({"Message":"Could not finish the request!"}),401
         return jsonify({"Massage":"Successfully","token":token}),200

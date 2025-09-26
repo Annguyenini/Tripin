@@ -14,7 +14,7 @@ const { width } = Dimensions.get('window');
 export const loginWithAccessToken = async () => {
   const auth = new Auth();
   const res = await auth.authenticateToken("access_token");
-
+  
   if (res.message === "Token Expired!") {
     const refreshRes = await auth.authenticateToken("refresh_token");
 

@@ -19,7 +19,7 @@ import {
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import {styles,mainScreenStyle,cameraStyle} from './src/frontend/style.js'
-import {CameraApp} from './src/frontend/camera.js'
+import {CameraApp} from './src/frontend/camera_layout.js'
 const backgroundImage = require('./assets/image/main_background.png');
 const logo = require('./assets/image/main_logo.png');
 const { width, height } = Dimensions.get('window');
