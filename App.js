@@ -5,6 +5,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { navigationRef } from './src/frontend/navigationService';
+import MapboxGL from "@rnmapbox/maps";
+
 import {
   TouchableOpacity,
   StyleSheet,
@@ -24,6 +26,7 @@ const backgroundImage = require('./assets/image/main_background.png');
 const logo = require('./assets/image/main_logo.png');
 const { width, height } = Dimensions.get('window');
 const Stack = createStackNavigator();
+MapboxGL.setAccessToken("pk.eyJ1IjoiYW5uZ3V5ZW4xMTIzNCIsImEiOiJjbWdhMmRjMGYwZWU2MmpweDkwc2l6eGpwIn0.b2ldLayg1XNiEctg3lFq0g");
 
 export default function App() {
 
@@ -40,31 +43,34 @@ export default function App() {
   if (!loaded) return null;
 
   return (
-    <SafeAreaProvider>
-      {/* <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
-          <Image source={logo} style={styles.logo} />
+     <View style={styles.container}>
+      <MapboxGL.MapView style={styles.map} />
+    </View>
+//     <SafeAreaProvider>
+//       {/* <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+//         <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
+//           <Image source={logo} style={styles.logo} />
       
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen name="Auth" component={AuthScreen} />
-          </Stack.Navigator>
-        </NavigationContainer> */}
-      <NavigationContainer  ref={navigationRef}>
-          <Stack.Navigator>
-            <Stack.Screen name="auth" component={AuthLayout}   options={{ headerShown: false }} // ← hides the "Auth" text
-/>
-            <Stack.Screen name="Main" component={MainLayout}   options={{ headerShown: false }} // ← hides the "Auth" text
-/>
-            <Stack.Screen name ="Camera" component={CameraLayout} options={{headerShown: false}}/>
-          </Stack.Navigator>
-        </NavigationContainer>
+//         <NavigationContainer>
+//           <Stack.Navigator>
+//             <Stack.Screen name="Auth" component={AuthScreen} />
+//           </Stack.Navigator>
+//         </NavigationContainer> */}
+//       <NavigationContainer  ref={navigationRef}>
+//           <Stack.Navigator>
+//             <Stack.Screen name="auth" component={AuthLayout}   options={{ headerShown: false }} // ← hides the "Auth" text
+// />
+//             <Stack.Screen name="Main" component={MainLayout}   options={{ headerShown: false }} // ← hides the "Auth" text
+// />
+//             <Stack.Screen name ="Camera" component={CameraLayout} options={{headerShown: false}}/>
+//           </Stack.Navigator>
+//         </NavigationContainer>
 
 
-    {/* <AuthScreen/> */}
-      {/* </ImageBackground>
-      </ScrollView> */}
-    </SafeAreaProvider>
+//     {/* <AuthScreen/> */}
+//       {/* </ImageBackground>
+//       </ScrollView> */}
+//     </SafeAreaProvider>
     
   );
 }
