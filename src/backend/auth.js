@@ -96,7 +96,6 @@ export class Auth{
             password:password 
         })});
         const respond = await request.json();
-        console.log(respond)
         return {"status":request.status,"message":request.message};
     }   
     }

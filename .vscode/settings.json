@@ -55,5 +55,20 @@
   "C_Cpp_Runner.useLeakSanitizer": false,
   "C_Cpp_Runner.showCompilationTime": false,
   "C_Cpp_Runner.useLinkTimeOptimization": false,
-  "C_Cpp_Runner.msvcSecureNoWarnings": false
+  "C_Cpp_Runner.msvcSecureNoWarnings": false,
+  
+  "background.editor": {
+    "useFront": true,
+    "style": {
+      "background-position": "100% 100%",
+      "background-size": "auto",
+      "opacity": 0.6
+    },
+    "styles": [{}, {}, {}],
+    // Local images can be dragged into the browser to quickly get the file protocol address from the address bar
+    "images": ["https://www.tiktok.com/discover/gai-%C4%91ep-gai-xinh", "file:///C:/Users/anphu/Downloads/sunset-water_YI2DB9LUZE.webp"],
+    "interval": 0,
+    "random": false
+  }
+
 }

@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions,Image,PanResponder } from 'react-native';
 import { CameraView, useCameraPermissions, FlashMode } from 'expo-camera';
 import { cameraStyle, mainScreenStyle } from './style';
-
+import {CameraService} from '../backend/camera/camera_functions.js'
 
 import * as MediaLibrary from 'expo-media-library';
 import{navigate} from './navigationService'
@@ -11,6 +11,7 @@ const cameraSetting_icon = require('../../assets/image/camera_setting.png');
 const exitCamera=()=>{
   navigate('Main');
 }
+const cameraService =new CameraService();
 export const CameraApp = () => {
   const cameraRef = useRef(null);
   const [cameraPermission, requestcameraPermission] = useCameraPermissions();
@@ -19,6 +20,8 @@ export const CameraApp = () => {
 
   const [Album,setAlbums]= useState(null);
   const [photo,setPhoto] =useState(null);
+  const [video,setVideo]=useState(null);
+  const [recording,setRecording] =useState(false);
 
   const [facing, setFacing] = useState('back');
   const [zoom,setZoom] = useState(0.16);
@@ -43,20 +46,32 @@ export const CameraApp = () => {
     });
     setAlbums(fetchedAlbums);
   }
-  ///take piture
+  //take piture
   const takePicture = async()=>{
-    if (cameraRef.current){
-        const options = {quality: 1, base64 :true}; // control option for picture\
-        setShowFlash(true);
-        setTimeout(()=>{
-          setShowFlash(false);
-        },150)
-        const photo =await cameraRef.current.takePictureAsync(options) // return a photo
-           setShowFlash(false);
-
+      setShowFlash(true);
+      setTimeout(()=>{
+        setShowFlash(false);
+      },150)
+      const photo = await cameraService.takePicture(cameraRef);  //// calling camera service (backend)
+      if (photo){
+        console.log("pass")
         setPhoto(photo);
-        setImage_icon(photo.uri);  
-    }
+        setImage_icon(photo.uri); 
+      } 
+  }
+
+
+
+  const recordVideo =async()=>{
+    const video = await cameraService.recordVideo(cameraRef);
+    setRecording(true);
+    setVideo(video);
+
+  }
+  const stopRecording = ()=>{
+    cameraService.stopRecording();
+    setRecording(false);
+    setImage_icon(video.uri);
   }
   //zooming for bar 
   const startZooming =(direction)=>{
@@ -198,11 +213,7 @@ const panResponder = PanResponder.create({
           {/** camera picture button */}
          <TouchableOpacity 
           style={cameraStyle.snapButton} 
-            onPress={() => {
-              setTimeout(() => {
-                takePicture();
-              }, 100); // 500ms = 0.5 second
-            }}
+             onPress={takePicture}
 
         >
           <Text style={cameraStyle.buttonText}> </Text>

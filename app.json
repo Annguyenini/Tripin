@@ -30,7 +30,14 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-secure-store"
+      "expo-secure-store",
+       [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsDownloadToken": "pk.eyJ1IjoiYW5uZ3V5ZW4xMTIzNCIsImEiOiJjbWdhMmRjMGYwZWU2MmpweDkwc2l6eGpwIn0.b2ldLayg1XNiEctg3lFq0g"
+        }
+      ]
+
     ]
   }
 }

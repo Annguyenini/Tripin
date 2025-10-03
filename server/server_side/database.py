@@ -1,24 +1,56 @@
 import sqlite3
 import psycopg2
+from dotenv import set_key, load_dotenv
+import os
+from server_side.config import Config
+from server_side.encryption import Encryption
+import inspect
 
-from config import Config
 class Database:
     _instance = None
-    def __init__(self):
-        self.__init__authsetup()
-        self.authdb_path = Config.instance().get_authbd_path()
-
-
     def __new__(cls,*args,**kwargs):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
-    def __init__authsetup(self):
-        self.authdb_path = Config.instance().get_authbd_path()
     
-        con,cur = self.connect_db(self.authdb_path)
-        # con.execute('PRAGMA journal_mode=WAL;') #WAL mode
+    def __init__(self):
+        if getattr(self, "_initialized", False):
+            return
+        if getattr(self, "_initialized_credentials", False):
+            return
+        self._initialized = True
+        self._initialized_credentials = False
+        self.config = Config()
+        self.encryption_Service = Encryption() 
 
+        # database credentials
+        self.database_host =None
+        self.database_dbname =None
+        self.database_username  =None
+        self.database_password =None
+        self.database_port = None
+
+        self.__init__authsetup()
+
+    # set database credentials(onlyfor server Auth class)
+    def set_database_credentials(self,host,dbname,username,password,port):
+        caller = inspect.stack()[1].frame.f_globals["__name__"]
+        if caller == "server_side.server_auth":
+            self.database_host = host
+            self.database_dbname = dbname
+            self.database_username = username
+            self.database_password = password
+            self.database_port = port
+            self._initialized_credentials = True
+            print("Database credentials set successfully!✅")
+        else :
+            print("You are not allowed to set database credentials!❌")
+            return
+
+    def __init__authsetup(self):
+        if not self._initialized_credentials:
+            return
+        con,cur = self.connect_db()
         cur.execute('CREATE TABLE IF NOT EXISTS tripin_auth.auth (id SERIAL PRIMARY KEY, email TEXT,display_name TEXT, user_name TEXT, password TEXT)')
         con.commit()
         cur.execute('''
@@ -35,16 +67,16 @@ class Database:
         ''')
         con.commit() 
         con.close()
-    def connect_db(self, path):
-        conn = psycopg2.connect(
-        host= Config.instance().get_database_host(),
-        dbname= Config.instance().get_database_name(),
-        user= Config.instance().get_database_username(),
-        password= Config.instance().get_database_password(),
-        port= Config.instance().get_database_port()
-        )
-        print(Config.instance().get_database_username())
 
+    def connect_db(self):
+        conn = psycopg2.connect(
+        host= self.database_host,
+        dbname= self.database_dbname,
+        user= self.database_username,
+        password= self.database_password,
+        port= self.database_port
+        )
+        print("Database connected successfully!✅")
 
         # con = sqlite3.connect(path,check_same_thread=False,isolation_level=None)
         cur= conn.cursor()
@@ -65,7 +97,7 @@ class Database:
         item = kwargs.get("item")
         self.check_allowance(table,item,"auth")
         value = kwargs.get("value")
-        con,cur = self.connect_db(self.authdb_path)
+        con,cur = self.connect_db()
         cur.execute (f'SELECT * FROM {table} WHERE {item}=%s',(value,))
         if options =="fetchall":
             time = cur.fetchall()
@@ -79,11 +111,14 @@ class Database:
         self.check_allowance(table,item,"auth")
         item_to_update = kwargs.get("item_to_update")
         value_to_update = kwargs.get("value_to_update")
-        con,cur = self.connect_db(self.authdb_path)
+        con,cur = self.connect_db()
         cur.execute(f'UPDATE {table} SET {item_to_update} =%s WHERE {item} = %s',(value_to_update,value,))
+        con.commit()
+        con.close()
+
 
     def insert_to_database_singup(self, **kwargs):
-        con,cur= self.connect_db(self.authdb_path)
+        con,cur= self.connect_db()
         email = kwargs.get('email')
         display_name =kwargs.get('display_name')
         username = kwargs.get('username')
@@ -92,6 +127,8 @@ class Database:
         con.commit()
         con.close()
         return cur.rowcount
+
+
     def insert_token_into_db(self,**kwargs): 
         #kwargs =>> type,token,issuePeriod,expPeriod
         #type(access,refresh) token (jwt)  issuePeriod(00_00_00:00_00) expPeriod(00_00_00:00_00)
@@ -102,7 +139,7 @@ class Database:
         issued_at = kwargs.get("issued_at")
         expires_at = kwargs.get("expires_at")
         revoked = kwargs.get("revoked")
-        con,cur = self.connect_db(Config.instance().get_authbd_path())
+        con,cur = self.connect_db()
         cur.execute(f'INSERT INTO tripin_auth.refresh_tokens (user_id,user_name,token,issued_at,expires_at,revoked) VALUES (%s, %s, %s, %s, %s, %s)',(userid,username,token,issued_at,expires_at,revoked,))
         con.commit()
         if(cur.rowcount<0):
