@@ -19,6 +19,7 @@ class TokenService:
         SECRET_KEY,
         algorithm='RS256'
         )
+        assert token != None ,"Token Undefine!"
         return token
 
     def jwt_verify(self,token):
@@ -31,18 +32,19 @@ class TokenService:
             algorithms=["RS256"],
             options={"exp": True}  # make sure expiration is enforced
         )
-            print(datetime.utcfromtimestamp(payload['issue']))
-            print(datetime.utcfromtimestamp(payload['exp']))
-            print(datetime.utcnow())
-
-        except jwt.ExpiredSignatureError:
-            print("somethins")
-            return False,"Token Expired!"
+            print("issue time: ",payload['issue'])
+            print("exp time: ",payload['exp'])
+            print("cur time: ",int(datetime.utcnow().timestamp()))
+            if(int(datetime.utcnow().timestamp()))>payload['exp']: ##just doesnt believe in the jwt anymore =))
+                return False, "Token expired"
         except jwt.InvalidTokenError:
             return False,"Token Invalid!"
         return True,"Successfully!" 
     def refresh_token_verify(self,row):
-        if row[6] ==1:
+        revoked_status = row[6]
+        assert type(revoked_status) == bool ,"Revoked_status must be type bool"
+        assert revoked_status != None ,"Revoked_status Null"
+        if revoked_status ==True:
             return False
         if datetime.now() >= row[5]:
             self.revoked_refresh_token(userid=row[1])
@@ -52,15 +54,16 @@ class TokenService:
 
     def revoked_refresh_token(self,**kwargs):
         userid = kwargs.get("userid")
-        self.db.update_db(table ="tripin_auth.refresh_tokens", item ="user_id", value =userid, item_to_update = "revoked", value_to_update = True)
- 
+        status = self.db.update_db(table ="tripin_auth.tokens", item ="user_id", value =userid, item_to_update = "revoked", value_to_update = True)
+        assert status == True ,"Error trying to update database revoked_token"
  
     def request_new_access_token(self,refresh_token):
-        row = self.db.find_item_in_sql(table="tripin_auth.refresh_tokens",item="token",value=refresh_token)
+        row = self.db.find_item_in_sql(table="tripin_auth.tokens",item="token",value=refresh_token)
+        new_token=None
         if row is None:
             return False, None
-        if not refresh_toke_verify(row):
-            new_token = generate_jwt(id=row[1],username=row[2])
-
-        return new_token
+        if self.refresh_token_verify(row):
+            new_token = self.generate_jwt(id=row[1],username=row[2])
+            return True, new_token
+        return False ,None
         

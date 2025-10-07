@@ -3,6 +3,7 @@ from server_side.config import Config
 from server_side.database import Database
 from dotenv import set_key, load_dotenv
 import getpass
+import sys
 import os
 class ServerAuth:
     def __init__(self):
@@ -175,10 +176,10 @@ class ServerAuth:
 
         ##store as variable to use when connect to database (NOT IN FILE AS PLAIN TEXT)
 
-        decrypted_host = self.encryption_Service.decrypt(host_iv,host,self.database_encryption_key)
-        decrypted_user = self.encryption_Service.decrypt(user_iv,user,self.database_encryption_key)
-        decrypted_dbname = self.encryption_Service.decrypt(dbname_iv,dbname,self.database_encryption_key)
-        decrypted_password = self.encryption_Service.decrypt(password_iv,password,self.database_encryption_key)
-        decrypted_port = self.encryption_Service.decrypt(port_iv,port,self.database_encryption_key)
+        decrypted_host = self.encryption_Service.decrypt(host_iv,host,self.database_encryption_key).strip().strip("'").strip('"')
+        decrypted_user = self.encryption_Service.decrypt(user_iv,user,self.database_encryption_key).strip().strip("'").strip('"')
+        decrypted_dbname = self.encryption_Service.decrypt(dbname_iv,dbname,self.database_encryption_key).strip().strip("'").strip('"')
+        decrypted_password = self.encryption_Service.decrypt(password_iv,password,self.database_encryption_key).strip().strip("'").strip('"')
+        decrypted_port = self.encryption_Service.decrypt(port_iv,port,self.database_encryption_key).strip().strip("'").strip('"')
         self.database_Service.set_database_credentials(decrypted_host,decrypted_dbname,decrypted_user,decrypted_password,int(decrypted_port))
         return True             

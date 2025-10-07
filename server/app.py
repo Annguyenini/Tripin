@@ -27,9 +27,10 @@ class Server:
         self.app.add_url_rule("/login", view_func=self.login, methods=["POST"])
         self.app.add_url_rule("/signup", view_func=self.signup, methods=["POST"])
         self.app.add_url_rule("/login/token", view_func=self.login_via_token, methods=["POST"])
-        self.app.add_url_rule("/auth/access", view_func=self.request_new_access_token, methods =["POST"])  
+        self.app.add_url_rule("/auth/requestAT", view_func=self.request_new_access_token, methods =["POST"])  
     def login_via_token(self):
         data = request.headers.get("Authorization")
+        print (data)
         token=data.replace("Bearer ","")
         status, message = self.token_service.jwt_verify(token)
         if not status:
@@ -58,11 +59,13 @@ class Server:
         return jsonify({"Message":message}),200
 
     def request_new_access_token(self):
-        token = request.headers.get("Authorization")
-        status , token = self.token_service.request_new_access_token(token)
+        data = request.headers.get("Authorization")
+        token = data.replace ("Bearer ","")
+        status , new_token = self.token_service.request_new_access_token(token)
+        print(new_token)
         if not status:
             return jsonify({"Message":"Could not finish the request!"}),401
-        return jsonify({"Massage":"Successfully","token":token}),200
+        return jsonify({"Massage":"Successfully","token":new_token}),200
 
 
 
@@ -74,5 +77,5 @@ if not server_auth_service.verify_indentity():
 print("Successfully authenticated!✅")
 server = Server()
 app = server.app
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ =="__main__":
+    app.run(debug=True, host ="0.0.0.0", port =8000)

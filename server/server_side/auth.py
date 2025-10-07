@@ -11,7 +11,7 @@ class Auth:
     def login(self,**kwargs):
         username = kwargs.get("username")
         password = kwargs.get("password")
-        row = self.db.find_item_in_sql(table="tripin_auth.auth",item="user_name",value=username)
+        row = self.db.find_item_in_sql(table="tripin_auth.userdata",item="user_name",value=username)
         if row is None:
             return False,"Wrong username",None
         elif not check_password_hash(row[4],password): # password
@@ -36,15 +36,17 @@ class Auth:
         return True,"Sucessfully",data
     #signup function
     def signup(self,**kwargs): 
+        print("calling signup")
         email = kwargs.get("email")
         display_name = kwargs.get("display_name")
         username = kwargs.get("username")
         password = kwargs.get("password")
         hashed_passwords = generate_password_hash(password)
+        print(email,display_name,username,hashed_passwords)
         #check if email or username already exists
-        if(self.db.find_item_in_sql(table="tripin_auth.auth",item="email",value=email)):
+        if(self.db.find_item_in_sql(table="tripin_auth.userdata",item="email",value=email)):
             return False, "Email already exists!"
-        if(self.db.find_item_in_sql(table="tripin_auth.auth",item="user_name",value=username)):
+        if(self.db.find_item_in_sql(table="tripin_auth.userdata",item="user_name",value=username)):
             return False, "Username already exists!"
         #insert into database
         res = self.db.insert_to_database_singup(email=email, display_name=display_name,username=username,password=hashed_passwords)
