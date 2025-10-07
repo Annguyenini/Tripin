@@ -87,3 +87,4 @@ yarn-error.*
 
 
 /assets/keys
+/server/server_side/assets/config
