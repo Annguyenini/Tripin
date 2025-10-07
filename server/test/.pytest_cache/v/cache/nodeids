@@ -1,0 +1,12 @@
+[
+  "test_login.py::test_login_perfect",
+  "test_login.py::test_login_wrong_password",
+  "test_login.py::test_login_wrong_username",
+  "test_signup.py::test_signup_exist_email",
+  "test_signup.py::test_signup_exist_email_username",
+  "test_signup.py::test_signup_exist_username",
+  "test_signup.py::test_signup_perfect",
+  "test_token.py::test_access_token",
+  "test_token.py::test_access_token_request_new_token",
+  "test_token.py::test_access_token_request_new_token_expried"
+]
