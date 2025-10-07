@@ -87,4 +87,8 @@ yarn-error.*
 
 
 /assets/keys
-/server/server_side/assets/config
+/server/server_side/assets/configs/
+/server/server_side/assets/keys/
+/server/venv/
+/server/test/
+/server/__pycache__/
