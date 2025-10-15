@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, Text, TextInput,Alert, StyleSheet, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import {styles} from './style.js'
-import {authStyle} from './style.js'
+import {styles} from '../styles/style.js'
+import {authStyle} from '../styles/auth_style.js'
 import { Auth } from '../backend/auth.js';  
 import { useNavigation  } from '@react-navigation/native';
 import { navigate } from './navigationService.js';
@@ -14,7 +14,7 @@ const { width } = Dimensions.get('window');
 export const loginWithAccessToken = async () => {
   const auth = new Auth();
   const res = await auth.authenticateToken("access_token");
-  
+  console.log(res)
   if (res.message === "Token Expired!") {
     const refreshRes = await auth.authenticateToken("refresh_token");
 
@@ -37,7 +37,7 @@ export const loginWithAccessToken = async () => {
   return true;
 };
 export const AuthScreen= ( ) => {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
   
   const auth = new Auth()
   const [showLogin, setShowLogin] = useState(false);

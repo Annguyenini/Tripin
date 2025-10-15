@@ -3,6 +3,8 @@ from datetime import datetime,timedelta
 from server_side.database import Database
 from server_side.config import Config
 from server_side.tokenservice import TokenService
+#userdata user_id|email|user_name|displayname|password
+#token keyid| userid| username|token|issue name | exp name | revok
 class Auth:
     def __init__(self):
         self.db = Database()
@@ -20,8 +22,8 @@ class Auth:
         # old token got revoked
         self.tokenService.revoked_refresh_token(userid=row[0])
         #new tokens generated
-        refresh_token = self.tokenService.generate_jwt(id=row[0],username=row[3])
-        access_token = self.tokenService.generate_jwt(id=row[0],username=row[3],exp_time={"minutes":1})
+        refresh_token = self.tokenService.generate_jwt(id=row[0],display_name = row[2],username=row[3])
+        access_token = self.tokenService.generate_jwt(id=row[0],display_name = row[2],username=row[3],exp_time={"minutes":1})
         
         self.db.insert_token_into_db(
             userid =row[0],
@@ -32,7 +34,7 @@ class Auth:
             revoked = False
             )
         #return data
-        data = {'userid':row[0],'displayname':row[2],'username':row[3],'refresh_token':refresh_token,'access_token':access_token}
+        data = {'user_id':row[0],'display_name':row[2],'user_name':row[3],'refresh_token':refresh_token,'access_token':access_token}
         return True,"Sucessfully",data
     #signup function
     def signup(self,**kwargs): 

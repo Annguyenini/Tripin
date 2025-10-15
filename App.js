@@ -18,7 +18,9 @@ import {
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
-import {styles,mainScreenStyle,cameraStyle} from './src/frontend/style.js'
+import {styles} from './src/styles/style.js'
+import{mainScreenStyle} from './src/styles/main_screen_styles.js'
+import{cameraStyle} from './src/styles/camera_style.js'
 import {CameraApp} from './src/frontend/camera_layout.js'
 const backgroundImage = require('./assets/image/main_background.png');
 const logo = require('./assets/image/main_logo.png');
@@ -40,6 +42,7 @@ export default function App() {
   if (!loaded) return null;
 
   return (
+    <View style={{flex:1}}>
     <SafeAreaProvider>
       {/* <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
@@ -65,7 +68,7 @@ export default function App() {
       {/* </ImageBackground>
       </ScrollView> */}
     </SafeAreaProvider>
-    
+    </View>
   );
 }
 

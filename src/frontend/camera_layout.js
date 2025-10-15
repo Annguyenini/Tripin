@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions,Image,PanResponder } from 'react-native';
 import { CameraView, useCameraPermissions, FlashMode } from 'expo-camera';
-import { cameraStyle, mainScreenStyle } from './style';
+import { cameraStyle, mainScreenStyle } from '../styles/camera_style.js';
 import {CameraService} from '../backend/camera/camera_functions.js'
 
 import * as MediaLibrary from 'expo-media-library';

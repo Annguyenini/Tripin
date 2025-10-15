@@ -13,6 +13,7 @@ class TokenService:
         token = jwt.encode({
             "id":kwargs.get("id"),
             "user":kwargs.get("username"),
+            "display_name": kwargs.get("display_name"),
             "issue":int((datetime.utcnow().timestamp())),
             "exp":int((datetime.utcnow() + timedelta(**exp_time)).timestamp()) 
         },
@@ -21,7 +22,12 @@ class TokenService:
         )
         assert token != None ,"Token Undefine!"
         return token
-
+    def decode_jwt(self,token): 
+        PUBLIC_KEY = self.config.public_key
+        assert token is not None, "Some how token is none" 
+        payload = jwt.decode(token, PUBLIC_KEY ,algorithms =["RS256"])
+        data ={'user_id':payload["id"],'user_name':payload["user"],'display_name':payload["display_name"]}
+        return data
     def jwt_verify(self,token):
  
         PUBLIC_KEY = self.config.public_key
@@ -36,7 +42,7 @@ class TokenService:
             print("exp time: ",payload['exp'])
             print("cur time: ",int(datetime.utcnow().timestamp()))
             if(int(datetime.utcnow().timestamp()))>payload['exp']: ##just doesnt believe in the jwt anymore =))
-                return False, "Token expired"
+                return False, "Token Expired!"
         except jwt.InvalidTokenError:
             return False,"Token Invalid!"
         return True,"Successfully!" 
