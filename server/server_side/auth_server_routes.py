@@ -7,6 +7,11 @@ from server_side.tokenservice import TokenService
 from server_side.encryption import Encryption
 from server_side.server_auth import ServerAuth
 class AuthServer:
+    _instance = None 
+    def __new__(cls,*args,**kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
     def __init__(self):
         self.bp = Blueprint("auth", __name__)
         self.auth = Auth()
@@ -22,6 +27,7 @@ class AuthServer:
         self.bp.route("/request-access-token", methods=["POST"])(self.request_new_access_token)
 
     def login_via_token(self):
+        print("login-via-token get called!")
         data = request.headers.get("Authorization")
         token = data.replace("Bearer ", "")
         status, message = self.token_service.jwt_verify(token)
@@ -45,6 +51,7 @@ class AuthServer:
         display_name = data.get("displayName")
         username = data.get("username")
         password = data.get("password")
+        lower_case_email = email.lowers()
         status, message = self.auth.signup(email=email, display_name=display_name, username=username, password=password)
         if not status:
             return jsonify({"Message": message}), 401

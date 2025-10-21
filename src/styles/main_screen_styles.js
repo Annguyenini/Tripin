@@ -110,8 +110,20 @@ export const mainScreenStyle = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3, // For Android shadow
-  }
+    elevation: 3, 
+  },
+  settingsContainer: {
+    right:-170,
+    justifyContent: 'center',
+        borderRadius: 40, // Half of width/height
+        
+
+
+  },
+  settingIcon: {
+    width: 40,  // adjust size
+    height: 40, // adjust size
+  },
 });
 
 
@@ -147,6 +159,10 @@ export const footer = StyleSheet.create({
   justifyContent: 'space-between', // push items to edges
     alignItems: 'center',
     width: '80%',                // span full width
+  },
+  settingIcon: {
+    width: 30,  // adjust size
+    height: 30, // adjust size
   },
 })
 

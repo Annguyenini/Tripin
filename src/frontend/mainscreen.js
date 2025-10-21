@@ -15,7 +15,7 @@ const userDataServive = new UserDataService();
 const homeIcon = require('../../assets/image/home_icon.png')
 const cameraIcon = require('../../assets/image/camera_icon.png')
 const galleryIcon = require('../../assets/image/gallery_icon.png')
-
+const settingIcon = require('../../assets/image/setting_icon.png')
 // const fetchUserData = async()=>{
 //   // const userProfilePic = await userDataServive.getUserProfilePic();
 //   // const userDisplayName = await userDataServive.getUserDisplayName ();
@@ -27,7 +27,7 @@ const galleryIcon = require('../../assets/image/gallery_icon.png')
 
 export const MainScreen = () =>{
   // const isCurrentTripActive = currentTrip.get("status") ? setIsOnAtrip(true) : setIsOnAtrip(false);
-
+  
   const userId = userDataServive.getUserId();
   const userDisplayName = userDataServive.getDisplayName ();
   console.log(userDisplayName)
@@ -37,8 +37,11 @@ export const MainScreen = () =>{
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
   }, []);
   const callCamera= ()=>{
-  const res = navigate("Camera");
-}
+    const res = navigate("Camera");
+  }
+  const callSetting =()=>{
+    const res = navigate("Setting");
+  }
 
   const bottomSheetRef = useRef(null);
 
@@ -56,10 +59,13 @@ export const MainScreen = () =>{
         handleIndicatorStyle={{ backgroundColor: '#0e0c0cff' }}
 
       >
+
+        {/* bottom sheet user infos */}
         <BottomSheetScrollView contentContainerStyle={styles.content}>
         {/* <Image source={userProfilePic}/> */}
         <View style = {mainScreenStyle.profilePic}><Image/></View>
         <Text style ={mainScreenStyle.displayname}>{userDisplayName}</Text>
+        
         {/* <Text style={mainScreenStyle.userId}>{userId}</Text> */}
         </BottomSheetScrollView>
         <View style={mainScreenStyle.curentTripZone}>
@@ -91,6 +97,9 @@ export const MainScreen = () =>{
         <TouchableOpacity style={footer.fotterbutton}>
             <Image source = {galleryIcon} style ={footer.fottericon}/>
         </TouchableOpacity>
+        <TouchableOpacity onPress={callSetting}>
+            <Image source={settingIcon} style={footer.settingIcon} />
+          </TouchableOpacity>
       </View>
         </View>
     </View>   

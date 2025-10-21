@@ -29,7 +29,8 @@ class TokenService:
         data ={'user_id':payload["id"],'user_name':payload["user"],'display_name':payload["display_name"]}
         return data
     def jwt_verify(self,token):
- 
+        print("jwt verify get called!")
+        print(token)
         PUBLIC_KEY = self.config.public_key
         try:
             payload = jwt.decode(
@@ -69,7 +70,7 @@ class TokenService:
         if row is None:
             return False, None
         if self.refresh_token_verify(row):
-            new_token = self.generate_jwt(id=row[1],username=row[2])
+            new_token = self.generate_jwt(id=row[1],display_name = row[2],username=row[3],exp_time={"minutes":1})
             return True, new_token
         return False ,None
         

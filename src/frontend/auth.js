@@ -13,28 +13,12 @@ const { width } = Dimensions.get('window');
 
 export const loginWithAccessToken = async () => {
   const auth = new Auth();
-  const res = await auth.authenticateToken("access_token");
-  console.log(res)
-  if (res.message === "Token Expired!") {
-    const refreshRes = await auth.authenticateToken("refresh_token");
-
-    if (refreshRes.status === 401) {
-      auth.forceDeleteToken();
-      return false;
-    } else if (refreshRes.status === 200) {
-      await auth.requestNewAccessToken();
-      return await loginWithAccessToken(); 
-    }
+  const respond =await auth.loginWithAccessToken()
+  if ( respond=== true){
+    // only navigate if navigation is ready
+    navigate('Main');
+    return true;
   }
-
-  if (res.message === "Token Invalid!") {
-    auth.forceDeleteToken();
-    return false;
-  }
-
-  // only navigate if navigation is ready
-  navigate('Main');
-  return true;
 };
 export const AuthScreen= ( ) => {
   const navigation = useNavigation();
@@ -42,11 +26,13 @@ export const AuthScreen= ( ) => {
   const auth = new Auth()
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
   const [email,setEmail] = useState('');
   const [password,setPassWord] = useState ('');
   const [confirmPassword,setConfirmPassWord] =useState('');
   const [username, setUserName] = useState ('');
   const [displayName, setDisplayName] = useState('');
+  const [verifyCode, setVerifyCode] = useState('');
   const [alert, setAlertType] = useState('');
   const [showAlert, setShowAleart] = useState(false);
   const [alertColor,setAlertColor] =useState('#FF0000')
@@ -75,6 +61,8 @@ export const AuthScreen= ( ) => {
       }
       navigation.navigate('Main');
     }
+
+
     else if(action ==="Signup"){
       setShowPML(false);
       if(displayName.trim()===''||confirmPassword===''||email===''){
@@ -103,8 +91,25 @@ export const AuthScreen= ( ) => {
       return;
     }
     setShowSignup(false);
-    setShowLogin(true);
+    setShowVerification(true);
       
+    }
+
+
+    else if(action === "Verification"){
+    if(verifyCode.length!=6){
+      setAlertType("Please enter 6 digits code")
+      showAlert(true)
+      return 
+    }
+    const respond = await auth.requestVerifycation(email,verifyCode);
+    if(respond.status!=200){
+      setAlertType(respond.message)
+      setShowAleart(true)
+      return;
+    }
+    setShowVerification(false)
+    setShowLogin(true)
     }
 }
   return (
@@ -175,6 +180,18 @@ export const AuthScreen= ( ) => {
         </OverlayCard>
       )}
 
+      {showVerification && (
+        <OverlayCard title="Confirm Code" onClose={() => setShowVerification(false)}>
+          <TextInput style={authStyle.input} placeholder="6 digits code" value ={verifyCode} onChangeText={text=> setVerifyCode(text)}/>
+
+          <TouchableOpacity style={authStyle.submitButton} onPress ={()=>submitRequest({action:'Verification'})}> 
+             <Text style={authStyle.submitButtonText}>Verify</Text>
+          </TouchableOpacity>
+          
+          
+          {showAlert&&(<Text style={{textAlign:'center',marginTop: 10, color:alertColor}}>{alert}</Text>)}
+        </OverlayCard>
+      )}
       
     </>
   );

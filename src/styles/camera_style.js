@@ -115,6 +115,26 @@ export const cameraStyle = StyleSheet.create({
     fontSize:20,
     color: 'rgba(255,255,255,0.9)',
   },
+  zoomModeZone:{
+    alignItems: 'center',
+    borderRadius: 30,
+
+    backgroundColor:'#535353ff'
+  },
+  currentZoomText:{
+    fontSize:30,
+    color: 'rgba(255, 255, 255, 0.9)',
+  },
+  currentZoomZone:{
+    alignItems: 'center',
+    borderRadius: 30,
+
+    backgroundColor:'#303030ff'
+  },
+    cameraMode:{
+    fontSize:10,
+    color: 'rgba(255,255,255,0.9)',
+  },
   flashOverlay : {
   position: 'absolute',
   top: 0,

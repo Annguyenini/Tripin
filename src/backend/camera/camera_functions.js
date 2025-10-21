@@ -20,8 +20,9 @@ export class CameraService{
 
   async recordVideo(cameraRef){
     if(cameraRef.current){
+        let video;
         try{
-            const video =await cameraRef.current.recordAsync()
+            video =await cameraRef.current.recordAsync({mute:false, maxDuration:30})
         }
         catch(err){
             console.error("Failed to record Video");
@@ -31,7 +32,7 @@ export class CameraService{
     }
   }
   async stopRecording(cameraRef){
-    if(cameraRef.curent){
+    if(cameraRef.current){
         cameraRef.current.stopRecording();
     }
   }

@@ -8,11 +8,11 @@ export class TokenService{
         this.accessToken= null;
         this.refreshToken =null;
     }
-    async setToken(type,accesstoken){
+    async setToken(type,token){
         if (type != "access_token" && type != "refresh_token") console.error( "Type must be 'access_token' or 'refresh_token'")
         if(Platform.OS === "web"){
             try{
-                await AsyncStorage.setItem('access_token',accesstoken);
+                await AsyncStorage.setItem(type,token);
             }
             catch(asyncError){
                 console.error("Error at set access_token", asyncError);
@@ -21,13 +21,14 @@ export class TokenService{
         }
         else{
             try{
-                await SecureStore.setItemAsync(type,accesstoken);
+                await SecureStore.setItemAsync(type,token);
             }
             catch(secureStoreError){
                 console.error(`Error at set ${type}`, secureStoreError);
                 throw secureStoreError;
             }
         }
+        // console.log(token)
 
     }
 

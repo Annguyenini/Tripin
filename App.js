@@ -5,6 +5,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { navigationRef } from './src/frontend/navigationService';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 import {
   TouchableOpacity,
   StyleSheet,
@@ -22,6 +24,7 @@ import {styles} from './src/styles/style.js'
 import{mainScreenStyle} from './src/styles/main_screen_styles.js'
 import{cameraStyle} from './src/styles/camera_style.js'
 import {CameraApp} from './src/frontend/camera_layout.js'
+import { SettingScreen } from './src/frontend/setting_screen.js';
 const backgroundImage = require('./assets/image/main_background.png');
 const logo = require('./assets/image/main_logo.png');
 const { width, height } = Dimensions.get('window');
@@ -42,8 +45,8 @@ export default function App() {
   if (!loaded) return null;
 
   return (
-    <View style={{flex:1}}>
-    <SafeAreaProvider>
+    <View style={{flex:2}}>
+    {/* <SafeAreaProvider> */}
       {/* <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
           <Image source={logo} style={styles.logo} />
@@ -57,8 +60,10 @@ export default function App() {
           <Stack.Navigator>
             <Stack.Screen name="auth" component={AuthLayout}   options={{ headerShown: false }} // ← hides the "Auth" text
 />
-            <Stack.Screen name="Main" component={MainLayout}   options={{ headerShown: false }} // ← hides the "Auth" text
-/>
+            <Stack.Screen name="Main" component={MainLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" text
+/>  
+            <Stack.Screen name="Setting" component={SettingLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" text
+/>  
             <Stack.Screen name ="Camera" component={CameraLayout} options={{headerShown: false}}/>
           </Stack.Navigator>
         </NavigationContainer>
@@ -67,35 +72,42 @@ export default function App() {
     {/* <AuthScreen/> */}
       {/* </ImageBackground>
       </ScrollView> */}
-    </SafeAreaProvider>
+    {/* </SafeAreaProvider> */}
     </View>
   );
 }
 
 function AuthLayout() {
   return (
-    <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
         <Image source={logo} style={styles.logo} />
         <AuthScreen />
       </ImageBackground>
-    </ScrollView>
   );
 }
 function MainLayout() {
   return (
-    <ScrollView contentContainerStyle={mainScreenStyle.scrollContent} showsVerticalScrollIndicator={false}>
       <ImageBackground source={backgroundImage} style={mainScreenStyle.backgroundImage}>
         <Image source={logo} style={mainScreenStyle.logo} />
         <MainScreen />
       </ImageBackground>
-    </ScrollView>
   );
 }
 function CameraLayout(){
   return(
-    <View style={cameraStyle.container}>
-        <CameraApp/>
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+
+      <CameraApp />
+      </GestureHandlerRootView>
+
+  )
+}
+
+function SettingLayout(){
+  return(
+      <ImageBackground source={backgroundImage} style={mainScreenStyle.backgroundImage}>
+        <Image source={logo} style={mainScreenStyle.logo} />
+        <SettingScreen />
+      </ImageBackground>
   )
 }
