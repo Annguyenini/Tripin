@@ -27,14 +27,23 @@ class Auth:
         row = self.db.find_item_in_sql(table="tripin_auth.userdata",item="user_name",value=username)
         if row is None:
             return False,"Wrong username",None
+        userid=row[0] 
+        display_name=row[2] 
+        username=row[3] 
+        assert type(row) == tuple ,"Row must be type tuple"
+        assert userid is not None ,"UserID Null"
+        assert display_name is not None ,"Display_name Null"
+        assert username is not None ,"Username is Null"
+        if row is None:
+            return False,"Wrong username",None
         elif not check_password_hash(row[4],password): # password
             return False,"Wrong password",None
         # if user is found and password is correct
         # old token got revoked
-        self.tokenService.revoked_refresh_token(userid=row[0])
+        self.tokenService.revoked_refresh_token(userid=userid)
         #new tokens generated
-        refresh_token = self.tokenService.generate_jwt(id=row[0],display_name = row[2],username=row[3])
-        access_token = self.tokenService.generate_jwt(id=row[0],display_name = row[2],username=row[3],exp_time={"minutes":1})
+        refresh_token = self.tokenService.generate_jwt(id=userid,display_name = display_name,username=username)
+        access_token = self.tokenService.generate_jwt(id=userid,display_name = display_name,username=username,exp_time={"minutes":1})
         
         self.db.insert_token_into_db(
             userid =row[0],

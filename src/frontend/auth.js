@@ -7,8 +7,8 @@ import {styles} from '../styles/style.js'
 import {authStyle} from '../styles/auth_style.js'
 import { Auth } from '../backend/auth.js';  
 import { useNavigation  } from '@react-navigation/native';
-import { navigate } from './navigationService.js';
-
+import { navigate } from './custome_function/navigationService.js';
+import { OverlayCard } from './custome_function/overlay_card.js';
 const { width } = Dimensions.get('window');
 
 export const loginWithAccessToken = async () => {
@@ -87,6 +87,7 @@ export const AuthScreen= ( ) => {
     const response = await auth.requestSignup(email,displayName,username,password);
     if(response.status===401){
       setAlertType(response.message);
+      console.log(response.message)
       setShowAleart(true);
       return;
     }
@@ -97,7 +98,7 @@ export const AuthScreen= ( ) => {
 
 
     else if(action === "Verification"){
-    if(verifyCode.length!=6){
+    if(!/\d/.test(verifyCode.length)){
       setAlertType("Please enter 6 digits code")
       showAlert(true)
       return 
@@ -134,12 +135,13 @@ export const AuthScreen= ( ) => {
       {/* Login Overlay */}
       {showLogin && (
         <OverlayCard title="LOGIN" onClose={() => setShowLogin(false)}>
+          {showAlert&&(<Text style={{textAlign:'center',marginTop: 10, color:alertColor}}>{alert}</Text>)}
+
           <TextInput style={authStyle.input} placeholder="UserName" value ={username} onChangeText={text=> setUserName(text)}/>
           <TextInput style={authStyle.input} placeholder="Password" value ={password} onChangeText={text=> setPassWord(text)}secureTextEntry />
           <TouchableOpacity style={authStyle.submitButton} onPress ={()=>submitRequest({action:'Login'})}> 
              <Text style={authStyle.submitButtonText}>Submit</Text>
           </TouchableOpacity>
-          {showAlert&&(<Text style={{textAlign:'center',marginTop: 10, color:alertColor}}>{alert}</Text>)}
           <TouchableOpacity onPress={() => { setShowLogin(false); setShowSignup(true),setShowAleart(false); }}>
             <Text style={{ textAlign: 'center', marginTop: 10 }}>Create Account</Text>
           </TouchableOpacity>
@@ -153,6 +155,8 @@ export const AuthScreen= ( ) => {
       {/* Signup Overlay */}
       {showSignup && (
         <OverlayCard title="SIGNUP" onClose={() => setShowSignup(false)}>
+          {showAlert&&(<Text style={{textAlign:'center',marginTop: 10, color:alertColor}}>{alert}</Text>)}
+
           <TextInput style={authStyle.input} placeholder="Email" value ={email} onChangeText={text=> setEmail(text)}/>
 
           <TextInput style={authStyle.input} placeholder="DisplayName" value ={displayName} onChangeText={text=> setDisplayName(text)}/>
@@ -176,20 +180,19 @@ export const AuthScreen= ( ) => {
               ))}
             </View>
           )}
-          {showAlert&&(<Text style={{textAlign:'center',marginTop: 10, color:alertColor}}>{alert}</Text>)}
         </OverlayCard>
       )}
 
       {showVerification && (
         <OverlayCard title="Confirm Code" onClose={() => setShowVerification(false)}>
-          <TextInput style={authStyle.input} placeholder="6 digits code" value ={verifyCode} onChangeText={text=> setVerifyCode(text)}/>
+          <TextInput style={authStyle.input} placeholder="6 digits code" value ={verifyCode} inputMode ="numeric" onChangeText={text=> setVerifyCode(text)}/>
 
           <TouchableOpacity style={authStyle.submitButton} onPress ={()=>submitRequest({action:'Verification'})}> 
              <Text style={authStyle.submitButtonText}>Verify</Text>
           </TouchableOpacity>
           
           
-          {showAlert&&(<Text style={{textAlign:'center',marginTop: 10, color:alertColor}}>{alert}</Text>)}
+          {showAlert&&(<Text style={{textAlign:'center',marginTop: 10, color:alertColor}} >{alert}</Text>)}
         </OverlayCard>
       )}
       
@@ -198,14 +201,3 @@ export const AuthScreen= ( ) => {
 
 };
 
-const OverlayCard = ({ title, children, onClose }) => (
-  <View style={authStyle.overlayContainer}>
-    <View style={authStyle.card}>
-      <TouchableOpacity style={authStyle.exitButton} onPress={onClose}>
-        <Text style={authStyle.exitText}>X</Text>
-      </TouchableOpacity>
-      <Text style={authStyle.title}>{title}</Text>
-      {children}
-    </View>
-  </View>
-);

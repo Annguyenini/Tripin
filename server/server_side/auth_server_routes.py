@@ -21,10 +21,10 @@ class AuthServer:
 
     def _register_routes(self):
         # pass the bound method
-        self.bp.route("/login-via-token", methods=["POST"])(self.login_via_token)
+        self.bp.route("/login_via_token", methods=["POST"])(self.login_via_token)
         self.bp.route("/login", methods=["POST"])(self.login)
         self.bp.route("/signup", methods=["POST"])(self.signup)
-        self.bp.route("/request-access-token", methods=["POST"])(self.request_new_access_token)
+        self.bp.route("/request_access_token", methods=["POST"])(self.request_new_access_token)
 
     def login_via_token(self):
         print("login-via-token get called!")
@@ -51,8 +51,8 @@ class AuthServer:
         display_name = data.get("displayName")
         username = data.get("username")
         password = data.get("password")
-        lower_case_email = email.lowers()
-        status, message = self.auth.signup(email=email, display_name=display_name, username=username, password=password)
+        lower_case_email = email.lower()
+        status, message = self.auth.signup(email=lower_case_email, display_name=display_name, username=username, password=password)
         if not status:
             return jsonify({"Message": message}), 401
         return jsonify({"Message": message}), 200

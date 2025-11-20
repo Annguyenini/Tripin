@@ -80,6 +80,22 @@ export const cameraStyle = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'white',
   },
+    outerCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 3,
+    borderColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  innerCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'white',
+  },
+
   captureButton: {
     width: 70,
     height: 70,
@@ -132,8 +148,10 @@ export const cameraStyle = StyleSheet.create({
     backgroundColor:'#303030ff'
   },
     cameraMode:{
-    fontSize:10,
+    fontSize:13,
     color: 'rgba(255,255,255,0.9)',
+    backgroundColor:"#7c1515ff",
+    borderRadius:10,
   },
   flashOverlay : {
   position: 'absolute',
@@ -145,3 +163,99 @@ export const cameraStyle = StyleSheet.create({
   zIndex: 1000, // High z-index to appear above everything
 },
 });
+
+
+export const camera_zoom = StyleSheet.create({
+  zoom_mode_zone:{
+   backgroundColor: 'rgba(255,255,255,0.1)',
+       flexDirection: 'row',
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+    paddingVertical: 10,   // smaller padding
+    paddingHorizontal: 5,
+    alignItems: 'center',
+    alignSelf: 'flex-start', // 👈 fix it to the left
+    transform: [{ scale: 1 }], // 👈 make everything 70% smaller
+    marginLeft: 0, // optional spacing from screen edge
+     transform: [{ translateX: 80 }]
+  },
+  zoom_text :{
+    color: 'white',
+    fontSize: 10,
+    fontWeight: '500',
+    marginHorizontal: 6,
+  },
+  current_zoom_text_mode :{
+      color: 'white',
+      fontSize: 15,
+      fontWeight: '500',
+      marginHorizontal: 6,
+  },
+  curent_zoom_mode_overlay :{
+    backgroundColor: 'rgba(0, 0, 0, 1)',
+    borderRadius:10,
+
+  },
+  zoom_mode_overlay :{
+    backgroundColor: '#fffffffffff',
+
+  },
+  zoomControls: {
+  position: 'absolute',
+  bottom: 150,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  width: '100%',
+  paddingHorizontal: 20,
+  height: 50,
+  borderRadius: 20,
+  backgroundColor: 'rgba(255,255,255,0.1)',
+},
+
+zoomButtonsGroup: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 8,
+},
+
+zoomButtons: {
+  borderRadius: 30,
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderColor: 'white',
+  borderWidth: 1,
+  width: 35,
+  height: 35,
+},
+
+zoomText: {
+  fontSize: 20,
+  color: 'rgba(255,255,255,0.9)',
+},
+
+currentZoomZone: {
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: 30,
+  backgroundColor: '#303030ff',
+  paddingHorizontal: 12,
+  paddingVertical: 4,
+  
+},
+
+currentZoomText: {
+  fontSize: 28,
+  color: 'rgba(255,255,255,0.9)',
+  fontWeight: '600',
+},
+centeredZoom: {
+  position: 'absolute',
+  left: '50%',
+  transform: [{ translateX: -25 }], // half of width of currentZoomZone
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+
+})

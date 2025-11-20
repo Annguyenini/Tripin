@@ -24,7 +24,7 @@ class Server:
         user_server = UserServer()
         mail_server = MailServer()
         self.app.register_blueprint(auth_server.bp,url_prefix="/auth")
-        self.app.register_blueprint(mail_server.bp,url_prefix="/send")
+        self.app.register_blueprint(mail_server.bp,url_prefix="/email")
         # self.app.register_blueprint(user_server.bp,url_prefix="/user")
         
         

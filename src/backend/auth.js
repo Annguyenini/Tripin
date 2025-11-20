@@ -23,7 +23,7 @@ export class Auth{
         })});
         console.assert(respond.status===200,"Error at calling request Login!")
         const data = await respond.json();
-        console.log(data)
+        // console.log(data)
         console.assert(data!= undefined,"Data at requestLogin is undefined")
 
         if(respond.status ===401) return respond.status;
@@ -32,9 +32,6 @@ export class Auth{
         await this.token_service.deleteToken("refresh_token");
         await this.token_service.setToken("refresh_token", data.userdatas.refresh_token);
         await this.token_service.setToken("access_token", data.userdatas.access_token);
-        console.log("token from login ")
-        console.log(data.userdatas.refresh_token)
-        console.log(data.userdatas.access_token)
 
         this.user_data_service.setUserId(data.userdatas.user_id)
         this.user_data_service.setUserName(data.userdatas.user_name)
@@ -44,14 +41,12 @@ export class Auth{
     
     async requestNewAccessToken(){
         const refresh_token = await this.token_service.getToken("refresh_token")
-        console.log(refresh_token)
         const respond = await fetch (API.REQUEST_NEW_ACCESS_TOKEN_API,{
             method :'POST',
             headers:{"Content-Type":"application/json",
                 "Authorization":`Bearer ${refresh_token}`
             }
         })
-        console.log(respond)
         console.assert(respond.status===200,"Error calling requestNewAccessToken!")
         const data  = await respond.json()
         console.assert(data!= undefined,"Data at request new access token is undefined")
@@ -67,7 +62,6 @@ export class Auth{
     async authenticateToken(type){
         console.assert(type != "access_token"&& type!="refresh_token","Wrong token type")
         const token = await this.token_service.getToken(type)
-        console.log(type,token)
         console.assert(token == null,"token is null")
         const respond = await fetch(API.LOGIN_TOKEN_API,{
             method : "POST",
@@ -79,6 +73,7 @@ export class Auth{
         // console.log(access_token);
         console.assert(respond.status===200,"Error at calling token checker")
         const data = await respond.json();
+        console.log (data)
         console.assert(data!= undefined,"Data at authenticateToken is undefined!")
         // console.log(data)
         if(respond.status===401){
@@ -101,7 +96,7 @@ export class Auth{
         console.assert(respond.status===200,"Error At request Sign Up back end!")
         const data = await respond.json();
         console.assert(data!=undefined,"Data at request signup is undefined!")
-        return {"status":respond.status,"message":respond.message};
+        return {"status":respond.status,"message":data.Message};
     }   
     async requestVerifycation (email, code){
         // console.log("called")
@@ -122,16 +117,16 @@ export class Auth{
         this.user_data_service.resetUserInfo();
     }
     async loginWithAccessToken(){
-        console.log("tokens")
-        // await this.token_service.deleteToken("access_token");
-        // await this.token_service.deleteToken("refresh_token");
-        console.log(await this.token_service.getToken("access_token"))
-        console.log(await this.token_service.getToken("refresh_token"))
+        // console.log("tokens")
+        // // await this.token_service.deleteToken("access_token");
+        // // await this.token_service.deleteToken("refresh_token");
+        // console.log(await this.token_service.getToken("access_token"))
+        // console.log(await this.token_service.getToken("refresh_token"))
 
       const res = await this.authenticateToken("access_token");
 
       if (res.message === "Token Expired!") {
-        console.log("called")
+        // console.log("called")
         const data = await this.authenticateToken("refresh_token");
     
         if (data.status === 401) {
@@ -142,7 +137,7 @@ export class Auth{
         else if (data.status === 200) {
             await this.token_service.deleteToken("access_token");
             await this.requestNewAccessToken();
-            console.log("pass this shit")
+            // console.log("pass this shit")
             return await this.loginWithAccessToken();
         }
       }
@@ -156,14 +151,11 @@ export class Auth{
             console.error("UserDataService is undefined!");
             return false;
         }
-        console.log("Full data:", res);
-        console.log("User datas:", res.data.userdatas);
-        console.log("User ID:", res.data.userdatas?.user_id);
-        console.log("here")
+        
         this.user_data_service.setUserId(res.data.userdatas.user_id)
         this.user_data_service.setUserName(res.data.userdatas.user_name)
         this.user_data_service.setDisplayName(res.data.userdatas.display_name)
-        console.log("true")
+        // console.log("true")
       return true;
     };
     }

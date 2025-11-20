@@ -11,8 +11,8 @@ class TokenService:
         exp_time = kwargs.pop("exp_time",{"days":30}) #if doesnt pass in, it will set as 30 days
         SECRET_KEY =self.config.private_key 
         token = jwt.encode({
-            "id":kwargs.get("id"),
-            "user":kwargs.get("username"),
+            "user_id":kwargs.get("id"),
+            "user_name":kwargs.get("username"),
             "display_name": kwargs.get("display_name"),
             "issue":int((datetime.utcnow().timestamp())),
             "exp":int((datetime.utcnow() + timedelta(**exp_time)).timestamp()) 
@@ -26,7 +26,7 @@ class TokenService:
         PUBLIC_KEY = self.config.public_key
         assert token is not None, "Some how token is none" 
         payload = jwt.decode(token, PUBLIC_KEY ,algorithms =["RS256"])
-        data ={'user_id':payload["id"],'user_name':payload["user"],'display_name':payload["display_name"]}
+        data ={'user_id':payload["user_id"],'user_name':payload["user_name"],'display_name':payload["display_name"]}
         return data
     def jwt_verify(self,token):
         print("jwt verify get called!")
@@ -44,9 +44,10 @@ class TokenService:
             print("cur time: ",int(datetime.utcnow().timestamp()))
             if(int(datetime.utcnow().timestamp()))>payload['exp']: ##just doesnt believe in the jwt anymore =))
                 return False, "Token Expired!"
+            # user_data= {"user_id":payload["user_id"],"user_name":payload["user_name"]}  
         except jwt.InvalidTokenError:
             return False,"Token Invalid!"
-        return True,"Successfully!" 
+        return True,"Successfully!"
     def refresh_token_verify(self,row):
         revoked_status = row[6]
         assert type(revoked_status) == bool ,"Revoked_status must be type bool"

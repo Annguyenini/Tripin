@@ -5,6 +5,8 @@ from server_side.config import Config
 from server_side.encryption import Encryption
 import inspect
 from datetime import datetime
+##change the connecttion to class variable
+
 class Database:
     _instance = None
     def __new__(cls,*args,**kwargs):
@@ -39,7 +41,7 @@ class Database:
             self.database_password = password
             self.database_port = port
             self._initialized_credentials = True
-            # self.__init__authsetup()
+            # self.__init__tripsetup()
 
             print("Database credentials set successfully!✅")
         else :
@@ -69,7 +71,36 @@ class Database:
         user_id INTEGER NOT NULL REFERENCES tripin_auth.auth(id) ON DELETE CASCADE, login_time TIMESTAMP NOT NULL, last_activity TIMESTAMP NOT NULL);''')
         con.commit()
         con.close()
+    def __init__tripsetup(self):
+        if not self._initialized_credentials:
+            return
+        con,cur = self.connect_db()
+        cur.execute('''
+        CREATE TABLE IF NOT EXISTS tripin_trips.trip_table (
+        id SERIAL PRIMARY KEY,
+        trip_name INTEGER NOT NULL,
+        user_id INTEGER NOT NULL REFERENCES tripin_auth.userdata(id) ON DELETE CASCADE,
+        start_time TIMESTAMP NOT NULL,
+        end_time TIMESTAMP,
+        active BOOLEAN NOT NULL DEFAULT FALSE
+        );
 
+        ''')
+        con.commit() 
+        cur.execute('''
+        CREATE TABLE IF NOT EXISTS tripin_trips.trip_points (
+        id SERIAL PRIMARY KEY,
+        trip_id INTEGER NOT NULL REFERENCES tripin_trips.trip_table(id) ON DELETE CASCADE,
+        altitude REAL NOT NULL,
+        latitude REAL NOT NULL,
+        longtitude REAL NOT NULL,
+        speed REAL NOT NULL,
+        heading REAL NOT NULL,
+        time_stamp TIMESTAMP NOT NULL
+        );
+        ''')
+        con.commit() 
+        con.close() 
     def connect_db(self):
         conn = psycopg2.connect(
         host= self.database_host,
@@ -85,31 +116,38 @@ class Database:
         return conn, cur
 
 
-    def check_allowance(self,table,item,tabletype):
+    def check_allowance(self,table,item):
         db_allow_table=['tripin_auth.userdata','tripin_auth.tokens','']
         db_allow_items_auth=['email','user_name','password','display_name','token','user_id','issued_at','exprires_at']
-        if tabletype == "userdata":
+        # if tabletype == "userdata":
 
-            if table not in db_allow_table or item not in db_allow_items_auth:
-                return False
-        return True
+        #     if table not in db_allow_table or item not in db_allow_items_auth:
+        #         return False
+        # return True
     def find_item_in_sql(self, **kwargs):
         options = kwargs.pop("option","fetchone")
+        second_condition = kwargs.pop("second_condition",False)
         table = kwargs.get("table")
         item = kwargs.get("item")
         value = kwargs.get("value")
         con,cur = self.connect_db()
-        cur.execute (f'SELECT * FROM {table} WHERE {item}=%s',(value,))
+        if not second_condition:
+            cur.execute (f'SELECT * FROM {table} WHERE {item}=%s',(value,))
+        else :
+            item2 = kwargs.get("item2")
+            value2 = kwargs.get("value2")
+            cur.execute(f'SELECT * FROM {table} WHERE {item}=%s AND {item2} =%s',(value,value2,))
         if options =="fetchall":
-            time = cur.fetchall()
+            item = cur.fetchall()
         else:
             item = cur.fetchone()
         return item
+    
     def update_db(self,**kwargs):
         table = kwargs.get("table")
         item = kwargs.get ("item")
         value = kwargs.get("value")
-        self.check_allowance(table,item,"userdata")
+        self.check_allowance(table,item)
         item_to_update = kwargs.get("item_to_update")
         value_to_update = kwargs.get("value_to_update")
         con,cur = self.connect_db()
@@ -120,7 +158,17 @@ class Database:
             return False
         return True
 
-
+    def insert_to_database_trip(self,**kwargs):
+        con,cur = self.connect_db()
+        user_id  = kwargs.get("user_id")
+        trip_name = kwargs.get("trip_name")
+        start_time = datetime.now()
+        cur.execute(f'INSERT INTO tripin_trips.trip_table (user_id,trip_name,start_time,active) VALUES (%s,%s,%s,%s) RETURNING id',(user_id,trip_name,start_time,True))
+        trip_id = cur.fetchone()[0]
+        con.commit()
+        con.close()
+        return cur.rowcount,trip_id 
+        
     def insert_to_database_singup(self, **kwargs):
         con,cur= self.connect_db()
         email = kwargs.get('email')

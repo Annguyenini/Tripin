@@ -4,7 +4,7 @@ import {MainScreen} from './src/frontend/mainscreen.js'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-import { navigationRef } from './src/frontend/navigationService';
+import { navigationRef } from './src/frontend/custome_function/navigationService.js';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import {
@@ -23,7 +23,7 @@ import { useFonts } from 'expo-font';
 import {styles} from './src/styles/style.js'
 import{mainScreenStyle} from './src/styles/main_screen_styles.js'
 import{cameraStyle} from './src/styles/camera_style.js'
-import {CameraApp} from './src/frontend/camera_layout.js'
+import {CameraApp} from './src/frontend/camera/camera_layout.js'
 import { SettingScreen } from './src/frontend/setting_screen.js';
 const backgroundImage = require('./assets/image/main_background.png');
 const logo = require('./assets/image/main_logo.png');
@@ -60,7 +60,7 @@ export default function App() {
           <Stack.Navigator>
             <Stack.Screen name="auth" component={AuthLayout}   options={{ headerShown: false }} // ← hides the "Auth" text
 />
-            <Stack.Screen name="Main" component={MainLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" text
+            <Stack.Screen name="Main" component={MainLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" tet
 />  
             <Stack.Screen name="Setting" component={SettingLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" text
 />  
@@ -70,7 +70,7 @@ export default function App() {
 
 
     {/* <AuthScreen/> */}
-      {/* </ImageBackground>
+      {/* </ImageBackground>sas
       </ScrollView> */}
     {/* </SafeAreaProvider> */}
     </View>

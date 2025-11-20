@@ -92,3 +92,8 @@ yarn-error.*
 /server/venv/
 /server/test/
 /server/__pycache__/
+
+# Expo
+.expo
+dist/
+web-build/

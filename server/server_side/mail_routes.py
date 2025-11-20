@@ -15,7 +15,7 @@ class MailServer:
         self._register_route()
     
     def _register_route(self):
-        self.bp.route("/confirm-code", methods=["POST"])(self.confirm_code)
+        self.bp.route("/verify_code", methods=["POST"])(self.confirm_code)
 
     def confirm_code(self):
         print("called confirm_code")

@@ -15,8 +15,21 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to save and view photos."
-      }
+        "UIBackgroundModes": [
+          "location",
+          "fetch",
+          "remote-notification",
+          "location",
+          "fetch",
+          "remote-notification"
+        ],
+        "NSLocationWhenInUseUsageDescription": "This app requires access to your location when open.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app requires access to your location even when closed.",
+        "NSLocationAlwaysUsageDescription": "This app requires access to your location when open.",
+        "deploymentTarget": "14",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.anonymous.tripin"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,20 +37,44 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.tripin"
+      "package": "com.anonymous.tripin",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION"
+      ]
     },
     "web": {
+      "bundler": "metro",
+      "output": "single",
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-secure-store",
-       [
+      [
         "@rnmapbox/maps",
         {
-          "RNMapboxMapsDownloadToken": "pk.eyJ1IjoiYW5uZ3V5ZW4xMTIzNCIsImEiOiJjbWdhMmRjMGYwZWU2MmpweDkwc2l6eGpwIn0.b2ldLayg1XNiEctg3lFq0g"
+          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiYW5uZ3V5ZW4xMTIzNCIsImEiOiJjbWhmZzQzeWcwNHdtMmtvZzNjZjM1NzR1In0.M7jTOEx4t44m9x-I1OAXEg"
         }
-      ]
-
-    ]
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      "expo-sqlite"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "2e3446d3-9978-4cea-8294-a1166b269f3f"
+      }
+    }
   }
 }

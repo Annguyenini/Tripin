@@ -6,7 +6,13 @@ export class UserDataService{
         this.user_id = null;
         this.user_name = null;
         this.display_name =null;
+        this.trip_status = false;
+        this.trip_name = null;
         UserDataService.instance = this;
+    }
+    setTripStatus(status, trip_name){
+        this.trip_status = status;
+        this.trip_name = trip_name;
     }
 
     setUserId (user_id){
