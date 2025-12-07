@@ -106,7 +106,7 @@ export const LocationHandler=() =>{
 
   return (
     <View className="justify-center items-center">
-      <Text>Foreground Permission: {foregroundStatus? "yes" :"no"}</Text>
+      {/* <Text>Foreground Permission: {foregroundStatus? "yes" :"no"}</Text>
       <Text>Background Permission: {backgroundStatus? "Yes" : "No"}</Text>
 
       {location && (
@@ -114,7 +114,7 @@ export const LocationHandler=() =>{
           📍 Lat: {location.coords.latitude.toFixed(4)}, Lon:{" "}
           {location.coords.longitude.toFixed(4)}
         </Text>
-      )}
+      )} */}
 
       {/* {!backgroundStatus?.granted && Platform.OS !== "web" && (
         <Button title="Enable Background Location" onPress={requestBackgroundPermission} />

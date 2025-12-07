@@ -1,6 +1,7 @@
-from server_side.encryption import Encryption 
-from server_side.config import Config
-from server_side.database import Database
+from server_side.server_config.encryption.encryption import Encryption 
+from server_side.server_config.config import Config
+# from server_side.database.database import Database
+from server_side.server_config.database_config import DatabaseConfig
 from dotenv import set_key, load_dotenv
 import getpass
 import sys
@@ -9,7 +10,8 @@ class ServerAuth:
     def __init__(self):
         self.encryption_Service = Encryption()
         self.config = Config()
-        self.database_Service = Database()
+        # self.database_Service = Database()
+        self.database_Config = DatabaseConfig()
         self.config_parser = self.config.get_config_parser() 
         self.database_config_parser = self.config.get_config_parser(path='server_side/assets/configs/.env')
         self.env_path = self.config.env_path
@@ -181,5 +183,7 @@ class ServerAuth:
         decrypted_dbname = self.encryption_Service.decrypt(dbname_iv,dbname,self.database_encryption_key).strip().strip("'").strip('"')
         decrypted_password = self.encryption_Service.decrypt(password_iv,password,self.database_encryption_key).strip().strip("'").strip('"')
         decrypted_port = self.encryption_Service.decrypt(port_iv,port,self.database_encryption_key).strip().strip("'").strip('"')
-        self.database_Service.set_database_credentials(decrypted_host,decrypted_dbname,decrypted_user,decrypted_password,int(decrypted_port))
+        
+        ##set credentials to datbase config
+        self.database_Config._init_database_properties(decrypted_host,decrypted_dbname,decrypted_user,decrypted_password,int(decrypted_port))
         return True             

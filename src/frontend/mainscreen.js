@@ -7,7 +7,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import {mainScreenStyle,footer} from '../styles/main_screen_styles.js'
 // import { Button } from 'react-native-web';
-import { navigate } from './custome_function/navigationService.js';
+import { navigate } from './custom_function/navigationService.js';
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import {UserDataService} from "../backend/userdata.js"
 // import { Color } from 'react-native/types_generated/Libraries/Animated/AnimatedExports';
@@ -18,7 +18,7 @@ const cameraIcon = require('../../assets/image/camera_icon.png')
 const galleryIcon = require('../../assets/image/gallery_icon.png')
 const settingIcon = require('../../assets/image/setting_icon.png')
 const userDataService = new UserDataService()
-
+import { MapBoxLayout } from './map_box/map_box_layout.js';
 // const fetchUserData = async()=>{
 //   const userProfilePic = await userDataService.getUserProfilePic();
 //   const userDisplayName = await userDataService.getUserDisplayName ();
@@ -45,6 +45,7 @@ export const MainScreen = () =>{
     return(
       <View style={styles.container}>    
       <LocationHandler></LocationHandler>
+      <MapBoxLayout></MapBoxLayout>
       <UserDataBottomSheet isOnATrip={isOnATrip} setIsOnATrip ={setIsOnAtrip} userId={userId} userDisplayName = {userDisplayName}/>
       <View style={footer.footerContainer}>
         <View style={footer.fotterrow}>

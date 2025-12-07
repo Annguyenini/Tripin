@@ -11,5 +11,16 @@ export const tripStyle = StyleSheet.create(
     marginBottom: 15,
     backgroundColor: '#fafafa',
   },
+  submitButton: {
+    backgroundColor: '#000000ff', // black submit
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+   submitButtonText: {
+    color: '#ffffff', // white text
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
     }
 )

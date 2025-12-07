@@ -77,6 +77,10 @@ yarn-error.*
 # local env files
 .env*.local
 .env
+/src/asset/.env
+
+
+App.js
 # typescript
 *.tsbuildinfo
 

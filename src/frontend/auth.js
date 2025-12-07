@@ -7,8 +7,8 @@ import {styles} from '../styles/style.js'
 import {authStyle} from '../styles/auth_style.js'
 import { Auth } from '../backend/auth.js';  
 import { useNavigation  } from '@react-navigation/native';
-import { navigate } from './custome_function/navigationService.js';
-import { OverlayCard } from './custome_function/overlay_card.js';
+import { navigate } from './custom_function/navigationService.js';
+import { OverlayCard } from './custom_function/overlay_card.js';
 const { width } = Dimensions.get('window');
 
 export const loginWithAccessToken = async () => {

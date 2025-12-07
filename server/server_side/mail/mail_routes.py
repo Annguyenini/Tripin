@@ -1,6 +1,6 @@
 from flask  import Blueprint, request, jsonify
 from flask_mail import Mail, Message
-from server_side.mail_service import MailService
+from server_side.mail.mail_service import MailService
 mail = Mail()
 class MailServer:
     _instance = None

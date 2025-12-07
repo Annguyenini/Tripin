@@ -1,11 +1,21 @@
+## use to control the database
+## contain functions to modify database directly
+## helpo avoid other class, function to touch database directly
+## act as a layer between server to database
+## all functions that contain querry must use parameter (EX: UPDATE table SET user =%s, (value))
+
+
+
+
 import psycopg2
 from dotenv import set_key, load_dotenv
 import os
-from server_side.config import Config
-from server_side.encryption import Encryption
+from server_side.server_config.config import Config
+from server_side.server_config.encryption.encryption import Encryption
+from server_side.server_config.database_config import DatabaseConfig
 import inspect
 from datetime import datetime
-##change the connecttion to class variable
+
 
 class Database:
     _instance = None
@@ -23,30 +33,24 @@ class Database:
         self._initialized_credentials = False
         self.config = Config()
         self.encryption_Service = Encryption() 
-
+        self.database_config = DatabaseConfig()
+        self._initialized =False
         # database credentials
         self.database_host =None
         self.database_dbname =None
         self.database_username  =None
         self.database_password =None
-        self.database_port = None
-
+        self.database_port = None        
+            
     # set database credentials(onlyfor server Auth class)
-    def set_database_credentials(self,host,dbname,username,password,port):
-        caller = inspect.stack()[1].frame.f_globals["__name__"]
-        if caller == "server_side.server_auth":
-            self.database_host = host
-            self.database_dbname = dbname
-            self.database_username = username
-            self.database_password = password
-            self.database_port = port
-            self._initialized_credentials = True
-            # self.__init__tripsetup()
-
-            print("Database credentials set successfully!✅")
-        else :
-            print("You are not allowed to set database credentials!❌")
-            return
+    def _init_database_credentials(self):
+        self.database_host = self.database_config.database_host
+        self.database_dbname = self.database_config.database_dbname
+        self.database_username = self.database_config.database_user
+        self.database_password = self.database_config.database_password
+        self.database_port = self.database_config.database_port
+        self._initialized_credentials = True
+        
     ## setup table if not exists (assuming exist)
     def __init__authsetup(self):
         if not self._initialized_credentials:
@@ -102,6 +106,10 @@ class Database:
         con.commit() 
         con.close() 
     def connect_db(self):
+        if not self._initialized:
+            print("dsdsd")
+            self._init_database_credentials()
+        print("dsdsdsdsdsdsds",self.database_host)
         conn = psycopg2.connect(
         host= self.database_host,
         dbname= self.database_dbname,
@@ -109,28 +117,34 @@ class Database:
         password= self.database_password,
         port= self.database_port
         )
-        print("Database connected successfully!✅")
 
         # con = sqlite3.connect(path,check_same_thread=False,isolation_level=None)
         cur= conn.cursor()
         return conn, cur
 
 
-    def check_allowance(self,table,item):
-        db_allow_table=['tripin_auth.userdata','tripin_auth.tokens','']
+    def check_allowance(self,**kwargs):
+        table = kwargs.get("table")
+        item = kwargs.get("item")
+        db_allow_table=['tripin_auth.userdata','tripin_auth.tokens','tripin_trips.trip_points','tripin_trips.trip_table']
         db_allow_items_auth=['email','user_name','password','display_name','token','user_id','issued_at','exprires_at']
-        # if tabletype == "userdata":
-
-        #     if table not in db_allow_table or item not in db_allow_items_auth:
-        #         return False
-        # return True
+        if table not in db_allow_table:
+            raise "Table not allowed"
+        
+        if item not in  db_allow_items_auth:
+            raise "Item not allowed"
+                
     def find_item_in_sql(self, **kwargs):
         options = kwargs.pop("option","fetchone")
         second_condition = kwargs.pop("second_condition",False)
         table = kwargs.get("table")
         item = kwargs.get("item")
         value = kwargs.get("value")
+        
         con,cur = self.connect_db()
+        
+        self.check_allowance(table=table,item=item)
+        
         if not second_condition:
             cur.execute (f'SELECT * FROM {table} WHERE {item}=%s',(value,))
         else :
@@ -147,10 +161,13 @@ class Database:
         table = kwargs.get("table")
         item = kwargs.get ("item")
         value = kwargs.get("value")
-        self.check_allowance(table,item)
         item_to_update = kwargs.get("item_to_update")
         value_to_update = kwargs.get("value_to_update")
+ 
         con,cur = self.connect_db()
+        self.check_allowance(table = table,item =item)
+        self.check_allowance(item = item_to_update)
+
         cur.execute(f'UPDATE {table} SET {item_to_update} =%s WHERE {item} = %s',(value_to_update,value,))
         con.commit()
         con.close()

@@ -5,7 +5,7 @@ import { cameraStyle } from '../../styles/camera_style.js';
 import { CameraService } from '../../backend/camera/camera_functions.js';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as MediaLibrary from 'expo-media-library';
-import { navigate } from '../custome_function/navigationService.js';
+import { navigate } from '../custom_function/navigationService.js';
 import { Platform } from 'react-native';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import AsyncStorage from '@react-native-async-storage/async-storage';

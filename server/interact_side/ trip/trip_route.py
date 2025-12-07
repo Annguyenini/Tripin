@@ -1,6 +1,7 @@
 
 from flask import Blueprint, request, jsonify
-from server_side.tokenservice import TokenService
+from server.server_side.token.tokenservice import TokenService
+from trip_service import TripService
 class TripRoute:
     _instance = None
     def __new__(cls,*args,**kwargs):
@@ -10,27 +11,27 @@ class TripRoute:
 
     def __init__(self):
         self.bp = Blueprint('mail',__name__)
-        self.token_service = TokenService()        
+        self.token_service = TokenService()     
+        self.trip_service = TripService()   
         self._register_route()
     
     def _register_route(self):
-        self.bp.route("/request_new_trip", methods=["POST"])()
-
-    def confirm_code(self):
+        self.bp.route("/request_new_trip", methods=["POST"])(self.request_new_trip)
+    
+    def request_new_trip(self):
         data = request.json
         token = request.headers.get("Authorization")
         token.replace("Bearer ","")
-        valid_token,message = self.token_service.jwt_verify(token)
+        valid_token,Tmessage = self.token_service.jwt_verify(token)
         if not valid_token:
-            return False, message
+            return (Tmessage), 400
         
         user_data = self.token_service.decode_jwt(token)
         user_id = user_data.get("user_id")
         user_name = user_data.get("user_name")
-        trip_name = data.get("trip_name")
-        # respond = self.mail_service.verify_code(email,code)
-        if not respond:
-            return jsonify({"status":"Failed"}),500
-
-        return jsonify({"status":"Successfully"}),200
-        
+        trip_name = user_data.get("trip_name")
+        status, message,tripid = self.trip_service.process_new_trip(user_id,trip_name,)
+        if not status :
+            return jsonify({"message":message}),400
+        else:
+            return jsonify({"message":message,"tripId":tripid}),200

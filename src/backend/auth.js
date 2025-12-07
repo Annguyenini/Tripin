@@ -77,10 +77,10 @@ export class Auth{
         console.assert(data!= undefined,"Data at authenticateToken is undefined!")
         // console.log(data)
         if(respond.status===401){
-            return ({"message":data.Message,"status": 401,"data":data})
+            return ({"message":data.message,"status": 401,"data":data})
         }
         
-        return({"message":data.Message,"status": 200,"data":data})
+        return({"message":data.message,"status": 200,"data":data})
         
     }
     async requestSignup(email,displayName,username,password){
@@ -96,7 +96,7 @@ export class Auth{
         console.assert(respond.status===200,"Error At request Sign Up back end!")
         const data = await respond.json();
         console.assert(data!=undefined,"Data at request signup is undefined!")
-        return {"status":respond.status,"message":data.Message};
+        return {"status":respond.status,"message":data.message};
     }   
     async requestVerifycation (email, code){
         // console.log("called")

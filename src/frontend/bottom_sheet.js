@@ -23,6 +23,9 @@ export const UserDataBottomSheet = ({
     const new_trip_filler = ()=>{
        set_show_create_trip_filler(true)
     }    
+    const request_new_trip =()=>{
+      
+    }
     return (
 
         <BottomSheet
@@ -63,7 +66,7 @@ export const UserDataBottomSheet = ({
         {/* Extra bottom padding so last content isn’t hidden behind toolbar */}
         <View style={{ height: 80 }} />
         {show_create_trip_filler&&
-        <NewTripFiller show_create_trip_filler={show_create_trip_filler} set_show_create_trip_filler ={set_show_create_trip_filler} set_trip_name={set_trip_name}/>}
+        <NewTripFiller show_create_trip_filler={show_create_trip_filler} set_show_create_trip_filler ={set_show_create_trip_filler} set_trip_name={set_trip_name} request_new_trip={request_new_trip}/>}
 
       </BottomSheet>
      

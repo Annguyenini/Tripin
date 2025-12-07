@@ -1,7 +1,7 @@
 import jwt
-from server_side.config import Config
+from server_side.server_config.config import Config
 from datetime import datetime , timedelta
-from server_side.database import Database
+from server_side.database.database import Database
 class TokenService:
     def __init__(self):
         self.db = Database()

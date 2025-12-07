@@ -7,7 +7,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from base64 import urlsafe_b64encode
 
-from server_side.config import Config
+from server_side.server_config.config import Config
 from  os import urandom
 import sys
 ## 2 tier key system 

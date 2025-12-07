@@ -1,6 +1,6 @@
-from server_side.tokenservice import TokenService
-from server_side.database import Database
-class User_Request:
+from server.server_side.token.tokenservice import TokenService
+from server.server_side.database.database import Database
+class TripService:
     _instance = None
     def __new__(cls,*args,**kwargs):
         if cls._instance is None:
@@ -9,7 +9,7 @@ class User_Request:
     def __init__(self):
         self.token_service = TokenService()
         self.database_service = Database()
-    def request_new_trip(self,user_id,trip_name):
+    def process_new_trip(self,user_id,trip_name):
         # trip_db layout 
         # trip_id | trip_name | user_id | start_time | end_time | active
 
@@ -25,7 +25,7 @@ class User_Request:
         
         create_trip,trip_id = self.database_service.insert_to_database_trip(user_id = user_id, trip_name = trip_name)
         if create_trip >=1 :
-            return True, trip_id, f"Created trip {trip_name} successfully"
+            return True, f"Created trip {trip_name} successfully", trip_id
         else: 
             return False, "Error occur while creating trip." 
            

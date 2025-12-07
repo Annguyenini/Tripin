@@ -4,7 +4,7 @@ import {MainScreen} from './src/frontend/mainscreen.js'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-import { navigationRef } from './src/frontend/custome_function/navigationService.js';
+import { navigationRef } from './src/frontend/custom_function/navigationService.js';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import {

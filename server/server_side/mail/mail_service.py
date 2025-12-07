@@ -41,7 +41,7 @@ class MailService:
         print(f"Email received: {email!r}")
         
         
-        from server_side.auth import Auth
+        from server_side.credential.credential import Auth
         self.auth = Auth()
         realcode = self.confirmation_list.get(email)
         print(realcode)

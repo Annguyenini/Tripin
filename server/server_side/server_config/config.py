@@ -30,7 +30,9 @@ class Config:
             self._PRIVATE_KEY = f.read()
         with open(self._public_keep_path,'r') as f:
             self._PUBLIC_KEY = f.read()
-
+    
+        
+    
     @property
     def private_key(self):
         return self._PRIVATE_KEY
@@ -54,6 +56,8 @@ class Config:
     @property 
     def encrypt_salt_path(self):
         return self._encrypt_salt_path
+
+ 
 
     def get_config_parser(self,**kwargs):
         if kwargs.get("path") is not None:

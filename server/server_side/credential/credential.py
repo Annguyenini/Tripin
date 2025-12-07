@@ -1,9 +1,9 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime,timedelta
-from server_side.database import Database
-from server_side.config import Config
-from server_side.tokenservice import TokenService
-from server_side.mail_service import MailService
+from server_side.database.database import Database
+from server_side.server_config.config import Config
+from server_side.token.tokenservice import TokenService
+from server_side.mail.mail_service import MailService
 #userdata user_id|email|user_name|displayname|password
 #token keyid| userid| username|token|issue name | exp name | revok
 class Auth:

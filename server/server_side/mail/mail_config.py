@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_mail import Mail, Message
 import os 
-from server_side.config import Config
+from server_side.server_config.config import Config
 from dotenv import set_key, load_dotenv
 config = Config()
 load_dotenv(config.env_path)

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions,Image,PanResponder } from 'react-native';
 import{Auth} from '../backend/auth.js'
-import {navigate} from './custome_function/navigationService.js'
+import {navigate} from './custom_function/navigationService.js'
 import {settingStyle} from '../styles/setting_style.js'
 export const SettingScreen =()=>{
     const auth_service = new Auth()
