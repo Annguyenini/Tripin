@@ -4,7 +4,7 @@ import {mainScreenStyle} from '../styles/main_screen_styles.js'
 import { useRef, useState,useMemo } from "react";
 import { TextInput } from "react-native-gesture-handler";
 import { TouchableOpacity,Text } from "react-native";
-import { UserDataService } from "../backend/userdata.js";
+import { UserDataService } from "../backend/userdatas/userdata.js";
 import {  StyleSheet,View,Image } from 'react-native';
 import { OverlayCard } from "./auth.js";
 import { authStyle } from "../styles/auth_style.js";

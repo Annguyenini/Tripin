@@ -17,8 +17,6 @@ class RateLimiterRedis:
         
     def exp (self,key,seconds):
         self.redis_client.expire(key,seconds)
-        ttl = self.redis_client.ttl(key)
-        print(ttl)
         
     def get (self,key):
         return self.redis_client.get(key)

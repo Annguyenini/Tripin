@@ -4,8 +4,7 @@ import {View} from 'react-native'
 import * as Location from "expo-location";
 import { HelpBarMap } from './help_bar_map';
 import { useFormState } from 'react-dom';
-import {MAPBOX_ACCESS_TOKEN} from '../../asset/.env'
-MapboxGL.setAccessToken(MAPBOX_ACCESS_TOKEN)
+MapboxGL.setAccessToken(process.env.MAPBOX_ACCESS_TOKEN)
 export const MapBoxLayout =()=>{
     const mapRef = useRef(null);
     const [userLock,setUserLock]=useState(false)

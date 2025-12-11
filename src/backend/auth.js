@@ -6,7 +6,7 @@ import {Platform } from 'react-native'
 
 import * as API from '../config/config'
 // import { setSurfaceProps } from 'react-native/types_generated/Libraries/ReactNative/AppRegistryImpl';
-import {UserDataService} from './userdata'
+import {UserDataService} from './userdatas/userdata'
 import {TokenService} from './token_service'
 export class Auth{
     constructor(){
@@ -23,16 +23,12 @@ export class Auth{
         })});
         console.assert(respond.status===200,"Error at calling request Login!")
         const data = await respond.json();
-        // console.log(data)
         console.assert(data!= undefined,"Data at requestLogin is undefined")
-
-        if(respond.status ===401) return respond.status;
-       
+        if(respond.status !=200) return respond.status;
         await this.token_service.deleteToken("access_token");
         await this.token_service.deleteToken("refresh_token");
         await this.token_service.setToken("refresh_token", data.userdatas.refresh_token);
         await this.token_service.setToken("access_token", data.userdatas.access_token);
-
         this.user_data_service.setUserId(data.userdatas.user_id)
         this.user_data_service.setUserName(data.userdatas.user_name)
         this.user_data_service.setDisplayName(data.userdatas.display_name)
@@ -137,7 +133,6 @@ export class Auth{
         else if (data.status === 200) {
             await this.token_service.deleteToken("access_token");
             await this.requestNewAccessToken();
-            // console.log("pass this shit")
             return await this.loginWithAccessToken();
         }
       }

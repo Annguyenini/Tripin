@@ -47,7 +47,7 @@ class AuthServer:
         if not status:
             return jsonify({"message": message}), 401
         userdatas = self.token_service.decode_jwt(token)
-        return jsonify({"message": message, "userDatas": userdatas}), 200
+        return jsonify({"message": message, "userdatas": userdatas}), 200
 
     def login(self):
         data = request.json
@@ -56,7 +56,7 @@ class AuthServer:
         status, message, userdatas = self.auth.login(username=username, password=password)
         if not status:
             return jsonify({"message": message}), 401
-        return jsonify({"message": message, "userDatas": userdatas}), 200
+        return jsonify({"message": message, "userdatas": userdatas}), 200
 
     def signup(self):
         data = request.json

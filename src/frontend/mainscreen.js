@@ -9,7 +9,7 @@ import {mainScreenStyle,footer} from '../styles/main_screen_styles.js'
 // import { Button } from 'react-native-web';
 import { navigate } from './custom_function/navigationService.js';
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import {UserDataService} from "../backend/userdata.js"
+import {UserDataService} from "../backend/userdatas/userdata.js"
 // import { Color } from 'react-native/types_generated/Libraries/Animated/AnimatedExports';
 import { LocationHandler } from '../backend/location_permision.js';
 import { UserDataBottomSheet } from './bottom_sheet.js';

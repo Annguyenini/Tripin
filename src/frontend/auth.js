@@ -59,6 +59,11 @@ export const AuthScreen= ( ) => {
         setShowAleart(true);
         return;
       }
+      else if (respond === 429){
+        setAlertType("Too many request please try again shortly!")
+        setShowAleart(true);
+        return;
+      }
       navigation.navigate('Main');
     }
 

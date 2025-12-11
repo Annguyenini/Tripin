@@ -1,19 +1,25 @@
-from server.server_side.token.tokenservice import TokenService
-from server.server_side.database.database import Database
+from server_side.token.tokenservice import TokenService
+from server_side.database.database import Database
 class TripService:
     _instance = None
+    _init = False
     def __new__(cls,*args,**kwargs):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
     def __init__(self):
-        self.token_service = TokenService()
-        self.database_service = Database()
+        if not self._init: 
+            self.token_service = TokenService()
+            self.database_service = Database()
+            self._init =True
+    def get_active_trip(self,user_id):
+        self.database_service.find_item_in_sql(table="tripin_trips.trip_table", )
+    
     def process_new_trip(self,user_id,trip_name):
         # trip_db layout 
         # trip_id | trip_name | user_id | start_time | end_time | active
 
-        exist_trip = self.database_service.find_item_in_sql(second_condition= True, table="tripin_trips.trips_table",item = "user_id", value=user_id, item2 ="active", value2 =True )
+        exist_trip = self.database_service.find_item_in_sql("tripin_trips.trips_table","user_id",user_id,True,"active",True )
     
         if exist_trip is not None:
             return False, f"Currently in {exist_trip[1]}"

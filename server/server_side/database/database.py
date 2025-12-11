@@ -15,6 +15,7 @@ from server_side.server_config.encryption.encryption import Encryption
 from server_side.server_config.database_config import DatabaseConfig
 import inspect
 from datetime import datetime
+from psycopg2.extras import DictCursor
 
 
 class Database:
@@ -106,10 +107,13 @@ class Database:
         con.commit() 
         con.close() 
     def connect_db(self):
+        """connect to postgres
+
+        Returns:
+            _cursor_: con, cur  
+        """
         if not self._initialized:
-            print("dsdsd")
             self._init_database_credentials()
-        print("dsdsdsdsdsdsds",self.database_host)
         conn = psycopg2.connect(
         host= self.database_host,
         dbname= self.database_dbname,
@@ -119,28 +123,42 @@ class Database:
         )
 
         # con = sqlite3.connect(path,check_same_thread=False,isolation_level=None)
-        cur= conn.cursor()
+        cur= conn.cursor(cursor_factory=DictCursor)
         return conn, cur
 
 
-    def check_allowance(self,**kwargs):
-        table = kwargs.get("table")
-        item = kwargs.get("item")
+    def check_allowance(self,table:str|None =None, item:str|None = None):
+        """check for allowance base on table and value
+
+        Args:
+            table (str): table_name 
+            item (str): column_name
+        """
         db_allow_table=['tripin_auth.userdata','tripin_auth.tokens','tripin_trips.trip_points','tripin_trips.trip_table']
-        db_allow_items_auth=['email','user_name','password','display_name','token','user_id','issued_at','exprires_at']
-        if table not in db_allow_table:
+        db_allow_items_auth=['email','user_name','password','display_name','token','user_id','issued_at','exprires_at','revoked']
+        db_allow_items_trip=['']
+        if table and table not in db_allow_table:
             raise "Table not allowed"
         
-        if item not in  db_allow_items_auth:
+        if item and item not in  db_allow_items_auth:
             raise "Item not allowed"
                 
-    def find_item_in_sql(self, **kwargs):
-        options = kwargs.pop("option","fetchone")
-        second_condition = kwargs.pop("second_condition",False)
-        table = kwargs.get("table")
-        item = kwargs.get("item")
-        value = kwargs.get("value")
-        
+                
+    def find_item_in_sql(self, table:str, item:str, value:str, second_condition:bool | None=None, second_item:str |None = None, second_value: str| None=None, return_option:str |None="fetchonce",):
+        """return value base on table and item in postgress
+
+        Args:
+            table (str): table name including scheme.
+            item (str): column name.
+            value (str): value that looking for in column.
+            second_condition (bool | None, optional): _True/ False_ find base on 2 columns and 2 values. Defaults to None.
+            second_item (str | None, optional): _second column name_. Defaults to None.
+            second_value (str | None, optional): _second value name_. Defaults to None.
+            return_option (str | None, optional): _fetchonce/fetchall_. Defaults to None.
+
+        Returns:
+            _list_: list of tuple or tuple
+        """
         con,cur = self.connect_db()
         
         self.check_allowance(table=table,item=item)
@@ -148,25 +166,29 @@ class Database:
         if not second_condition:
             cur.execute (f'SELECT * FROM {table} WHERE {item}=%s',(value,))
         else :
-            item2 = kwargs.get("item2")
-            value2 = kwargs.get("value2")
-            cur.execute(f'SELECT * FROM {table} WHERE {item}=%s AND {item2} =%s',(value,value2,))
-        if options =="fetchall":
+            cur.execute(f'SELECT * FROM {table} WHERE {item}=%s AND {second_item} =%s',(value,second_value,))
+        
+        if return_option =="fetchall":
             item = cur.fetchall()
         else:
             item = cur.fetchone()
         return item
     
-    def update_db(self,**kwargs):
-        table = kwargs.get("table")
-        item = kwargs.get ("item")
-        value = kwargs.get("value")
-        item_to_update = kwargs.get("item_to_update")
-        value_to_update = kwargs.get("value_to_update")
- 
+    def update_db(self,table:str, item:str, value:str, item_to_update:str, value_to_update:str):
+        
+        """update a specific value where  condition exist 
+        Args:
+            table: table name
+            item: column name
+            value: some condition
+            item_to_update: column that want to update
+            value_to_update: value that want to update
+        Returns:
+            _type_: _description_
+        """
         con,cur = self.connect_db()
         self.check_allowance(table = table,item =item)
-        self.check_allowance(item = item_to_update)
+        self.check_allowance(table =table,item = item_to_update)
 
         cur.execute(f'UPDATE {table} SET {item_to_update} =%s WHERE {item} = %s',(value_to_update,value,))
         con.commit()
@@ -175,43 +197,65 @@ class Database:
             return False
         return True
 
-    def insert_to_database_trip(self,**kwargs):
+    def insert_to_database_trip(self,user_id:int,trip_name:str):
+        """insert new row in to database trip table / return 2 value
+
+        Args:
+            user_id (int): _userid_
+            trip_name (str): _tripname_
+
+        Returns:
+            _bool, int_: _status, trip_id_
+        """
         con,cur = self.connect_db()
-        user_id  = kwargs.get("user_id")
-        trip_name = kwargs.get("trip_name")
         start_time = datetime.now()
         cur.execute(f'INSERT INTO tripin_trips.trip_table (user_id,trip_name,start_time,active) VALUES (%s,%s,%s,%s) RETURNING id',(user_id,trip_name,start_time,True))
         trip_id = cur.fetchone()[0]
         con.commit()
         con.close()
-        return cur.rowcount,trip_id 
+        if cur.rowcount >=1:
+            return True, trip_id
+        return False,0 
         
-    def insert_to_database_singup(self, **kwargs):
+    def insert_to_database_singup(self, email:str, display_name:str, username:str, password:str):
+        """insert to database, credential table
+
+        Args:
+            email (str): _email_
+            display_name (str): _display name_
+            username (str): _username_
+            password (str): _dpassword (hashed)_
+
+        Returns:
+            _bool_: _status_
+        """
         con,cur= self.connect_db()
-        email = kwargs.get('email')
-        display_name =kwargs.get('display_name')
-        username = kwargs.get('username')
-        password = kwargs.get('password')
         current_time = datetime.now()
         cur.execute(f'INSERT INTO tripin_auth.userdata (email,display_name,user_name,password,created_time) VALUES(%s,%s,%s,%s,%s)',(email,display_name,username,password,current_time))
         con.commit()
         con.close()
-        return cur.rowcount
+        if cur.rowcount >=1:
+            return True
+        return False
 
 
-    def insert_token_into_db(self,**kwargs): 
-        #kwargs =>> type,token,issuePeriod,expPeriod
-        #type(access,refresh) token (jwt)  issuePeriod(00_00_00:00_00) expPeriod(00_00_00:00_00)
-        userid = kwargs.get("userid")
-        username =kwargs.get("username")
-        token = kwargs.get("refresh_token")
-        issued_at = kwargs.get("issued_at")
-        expires_at = kwargs.get("expires_at")
-        revoked = kwargs.get("revoked")
+    def insert_token_into_db(self, user_id :int, username:str, token:str, issued_at, expired_at): 
+        """insert into database, token table 
+
+        Args:
+            user_id (int): _username_
+            username (str): _userid_
+            token (str): _token_
+            issued_at (timestamp): _timestamp_
+            expired_at (timestamp): _timestamp_
+
+        Returns:
+            _bool_: _status_
+        """
+
         con,cur = self.connect_db()
-        cur.execute(f'INSERT INTO tripin_auth.tokens (user_id,user_name,token,issued_at,expires_at,revoked) VALUES (%s, %s, %s, %s, %s, %s)',(userid,username,token,issued_at,expires_at,revoked,))
+        cur.execute(f'INSERT INTO tripin_auth.tokens (user_id,user_name,token,issued_at,expires_at,revoked) VALUES (%s, %s, %s, %s, %s, %s)',(user_id,username,token,issued_at,expired_at,))
         con.commit()
-        if(cur.rowcount<0):
-            return False, "Error insert to db"
-
-        return True
+        if(cur.rowcount>=1):
+            return True
+        return False

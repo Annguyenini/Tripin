@@ -8,6 +8,7 @@ export class UserDataService{
         this.display_name =null;
         this.trip_status = false;
         this.trip_name = null;
+        this.user_role = null;
         UserDataService.instance = this;
     }
     setTripStatus(status, trip_name){
@@ -17,17 +18,17 @@ export class UserDataService{
 
     setUserId (user_id){
         this.user_id = user_id;
-        console.log(user_id)
     }
     setUserName(user_name){
         this.user_name = user_name;
-        console.log(user_name)
 
     }
     setDisplayName(display_name){
         this.display_name = display_name;
-        console.log(display_name)
 
+    }
+    setUserRole(role){
+        this.user_role =role
     }
     getUserId(){
         if(!this.user_id){
@@ -54,4 +55,5 @@ export class UserDataService{
         this.user_name = null;
         this.user_id =null;
     }
+
 }

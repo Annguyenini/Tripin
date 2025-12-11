@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, jsonify
-from server.server_side.token.tokenservice import TokenService
+from server_side.token.tokenservice import TokenService
 from trip_service import TripService
 class TripRoute:
     _instance = None
@@ -18,20 +18,27 @@ class TripRoute:
     def _register_route(self):
         self.bp.route("/request_new_trip", methods=["POST"])(self.request_new_trip)
     
+    ## request new trip
     def request_new_trip(self):
         data = request.json
         token = request.headers.get("Authorization")
         token.replace("Bearer ","")
-        valid_token,Tmessage = self.token_service.jwt_verify(token)
-        if not valid_token:
-            return (Tmessage), 400
         
+        ##verify token
+        valid_token,Tmessage = self.token_service.jwt_verify(token)
+        ##return if invalid token
+        if not valid_token:
+            return (Tmessage), 401
+        
+        ##decode jwt to get userdatas
         user_data = self.token_service.decode_jwt(token)
         user_id = user_data.get("user_id")
         user_name = user_data.get("user_name")
         trip_name = user_data.get("trip_name")
+        
+        #process new trip
         status, message,tripid = self.trip_service.process_new_trip(user_id,trip_name,)
         if not status :
-            return jsonify({"message":message}),400
+            return jsonify({"message":message}),401
         else:
             return jsonify({"message":message,"tripId":tripid}),200

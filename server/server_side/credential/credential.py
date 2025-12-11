@@ -25,11 +25,13 @@ class Auth:
         username = kwargs.get("username")
         password = kwargs.get("password")
         row = self.db.find_item_in_sql(table="tripin_auth.userdata",item="user_name",value=username)
+        trip_row = self.db.find_item_in_sql(table = "tripin_trips.trip_table")
         if row is None:
             return False,"Wrong username",None
         userid=row[0] 
         display_name=row[2] 
         username=row[3] 
+        role = row[6]
         assert type(row) == tuple ,"Row must be type tuple"
         assert userid is not None ,"UserID Null"
         assert display_name is not None ,"Display_name Null"
@@ -45,6 +47,7 @@ class Auth:
         refresh_token = self.tokenService.generate_jwt(id=userid,display_name = display_name,username=username)
         access_token = self.tokenService.generate_jwt(id=userid,display_name = display_name,username=username,exp_time={"minutes":1})
         
+        
         self.db.insert_token_into_db(
             userid =row[0],
             username=username,
@@ -54,7 +57,8 @@ class Auth:
             revoked = False
             )
         #return data
-        data = {'user_id':row[0],'display_name':row[2],'user_name':row[3],'refresh_token':refresh_token,'access_token':access_token}
+        data = {'user_id':row[0],'display_name':row[2],'user_name':row[3],'refresh_token':refresh_token,'access_token':access_token,'role':role}
+        trip_data = {'trip_name'}
         return True,"Sucessfully",data
     #signup function
     def signup(self,**kwargs): 
