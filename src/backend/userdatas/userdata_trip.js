@@ -1,4 +1,4 @@
-class UserDataTrip{
+export class UserDataTrip{
     constructor(){
         if (UserDataTrip.instance){
             return UserDataTrip.instance

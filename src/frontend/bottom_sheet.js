@@ -1,5 +1,5 @@
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import {Trip} from'../backend/service/trip_service.js'
+import {Trip} from'../backend/trip/trip.js'
 import {mainScreenStyle} from '../styles/main_screen_styles.js'
 import { useRef, useState,useMemo } from "react";
 import { TextInput } from "react-native-gesture-handler";
@@ -24,7 +24,11 @@ export const UserDataBottomSheet = ({
        set_show_create_trip_filler(true)
     }    
     const request_new_trip =()=>{
-      
+      const res = trip_service.requestNewTrip(trip_name)
+      if (!res){
+        
+      }
+      setIsOnATrip(True)
     }
     return (
 

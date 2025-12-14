@@ -32,6 +32,7 @@ export class Auth{
         this.user_data_service.setUserId(data.userdatas.user_id)
         this.user_data_service.setUserName(data.userdatas.user_name)
         this.user_data_service.setDisplayName(data.userdatas.display_name)
+        this
         return respond.status;
      } 
     

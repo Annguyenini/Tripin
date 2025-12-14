@@ -1,6 +1,6 @@
 import React, { useMemo, useState,useRef, useEffect } from 'react';
 import * as ScreenOrientation from 'expo-screen-orientation';
-
+import { UserDataTrip } from '../backend/userdatas/userdata_trip.js';
 import {Image} from 'react-native'
 import { View, TouchableOpacity, Text,Button, TextInput,Alert, StyleSheet, Dimensions } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -18,6 +18,7 @@ const cameraIcon = require('../../assets/image/camera_icon.png')
 const galleryIcon = require('../../assets/image/gallery_icon.png')
 const settingIcon = require('../../assets/image/setting_icon.png')
 const userDataService = new UserDataService()
+const userDataServiceTrip = new UserDataTrip()
 import { MapBoxLayout } from './map_box/map_box_layout.js';
 // const fetchUserData = async()=>{
 //   const userProfilePic = await userDataService.getUserProfilePic();
@@ -35,6 +36,7 @@ export const MainScreen = () =>{
     useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
   }, []);
+
   const callCamera= ()=>{
     const res = navigate("Camera");
   }
@@ -43,9 +45,11 @@ export const MainScreen = () =>{
   } 
 
     return(
+      
       <View style={styles.container}>    
       <LocationHandler></LocationHandler>
       <MapBoxLayout></MapBoxLayout>
+      
       <UserDataBottomSheet isOnATrip={isOnATrip} setIsOnATrip ={setIsOnAtrip} userId={userId} userDisplayName = {userDisplayName}/>
       <View style={footer.footerContainer}>
         <View style={footer.fotterrow}>
