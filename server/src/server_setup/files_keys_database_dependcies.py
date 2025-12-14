@@ -35,7 +35,7 @@ def init_database_scheme():
     cur.execute('''
     CREATE TABLE IF NOT EXISTS tripin_auth.tokens (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES tripin_auth.auth(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES tripin_auth.userdata(id) ON DELETE CASCADE,
     user_name TEXT NOT NULL,
     token TEXT NOT NULL,
     issued_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -46,7 +46,7 @@ def init_database_scheme():
     ''')
     con.commit() 
     cur.execute(''' CREATE TABLE IF NOT EXISTS tripin_auth.session (id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES tripin_auth.auth(id) ON DELETE CASCADE, login_time TIMESTAMP NOT NULL, last_activity TIMESTAMP NOT NULL);''')
+    user_id INTEGER NOT NULL REFERENCES tripin_auth.userdata(id) ON DELETE CASCADE, login_time TIMESTAMP NOT NULL, last_activity TIMESTAMP NOT NULL);''')
     con.commit()
     con.close()
     set_up_config_env(hostname=host,dbname=db_name,user=user,password=password,port=port)
@@ -57,17 +57,17 @@ def set_up_config_files():
     os.makedirs(parent_path,exist_ok=True)
     with open('src/assets/configs/Confignure.ini','w')as config_file:
         content = """[paths]
-                        private_key = src/assets/keys/private.pem
-                        public_key = src/assets/keys/public.pem
-                        access_salt = src/assets/keys/access_salt.pem
-                        access_key = src/assets/keys/access_key.pem
-                        encrypt_salt = src/assets/keys/encrypt_salt.pem
-                        database_salt = src/assets/keys/database_salt.pem
-                        env_path = src/assets/configs/.env
+private_key = src/assets/keys/private.pem
+public_key = src/assets/keys/public.pem
+access_salt = src/assets/keys/access_salt.pem
+access_key = src/assets/keys/access_key.pem
+encrypt_salt = src/assets/keys/encrypt_salt.pem
+database_salt = src/assets/keys/database_salt.pem
+env_path = src/assets/configs/.env
 
-                        [status]
-                        db_encrypted = 0
-                                        """
+[status]
+db_encrypted = 0
+"""
         config_file.write(content)
         
 def set_up_config_env(hostname:str, dbname:str, user:str, password:str, port:int):
@@ -103,7 +103,7 @@ def set_up_keys():
             private_key =rsa.generate_private_key( public_exponent=65537,
             key_size=2048)
             
-            with open('private.pem','wb') as private:
+            with open(_private_key_path,'wb') as private:
                 private.write(private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
@@ -114,7 +114,7 @@ def set_up_keys():
             public_key = private_key.public_key()
 
             # save public key
-            with open("public.pem", "wb") as f:
+            with open(_public_key_path, "wb") as f:
                 f.write(
                     public_key.public_bytes(
                         encoding=serialization.Encoding.PEM,
