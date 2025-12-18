@@ -64,6 +64,8 @@ export const AuthScreen= ( ) => {
         setShowAleart(true);
         return;
       }
+      console.log("sdsdsdsd")
+
       navigation.navigate('Main');
     }
 

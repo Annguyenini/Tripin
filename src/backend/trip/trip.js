@@ -1,14 +1,16 @@
 import { TokenService } from '../token_service';
 import { Auth } from '../auth';
 import * as API from '../../config/config'
-import { UserDataTrip } from '../userdatas/userdata_trip';
+import { UserDataService } from '../userdatas/user';
+import { TripDataService } from '../userdatas/trip';
 export class Trip{
     constructor(){
         if(Trip.instance) return Trip.instance;
         Trip.instance =this;
         this.TokenService = new TokenService()
         this.AuthService = new Auth()
-        this.UserTripService = new UserDataTrip()
+        this.userDataService = new UserDataService()
+        this.tripDataService = new TripDataService()
     }
 
     verifyTripName(trip_name){
@@ -37,10 +39,11 @@ export class Trip{
             return false
         }
         const data = await res.json();
+        const trip_id = data.tripid
         if (res.status ===200){
-            this.UserTripService.set_trip_id(data.tripid)
-            this.UserTripService.set_trip_name(data.trip_name)
-            this.UserTripService.set_trip_status()
+            const trip_data = this.tripDataService.getObjectReady(trip_name, trip_id,Date.now())
+            this.tripDataService.setTripData(trip_data)
+            this.tripDataService.setTripStatus(true)
             return true
         }
     }

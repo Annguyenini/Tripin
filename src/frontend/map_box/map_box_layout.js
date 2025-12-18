@@ -5,7 +5,7 @@ import * as Location from "expo-location";
 import { HelpBarMap } from './help_bar_map';
 import { useFormState } from 'react-dom';
 MapboxGL.setAccessToken(process.env.MAPBOX_ACCESS_TOKEN)
-export const MapBoxLayout =()=>{
+export const MapBoxLayout =({isOnAtrip})=>{
     const mapRef = useRef(null);
     const [userLock,setUserLock]=useState(false)
     // const [zoomLevel, setZoomLevel]= useState(14);
@@ -25,6 +25,7 @@ export const MapBoxLayout =()=>{
     // }
     return(
         <View style={{flex:1}}> 
+            
             <MapboxGL.MapView style ={{flex:1}}
             ref={mapRef}
             projection="globe"
@@ -45,6 +46,7 @@ export const MapBoxLayout =()=>{
             }}
 
             >   
+            
             <MapboxGL.Camera 
             followUserLocation={isFollowingUser}   // <-- key part
             followUserMode="normal"
@@ -55,10 +57,10 @@ export const MapBoxLayout =()=>{
             // animationDuration={1}
             />
             <MapboxGL.UserLocation minDisplacement={2}/>
-            
             </MapboxGL.MapView>
-            <HelpBarMap isFollowingUser={isFollowingUser} setIsFollowingUser={setIsFollowingUser}></HelpBarMap>
-
+            
+            <HelpBarMap isFollowingUser={isFollowingUser} setIsFollowingUser={setIsFollowingUser} isOnAtrip={isOnAtrip} ></HelpBarMap>
+            
         </View>
     )
 }

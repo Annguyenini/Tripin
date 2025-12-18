@@ -3,16 +3,15 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { UserDataTrip } from '../backend/userdatas/userdata_trip.js';
 import {Image} from 'react-native'
 import { View, TouchableOpacity, Text,Button, TextInput,Alert, StyleSheet, Dimensions } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import {mainScreenStyle,footer} from '../styles/main_screen_styles.js'
 // import { Button } from 'react-native-web';
 import { navigate } from './custom_function/navigationService.js';
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import {UserDataService} from "../backend/userdatas/userdata.js"
+import {UserDataService} from "../backend/userdatas/user.js"
 // import { Color } from 'react-native/types_generated/Libraries/Animated/AnimatedExports';
-import { LocationHandler } from '../backend/location_permision.js';
+import { LocationPermission } from './functions/location_permision.js';
 import { UserDataBottomSheet } from './bottom_sheet.js';
+import {CurrentTripBar} from'./functions/current_trip_header.js'
 const homeIcon = require('../../assets/image/home_icon.png')
 const cameraIcon = require('../../assets/image/camera_icon.png')
 const galleryIcon = require('../../assets/image/gallery_icon.png')
@@ -30,11 +29,22 @@ import { MapBoxLayout } from './map_box/map_box_layout.js';
 // }
 
 export const MainScreen = () =>{
-  const userId = userDataService.getUserId();
-  const userDisplayName = userDataService.getDisplayName ();
+
+  const [user_id, setUserId] = useState(null)
+  const [user_name, setUsername ] = useState(null)
+  const [display_name,setDisplayName] = useState(null)
+
   const [isOnATrip, setIsOnAtrip] = useState(false);
-    useEffect(() => {
+  useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    async function fetch_userdata(){
+      const userdata = await userDataService.getUserData()
+      setUserId(userdata.user_id)
+      setUsername(userdata.user_name)
+      setDisplayName(userdata.display_name)
+
+    }
+    fetch_userdata()
   }, []);
 
   const callCamera= ()=>{
@@ -46,11 +56,12 @@ export const MainScreen = () =>{
 
     return(
       
-      <View style={styles.container}>    
-      <LocationHandler></LocationHandler>
-      <MapBoxLayout></MapBoxLayout>
+      <View style={styles.container}> 
+      <LocationPermission></LocationPermission>
+      <MapBoxLayout style={{ height: '70%' }} isOnAtrip={isOnATrip}></MapBoxLayout>
       
-      <UserDataBottomSheet isOnATrip={isOnATrip} setIsOnATrip ={setIsOnAtrip} userId={userId} userDisplayName = {userDisplayName}/>
+
+      <UserDataBottomSheet isOnATrip={isOnATrip} setIsOnATrip ={setIsOnAtrip} userId={user_id} userDisplayName = {display_name}/>
       <View style={footer.footerContainer}>
         <View style={footer.fotterrow}>
         <TouchableOpacity style={footer.fotterbutton}>
@@ -75,7 +86,7 @@ const styles = StyleSheet.create({
     flex: 1,
     // padding: 16,
     justifyContent: 'center',
-    width:'95%',
+    width:'100%',
   },
   title: {
     fontSize: 22,
@@ -86,5 +97,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor:'#3d3b3bff',
     borderRadius:20
+  },
+   overlay: {
+    position: 'absolute', // absolutely positioned over the map
+    left: 10, // distance from left
+    right: 10, // distance from right
+    zIndex: 10, // ensures it's on top
   },
 });

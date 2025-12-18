@@ -1,3 +1,6 @@
+// OUT OF USE/ do not use
+
+
 export class UserDataTrip{
     constructor(){
         if (UserDataTrip.instance){

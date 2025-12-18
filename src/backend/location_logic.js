@@ -2,7 +2,7 @@
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
 import { useState } from 'react';
-import {CoordinatesMap} from'./coordinates/coordinates_map'
+import {CoordinatesMap} from'./trip/trip_data_storage'
 const TASK_NAME = "background-location-task";
 
 

@@ -56,7 +56,6 @@ export class CameraService{
     }
   }
   async saveMediaToAlbum(uri){
-    
     console.log (this.album_name)    
     const album = await MediaLibrary.getAlbumAsync(this.album_name);
     const asset = await MediaLibrary.createAssetAsync(uri)

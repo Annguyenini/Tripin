@@ -8,7 +8,8 @@ import { UserDataService } from "../backend/userdatas/userdata.js";
 import {  StyleSheet,View,Image } from 'react-native';
 import { OverlayCard } from "./auth.js";
 import { authStyle } from "../styles/auth_style.js";
-import { NewTripFiller } from "./features/add_new_trip.js";
+import { NewTripFiller } from "./functions/add_new_trip.js";
+import { CurrentTripHeader } from "./functions/current_trip_header.js";
 export const UserDataBottomSheet = ({ 
   isOnATrip, 
   setIsOnATrip, 
@@ -38,12 +39,14 @@ export const UserDataBottomSheet = ({
         snapPoints={snapPoints}
         backgroundStyle={{ backgroundColor: '#2b2a2aff' }}
         handleIndicatorStyle={{ backgroundColor: '#0e0c0cff' }}
-
+        
       >
+        
 
         {/* bottom sheet user infos */}
         <BottomSheetScrollView contentContainerStyle={styles.content}>
         {/* <Image source={userProfilePic}/> */}
+        
         <View style = {mainScreenStyle.profilePic}><Image/></View>
         <Text style ={mainScreenStyle.displayname}>{userDisplayName}</Text>
         
@@ -93,4 +96,12 @@ const styles = StyleSheet.create({
     backgroundColor:'#3d3b3bff',
     borderRadius:20
   },
+  currentTripHeaderOverlay: {
+    position: 'absolute',
+    top: -20, // distance from top of BottomSheet
+    left: 20,
+    right: 20,
+    zIndex: 20, // make sure it floats above everything
+  },
+
 });

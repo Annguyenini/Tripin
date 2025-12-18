@@ -254,7 +254,7 @@ class Database:
         """
 
         con,cur = self.connect_db()
-        cur.execute(f'INSERT INTO tripin_auth.tokens (user_id,user_name,token,issued_at,expires_at) VALUES (%s, %s, %s, %s, %s)',(user_id,username,token,issued_at,expired_at,))
+        cur.execute(f'INSERT INTO tripin_auth.tokens (user_id,user_name,token,issued_at,expired_at) VALUES (%s, %s, %s, %s, %s)',(user_id,username,token,issued_at,expired_at,))
         con.commit()
         if(cur.rowcount>=1):
             return True

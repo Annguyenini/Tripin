@@ -6,7 +6,7 @@ import {Platform } from 'react-native'
 
 import * as API from '../config/config'
 // import { setSurfaceProps } from 'react-native/types_generated/Libraries/ReactNative/AppRegistryImpl';
-import {UserDataService} from './userdatas/userdata'
+import {UserDataService} from './userdatas/user'
 import {TokenService} from './token_service'
 export class Auth{
     constructor(){
@@ -21,18 +21,31 @@ export class Auth{
             username:username,
             password:password 
         })});
+
         console.assert(respond.status===200,"Error at calling request Login!")
         const data = await respond.json();
         console.assert(data!= undefined,"Data at requestLogin is undefined")
+        
+        
         if(respond.status !=200) return respond.status;
         await this.token_service.deleteToken("access_token");
         await this.token_service.deleteToken("refresh_token");
         await this.token_service.setToken("refresh_token", data.userdatas.refresh_token);
         await this.token_service.setToken("access_token", data.userdatas.access_token);
-        this.user_data_service.setUserId(data.userdatas.user_id)
-        this.user_data_service.setUserName(data.userdatas.user_name)
-        this.user_data_service.setDisplayName(data.userdatas.display_name)
-        this
+
+        const userdata ={
+            user_id :data.userdatas.user_id,
+            user_name : data.userdatas.user_name,
+            display_name : data.userdatas.display_name
+
+        }
+
+        await this.user_data_service.setUserData(userdata)
+        // old code
+        // this.user_data_service.setUserId(data.userdatas.user_id)
+        // this.user_data_service.setUserName(data.userdatas.user_name)
+        // this.user_data_service.setDisplayName(data.userdatas.display_name)
+        // 
         return respond.status;
      } 
     
@@ -111,9 +124,10 @@ export class Auth{
     async requestLogout(){
         await this.token_service.deleteToken("access_token")
         await this.token_service.deleteToken("refresh_token")
-        this.user_data_service.resetUserInfo();
+        await this.user_data_service.deleteUserData();
     }
     async loginWithAccessToken(){
+
         // console.log("tokens")
         // // await this.token_service.deleteToken("access_token");
         // // await this.token_service.deleteToken("refresh_token");
@@ -121,9 +135,10 @@ export class Auth{
         // console.log(await this.token_service.getToken("refresh_token"))
 
       const res = await this.authenticateToken("access_token");
+                console.log("called")
 
       if (res.message === "Token Expired!") {
-        // console.log("called")
+        console.log("called")
         const data = await this.authenticateToken("refresh_token");
     
         if (data.status === 401) {
@@ -148,9 +163,16 @@ export class Auth{
             return false;
         }
         
-        this.user_data_service.setUserId(res.data.userdatas.user_id)
-        this.user_data_service.setUserName(res.data.userdatas.user_name)
-        this.user_data_service.setDisplayName(res.data.userdatas.display_name)
+        const userdata ={
+            user_id: res.data.userdatas.user_id,
+            user_name: res.data.userdatas.user_name,
+            display_name: res.data.userdatas.display_name
+        }
+        await this.user_data_service.setUserData(userdata)
+        // old code
+        // this.user_data_service.setUserId(res.data.userdatas.user_id)
+        // this.user_data_service.setUserName(res.data.userdatas.user_name)
+        // this.user_data_service.setDisplayName(res.data.userdatas.display_name)
         // console.log("true")
       return true;
     };

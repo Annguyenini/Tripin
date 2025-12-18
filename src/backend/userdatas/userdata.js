@@ -1,3 +1,14 @@
+
+
+import * as SecureStore from 'expo-secure-store'
+
+
+const KEY={
+    USERNAME:'username',
+    USERID:'userid',
+    DISPLAYNAME:'displayname',
+    USERROLE:'role'
+}
 export class UserDataService{
     constructor(){
         if(UserDataService.instance){
@@ -16,19 +27,43 @@ export class UserDataService{
         this.trip_name = trip_name;
     }
 
-    setUserId (user_id){
+    async setUserId (user_id){
         this.user_id = user_id;
+        try{
+            await SecureStore.setItemAsync(KEY.USERID,user_id)
+        }
+        catch(secureStoreError){
+            console.error(`Error to set ${KEY.USERID}`)
+        }
     }
-    setUserName(user_name){
+    async setUserName(user_name){
         this.user_name = user_name;
+        try {
+            await SecureStore.setItemAsync(KEY.USERNAME,user_name)
+        }
+        catch(secureStoreError){
+            console.error(`Error at set key ${KEY.USERNAME}`)
+        }
 
     }
-    setDisplayName(display_name){
+    async setDisplayName(display_name){
         this.display_name = display_name;
+        try {
+            await SecureStore.setItemAsync(KEY.DISPLAYNAME,display_name)
+        }
+        catch(secureStoreError){
+            console.error(`Error at set key ${KEY.DISPLAYNAME}`)
+        }
 
     }
-    setUserRole(role){
+    async etUserRole(role){
         this.user_role =role
+        try {
+            await SecureStore.setItemAsync(KEY.USERROLE,role)
+        }
+        catch(secureStoreError){
+            console.error(`Error at set key ${KEY.USERROLE}`)
+        }
     }
     getUserId(){
         if(!this.user_id){
