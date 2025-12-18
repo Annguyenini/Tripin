@@ -81,6 +81,7 @@ yarn-error.*
 
 
 App.js
+app.json
 # typescript
 *.tsbuildinfo
 
@@ -101,3 +102,6 @@ App.js
 .expo
 dist/
 web-build/
+
+
+server/
