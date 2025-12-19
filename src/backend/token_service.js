@@ -2,6 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store'
 import { Platform } from 'react-native';
 export class TokenService{
+    static instance
+
     constructor(){
         if(TokenService.instance)return TokenService.instance;
         TokenService.instance = this;

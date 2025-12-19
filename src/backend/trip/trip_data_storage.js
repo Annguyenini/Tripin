@@ -4,6 +4,8 @@ import * as SQLite from 'expo-sqlite';
 import * as DBCONFIG from '../../config/config_db'
 import { TripDataService } from '../userdatas/trip';
 export class TripDataStorage{
+    static instance
+
     constructor(){
         if (TripDataStorage.instance) return TripDataStorage.instance;
         TripDataStorage.instance = this;
@@ -27,7 +29,7 @@ CREATE TABLE IF NOT EXISTS trips (trip_id INTEGER PRIMARY KEY NOT NULL, trip_nam
         this.trip_id = trip_data.trip_id
         this.created_time = trip_data.created_time
         await this.db.execAsync(`INSERT INTO trips (trip_id,trip_name,created_time) VALUES (${this.trip_id},${this.trip_name},${this.created_time})`)    
-        await this.db.execAsync`CREATE TABLE IF NOT EXISTS ${this.trip_name} (time_stamp INTEGER PRIMARY KEY,altitude TEXT NOT NULL, latitude TEXT NOT NULL, longtitude TEXT NOT NULL, heading TEXT NOT NULL);`
+        await this.db.execAsync`CREATE TABLE IF NOT EXISTS ${this.trip_name} (time_stamp INTEGER PRIMARY KEY,altitude TEXT NOT NULL, latitude TEXT NOT NULL, longitude TEXT NOT NULL, heading TEXT NOT NULL,speed TEXT NOT NULL);`
         await this.db.execAsync("COMMIT")
 
     }
@@ -37,7 +39,7 @@ CREATE TABLE IF NOT EXISTS trips (trip_id INTEGER PRIMARY KEY NOT NULL, trip_nam
         this.db.execAsync(`BEGIN`)
        
         for(item of this.storage){
-            await this.db.execAsync(`INSERT INTO ${this.trip_name} (time_stamp, altitude, latitude, longtitude,heading) VALUES (${item.time_stamp},${item.data.altitude},${item.data.latitude},${item.data.longtitude},${item.data.heading} )`)
+            await this.db.execAsync(`INSERT INTO ${this.trip_name} (time_stamp, altitude, latitude, longitude,heading,speed) VALUES (${item.time_stamp},${item.data.altitude},${item.data.latitude},${item.data.longtitude},${item.data.heading},${item.data.speed} )`)
         }
         this.db.execAsync("COMMIT")
     }
@@ -50,10 +52,11 @@ CREATE TABLE IF NOT EXISTS trips (trip_id INTEGER PRIMARY KEY NOT NULL, trip_nam
      * @param {*} trip_data_object - the object it self
      */
     async push (trip_data_object){
+        console.log(trip_data_object)
         console.assert(typeof(trip_data_object)==='object', 'trip data must be an object')
         this.storage.push(trip_data_object);
-        if(this.storage.size >=20){
-            await this.insert_into_DB()
+        if(this.storage.length >=5){
+            // await this.insert_into_DB()
 
             /// IMPORTANT need to implement store data to sql
             ///maybe implement buffer 

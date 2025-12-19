@@ -9,6 +9,8 @@ import * as API from '../config/config'
 import {UserDataService} from './userdatas/user'
 import {TokenService} from './token_service'
 export class Auth{
+    static instance
+
     constructor(){
         this.user_data_service = new UserDataService()
         this.token_service = new TokenService()

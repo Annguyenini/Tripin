@@ -4,7 +4,6 @@ import {mainScreenStyle} from '../styles/main_screen_styles.js'
 import { useRef, useState,useMemo } from "react";
 import { TextInput } from "react-native-gesture-handler";
 import { TouchableOpacity,Text } from "react-native";
-import { UserDataService } from "../backend/userdatas/userdata.js";
 import {  StyleSheet,View,Image } from 'react-native';
 import { OverlayCard } from "./auth.js";
 import { authStyle } from "../styles/auth_style.js";
@@ -20,6 +19,7 @@ export const UserDataBottomSheet = ({
     const snapPoints = useMemo (()=>['20%','95%'],[])
     const [trip_name, set_trip_name] = useState(null)
     const [show_create_trip_filler, set_show_create_trip_filler] = useState(false)
+    const[alert,setAlert] = useState(null)
     const trip_service = new Trip();
     const new_trip_filler = ()=>{
        set_show_create_trip_filler(true)
@@ -27,9 +27,11 @@ export const UserDataBottomSheet = ({
     const request_new_trip =()=>{
       const res = trip_service.requestNewTrip(trip_name)
       if (!res){
-        
+        setAlert("ss")
+        return
       }
-      setIsOnATrip(True)
+      setIsOnATrip(true)
+      set_show_create_trip_filler(false)
     }
     return (
 
@@ -49,7 +51,9 @@ export const UserDataBottomSheet = ({
         
         <View style = {mainScreenStyle.profilePic}><Image/></View>
         <Text style ={mainScreenStyle.displayname}>{userDisplayName}</Text>
-        
+        <TouchableOpacity>
+          <Text></Text>
+        </TouchableOpacity>
         {/* <Text style={mainScreenStyle.userId}>{userId}</Text> */}
         </BottomSheetScrollView>
         
@@ -72,8 +76,12 @@ export const UserDataBottomSheet = ({
          {/* {showAllTrips&&()} */}
         {/* Extra bottom padding so last content isn’t hidden behind toolbar */}
         <View style={{ height: 80 }} />
+
+
+
+        {/* filer for new trip */}
         {show_create_trip_filler&&
-        <NewTripFiller show_create_trip_filler={show_create_trip_filler} set_show_create_trip_filler ={set_show_create_trip_filler} set_trip_name={set_trip_name} request_new_trip={request_new_trip}/>}
+        <NewTripFiller show_create_trip_filler={show_create_trip_filler} set_show_create_trip_filler ={set_show_create_trip_filler} set_trip_name={set_trip_name} request_new_trip={request_new_trip} alert={alert}/>}
 
       </BottomSheet>
      

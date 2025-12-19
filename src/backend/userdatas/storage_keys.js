@@ -4,6 +4,6 @@ export const STORAGE_KEYS={
     SETTINGS:{
         TRIP_STATUS:'settings.trip_status',
         FOREGROUNDPERMISSION :"settings.foreground_permission",
-        BACKGROUNDPERMISSION :"settings.background_permission"
+        BACKGROUNDPERMISSION :"settings.background_permission",
     }
 }

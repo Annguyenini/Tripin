@@ -1,6 +1,8 @@
 import * as SecureStore from 'expo-secure-store'
 import { STORAGE_KEYS } from '../storage_keys'
 export class Permission{
+    static instance
+
     constructor(){
         if (Permission.instance){
             return Permission.instance

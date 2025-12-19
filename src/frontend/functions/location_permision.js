@@ -1,7 +1,6 @@
 import React, { forwardRef, useEffect, useMemo, useState } from "react";
 import { View, Text, Button, ActivityIndicator, Platform,AppState } from "react-native";
 import * as Location from "expo-location";
-import {LocationLogic} from "../../backend/location_logic"
 import { Permission } from "../../backend/userdatas/settings/permissions";
 const permissionService = new Permission()
 export const LocationPermission=() =>{

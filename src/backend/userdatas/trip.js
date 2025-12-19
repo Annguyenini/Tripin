@@ -1,9 +1,17 @@
 import {STORAGE_KEYS} from './storage_keys'
-
+import * as SecureStore from 'expo-secure-store'
 
 export class TripDataService{
-
-
+    /**
+     * trip data service, use to store trip_name...
+     * struct of data object {
+     * "trip_name":trip_name,
+            "trip_id":trip_id,
+            "created_time":created_time
+     * }
+     * @returns
+     */
+    static instance
     constructor(){
         if (TripDataService.instance){
             return TripDataService.instance
@@ -24,7 +32,7 @@ export class TripDataService{
             await SecureStore.setItemAsync(STORAGE_KEYS.TRIPDATA,JSON.stringify(tripdata))
         }
         catch(secureStoreError){
-            console.error`Error at set key ${STORAGE_KEYS.TRIPDATA}`
+            console.error`Error at set key ${STORAGE_KEYS.TRIPDATA} ${secureStoreError}`
         }
         
     }
@@ -41,16 +49,26 @@ export class TripDataService{
             }
         }
         catch(secureStoreError){
-            console.error`Error at getting${STORAGE_KEYS.TRIPDATA}`
+            console.error`Error at getting${STORAGE_KEYS.TRIPDATA} ${secureStoreError}`
             return null
         }
     }
     async setTripStatus(status){
         try{
-            const tripstatus =await SecureStore.setItemAsync(STORAGE_KEYS.SETTINGS.TRIP_STATUS,status)
+            await SecureStore.setItemAsync(STORAGE_KEYS.SETTINGS.TRIP_STATUS,status)
         }
         catch(secureStoreError){
-            console.error(`ERROR at set trip status`)
+            console.error(`ERROR at set trip status ${secureStoreError}`)
+        }
+    }
+
+    async getTripStatus(){
+        try{
+            const status = await SecureStore.getItemAsync(STORAGE_KEYS.SETTINGS.TRIP_STATUS)
+            return status
+        }
+        catch(secureStoreError){
+            console.error(`ERROR at get trip status ${secureStoreError}`)
         }
     }
     /**
@@ -66,7 +84,7 @@ export class TripDataService{
     }
 
     getObjectReady(trip_name, trip_id, created_time){
-        tripdata ={
+        const tripdata ={
             "trip_name":trip_name,
             "trip_id":trip_id,
             "created_time":created_time

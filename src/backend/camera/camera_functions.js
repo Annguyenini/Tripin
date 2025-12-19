@@ -3,7 +3,8 @@ import { act,useState } from 'react';
 import * as MediaLibrary from 'expo-media-library';
 
 export class CameraService{
-    
+    static instance
+
     constructor(){
         
         if(CameraService.instance) return CameraService.instance;

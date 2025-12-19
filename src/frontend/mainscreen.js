@@ -1,6 +1,5 @@
 import React, { useMemo, useState,useRef, useEffect } from 'react';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import { UserDataTrip } from '../backend/userdatas/userdata_trip.js';
 import {Image} from 'react-native'
 import { View, TouchableOpacity, Text,Button, TextInput,Alert, StyleSheet, Dimensions } from 'react-native';
 import {mainScreenStyle,footer} from '../styles/main_screen_styles.js'
@@ -17,8 +16,9 @@ const cameraIcon = require('../../assets/image/camera_icon.png')
 const galleryIcon = require('../../assets/image/gallery_icon.png')
 const settingIcon = require('../../assets/image/setting_icon.png')
 const userDataService = new UserDataService()
-const userDataServiceTrip = new UserDataTrip()
+const tripDataService = new TripDataService()
 import { MapBoxLayout } from './map_box/map_box_layout.js';
+import { TripDataService } from '../backend/userdatas/trip.js';
 // const fetchUserData = async()=>{
 //   const userProfilePic = await userDataService.getUserProfilePic();
 //   const userDisplayName = await userDataService.getUserDisplayName ();
@@ -39,6 +39,13 @@ export const MainScreen = () =>{
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
     async function fetch_userdata(){
       const userdata = await userDataService.getUserData()
+      const trip_status = await tripDataService.getTripStatus()
+      if (trip_status ==='true'){
+        setIsOnAtrip(true)
+      }
+      else{
+        setIsOnAtrip(false)
+      }
       setUserId(userdata.user_id)
       setUsername(userdata.user_name)
       setDisplayName(userdata.display_name)

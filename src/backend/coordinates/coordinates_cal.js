@@ -1,4 +1,6 @@
 class CoordinatesCal{
+    static instance
+
     constructor(){
         if(CoordinatesCal.instance) return CoordinatesCal.instance;
         CoordinatesCal.instance = this;

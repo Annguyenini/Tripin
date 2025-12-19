@@ -3,14 +3,23 @@ import { TouchableOpacity, View,Image,Text,StyleSheet,AppState } from "react-nat
 import {curent_trip_styles} from '../../styles/function/current_trip_header'
 import { useEffect, useState } from "react";
 import { TripService } from "../../backend/trip/trip_service";
+import { TripDataService } from "../../backend/userdatas/trip";
 export const CurrentTripBar=()=>{
+
+  const[onFullMode, setOnFullMode]=useState(false)
+
   const[duration,setDuration] = useState(null)
   const[degree,setDegree] = useState(null)
   const[aqi,setAqi] = useState(null)
   const[currentState,setCurrentState] =useState(AppState.currentState);
   const tripService = new TripService
+  const tripDataService = new TripDataService
   useEffect(()=>{
     (async()=>{
+      const tripStatus = await tripDataService.getTripStatus()
+      if (tripStatus ==='true'){
+        tripService.init_trip_properties()
+      }
       const state = AppState.addEventListener('change' ,nextState=>{
         setCurrentState(nextState)
       });
@@ -18,10 +27,26 @@ export const CurrentTripBar=()=>{
       tripService.startGPSWatch(currentState);
       return () => state.remove();
       })();
+    async function fetchdata() {
+    const tripData = await tripDataService.getTripData()
+    const duration = Date.now()-tripData.created_time
+    }
+    fetchdata()
   })
-   return (
-    <View style={styles.wrapper}>
+  const callSetFullMode = () =>{
+    setOnFullMode(last=> last === false? true:false)
+  }
+  const Minimize =()=>{
+    return(
       <View style={styles.container}>
+        <TouchableOpacity onPress={callSetFullMode} style={styles.arrow} activeOpacity={0.7}>
+          <Text>↓</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+  const Full =()=>{
+      return(<View style={styles.container}>
         <Pill>
           <Text style={styles.time}>55</Text>
           <Text style={styles.sub}>MIN</Text>
@@ -39,11 +64,16 @@ export const CurrentTripBar=()=>{
           <Text style={styles.text}>AQI: 42</Text>
         </Pill>
 
-        <TouchableOpacity style={styles.arrow} activeOpacity={0.7}>
+        <TouchableOpacity onPress ={callSetFullMode} style={styles.arrow} activeOpacity={0.7}>
           <Text>↑</Text>
         </TouchableOpacity>
+      </View>)
+  }
+   return (
+    <View style={styles.wrapper}>
+      {!onFullMode && <Minimize/>}
+      {onFullMode &&<Full/>}
       </View>
-    </View>
   );
 }
 

@@ -7,7 +7,10 @@ export  const HelpBarMap =({isFollowingUser,setIsFollowingUser,isOnAtrip})=>{
     
     return(
         <View style ={helpBarMapStyle.container}>
-                <CurrentTripBar></CurrentTripBar>
+            {isOnAtrip&&
+            <CurrentTripBar></CurrentTripBar>
+            }
+                
 
             
             {/* zoom up button */}

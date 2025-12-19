@@ -4,6 +4,8 @@ import {STORAGE_KEYS} from './storage_keys'
 
 
 export class UserDataService{
+    static instance
+
     constructor(){
         if (UserDataService.instance){
             return UserDataService.instance

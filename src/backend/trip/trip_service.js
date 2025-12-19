@@ -5,38 +5,56 @@ import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
 import { useState } from 'react';
 import { TripDataStorage } from './trip_data_storage';
-
+import { TripDataService } from '../userdatas/trip';
 const TASK_NAME = "background-location-task";
 export class TripService{
-    constructor(){
-        if (TripService.instance){
-            return TripService.instance
-            TripService.instance =this
-        }
-        // this.db = SQLite.openDatabaseAsync(TRIPCONFIG.SQLITE3_TRIPS_DB_DIRECTORY)
-        this.permissionService = new Permission()
-        this.tripDataStorage = new TripDataStorage()
-        this.defineTask();
+    static instance
 
+    constructor(){
+      if (TripService.instance){
+        // this.init_trip_properties()
+        return TripService.instance
+      }
+      TripService.instance =this
+
+      // this.db = SQLite.openDatabaseAsync(TRIPCONFIG.SQLITE3_TRIPS_DB_DIRECTORY)
+      this.permissionService = new Permission()
+      this.tripDataStorage = new TripDataStorage()
+      this.tripDataService = new TripDataService()
+      
+      this.defineTask();
+
+    }
+    async init_trip_properties(){
+      const trip_data = await this.tripDataService.getTripData()
+      this.trip_id = trip_data.trip_id
+      console.log(this.trip_id)
     }
     /**
      * call back for GPS
      */
-    defineTask(){
+    async defineTask(){
      TaskManager.defineTask(TASK_NAME, ({ data, error }) => {
     if (error) {
       console.error(error);
       return;
     }
     if (data) {
+
       const { locations } = data;
         const coor_data ={
+          time_stamp : Date.now(),
+          trip_id:this.trip_id,
+          coordinates:{
             altitude:locations[0].coords.altitude,
             heading : locations[0].coords.heading,
             latitude :locations[0].coords.latitude,
-            longtitude :locations[0].coords.longtitude
-        }
-        this.tripDataStorage.push(Date.now,coor_data)
+            longitude :locations[0].coords.longitude,
+            speed:locations[0].coords.speed
+          }
+          }
+        this.tripDataStorage.push(coor_data)
+      console.log(coor_data)
       console.log("📍 New location:", locations[0].coords);
 
     }
