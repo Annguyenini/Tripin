@@ -6,7 +6,7 @@ import {Platform } from 'react-native'
 
 import * as API from '../config/config'
 // import { setSurfaceProps } from 'react-native/types_generated/Libraries/ReactNative/AppRegistryImpl';
-import {UserDataService} from './userdatas/user'
+import {UserDataService} from './storage/user'
 import {TokenService} from './token_service'
 export class Auth{
     static instance
@@ -85,9 +85,8 @@ export class Auth{
         // console.log(access_token);
         console.assert(respond.status===200,"Error at calling token checker")
         const data = await respond.json();
-        console.log (data)
+        // console.log (data)
         console.assert(data!= undefined,"Data at authenticateToken is undefined!")
-        // console.log(data)
         if(respond.status===401){
             return ({"message":data.message,"status": 401,"data":data})
         }
@@ -137,10 +136,8 @@ export class Auth{
         // console.log(await this.token_service.getToken("refresh_token"))
 
       const res = await this.authenticateToken("access_token");
-                console.log("called")
 
       if (res.message === "Token Expired!") {
-        console.log("called")
         const data = await this.authenticateToken("refresh_token");
     
         if (data.status === 401) {

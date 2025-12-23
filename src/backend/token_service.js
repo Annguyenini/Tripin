@@ -60,6 +60,11 @@ export class TokenService{
     }
     
     async getToken(type){
+        /**
+         * get token
+         *  @param type -type of token, (refresh_token,access_token)
+         * @returns token
+         */
         if (type != "access_token" && type != "refresh_token") console.error( "Type must be 'access_token' or 'refresh_token'")
         let token;
         if(Platform.OS === "web"){

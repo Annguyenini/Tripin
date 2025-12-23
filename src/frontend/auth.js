@@ -64,7 +64,6 @@ export const AuthScreen= ( ) => {
         setShowAleart(true);
         return;
       }
-      console.log("sdsdsdsd")
 
       navigation.navigate('Main');
     }
@@ -94,7 +93,6 @@ export const AuthScreen= ( ) => {
     const response = await auth.requestSignup(email,displayName,username,password);
     if(response.status===401){
       setAlertType(response.message);
-      console.log(response.message)
       setShowAleart(true);
       return;
     }

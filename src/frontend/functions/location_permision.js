@@ -1,7 +1,7 @@
 import React, { forwardRef, useEffect, useMemo, useState } from "react";
 import { View, Text, Button, ActivityIndicator, Platform,AppState } from "react-native";
 import * as Location from "expo-location";
-import { Permission } from "../../backend/userdatas/settings/permissions";
+import { Permission } from "../../backend/storage/settings/permissions";
 const permissionService = new Permission()
 export const LocationPermission=() =>{
   const [foregroundStatus, setForegroundPermission] = useState(false);

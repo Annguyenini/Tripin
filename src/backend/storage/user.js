@@ -11,6 +11,35 @@ export class UserDataService{
             return UserDataService.instance
         }
         UserDataService.instance = this
+        this.observers =[];
+        this.object = null;
+    }
+
+
+    /**
+     * add to the subcriber list
+     * @param {observer object} observer 
+     */
+    attach(observer){
+        this.observers.push(observer)
+    }
+
+
+    /**
+     * detach from the subcriber list
+     * @param {observer object} observer 
+     */
+    detach(observer){
+        this.observers = this.observers.filter(obs=> obs !== observer);
+        }
+
+    /**
+     * notify all subcribers about the change 
+     */
+    notify(){
+        for(const obs of this.observers){
+            obs.update(this.object)
+        }
     }
 
 
@@ -28,6 +57,9 @@ export class UserDataService{
         catch(secureStoreError){
             console.error`Error at set key ${STORAGE_KEYS.USER}`
         }
+
+        this.object = userdata;
+        this.notify()
         
     }
     /** getUserData
@@ -57,5 +89,8 @@ export class UserDataService{
         catch(secureStoreError){
             console.error(`Error at deleting ${STORAGE_KEYS.USER}`)
         }
+
+        this.object = userdata;
+        this.notify()
     }
 }

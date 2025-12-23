@@ -18,7 +18,7 @@ export class CameraService{
         try{
             const options = {quality: 1, base64 :true}; // control option for picture
             const photo =await cameraRef.current.takePictureAsync(options) // return a photo
-            console.log(photo.uri)
+            // console.log(photo.uri)
             this.saveMediaToAlbum(photo.uri)
             return photo;
         }    
@@ -57,7 +57,7 @@ export class CameraService{
     }
   }
   async saveMediaToAlbum(uri){
-    console.log (this.album_name)    
+    // console.log (this.album_name)    
     const album = await MediaLibrary.getAlbumAsync(this.album_name);
     const asset = await MediaLibrary.createAssetAsync(uri)
     try{
@@ -71,7 +71,7 @@ export class CameraService{
     catch(error){
         console.error("Error at save media to album: ",error);
     }
-    console.log("save successfully")
+    // console.log("save successfully")
 
   }
 }

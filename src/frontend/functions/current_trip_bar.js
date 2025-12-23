@@ -1,38 +1,56 @@
 import { TouchableOpacity, View,Image,Text,StyleSheet,AppState } from "react-native"
 
 import {curent_trip_styles} from '../../styles/function/current_trip_header'
-import { useEffect, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { TripService } from "../../backend/trip/trip_service";
-import { TripDataService } from "../../backend/userdatas/trip";
+import { TripDataService } from "../../backend/storage/trip";
+import TripData from "../../app-core/local_data/local_trip_data";
+import { Trip } from "../../backend/trip/trip";
+import { navigate } from "../custom_function/navigationService";
 export const CurrentTripBar=()=>{
 
   const[onFullMode, setOnFullMode]=useState(false)
 
-  const[duration,setDuration] = useState(null)
+  const[duration,setDuration] = useState({hours:0,minutes:0})
   const[degree,setDegree] = useState(null)
   const[aqi,setAqi] = useState(null)
   const[currentState,setCurrentState] =useState(AppState.currentState);
+  const[createdTime,setCreatedTime] = useState(null)
   const tripService = new TripService
+  const trip = new Trip()
+
   const tripDataService = new TripDataService
-  useEffect(()=>{
-    (async()=>{
-      const tripStatus = await tripDataService.getTripStatus()
-      if (tripStatus ==='true'){
-        tripService.init_trip_properties()
-      }
-      const state = AppState.addEventListener('change' ,nextState=>{
-        setCurrentState(nextState)
-      });
-      // await location_logic();
-      tripService.startGPSWatch(currentState);
-      return () => state.remove();
-      })();
-    async function fetchdata() {
-    const tripData = await tripDataService.getTripData()
-    const duration = Date.now()-tripData.created_time
+  const end_trip =async()=>{
+    const status =await trip.end_trip();
+    if (status){
+      tripDataService.setTripStatus('false')
     }
-    fetchdata()
-  })
+  }
+
+  useEffect(()=>{
+    const fetch = async()=>{
+      setCreatedTime(TripData.created_time)
+
+    }
+    fetch()
+  },[createdTime])
+
+  useEffect(()=>{
+
+    if (!createdTime) {
+       return;
+    }
+    const interval = setInterval(()=>{
+      const dur = Date.now() - createdTime
+      const hour = dur/3600000
+      const hours_floor = Math.floor(hour)
+      const minutes = Math.floor((hour - hours_floor) * 60);
+      setDuration({hours:hours_floor,minutes: minutes})
+    },1000)
+    return ()=> clearInterval(interval)
+  },[createdTime])
+
+
   const callSetFullMode = () =>{
     setOnFullMode(last=> last === false? true:false)
   }
@@ -48,8 +66,20 @@ export const CurrentTripBar=()=>{
   const Full =()=>{
       return(<View style={styles.container}>
         <Pill>
-          <Text style={styles.time}>55</Text>
-          <Text style={styles.sub}>MIN</Text>
+          {duration.hours !== 0 && (
+          <>
+            <Text style={styles.time_hr}>{duration.hours}</Text>
+            <Text style={styles.sub_hr}>Hour</Text>
+          </>
+        )}
+
+        {duration.minutes !== 0 && (
+          <>
+          <Text style={styles.time_min}>{duration.minutes}</Text>
+          <Text style={styles.sub_min}>Min</Text>
+        </>
+        )}
+
         </Pill>
 
         <Pill>
@@ -63,7 +93,11 @@ export const CurrentTripBar=()=>{
         <Pill>
           <Text style={styles.text}>AQI: 42</Text>
         </Pill>
-
+        <RedPill>
+          <TouchableOpacity onPress={end_trip}>
+          <Text style={styles.end_trip}>End trip</Text>
+          </TouchableOpacity>
+        </RedPill>
         <TouchableOpacity onPress ={callSetFullMode} style={styles.arrow} activeOpacity={0.7}>
           <Text>↑</Text>
         </TouchableOpacity>
@@ -77,10 +111,12 @@ export const CurrentTripBar=()=>{
   );
 }
 
+function RedPill({ children }) {
+  return <View style={styles.red_pill}>{children}</View>;
+}
 function Pill({ children }) {
   return <View style={styles.pill}>{children}</View>;
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     position: "absolute",
@@ -96,7 +132,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     alignItems: "center",
   },
-
+  red_pill:{
+    backgroundColor: "#ff0000ff",
+    borderRadius: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    alignItems: "center",
+    marginVertical: 5,
+    minWidth: 70,
+  },
   pill: {
     backgroundColor: "#E5E5E5",
     borderRadius: 16,
@@ -107,16 +151,30 @@ const styles = StyleSheet.create({
     minWidth: 70,
   },
 
-  time: {
+  time_hr: {
     fontSize: 22,
     fontWeight: "700",
   },
+  time_min: {
+    fontSize: 15,
+    fontWeight: "700",
+  },
 
-  sub: {
+  sub_hr: {
+    fontSize: 14,
+    fontWeight: "600",
+    opacity: 0.7,
+    marginTop: -2,
+  },
+  sub_min: {
     fontSize: 10,
     fontWeight: "600",
     opacity: 0.7,
     marginTop: -2,
+  },
+  end_trip:{
+    fontSize:10,
+    fontWeight: "700",
   },
 
   text: {

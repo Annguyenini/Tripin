@@ -1,11 +1,14 @@
 import * as SQLite from 'expo-sqlite';
 import * as TRIPCONFIG from '../../config/config_db'
-import { Permission } from '../userdatas/settings/permissions';
+import { Permission } from '../storage/settings/permissions';
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
 import { useState } from 'react';
 import { TripDataStorage } from './trip_data_storage';
-import { TripDataService } from '../userdatas/trip';
+//old 
+import { TripDataService } from '../storage/trip';
+
+import TripData from '../../app-core/local_data/local_trip_data';
 const TASK_NAME = "background-location-task";
 export class TripService{
     static instance
@@ -20,15 +23,20 @@ export class TripService{
       // this.db = SQLite.openDatabaseAsync(TRIPCONFIG.SQLITE3_TRIPS_DB_DIRECTORY)
       this.permissionService = new Permission()
       this.tripDataStorage = new TripDataStorage()
+      // old
       this.tripDataService = new TripDataService()
       
       this.defineTask();
 
     }
     async init_trip_properties(){
-      const trip_data = await this.tripDataService.getTripData()
-      this.trip_id = trip_data.trip_id
-      console.log(this.trip_id)
+      //old code
+      // const trip_data = await this.tripDataService.getTripData()
+      // this.trip_id = trip_data.trip_id
+
+
+      this.trip_id = TripData.trip_id
+      // console.log(this.trip_id)
     }
     /**
      * call back for GPS
@@ -55,7 +63,7 @@ export class TripService{
           }
         this.tripDataStorage.push(coor_data)
       console.log(coor_data)
-      console.log("📍 New location:", locations[0].coords);
+      // console.log("📍 New location:", locations[0].coords);
 
     }
     });
@@ -66,15 +74,15 @@ export class TripService{
      */
     async startGPSWatch (currentState){
         //if user currently on the app
-        console.log(currentState)
+        // console.log(currentState)
         if(currentState=== 'active'){
         await this.startGPSTask(10000,Location.Accuracy.High);
-        console.log("calling active")
+        // console.log("calling active")
         }
         //if the app run on background
         else if(currentState ==='background'){
         await this.startGPSTask(10000, Location.Accuracy.Low);
-        console.log("calling BACKGROUND")
+        // console.log("calling BACKGROUND")
         }
     }
 
@@ -92,7 +100,7 @@ export class TripService{
         //end task
         if(hasStarted){
         Location.stopLocationUpdatesAsync(TASK_NAME);
-        console.log("Stop curent task!")
+        // console.log("Stop curent task!")
         }
         
         // run a new task

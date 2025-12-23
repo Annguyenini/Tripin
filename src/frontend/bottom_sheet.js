@@ -1,17 +1,20 @@
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import {Trip} from'../backend/trip/trip.js'
 import {mainScreenStyle} from '../styles/main_screen_styles.js'
-import { useRef, useState,useMemo } from "react";
+import { useRef, useState,useMemo, useEffect } from "react";
 import { TextInput } from "react-native-gesture-handler";
 import { TouchableOpacity,Text } from "react-native";
 import {  StyleSheet,View,Image } from 'react-native';
 import { OverlayCard } from "./auth.js";
 import { authStyle } from "../styles/auth_style.js";
 import { NewTripFiller } from "./functions/add_new_trip.js";
-import { CurrentTripHeader } from "./functions/current_trip_header.js";
+import { CurrentTripHeader } from "./functions/current_trip_bar.js";
+import { navigate } from "./custom_function/navigationService.js";
+import { TripDataService } from "../backend/storage/trip.js";
+
+const trip_data_service = new TripDataService()
 export const UserDataBottomSheet = ({ 
-  isOnATrip, 
-  setIsOnATrip, 
+
   userId, 
   userDisplayName 
 }) => {  const bottomSheetRef = useRef(null);
@@ -19,19 +22,33 @@ export const UserDataBottomSheet = ({
     const snapPoints = useMemo (()=>['20%','95%'],[])
     const [trip_name, set_trip_name] = useState(null)
     const [show_create_trip_filler, set_show_create_trip_filler] = useState(false)
-    const[alert,setAlert] = useState(null)
     const trip_service = new Trip();
+    const[isOnATrip,setIsOnATrip] =useState(null)
+    useEffect(()=>{
+      const update_state ={
+        update(newState){
+        setIsOnATrip(newState)
+      }
+    }
+      trip_data_service.attach(update_state,'status')
+
+      return ()=>trip_data_service.detach(update_state,'status')
+    },[])
+    
+    
     const new_trip_filler = ()=>{
        set_show_create_trip_filler(true)
-    }    
-    const request_new_trip =()=>{
-      const res = trip_service.requestNewTrip(trip_name)
-      if (!res){
-        setAlert("ss")
-        return
+    }
+
+    const request_new_trip = async()=>{
+      const res = await trip_service.requestNewTrip(trip_name)
+      console.log("respond",res)
+      if (res){
+        set_show_create_trip_filler(false)
+        trip_data_service.setTripStatus('true')
       }
-      setIsOnATrip(true)
-      set_show_create_trip_filler(false)
+      return
+      // navigate('Main')
     }
     return (
 
@@ -81,7 +98,7 @@ export const UserDataBottomSheet = ({
 
         {/* filer for new trip */}
         {show_create_trip_filler&&
-        <NewTripFiller show_create_trip_filler={show_create_trip_filler} set_show_create_trip_filler ={set_show_create_trip_filler} set_trip_name={set_trip_name} request_new_trip={request_new_trip} alert={alert}/>}
+        <NewTripFiller show_create_trip_filler={show_create_trip_filler} set_show_create_trip_filler ={set_show_create_trip_filler} set_trip_name={set_trip_name} request_new_trip={request_new_trip} />}
 
       </BottomSheet>
      

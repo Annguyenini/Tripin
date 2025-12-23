@@ -2,15 +2,16 @@
 
 import * as SQLite from 'expo-sqlite';
 import * as DBCONFIG from '../../config/config_db'
-import { TripDataService } from '../userdatas/trip';
+import TripData from '../../app-core/local_data/local_trip_data';
+import { Trip } from './trip';
 export class TripDataStorage{
     static instance
 
     constructor(){
         if (TripDataStorage.instance) return TripDataStorage.instance;
         TripDataStorage.instance = this;
+        this.trip_service = new Trip()
         this.storage = []
-        this.trip_service= new TripDataService()
     }
 
     async initDB(){
@@ -24,10 +25,9 @@ CREATE TABLE IF NOT EXISTS trips (trip_id INTEGER PRIMARY KEY NOT NULL, trip_nam
     }
 
     async init_new_trip(){
-        const trip_data = this.trip_service.getTripData()
-        this.trip_name = trip_data.trip_name
-        this.trip_id = trip_data.trip_id
-        this.created_time = trip_data.created_time
+        this.trip_name = TripData.trip_name
+        this.trip_id = TripData.trip_id
+        this.created_time = TripData.created_time
         await this.db.execAsync(`INSERT INTO trips (trip_id,trip_name,created_time) VALUES (${this.trip_id},${this.trip_name},${this.created_time})`)    
         await this.db.execAsync`CREATE TABLE IF NOT EXISTS ${this.trip_name} (time_stamp INTEGER PRIMARY KEY,altitude TEXT NOT NULL, latitude TEXT NOT NULL, longitude TEXT NOT NULL, heading TEXT NOT NULL,speed TEXT NOT NULL);`
         await this.db.execAsync("COMMIT")
@@ -52,16 +52,16 @@ CREATE TABLE IF NOT EXISTS trips (trip_id INTEGER PRIMARY KEY NOT NULL, trip_nam
      * @param {*} trip_data_object - the object it self
      */
     async push (trip_data_object){
-        console.log(trip_data_object)
         console.assert(typeof(trip_data_object)==='object', 'trip data must be an object')
         this.storage.push(trip_data_object);
         if(this.storage.length >=5){
+            await this.trip_service.send_coordinates(this.storage)
             // await this.insert_into_DB()
 
             /// IMPORTANT need to implement store data to sql
             ///maybe implement buffer 
             /// send to server
-            this.storage.clear()
+            this.storage.length = 0
         }
 
     }

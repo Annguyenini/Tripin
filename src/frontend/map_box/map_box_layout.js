@@ -4,25 +4,25 @@ import {View} from 'react-native'
 import * as Location from "expo-location";
 import { HelpBarMap } from './help_bar_map';
 import { useFormState } from 'react-dom';
+import { TripDataService } from '../../backend/storage/trip';
 MapboxGL.setAccessToken(process.env.MAPBOX_ACCESS_TOKEN)
-export const MapBoxLayout =({isOnAtrip})=>{
+const tripDataService = new TripDataService()
+export const MapBoxLayout =({})=>{
     const mapRef = useRef(null);
     const [userLock,setUserLock]=useState(false)
     // const [zoomLevel, setZoomLevel]= useState(14);
     const [isFollowingUser, setIsFollowingUser] = useState(true)
+    const fetchIsOnATrip =async()=>{
+        const trip_status = await tripDataService.getTripStatus()
+        if (trip_status ==='true'){
+        tripDataService.setTripStatus('true')
+        }
+        else{
+            
+        tripDataService.setTripStatus('false')
+        }
+    }
     
-    // const zoom = async(mode)=>{
-    //     if (mode ==="in"){
-    //         setZoomLevel(prev =>{
-    //             return Math.min(20,prev+=1)
-    //         })   
-    //     }
-    //     else if(mode ==="out"){
-    //         setZoomLevel(prev =>{
-    //             return Math.max(0,prev -=1)
-    //         })
-    //     }
-    // }
     return(
         <View style={{flex:1}}> 
             
@@ -39,10 +39,11 @@ export const MapBoxLayout =({isOnAtrip})=>{
                 if(!userLock){
                     setUserLock(true)
                 }
+                await fetchIsOnATrip()
+                
             }}
             onMapIdle={()=>{
                 setIsFollowingUser(false)
-                // console.log(isFollowingUser)
             }}
 
             >   
@@ -59,7 +60,7 @@ export const MapBoxLayout =({isOnAtrip})=>{
             <MapboxGL.UserLocation minDisplacement={2}/>
             </MapboxGL.MapView>
             
-            <HelpBarMap isFollowingUser={isFollowingUser} setIsFollowingUser={setIsFollowingUser} isOnAtrip={isOnAtrip} ></HelpBarMap>
+            <HelpBarMap isFollowingUser={isFollowingUser} setIsFollowingUser={setIsFollowingUser}></HelpBarMap>
             
         </View>
     )

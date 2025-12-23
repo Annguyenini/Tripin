@@ -5,12 +5,13 @@ import { View, TouchableOpacity, Text,Button, TextInput,Alert, StyleSheet, Dimen
 import {mainScreenStyle,footer} from '../styles/main_screen_styles.js'
 // import { Button } from 'react-native-web';
 import { navigate } from './custom_function/navigationService.js';
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import {UserDataService} from "../backend/userdatas/user.js"
+import {UserDataService} from "../backend/storage/user.js"
 // import { Color } from 'react-native/types_generated/Libraries/Animated/AnimatedExports';
 import { LocationPermission } from './functions/location_permision.js';
 import { UserDataBottomSheet } from './bottom_sheet.js';
-import {CurrentTripBar} from'./functions/current_trip_header.js'
+// import Subject from './logics/observer.js'
+import UserData from '../app-core/local_data/local_user_data.js'
+
 const homeIcon = require('../../assets/image/home_icon.png')
 const cameraIcon = require('../../assets/image/camera_icon.png')
 const galleryIcon = require('../../assets/image/gallery_icon.png')
@@ -18,7 +19,7 @@ const settingIcon = require('../../assets/image/setting_icon.png')
 const userDataService = new UserDataService()
 const tripDataService = new TripDataService()
 import { MapBoxLayout } from './map_box/map_box_layout.js';
-import { TripDataService } from '../backend/userdatas/trip.js';
+import { TripDataService } from '../backend/storage/trip.js';
 // const fetchUserData = async()=>{
 //   const userProfilePic = await userDataService.getUserProfilePic();
 //   const userDisplayName = await userDataService.getUserDisplayName ();
@@ -33,23 +34,12 @@ export const MainScreen = () =>{
   const [user_id, setUserId] = useState(null)
   const [user_name, setUsername ] = useState(null)
   const [display_name,setDisplayName] = useState(null)
-
-  const [isOnATrip, setIsOnAtrip] = useState(false);
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-    async function fetch_userdata(){
-      const userdata = await userDataService.getUserData()
-      const trip_status = await tripDataService.getTripStatus()
-      if (trip_status ==='true'){
-        setIsOnAtrip(true)
-      }
-      else{
-        setIsOnAtrip(false)
-      }
-      setUserId(userdata.user_id)
-      setUsername(userdata.user_name)
-      setDisplayName(userdata.display_name)
-
+      async function fetch_userdata(){
+      setUserId(UserData.user_id)
+      setUsername(UserData.user_name)
+      setDisplayName(UserData.display_name)
     }
     fetch_userdata()
   }, []);
@@ -65,10 +55,8 @@ export const MainScreen = () =>{
       
       <View style={styles.container}> 
       <LocationPermission></LocationPermission>
-      <MapBoxLayout style={{ height: '70%' }} isOnAtrip={isOnATrip}></MapBoxLayout>
-      
-
-      <UserDataBottomSheet isOnATrip={isOnATrip} setIsOnATrip ={setIsOnAtrip} userId={user_id} userDisplayName = {display_name}/>
+      <MapBoxLayout style={{ height: '70%' }}></MapBoxLayout>
+      <UserDataBottomSheet  userId={user_id} userDisplayName = {display_name}/>
       <View style={footer.footerContainer}>
         <View style={footer.fotterrow}>
         <TouchableOpacity style={footer.fotterbutton}>
