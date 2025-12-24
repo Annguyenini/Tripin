@@ -1,17 +1,27 @@
 import { View, Text, Image,StyleSheet,TouchableOpacity,AppState } from 'react-native';
 import { useEffect, useState } from "react";
-import TripData from '../../app-core/local_data/local_trip_data';
+import TripData from '../../../app-core/local_data/local_trip_data';
 import { MaterialIcons } from '@expo/vector-icons'; // For the arrow icon
-import { TripService } from '../../backend/trip/trip_service';
-import { TripDataService } from '../../backend/storage/trip';
+import { TripService } from '../../../backend/trip/trip_service';
+import { TripDataService } from '../../../backend/storage/trip';
 export const CurrentTripBox = ()=>{
     const tripService = new TripService()
     const tripDataService = new TripDataService()
     const[currentState,setCurrentState] =useState(AppState.currentState);
     const[curesntTripName,setCurrentTripName] = useState(null)
+    const[tripImageCover,setTripImageCover] = useState(null)
     useEffect(()=>{
-    (async()=>{
+      // const updateImage ={
+      //   update(uri){
+      //     console.log("uri",uri)
+      //     setTripImageCover(uri)
+      //   }
+      // }
+      // tripDataService.attach(updateImage,"trip_image");
+
+      (async()=>{
         const tripStatus = await tripDataService.getTripStatus()
+
         if (tripStatus ==='true'){
         tripService.init_trip_properties()
         }
@@ -21,7 +31,12 @@ export const CurrentTripBox = ()=>{
         // await location_logic();
         tripService.startGPSWatch(currentState);
         return () => state.remove();
-        })();
+      
+      })()
+       
+      
+      // appState()
+        // return ()=>tripDataService.detach(updateImage,"trip_image")
     })
     return (
         <View style={styles.wrapper}>

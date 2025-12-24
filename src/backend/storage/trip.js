@@ -1,8 +1,7 @@
 import { Alert } from 'react-native'
 import {STORAGE_KEYS} from './storage_keys'
 import * as SecureStore from 'expo-secure-store'
-
-export class TripDataService{
+import { copyAsync, documentDirectory }  from 'expo-file-system/legacy';export class TripDataService{
     /**
      * trip data service, use to store trip_name...
      * struct of data object {
@@ -24,6 +23,7 @@ export class TripDataService{
         this.item = {
             trip_object:null,
             status: null,
+            trip_image: null,
             set(prop,value){
                 this[prop] = value
             },
@@ -31,7 +31,7 @@ export class TripDataService{
                 return this[prop]
             }
         }
-        this.allowance_key = ['trip_object','status']
+        this.allowance_key = ['trip_object','status','trip_image']
     }
 
 
@@ -111,6 +111,9 @@ export class TripDataService{
             return null
         }
     }
+
+
+
     async setTripStatus(status){
         /**
          * status must be string
@@ -142,6 +145,45 @@ export class TripDataService{
             console.error(`ERROR at get trip status ${secureStoreError}`)
         }
     }
+
+    async setTripImageCover(imageUri){
+        
+        try {
+            const filename = `${this.trip_id}_cover.jpg`;
+            const destination = documentDirectory + filename;
+
+            await copyAsync({
+            from: imageUri,      // source URI (camera / image picker)
+            to: destination,     // app private folder
+            });
+
+            console.log('Image saved at:', destination);
+            await SecureStore.setItemAsync('trip_image',destination)
+            this.item.set('trip_image',destination)
+            this.notify('trip_image')
+            return destination;
+        } 
+        catch (err) {
+            console.error('Failed to save image:', err);
+    }
+
+    }
+
+    async getTripImageUriCover(){
+        try{
+            const imageUri = await SecureStore.getItemAsync('trip_image')
+            if(!imageUri){
+                return null
+            }
+            return imageUri
+        }
+        catch(secureStoreError){
+            console.error(secureStoreError)
+        }
+    }
+
+
+
     /**
      *
      */

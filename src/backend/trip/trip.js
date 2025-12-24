@@ -19,9 +19,10 @@ export class Trip{
     verifyTripName(trip_name){
 
     }
-    async requestNewTrip(trip_name){
+    async requestNewTrip(trip_name,imageUri=null){
         /**
          * request to create new trip
+         * send via FORMDATA
          * @param trip_name - tripname
          */
         // if there are no token found return false
@@ -30,22 +31,29 @@ export class Trip{
         if (!token) {
             return false 
         }
-        // only send trip name b/c we took userdata straight out from token
-        const res = await fetch(API.REQUEST_NEW_TRIP_API,{
-            method:"POST",
-            headers:{"Content-Type":"application/json","Authorization": `Bearer ${token}`},
-            body:JSON.stringify({
-                trip_name: trip_name
-            })
-        });
-        const data = await res.json();
-        // console.log(data)
-        // console.log(res.status)
 
-        const trip_id = data.tripid
+        let formData = new FormData()
+        formData.append('image',{
+            uri:imageUri,
+            name:`cover_${TripData.trip_id}`,
+            type:'image/jpeg'
+        })
+        formData.append('trip_name',trip_name)
+
+        // only send trip name b/c we took userdata straight out from token
+        const respond = await fetch(API.REQUEST_NEW_TRIP_API,{
+            method:"POST",
+            headers:{"Authorization": `Bearer ${token}`},
+            body: formData
+        });
+        const data = await respond.json();
+        // console.log(data)
+        // console.log(respond.status)
+
+        const trip_id = data.trip_id
         // console.log(trip_id)
 
-        if (res.status ===200){
+        if (respond.status ===200){
             const trip_data = this.tripDataService.getObjectReady(trip_name, trip_id,Date.now())
             // console.log(trip_data)
             await this.tripDataService.setTripData(trip_data)
@@ -53,7 +61,7 @@ export class Trip{
             return true
         }
 
-        if(res.status === 401){
+        if(respond.status === 401){
             console.log("401")
             console.log(data.code)
             if (data.code ==="token_expired"){
@@ -66,7 +74,7 @@ export class Trip{
             else if(data.code ==="token_invalid"){
                 return false
             }
-            else if(res.status != 419 ){
+            else if(respond.status != 419 ){
                 return false
             }
             else if(data.code ==="failed"){

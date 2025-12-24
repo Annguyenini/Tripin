@@ -3,123 +3,170 @@ import * as TRIPCONFIG from '../../config/config_db'
 import { Permission } from '../storage/settings/permissions';
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
-import { useState } from 'react';
 import { TripDataStorage } from './trip_data_storage';
-//old 
 import { TripDataService } from '../storage/trip';
-
 import TripData from '../../app-core/local_data/local_trip_data';
+
 const TASK_NAME = "background-location-task";
-export class TripService{
-    static instance
 
-    constructor(){
-      if (TripService.instance){
-        // this.init_trip_properties()
-        return TripService.instance
-      }
-      TripService.instance =this
-
-      // this.db = SQLite.openDatabaseAsync(TRIPCONFIG.SQLITE3_TRIPS_DB_DIRECTORY)
-      this.permissionService = new Permission()
-      this.tripDataStorage = new TripDataStorage()
-      // old
-      this.tripDataService = new TripDataService()
-      
-      this.defineTask();
-
-    }
-    async init_trip_properties(){
-      //old code
-      // const trip_data = await this.tripDataService.getTripData()
-      // this.trip_id = trip_data.trip_id
-
-
-      this.trip_id = TripData.trip_id
-      // console.log(this.trip_id)
-    }
-    /**
-     * call back for GPS
-     */
-    async defineTask(){
-     TaskManager.defineTask(TASK_NAME, ({ data, error }) => {
-    if (error) {
-      console.error(error);
-      return;
-    }
-    if (data) {
-
-      const { locations } = data;
-        const coor_data ={
-          time_stamp : Date.now(),
-          trip_id:this.trip_id,
-          coordinates:{
-            altitude:locations[0].coords.altitude,
-            heading : locations[0].coords.heading,
-            latitude :locations[0].coords.latitude,
-            longitude :locations[0].coords.longitude,
-            speed:locations[0].coords.speed
-          }
-          }
-        this.tripDataStorage.push(coor_data)
-      console.log(coor_data)
-      // console.log("📍 New location:", locations[0].coords);
-
-    }
-    });
+// Define task at module level - BEFORE any class instantiation
+TaskManager.defineTask(TASK_NAME, async ({ data, error }) => {
+  if (error) {
+    console.error('Background location error:', error);
+    return;
   }
-    /**
-     * fillter the and start task 
-     * @param {*} currentState - active or background
-     */
-    async startGPSWatch (currentState){
-        //if user currently on the app
-        // console.log(currentState)
-        if(currentState=== 'active'){
-        await this.startGPSTask(10000,Location.Accuracy.High);
-        // console.log("calling active")
-        }
-        //if the app run on background
-        else if(currentState ==='background'){
-        await this.startGPSTask(10000, Location.Accuracy.Low);
-        // console.log("calling BACKGROUND")
-        }
+
+  if (!data) {
+    console.log('No data in background task');
+    return;
+  }
+
+  const { locations } = data;
+  if (!locations?.length) {
+    console.log('No locations in data');
+    return;
+  }
+
+  const location = locations[0];
+  const trip_id = TripData.trip_id;
+
+  if (!trip_id) {
+    console.log('No trip_id available');
+    return;
+  }
+
+  const payload = {
+    time_stamp: Date.now(),
+    trip_id,
+    coordinates: {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      altitude: location.coords.altitude,
+      speed: location.coords.speed,
+      heading: location.coords.heading,
+    },
+  };
+  
+  console.log('Background location payload:', payload);
+  
+  try {
+    const storage = new TripDataStorage();
+    await storage.push(payload);
+    console.log('Successfully saved location');
+  } catch (error) {
+    console.error('Error saving location:', error);
+    // never throw in background tasks
+  }
+});
+
+export class TripService {
+  static instance
+
+  constructor() {
+    if (TripService.instance) {
+      return TripService.instance
+    }
+    TripService.instance = this
+
+    this.permissionService = new Permission()
+    this.tripDataStorage = new TripDataStorage()
+    this.tripDataService = new TripDataService()
+  }
+
+  async init_trip_properties() {
+    this.trip_id = TripData.trip_id
+  }
+
+  /**
+   * Check if background location permission is granted
+   */
+  async checkBackgroundPermission() {
+    const { status } = await Location.getBackgroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.warn('Background location permission not granted');
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Filter and start task 
+   * @param {*} currentState - active or background
+   */
+  async startGPSWatch(currentState) {
+    // Ensure we have background permission
+    const hasPermission = await this.checkBackgroundPermission();
+    if (!hasPermission) {
+      console.error('Cannot start GPS watch without background permission');
+      return false;
     }
 
-/**
- * Start a location task
- * @param {*} trackingTime - nm tracking per nm (not guaranteer) 
- * @param {*} performance  - type of performance will be perform
- */
-    async startGPSTask (trackingTime, performance){
-        // if there are an exists location service end it
-        
-        //check for exists task
-        const hasStarted = Location.hasStartedLocationUpdatesAsync(TASK_NAME);
-        
-        //end task
-        if(hasStarted){
-        Location.stopLocationUpdatesAsync(TASK_NAME);
-        // console.log("Stop curent task!")
-        }
-        
-        // run a new task
-        setTimeout(async()=>{
-        await Location.startLocationUpdatesAsync(TASK_NAME,
-            {
-                accuracy:performance,
-                timeInterval:trackingTime,
-                pausesUpdatesAutomatically:false,
-                distanceInterval:5,
-            })
-        },200)
+    if (currentState === 'active') {
+      await this.startGPSTask(10000, Location.Accuracy.High);
+    } else if (currentState === 'background') {
+      await this.startGPSTask(10000, Location.Accuracy.Low);
     }
+    
+    return true;
+  }
+
+  /**
+   * Start a location task
+   * @param {*} trackingTime - tracking interval in ms
+   * @param {*} performance - accuracy level
+   */
+  async startGPSTask(trackingTime, performance) {
+    try {
+      // Check if task is already running
+      const hasStarted = await Location.hasStartedLocationUpdatesAsync(TASK_NAME);
+      
+      if (hasStarted) {
+        console.log('Stopping existing task...');
+        await Location.stopLocationUpdatesAsync(TASK_NAME);
+        // Wait a bit after stopping
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      // Check if task is registered
+      const isTaskDefined = await TaskManager.isTaskRegisteredAsync(TASK_NAME);
+      console.log('Task registered:', isTaskDefined);
+
+      // Start the task
+      console.log('Starting location updates...');
+      await Location.startLocationUpdatesAsync(TASK_NAME, {
+        accuracy: performance,
+        timeInterval: trackingTime,
+        pausesUpdatesAutomatically: false,
+        distanceInterval: 5,
+        showsBackgroundLocationIndicator: true, // iOS - shows blue bar
+        foregroundService: { // Android
+          notificationTitle: 'Trip Tracking',
+          notificationBody: 'Your trip is being tracked',
+        },
+      });
+      
+      console.log('Location updates started successfully');
+      return true;
+    } catch (e) {
+      console.error('Error starting GPS task:', e);
+      return false;
     }
+  }
 
-
-
-
-
-
-
-
+  /**
+   * Stop GPS tracking
+   */
+  async stopGPSWatch() {
+    try {
+      const hasStarted = await Location.hasStartedLocationUpdatesAsync(TASK_NAME);
+      if (hasStarted) {
+        await Location.stopLocationUpdatesAsync(TASK_NAME);
+        console.log('GPS tracking stopped');
+        return true;
+      }
+    } catch (e) {
+      console.error('Error stopping GPS watch:', e);
+      return false;
+    }
+  }
+}

@@ -8,7 +8,7 @@ import {  StyleSheet,View,Image } from 'react-native';
 import { OverlayCard } from "./auth.js";
 import { authStyle } from "../styles/auth_style.js";
 import { NewTripFiller } from "./functions/add_new_trip.js";
-import { CurrentTripHeader } from "./functions/current_trip_bar.js";
+import { CurrentTripHeader } from "./map_box/components/current_trip_bar.js";
 import { navigate } from "./custom_function/navigationService.js";
 import { TripDataService } from "../backend/storage/trip.js";
 
@@ -21,6 +21,7 @@ export const UserDataBottomSheet = ({
 
     const snapPoints = useMemo (()=>['20%','95%'],[])
     const [trip_name, set_trip_name] = useState(null)
+    const [imageUri,setImageUri] =useState(null)
     const [show_create_trip_filler, set_show_create_trip_filler] = useState(false)
     const trip_service = new Trip();
     const[isOnATrip,setIsOnATrip] =useState(null)
@@ -41,11 +42,13 @@ export const UserDataBottomSheet = ({
     }
 
     const request_new_trip = async()=>{
-      const res = await trip_service.requestNewTrip(trip_name)
+      const res = await trip_service.requestNewTrip(trip_name,imageUri? imageUri:null)
       console.log("respond",res)
       if (res){
         set_show_create_trip_filler(false)
-        trip_data_service.setTripStatus('true')
+        await trip_data_service.setTripStatus('true')
+        await trip_data_service.setTripImageCover(imageUri)
+        setImageUri(null)
       }
       return
       // navigate('Main')
@@ -98,7 +101,7 @@ export const UserDataBottomSheet = ({
 
         {/* filer for new trip */}
         {show_create_trip_filler&&
-        <NewTripFiller show_create_trip_filler={show_create_trip_filler} set_show_create_trip_filler ={set_show_create_trip_filler} set_trip_name={set_trip_name} request_new_trip={request_new_trip} />}
+        <NewTripFiller set_show_create_trip_filler ={set_show_create_trip_filler} set_trip_name={set_trip_name} request_new_trip={request_new_trip} setImageUri={setImageUri} imageUri={imageUri}/>}
 
       </BottomSheet>
      

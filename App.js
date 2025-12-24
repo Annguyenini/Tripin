@@ -30,12 +30,14 @@ const logo = require('./assets/image/main_logo.png');
 const { width, height } = Dimensions.get('window');
 const Stack = createStackNavigator();
 
+
 export default function App() {
 
   const [loaded] = useFonts({
     mainfont: require('./assets/fonts/font2.otf'),
   });
     useEffect(() => {
+
      const checkToken = async () => {
     await loginWithAccessToken();
     setLoading(false);
@@ -43,6 +45,7 @@ export default function App() {
   checkToken();
   }, []);
   if (!loaded) return null;
+ 
 
   return (
     <View style={{flex:2}}>

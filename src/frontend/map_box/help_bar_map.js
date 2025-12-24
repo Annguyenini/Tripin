@@ -1,8 +1,8 @@
 import {View,TouchableOpacity,Text,Image} from 'react-native'
 import { useState,useEffect } from 'react'
 import { helpBarMapStyle } from '../../styles/function/help_bar_map'
-import { CurrentTripBar } from '../functions/current_trip_bar'
-import { CurrentTripBox } from '../functions/current_trip_box'
+import { CurrentTripBar } from './components/current_trip_bar.js'
+import { CurrentTripBox } from './components/current_trip_box.js'
 import { TripDataService } from '../../backend/storage/trip.js'
 // import {subject} from '../logics/observer.js';
 import TripData from '../../app-core/local_data/local_trip_data.js'

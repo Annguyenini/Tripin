@@ -16,12 +16,7 @@
       "supportsTablet": true,
       "infoPlist": {
         "UIBackgroundModes": [
-          "location",
-          "fetch",
-          "remote-notification",
-          "location",
-          "fetch",
-          "remote-notification"
+          "location"
         ],
         "NSLocationWhenInUseUsageDescription": "This app requires access to your location when open.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "This app requires access to your location even when closed.",
@@ -56,7 +51,7 @@
       [
         "@rnmapbox/maps",
         {
-          "RNMapboxMapsDownloadToken": "<token>"
+          "RNMapboxMapsDownloadToken": "token"
         }
       ],
       [
@@ -73,7 +68,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "identifier"
+        "projectId": "id"
       }
     }
   }

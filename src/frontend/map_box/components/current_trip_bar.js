@@ -1,12 +1,12 @@
 import { TouchableOpacity, View,Image,Text,StyleSheet,AppState } from "react-native"
 
-import {curent_trip_styles} from '../../styles/function/current_trip_header'
+import {curent_trip_styles} from '../../../styles/function/current_trip_header'
 import { use, useEffect, useMemo, useState } from "react";
-import { TripService } from "../../backend/trip/trip_service";
-import { TripDataService } from "../../backend/storage/trip";
-import TripData from "../../app-core/local_data/local_trip_data";
-import { Trip } from "../../backend/trip/trip";
-import { navigate } from "../custom_function/navigationService";
+import { TripService } from "../../../backend/trip/trip_service";
+import { TripDataService } from "../../../backend/storage/trip";
+import TripData from "../../../app-core/local_data/local_trip_data";
+import { Trip } from "../../../backend/trip/trip";
+import { navigate } from "../../custom_function/navigationService";
 export const CurrentTripBar=()=>{
 
   const[onFullMode, setOnFullMode]=useState(false)

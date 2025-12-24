@@ -102,6 +102,6 @@ app.json
 .expo
 dist/
 web-build/
-
+.vscode
 
 server/

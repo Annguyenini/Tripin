@@ -55,7 +55,8 @@ CREATE TABLE IF NOT EXISTS trips (trip_id INTEGER PRIMARY KEY NOT NULL, trip_nam
         console.assert(typeof(trip_data_object)==='object', 'trip data must be an object')
         this.storage.push(trip_data_object);
         if(this.storage.length >=5){
-            await this.trip_service.send_coordinates(this.storage)
+            const send_coor = await this.trip_service.send_coordinates(this.storage)
+            
             // await this.insert_into_DB()
 
             /// IMPORTANT need to implement store data to sql
