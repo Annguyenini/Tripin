@@ -1,7 +1,7 @@
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import {Trip} from'../backend/trip/trip.js'
+import Trip from'../backend/trip/trip.js'
 import {mainScreenStyle} from '../styles/main_screen_styles.js'
-import { useRef, useState,useMemo, useEffect } from "react";
+import { useRef, useState,useMemo, useEffect, use } from "react";
 import { TextInput } from "react-native-gesture-handler";
 import { TouchableOpacity,Text } from "react-native";
 import {  StyleSheet,View,Image } from 'react-native';
@@ -10,11 +10,11 @@ import { authStyle } from "../styles/auth_style.js";
 import { NewTripFiller } from "./functions/add_new_trip.js";
 import { CurrentTripHeader } from "./map_box/components/current_trip_bar.js";
 import { navigate } from "./custom_function/navigationService.js";
-import { TripDataService } from "../backend/storage/trip.js";
-
-const trip_data_service = new TripDataService()
+import TripDataService from "../backend/storage/trip.js";
+import UserDataService from'../backend/storage/user.js'
+const default_user_image = require('../../assets/image/profile_icon.png')
 export const UserDataBottomSheet = ({ 
-
+  set_show_profile_picker,
   userId, 
   userDisplayName 
 }) => {  const bottomSheetRef = useRef(null);
@@ -23,31 +23,45 @@ export const UserDataBottomSheet = ({
     const [trip_name, set_trip_name] = useState(null)
     const [imageUri,setImageUri] =useState(null)
     const [show_create_trip_filler, set_show_create_trip_filler] = useState(false)
-    const trip_service = new Trip();
     const[isOnATrip,setIsOnATrip] =useState(null)
+    const [userProfileImage, setUserProfileImage] = useState(UserDataService.getProfileImageUri())
     useEffect(()=>{
       const update_state ={
         update(newState){
         setIsOnATrip(newState)
       }
     }
-      trip_data_service.attach(update_state,'status')
+      TripDataService.attach(update_state,'status')
+      const update_user_image={
+        update(uri){
+          console.log('uri',uri)
+          setUserProfileImage(uri)
+        }
+      }
+      UserDataService.attach(update_user_image,'user_profile_image_uri')
+      return ()=>{TripDataService.detach(update_state,'status')
+                UserDataService.detach(update_user_image,'user_profile_image_uri')
 
-      return ()=>trip_data_service.detach(update_state,'status')
+      }
+
     },[])
     
     
     const new_trip_filler = ()=>{
        set_show_create_trip_filler(true)
     }
+    const profile_picker =()=>{
+      set_show_profile_picker(true)
+    }
 
     const request_new_trip = async()=>{
-      const res = await trip_service.requestNewTrip(trip_name,imageUri? imageUri:null)
+      const res = await Trip.requestNewTrip(trip_name,imageUri? imageUri:null)
       console.log("respond",res)
       if (res){
+        console.log("successfully")
         set_show_create_trip_filler(false)
-        await trip_data_service.setTripStatus('true')
-        await trip_data_service.setTripImageCover(imageUri)
+        await TripDataService.setTripStatus('true')
+        await TripDataService.setTripImageCover(imageUri)
         setImageUri(null)
       }
       return
@@ -69,11 +83,11 @@ export const UserDataBottomSheet = ({
         <BottomSheetScrollView contentContainerStyle={styles.content}>
         {/* <Image source={userProfilePic}/> */}
         
-        <View style = {mainScreenStyle.profilePic}><Image/></View>
-        <Text style ={mainScreenStyle.displayname}>{userDisplayName}</Text>
-        <TouchableOpacity>
-          <Text></Text>
+        <TouchableOpacity onPress={profile_picker}>
+        <View style = {mainScreenStyle.profilePic}><Image style= {{ width:'90%',height:'90%', borderRadius: 40}}source={userProfileImage? {uri:userProfileImage} :default_user_image}/></View>
         </TouchableOpacity>
+        <Text style ={mainScreenStyle.displayname}>{userDisplayName}</Text>
+    
         {/* <Text style={mainScreenStyle.userId}>{userId}</Text> */}
         </BottomSheetScrollView>
         
@@ -97,7 +111,7 @@ export const UserDataBottomSheet = ({
         {/* Extra bottom padding so last content isn’t hidden behind toolbar */}
         <View style={{ height: 80 }} />
 
-
+        
 
         {/* filer for new trip */}
         {show_create_trip_filler&&

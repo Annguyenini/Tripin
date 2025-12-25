@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo,useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image ,PanResponder} from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { cameraStyle } from '../../styles/camera_style.js';
-import { CameraService } from '../../backend/camera/camera_functions.js';
+import CameraService from '../../backend/camera/camera_functions.js';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as MediaLibrary from 'expo-media-library';
 import { navigate } from '../custom_function/navigationService.js';
@@ -45,7 +45,6 @@ export const CameraApp = () => {
   const baseZoom = useRef(0.16);
   const leftZoomModeList =[0,1,1.6]
   const rightZoomModeList =[3,5,10];
-  const cameraService = new CameraService();
 
   const toggleFlash = () => {
     setFlashIcon(prev => prev === require("../../../assets/image/camera_flash_off.png") ? require('../../../assets/image/camera_flash_on.png') : require('../../../assets/image/camera_flash_off.png'));
@@ -67,7 +66,7 @@ export const CameraApp = () => {
     setTimeout(() => {
       setShowFlash(false);
     }, 150);
-    const photo = await cameraService.takePicture(cameraRef);
+    const photo = await CameraService.takePicture(cameraRef);
     if (photo) {
       console.log("pass");
       setPhoto(photo);
@@ -105,11 +104,11 @@ export const CameraApp = () => {
   const stopRecording = async()=>{
     console.log("stop record")
     if(recording){
-      cameraService.stopRecording(cameraRef);
+      CameraService.stopRecording(cameraRef);
     }
     setRecording(false)
     console.log(video.uri)
-    // await cameraService.saveMediaToAlbum(video.uri)
+    // await CameraService.saveMediaToAlbum(video.uri)
   }
   const callZooming =(mode)=>{
     setZoom(mode/10)

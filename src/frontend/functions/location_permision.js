@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Platform, Pressable } from "react-native";
 import * as Location from "expo-location";
-
+import Permission from "../../backend/storage/settings/permissions";
 export const LocationPermission = () => {
   const [foregroundGranted, setForegroundGranted] = useState(false);
   const [backgroundGranted, setBackgroundGranted] = useState(false);
@@ -11,11 +11,13 @@ export const LocationPermission = () => {
     const init = async () => {
       const fg = await Location.requestForegroundPermissionsAsync();
       setForegroundGranted(fg.status === "granted");
-       if (fg.status!== "granted"){
+      await Permission.setForeGroundPer(fg.status ==="granted"? "true":"false")
+      if (fg.status!== "granted"){
       console.warn("Location denied")
       } 
       const bg = await Location.requestBackgroundPermissionsAsync()
       setBackgroundGranted(bg.status ==='granted')
+      await Permission.setBackGroundPer(fg.status ==="granted"? "true":"false")
       if (bg.status!== "granted"){
       console.warn("Location denied")
       } 

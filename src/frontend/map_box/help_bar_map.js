@@ -3,10 +3,9 @@ import { useState,useEffect } from 'react'
 import { helpBarMapStyle } from '../../styles/function/help_bar_map'
 import { CurrentTripBar } from './components/current_trip_bar.js'
 import { CurrentTripBox } from './components/current_trip_box.js'
-import { TripDataService } from '../../backend/storage/trip.js'
+import TripDataService from '../../backend/storage/trip.js'
 // import {subject} from '../logics/observer.js';
 import TripData from '../../app-core/local_data/local_trip_data.js'
-const tripDataService = new TripDataService()
 export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
     const navigation_icon = require('../../../assets/image/navigation_notoutline_icon.png')
     const navigation_outline_icon = require('../../../assets/image/navigation_outline_icon.png')
@@ -19,14 +18,14 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
             setIsOnATrip(newState)
            }
     }
-        tripDataService.attach(update_state,'status')
+        TripDataService.attach(update_state,'status')
 
         const fetch_trip_data =()=>{
             setCurrentTripId(TripData.trip_id);
             setCurrentTripName(TripData.trip_name);
         }
         fetch_trip_data()
-        return ()=>tripDataService.detach(update_state,'status')
+        return ()=>TripDataService.detach(update_state,'status')
 
     },[])
     return(

@@ -2,10 +2,9 @@ import { TouchableOpacity, View,Image,Text,StyleSheet,AppState } from "react-nat
 
 import {curent_trip_styles} from '../../../styles/function/current_trip_header'
 import { use, useEffect, useMemo, useState } from "react";
-import { TripService } from "../../../backend/trip/trip_service";
-import { TripDataService } from "../../../backend/storage/trip";
+import TripDataService from "../../../backend/storage/trip";
 import TripData from "../../../app-core/local_data/local_trip_data";
-import { Trip } from "../../../backend/trip/trip";
+import Trip from "../../../backend/trip/trip";
 import { navigate } from "../../custom_function/navigationService";
 export const CurrentTripBar=()=>{
 
@@ -16,14 +15,11 @@ export const CurrentTripBar=()=>{
   const[aqi,setAqi] = useState(null)
   const[currentState,setCurrentState] =useState(AppState.currentState);
   const[createdTime,setCreatedTime] = useState(null)
-  const tripService = new TripService
-  const trip = new Trip()
 
-  const tripDataService = new TripDataService
   const end_trip =async()=>{
-    const status =await trip.end_trip();
+    const status =await Trip.end_trip();
     if (status){
-      tripDataService.setTripStatus('false')
+      TripDataService.setTripStatus('false')
     }
   }
 

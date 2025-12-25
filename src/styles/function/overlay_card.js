@@ -13,7 +13,7 @@ export const overlayCardStyle=StyleSheet.create
     backgroundColor: 'rgba(0,0,0,0.3)',
   },
   card: {
-    width: width * 0.85,
+    width: width * 1,
     padding: 20,
     backgroundColor: '#fff', // card white
     borderRadius: 15,

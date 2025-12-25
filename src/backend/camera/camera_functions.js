@@ -2,13 +2,8 @@ import { CameraView, useCameraPermissions, FlashMode } from 'expo-camera';
 import { act,useState } from 'react';
 import * as MediaLibrary from 'expo-media-library';
 
-export class CameraService{
-    static instance
-
+class CameraService{
     constructor(){
-        
-        if(CameraService.instance) return CameraService.instance;
-        CameraService.instance = this;
         this.album_name = "Tripin_album";
         this.video = null;
     }
@@ -76,4 +71,5 @@ export class CameraService{
   }
 }
 
-
+const camera = new CameraService()
+export default camera

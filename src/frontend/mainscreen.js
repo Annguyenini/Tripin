@@ -5,28 +5,25 @@ import { View, TouchableOpacity, Text,Button, TextInput,Alert, StyleSheet, Dimen
 import {mainScreenStyle,footer} from '../styles/main_screen_styles.js'
 // import { Button } from 'react-native-web';
 import { navigate } from './custom_function/navigationService.js';
-import {UserDataService} from "../backend/storage/user.js"
+import UserDataService from "../backend/storage/user.js"
 // import { Color } from 'react-native/types_generated/Libraries/Animated/AnimatedExports';
 import { LocationPermission } from './functions/location_permision.js';
 import { UserDataBottomSheet } from './bottom_sheet.js';
 // import Subject from './logics/observer.js'
 import UserData from '../app-core/local_data/local_user_data.js'
-
+import {ProfileImagePicker} from'./custom_components/profile_image_picker.js'
 const homeIcon = require('../../assets/image/home_icon.png')
 const cameraIcon = require('../../assets/image/camera_icon.png')
 const galleryIcon = require('../../assets/image/gallery_icon.png')
 const settingIcon = require('../../assets/image/setting_icon.png')
-const userDataService = new UserDataService()
-const tripDataService = new TripDataService()
 import { MapBoxLayout } from './map_box/map_box_layout.js';
-import { TripDataService } from '../backend/storage/trip.js';
 // const fetchUserData = async()=>{
-//   const userProfilePic = await userDataService.getUserProfilePic();
-//   const userDisplayName = await userDataService.getUserDisplayName ();
-//   const userId = await userDataService.getUserId();
+//   const userProfilePic = await UserDataService.getUserProfilePic();
+//   const userDisplayName = await UserDataService.getUserDisplayName ();
+//   const userId = await UserDataService.getUserId();
 //   ///all trips is a dictionary
-//   let currentTrip = await userDataService.getCurrentTrip();
-//   let allTrip = await userDataService.getAllTrips();
+//   let currentTrip = await UserDataService.getCurrentTrip();
+//   let allTrip = await UserDataService.getAllTrips();
 // }
 
 export const MainScreen = () =>{
@@ -34,6 +31,8 @@ export const MainScreen = () =>{
   const [user_id, setUserId] = useState(null)
   const [user_name, setUsername ] = useState(null)
   const [display_name,setDisplayName] = useState(null)
+  const[show_profile_picker,set_show_profile_picker] =useState(false)
+
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
       async function fetch_userdata(){
@@ -56,7 +55,7 @@ export const MainScreen = () =>{
       <View style={styles.container}> 
       <LocationPermission></LocationPermission>
       <MapBoxLayout style={{ height: '70%' }}></MapBoxLayout>
-      <UserDataBottomSheet  userId={user_id} userDisplayName = {display_name}/>
+      <UserDataBottomSheet  userId={user_id} userDisplayName = {display_name} set_show_profile_picker={set_show_profile_picker}/>
       <View style={footer.footerContainer}>
         <View style={footer.fotterrow}>
         <TouchableOpacity style={footer.fotterbutton}>
@@ -73,6 +72,8 @@ export const MainScreen = () =>{
           </TouchableOpacity>
       </View>
         </View>
+        {show_profile_picker && <View style ={mainScreenStyle.overlay}><ProfileImagePicker set_show_profile_picker ={set_show_profile_picker}>
+          </ProfileImagePicker></View>}
     </View>   
     )
 };

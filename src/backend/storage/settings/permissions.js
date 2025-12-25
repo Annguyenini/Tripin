@@ -1,13 +1,8 @@
 import * as SecureStore from 'expo-secure-store'
 import { STORAGE_KEYS } from '../storage_keys'
-export class Permission{
-    static instance
+class Permission{
 
     constructor(){
-        if (Permission.instance){
-            return Permission.instance
-        }
-        Permission.instance = this
     }
 
     /** set foreground permission (Location) 
@@ -65,3 +60,5 @@ export class Permission{
 
     
 }
+const permission = new Permission()
+export default permission

@@ -1,10 +1,9 @@
 import * as SQLite from 'expo-sqlite';
 import * as TRIPCONFIG from '../../config/config_db'
-import { Permission } from '../storage/settings/permissions';
+import Permission from '../storage/settings/permissions';
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
-import { TripDataStorage } from './trip_data_storage';
-import { TripDataService } from '../storage/trip';
+import TripDataStorage from './trip_data_storage';
 import TripData from '../../app-core/local_data/local_trip_data';
 
 const TASK_NAME = "background-location-task";
@@ -17,13 +16,13 @@ TaskManager.defineTask(TASK_NAME, async ({ data, error }) => {
   }
 
   if (!data) {
-    console.log('No data in background task');
+    console.warn('No data in background task');
     return;
   }
 
   const { locations } = data;
   if (!locations?.length) {
-    console.log('No locations in data');
+    console.warn('No locations in data');
     return;
   }
 
@@ -31,7 +30,7 @@ TaskManager.defineTask(TASK_NAME, async ({ data, error }) => {
   const trip_id = TripData.trip_id;
 
   if (!trip_id) {
-    console.log('No trip_id available');
+    console.warn('No trip_id available');
     return;
   }
 
@@ -50,9 +49,8 @@ TaskManager.defineTask(TASK_NAME, async ({ data, error }) => {
   console.log('Background location payload:', payload);
   
   try {
-    const storage = new TripDataStorage();
-    await storage.push(payload);
-    console.log('Successfully saved location');
+    await TripDataStorage.push(payload);
+    // console.log('Successfully saved location');
   } catch (error) {
     console.error('Error saving location:', error);
     // never throw in background tasks
@@ -60,17 +58,10 @@ TaskManager.defineTask(TASK_NAME, async ({ data, error }) => {
 });
 
 export class TripService {
-  static instance
 
   constructor() {
-    if (TripService.instance) {
-      return TripService.instance
-    }
-    TripService.instance = this
+ 
 
-    this.permissionService = new Permission()
-    this.tripDataStorage = new TripDataStorage()
-    this.tripDataService = new TripDataService()
   }
 
   async init_trip_properties() {
@@ -81,8 +72,8 @@ export class TripService {
    * Check if background location permission is granted
    */
   async checkBackgroundPermission() {
-    const { status } = await Location.getBackgroundPermissionsAsync();
-    if (status !== 'granted') {
+    const status = await Permission.getBackGroundPer();
+    if (status !== 'true') {
       console.warn('Background location permission not granted');
       return false;
     }
@@ -121,7 +112,7 @@ export class TripService {
       const hasStarted = await Location.hasStartedLocationUpdatesAsync(TASK_NAME);
       
       if (hasStarted) {
-        console.log('Stopping existing task...');
+        // console.log('Stopping existing task...');
         await Location.stopLocationUpdatesAsync(TASK_NAME);
         // Wait a bit after stopping
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -129,10 +120,10 @@ export class TripService {
 
       // Check if task is registered
       const isTaskDefined = await TaskManager.isTaskRegisteredAsync(TASK_NAME);
-      console.log('Task registered:', isTaskDefined);
+      // console.log('Task registered:', isTaskDefined);
 
       // Start the task
-      console.log('Starting location updates...');
+      // console.log('Starting location updates...');
       await Location.startLocationUpdatesAsync(TASK_NAME, {
         accuracy: performance,
         timeInterval: trackingTime,
@@ -145,7 +136,7 @@ export class TripService {
         },
       });
       
-      console.log('Location updates started successfully');
+      // console.log('Location updates started successfully');
       return true;
     } catch (e) {
       console.error('Error starting GPS task:', e);
@@ -161,7 +152,7 @@ export class TripService {
       const hasStarted = await Location.hasStartedLocationUpdatesAsync(TASK_NAME);
       if (hasStarted) {
         await Location.stopLocationUpdatesAsync(TASK_NAME);
-        console.log('GPS tracking stopped');
+        // console.log('GPS tracking stopped');
         return true;
       }
     } catch (e) {
@@ -170,3 +161,6 @@ export class TripService {
     }
   }
 }
+
+const trip = new TripService()
+export default trip

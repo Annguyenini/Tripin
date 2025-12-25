@@ -1,4 +1,3 @@
-import 'dotenv/config';
 export default {
   expo: {
     name: "tripin",
@@ -47,8 +46,7 @@ export default {
       [
         "@rnmapbox/maps",
         {
-          // Use environment variable instead of hardcoded token
-          RNMapboxMapsDownloadToken: process.env.MAPBOX_DOWNLOAD_TOKEN
+          RNMapboxMapsDownloadToken: process.env.EXPO_MAPBOX_DOWNLOAD_TOKEN
         }
       ],
       [
@@ -67,8 +65,7 @@ export default {
       eas: {
         projectId: "2e3446d3-9978-4cea-8294-a1166b269f3f"
       },
-      // Make tokens available to your app
-      mapboxToken: process.env.MAPBOX_PUBLIC_TOKEN,
+      mapboxToken: process.env.EXPO_MAPBOX_PUBLIC_TOKEN,
     }
   }
 }

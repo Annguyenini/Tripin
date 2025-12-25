@@ -1,5 +1,5 @@
 import { Alert } from "react-native";
-import { UserDataService } from "../../backend/storage/user";
+import UserDataService from "../../backend/storage/user";
 import LocalData from './local_data'
 
 class UserData extends LocalData{
@@ -8,19 +8,18 @@ class UserData extends LocalData{
      */
     constructor(){
         super()
-        this.user_data = new UserDataService()
         this.user_name = null;
         this.display_name = null;
         this.user_id =null
         this.initialize()
-        this.user_data.attach(this)
+        UserDataService.attach(this,'user_data')
 
     }
     /**
      * construct initial value
      */
     async initialize(){
-        const user_data = await this.user_data.getUserData()
+        const user_data = await UserDataService.getUserData()
         if(!user_data){
             return 
         }
@@ -48,7 +47,7 @@ class UserData extends LocalData{
      * detach from update/
      */
     destroy(){
-        this.user_data.detach(this)
+        UserDataService.detach(this,'user_data')
     }
     
     

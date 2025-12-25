@@ -1,23 +1,11 @@
-import { TokenService } from '../token_service';
-import { Auth } from '../auth';
+import TokenService  from '../services/token_service';
+import AuthService from '../services/auth';
 import * as API from '../../config/config'
-import { UserDataService } from '../storage/user';
-import { TripDataService } from '../storage/trip';
+import TripDataService from '../storage/trip';
 import TripData from '../../app-core/local_data/local_trip_data';
-export class Trip{
-    static instance
+class Trip{
 
     constructor(){
-        if(Trip.instance) return Trip.instance;
-        Trip.instance =this;
-        this.TokenService = new TokenService()
-        this.AuthService = new Auth()
-        this.userDataService = new UserDataService()
-        this.tripDataService = new TripDataService()
-    }
-
-    verifyTripName(trip_name){
-
     }
     async requestNewTrip(trip_name,imageUri=null){
         /**
@@ -26,7 +14,7 @@ export class Trip{
          * @param trip_name - tripname
          */
         // if there are no token found return false
-        const token = await this.TokenService.getToken("access_token");
+        const token = await TokenService.getToken("access_token");
         // console.log(token)
         if (!token) {
             return false 
@@ -54,10 +42,11 @@ export class Trip{
         // console.log(trip_id)
 
         if (respond.status ===200){
-            const trip_data = this.tripDataService.getObjectReady(trip_name, trip_id,Date.now())
+            const trip_data =TripDataService.getObjectReady(trip_name, trip_id,Date.now())
+            console.assert(trip_data === null,"Trip data is null")
             // console.log(trip_data)
-            await this.tripDataService.setTripData(trip_data)
-            await this.tripDataService.setTripStatus('true')
+            await TripDataService.setTripData(trip_data)
+            await TripDataService.setTripStatus('true')
             return true
         }
 
@@ -65,7 +54,7 @@ export class Trip{
             console.log("401")
             console.log(data.code)
             if (data.code ==="token_expired"){
-                await this.AuthService.requestNewAccessToken()
+                await AuthService.requestNewAccessToken()
                 setTimeout(async()=>{
                     await this.requestNewTrip(trip_name)
                 },2000)
@@ -82,13 +71,12 @@ export class Trip{
                 return false 
 
             }
-            return false
         }
     }
     async end_trip (){
         //oldcode
-        const token = await this.TokenService.getToken('access_token')
-        // const trip_data = await this.tripDataService.getTripData()
+        const token = await TokenService.getToken('access_token')
+        // const trip_data = awaitTripDataService.getTripData()
 
         // const trip_id =trip_data.trip_id 
         const trip_id = TripData.trip_id
@@ -104,7 +92,7 @@ export class Trip{
         if (res.status===401){
             // console.log(data.code)
             if(data.code ==="token_expired"){
-                await this.AuthService.requestNewAccessToken()
+                await AuthService.requestNewAccessToken()
                 return await this.end_trip()
             }
             else if(data.code==="token_invalid"){
@@ -112,14 +100,14 @@ export class Trip{
             }
         }
         else if(res.status === 200){
-            await this.tripDataService.deleteTripData()
-            await this.tripDataService.setTripStatus('false')
+            await TripDataService.deleteTripData()
+            await TripDataService.setTripStatus('false')
             return true
         }
     }
     async send_coordinates(coor_object){
         console.log("called")
-        const token = await this.TokenService.getToken('access_token')
+        const token = await TokenService.getToken('access_token')
         const respond = await fetch(API.SEND_COORDINATES+`/${TripData.trip_id}/coordinates`,{
             method:'POST',
             headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
@@ -129,7 +117,7 @@ export class Trip{
         if(respond.status ===401){
             console.log("401")
             if(data.code === 'token_expired'){
-                await this.TokenService.requestNewAccessToken()
+                await AuthService.requestNewAccessToken()
                 return await this.send_coordinates(coor_object)
             }
             else if(data.code === 'token_invalid'){
@@ -143,3 +131,6 @@ export class Trip{
 
     }
 }
+
+const trip = new Trip()
+export default trip

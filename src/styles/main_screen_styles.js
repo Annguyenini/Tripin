@@ -124,6 +124,16 @@ export const mainScreenStyle = StyleSheet.create({
     width: 40,  // adjust size
     height: 40, // adjust size
   },
+   overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 9999,
+    elevation: 9999, // Android
+    backgroundColor: 'rgba(0,0,0,0.6)', // optional dim
+  },
 });
 
 

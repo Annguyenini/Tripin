@@ -4,22 +4,21 @@ import {View} from 'react-native'
 import * as Location from "expo-location";
 import { HelpBarMap } from './help_bar_map';
 import { useFormState } from 'react-dom';
-import { TripDataService } from '../../backend/storage/trip';
-MapboxGL.setAccessToken(process.env.MAPBOX_ACCESS_TOKEN)
-const tripDataService = new TripDataService()
+import TripDataService from '../../backend/storage/trip';
+MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN)
 export const MapBoxLayout =({})=>{
     const mapRef = useRef(null);
     const [userLock,setUserLock]=useState(false)
     // const [zoomLevel, setZoomLevel]= useState(14);
     const [isFollowingUser, setIsFollowingUser] = useState(true)
     const fetchIsOnATrip =async()=>{
-        const trip_status = await tripDataService.getTripStatus()
+        const trip_status = await TripDataService.getTripStatus()
         if (trip_status ==='true'){
-        tripDataService.setTripStatus('true')
+        TripDataService.setTripStatus('true')
         }
         else{
             
-        tripDataService.setTripStatus('false')
+        TripDataService.setTripStatus('false')
         }
     }
     

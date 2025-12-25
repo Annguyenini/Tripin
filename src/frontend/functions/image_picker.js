@@ -23,7 +23,7 @@ export const takePicture = async () => {
   if (!permission.granted) return
 
   const result = await ImagePicker.launchCameraAsync({
-    quality: 0.7,
+    quality: 1,
   })
 
   if (!result.canceled) {

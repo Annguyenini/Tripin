@@ -1,7 +1,8 @@
 import { Alert } from 'react-native'
 import {STORAGE_KEYS} from './storage_keys'
 import * as SecureStore from 'expo-secure-store'
-import { copyAsync, documentDirectory }  from 'expo-file-system/legacy';export class TripDataService{
+import { copyAsync, documentDirectory }  from 'expo-file-system/legacy';
+class TripDataService{
     /**
      * trip data service, use to store trip_name...
      * struct of data object {
@@ -11,13 +12,7 @@ import { copyAsync, documentDirectory }  from 'expo-file-system/legacy';export c
      * }
      * @returns
      */
-    static instance
     constructor(){
-        if (TripDataService.instance){
-            return TripDataService.instance
-        }
-        TripDataService.instance = this
-        
         //since this object can keep track of 2 states
         this.observers = {}
         this.item = {
@@ -149,7 +144,8 @@ import { copyAsync, documentDirectory }  from 'expo-file-system/legacy';export c
     async setTripImageCover(imageUri){
         
         try {
-            const filename = `${this.trip_id}_cover.jpg`;
+            const trip_id = this.item.get('trip_object').trip_id
+            const filename = `${trip_id}_cover.jpg`;
             const destination = documentDirectory + filename;
 
             await copyAsync({
@@ -206,3 +202,6 @@ import { copyAsync, documentDirectory }  from 'expo-file-system/legacy';export c
     }
 
 }
+
+const trip = new TripDataService()
+export default trip

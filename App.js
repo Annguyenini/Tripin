@@ -1,5 +1,4 @@
 
-import 'dotenv/config';
 import React, { useState,useEffect } from 'react';
 import { AuthScreen, loginWithAccessToken} from './src/frontend/auth.js';
 import {MainScreen} from './src/frontend/mainscreen.js'

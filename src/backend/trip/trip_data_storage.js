@@ -3,14 +3,11 @@
 import * as SQLite from 'expo-sqlite';
 import * as DBCONFIG from '../../config/config_db'
 import TripData from '../../app-core/local_data/local_trip_data';
-import { Trip } from './trip';
-export class TripDataStorage{
-    static instance
+import Trip from './trip';
+class TripDataStorage{
 
     constructor(){
-        if (TripDataStorage.instance) return TripDataStorage.instance;
-        TripDataStorage.instance = this;
-        this.trip_service = new Trip()
+
         this.storage = []
     }
 
@@ -55,7 +52,7 @@ CREATE TABLE IF NOT EXISTS trips (trip_id INTEGER PRIMARY KEY NOT NULL, trip_nam
         console.assert(typeof(trip_data_object)==='object', 'trip data must be an object')
         this.storage.push(trip_data_object);
         if(this.storage.length >=5){
-            const send_coor = await this.trip_service.send_coordinates(this.storage)
+            const send_coor = await Trip.send_coordinates(this.storage)
             
             // await this.insert_into_DB()
 
@@ -81,3 +78,5 @@ CREATE TABLE IF NOT EXISTS trips (trip_id INTEGER PRIMARY KEY NOT NULL, trip_nam
 
 
 
+const trip_storage = new TripDataStorage()
+export default trip_storage

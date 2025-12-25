@@ -2,41 +2,40 @@ import { View, Text, Image,StyleSheet,TouchableOpacity,AppState } from 'react-na
 import { useEffect, useState } from "react";
 import TripData from '../../../app-core/local_data/local_trip_data';
 import { MaterialIcons } from '@expo/vector-icons'; // For the arrow icon
-import { TripService } from '../../../backend/trip/trip_service';
-import { TripDataService } from '../../../backend/storage/trip';
+import TripService from '../../../backend/trip/trip_service';
+import TripDataService from '../../../backend/storage/trip';
 export const CurrentTripBox = ()=>{
-    const tripService = new TripService()
-    const tripDataService = new TripDataService()
     const[currentState,setCurrentState] =useState(AppState.currentState);
     const[curesntTripName,setCurrentTripName] = useState(null)
     const[tripImageCover,setTripImageCover] = useState(null)
     useEffect(()=>{
-      // const updateImage ={
-      //   update(uri){
-      //     console.log("uri",uri)
-      //     setTripImageCover(uri)
-      //   }
-      // }
-      // tripDataService.attach(updateImage,"trip_image");
-
-      (async()=>{
-        const tripStatus = await tripDataService.getTripStatus()
+      const get_trip_image=async()=>{
+        const imageUri = await TripDataService.getTripImageUriCover()
+        setTripImageCover(imageUri)
+      }
+      get_trip_image()
+      const updateImage ={
+        update(uri){
+          setTripImageCover(uri)
+        }
+      }
+      TripDataService.attach(updateImage,"trip_image");
+      const appState =async()=>{
+        const tripStatus = await TripDataService.getTripStatus()
 
         if (tripStatus ==='true'){
-        tripService.init_trip_properties()
+        TripService.init_trip_properties()
         }
         const state = AppState.addEventListener('change' ,nextState=>{
         setCurrentState(nextState)
         });
         // await location_logic();
-        tripService.startGPSWatch(currentState);
+        TripService.startGPSWatch(currentState);
         return () => state.remove();
+      }
       
-      })()
-       
-      
-      // appState()
-        // return ()=>tripDataService.detach(updateImage,"trip_image")
+      appState()
+        return ()=>TripDataService.detach(updateImage,"trip_image")
     })
     return (
         <View style={styles.wrapper}>
@@ -45,7 +44,7 @@ export const CurrentTripBox = ()=>{
       <View style={styles.background} />
 
       {/* Image */}
-      {/* <Image source={imageSource} style={styles.image} /> */}
+      <Image source={{uri:tripImageCover}} style={styles.image} />
 
       {/* LIVE badge */}
         <View style={styles.liveBadge}>
@@ -88,8 +87,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0', // light gray background
   },
   image: {
-    width: '100%',
-    height: 120,
+    width: '90%',
+    top:10,
+    height: 130,
+    paddingBottom:1,
     borderRadius: 15,
   },
   liveBadge: {
