@@ -6,6 +6,7 @@ import { CurrentTripBox } from './components/current_trip_box.js'
 import TripDataService from '../../backend/storage/trip.js'
 // import {subject} from '../logics/observer.js';
 import TripData from '../../app-core/local_data/local_trip_data.js'
+import { DATA_KEYS } from '../../backend/storage/storage_keys.js'
 export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
     const navigation_icon = require('../../../assets/image/navigation_notoutline_icon.png')
     const navigation_outline_icon = require('../../../assets/image/navigation_outline_icon.png')
@@ -18,14 +19,14 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
             setIsOnATrip(newState)
            }
     }
-        TripDataService.attach(update_state,'status')
+        TripDataService.attach(update_state,DATA_KEYS.TRIP.TRIP_STATUS)
 
         const fetch_trip_data =()=>{
             setCurrentTripId(TripData.trip_id);
             setCurrentTripName(TripData.trip_name);
         }
         fetch_trip_data()
-        return ()=>TripDataService.detach(update_state,'status')
+        return ()=>TripDataService.detach(update_state,DATA_KEYS.TRIP.TRIP_STATUS)
 
     },[])
     return(

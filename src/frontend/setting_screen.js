@@ -3,9 +3,13 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions,Image,PanResponder
 import AuthService from '../backend/services/auth.js'
 import {navigate} from './custom_function/navigationService.js'
 import {settingStyle} from '../styles/setting_style.js'
+import TripDataService from '../backend/storage/trip.js'
+import TripService from '../backend/trip/trip_service.js';
 export const SettingScreen =()=>{
     const callLogout = async ()=>{
         await AuthService.requestLogout();
+        await TripDataService.deleteTripData()
+        await TripService.stopGPSWatch()
         navigate("auth")
     }  
     const returnToMainScreen =()=>{

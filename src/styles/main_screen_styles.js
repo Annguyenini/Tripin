@@ -33,7 +33,7 @@ export const mainScreenStyle = StyleSheet.create({
   },
   curentTripZone: {
     flex: 1,                  // fill screen
-    justifyContent: 'top', // vertical center
+    // justifyContent: 'top', // vertical center
     top :0,
     alignItems: 'center',     // horizontal center
     // backgroundColor: '#fffffff',  // optional, makes white text visible

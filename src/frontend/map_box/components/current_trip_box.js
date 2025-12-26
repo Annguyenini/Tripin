@@ -4,6 +4,7 @@ import TripData from '../../../app-core/local_data/local_trip_data';
 import { MaterialIcons } from '@expo/vector-icons'; // For the arrow icon
 import TripService from '../../../backend/trip/trip_service';
 import TripDataService from '../../../backend/storage/trip';
+import { DATA_KEYS } from '../../../backend/storage/storage_keys';
 export const CurrentTripBox = ()=>{
     const[currentState,setCurrentState] =useState(AppState.currentState);
     const[curesntTripName,setCurrentTripName] = useState(null)
@@ -19,7 +20,7 @@ export const CurrentTripBox = ()=>{
           setTripImageCover(uri)
         }
       }
-      TripDataService.attach(updateImage,"trip_image");
+      TripDataService.attach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE);
       const appState =async()=>{
         const tripStatus = await TripDataService.getTripStatus()
 
@@ -35,7 +36,7 @@ export const CurrentTripBox = ()=>{
       }
       
       appState()
-        return ()=>TripDataService.detach(updateImage,"trip_image")
+        return ()=>TripDataService.detach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE)
     })
     return (
         <View style={styles.wrapper}>

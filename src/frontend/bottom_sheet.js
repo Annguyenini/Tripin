@@ -12,6 +12,8 @@ import { CurrentTripHeader } from "./map_box/components/current_trip_bar.js";
 import { navigate } from "./custom_function/navigationService.js";
 import TripDataService from "../backend/storage/trip.js";
 import UserDataService from'../backend/storage/user.js'
+import { DATA_KEYS } from "../backend/storage/storage_keys.js";
+import { renderTrips } from "./custom_components/trip_label.js";
 const default_user_image = require('../../assets/image/profile_icon.png')
 export const UserDataBottomSheet = ({ 
   set_show_profile_picker,
@@ -31,16 +33,16 @@ export const UserDataBottomSheet = ({
         setIsOnATrip(newState)
       }
     }
-      TripDataService.attach(update_state,'status')
+      TripDataService.attach(update_state,DATA_KEYS.TRIP.TRIP_STATUS)
       const update_user_image={
         update(uri){
           console.log('uri',uri)
           setUserProfileImage(uri)
         }
       }
-      UserDataService.attach(update_user_image,'user_profile_image_uri')
-      return ()=>{TripDataService.detach(update_state,'status')
-                UserDataService.detach(update_user_image,'user_profile_image_uri')
+      UserDataService.attach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
+      return ()=>{TripDataService.detach(update_state,DATA_KEYS.TRIP.TRIP_STATUS)
+                UserDataService.detach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
 
       }
 
@@ -53,6 +55,41 @@ export const UserDataBottomSheet = ({
     const profile_picker =()=>{
       set_show_profile_picker(true)
     }
+    const handleTripPress=()=>{
+
+    }
+    const trips = [
+  {
+    id: 1,
+    title: 'PARIS',
+    image: 'https://example.com/paris.jpg',
+  },
+  {
+    id: 2,
+    title: 'CA MAU',
+    image: 'https://example.com/camau.jpg',
+  },
+  {
+    id: 3,
+    title: 'DA LAT',
+    image: 'https://example.com/dalat.jpg',
+  },
+  {
+    id: 4,
+    title: 'NOTITLE',
+    image: 'https://example.com/abstract.jpg',
+  },
+  {
+    id: 5,
+    title: 'DA LAT',
+    image: 'https://example.com/dalat.jpg',
+  },
+  {
+    id: 6,
+    title: 'NOTITLE',
+    image: 'https://example.com/abstract.jpg',
+  },
+];
 
     const request_new_trip = async()=>{
       const res = await Trip.requestNewTrip(trip_name,imageUri? imageUri:null)
@@ -92,21 +129,25 @@ export const UserDataBottomSheet = ({
         </BottomSheetScrollView>
         
         <View style={mainScreenStyle.curentTripZone}>
-          <View style={mainScreenStyle.row}>
-            <Text style={mainScreenStyle.title}>Current Trip</Text>
-            {!isOnATrip&& 
-            (<TouchableOpacity style={mainScreenStyle.button} onPress={new_trip_filler}>
+        <View style={mainScreenStyle.row}>
+          <Text style={mainScreenStyle.title}>All Trip</Text>
+
+          {!isOnATrip && (
+            <TouchableOpacity
+              style={mainScreenStyle.button}
+              onPress={new_trip_filler}
+            >
               <Text style={mainScreenStyle.buttonText}>+</Text>
-            </TouchableOpacity>)
-            }
-            
-          </View>
+            </TouchableOpacity>
+          )}
         </View>
-             
+
+        {renderTrips(trips, handleTripPress)}
+      </View>
        {/* {showCurrentTrip&&()} */}
-        <View style={mainScreenStyle.alltrip}>
+        {/* <View style={mainScreenStyle.alltrip}>
           <Text style={mainScreenStyle.allTripTitle}>Browse All Trip</Text>
-        </View>
+        </View> */}
          {/* {showAllTrips&&()} */}
         {/* Extra bottom padding so last content isn’t hidden behind toolbar */}
         <View style={{ height: 80 }} />

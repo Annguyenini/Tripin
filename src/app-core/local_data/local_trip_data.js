@@ -1,6 +1,6 @@
 import LocalData from './local_data'
 import TripDataService from '../../backend/storage/trip'
-
+import { DATA_KEYS } from '../../backend/storage/storage_keys';
 class LocalTripData extends LocalData{
     constructor(){
         super()
@@ -8,7 +8,7 @@ class LocalTripData extends LocalData{
         this.trip_id = null;
         this.created_time = null;
         this.initialize()
-        TripDataService.attach(this,'trip_object')
+        TripDataService.attach(this,DATA_KEYS.TRIP.TRIP_DATA)
     }   
 
     async initialize (){
@@ -32,7 +32,7 @@ class LocalTripData extends LocalData{
     }
 
     destroy(){
-        TripDataService.detach(this,'trip_object')
+        TripDataService.detach(this,DATA_KEYS.TRIP.TRIP_DATA)
     }
 }
 const TripData = new LocalTripData()

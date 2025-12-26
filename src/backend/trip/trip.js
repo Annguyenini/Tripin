@@ -55,9 +55,7 @@ class Trip{
             console.log(data.code)
             if (data.code ==="token_expired"){
                 await AuthService.requestNewAccessToken()
-                setTimeout(async()=>{
-                    await this.requestNewTrip(trip_name)
-                },2000)
+                return await this.requestNewTrip(trip_name)
                 
             }
             else if(data.code ==="token_invalid"){
@@ -72,6 +70,7 @@ class Trip{
 
             }
         }
+        return true
     }
     async end_trip (){
         //oldcode

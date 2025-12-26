@@ -1,17 +1,14 @@
 import * as SecureStore from 'expo-secure-store'
-
+import {DATA_KEYS} from './storage_keys'
 import {STORAGE_KEYS} from './storage_keys'
-import { copyAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
+import { copyAsync, deleteAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
 const USER_PROFILE_IMAGE_PATH = 'user_profile.jpg'
-const ALLOWED_KEYS =
-    ['user_data','user_profile_image_uri']
-
 class UserDataService{
     constructor(){
         this.observers ={};
         this.items ={
-            user_data:null,
-            user_profile_image_uri:null,
+            [DATA_KEYS.USER.USER_DATA] :null,
+            [DATA_KEYS.USER.USER_AVATAR]:null,
             get(prop){
                 return this[prop]
             },
@@ -25,12 +22,11 @@ class UserDataService{
     /**
      * add to the subcriber list
      * @param {observer object} observer
-     * @param {string} key {@link ALLOWED_KEYS} 
+     * @param {string} key {@link DATA_KEYS.USER} 
      * 
      */
     attach(observer,key){
-        const item = ALLOWED_KEYS.find(i=>i===key)
-        if (!item) {
+        if( !Object.values(DATA_KEYS.USER).includes(key)){
             console.warn("Key not allow")
             return
         }
@@ -46,8 +42,7 @@ class UserDataService{
      * @param {observer object} observer 
      */
     detach(observer,key){
-        const item = ALLOWED_KEYS.find(i=>i===key)
-        if (!item) {
+        if( !Object.values(DATA_KEYS.USER).includes(key)){
             console.warn("Key not allow")
             return
         }
@@ -58,6 +53,9 @@ class UserDataService{
      * notify all subcribers about the change 
      */
     notify(key){
+        if(!this.observers[key]){
+            return
+        }
         for(const obs of this.observers[key]){
             obs.update(this.items.get(key))
         }
@@ -78,8 +76,8 @@ class UserDataService{
         catch(secureStoreError){
             console.error`Error at set key ${STORAGE_KEYS.USER}`
         }
-        this.items.set('user_data',userdata)
-        this.notify('user_data')
+        this.items.set(DATA_KEYS.USER.USER_DATA,userdata)
+        this.notify(DATA_KEYS.USER.USER_DATA)
         
     }
     /** getUserData
@@ -109,8 +107,8 @@ class UserDataService{
         catch(secureStoreError){
             console.error(`Error at deleting ${STORAGE_KEYS.USER}`)
         }
-        this.items.set('user_data',null)
-        this.notify('user_data')
+        this.items.set(DATA_KEYS.USER.USER_DATA,null)
+        this.notify(DATA_KEYS.USER.USER_DATA)
     }
 
 
@@ -122,25 +120,44 @@ class UserDataService{
         catch(err){
             console.error(err)
         }
-        this.items.set("user_profile_image_uri",destination)
-        this.notify('user_profile_image_uri')
+        this.items.set(DATA_KEYS.USER.USER_AVATAR,destination)
+        this.notify(DATA_KEYS.USER.USER_AVATAR)
     }
 
     async downloadProfileImageUri(uri){
         const destination = documentDirectory+USER_PROFILE_IMAGE_PATH
         try {
-            await downloadAsync({from:uri,to:destination })
+            const result = await downloadAsync(uri,destination )
+            console.log('downloaded',result)
         }
         catch(err){
             console.error(err)
         }
-        this.items.set("user_profile_image_uri",destination)
-        this.notify('user_profile_image_uri')
+
+       
+        this.items.set(DATA_KEYS.USER.USER_AVATAR,destination)
+        console.log('32323')
+        this.notify(DATA_KEYS.USER.USER_AVATAR)
+        console.log('complete download')
     }
 
     getProfileImageUri(){
         const imageUri = documentDirectory+USER_PROFILE_IMAGE_PATH
         return imageUri
+    }
+
+    async deleteProfileImage(){
+        try{
+            await deleteAsync(documentDirectory+USER_PROFILE_IMAGE_PATH)
+        }
+        catch(err){
+            console.error(err)
+        }
+    }
+
+    async deleteAllUserData(){
+        await this.deleteUserData()
+        await this.deleteProfileImage()
     }
 }
 

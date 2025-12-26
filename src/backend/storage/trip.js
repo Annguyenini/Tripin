@@ -1,7 +1,7 @@
 import { Alert } from 'react-native'
-import {STORAGE_KEYS} from './storage_keys'
+import {STORAGE_KEYS,DATA_KEYS} from './storage_keys'
 import * as SecureStore from 'expo-secure-store'
-import { copyAsync, documentDirectory }  from 'expo-file-system/legacy';
+import { copyAsync, deleteAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
 class TripDataService{
     /**
      * trip data service, use to store trip_name...
@@ -16,9 +16,9 @@ class TripDataService{
         //since this object can keep track of 2 states
         this.observers = {}
         this.item = {
-            trip_object:null,
-            status: null,
-            trip_image: null,
+            [DATA_KEYS.TRIP.TRIP_DATA]:null,
+            [DATA_KEYS.TRIP.TRIP_STATUS]: null,
+            [DATA_KEYS.TRIP.TRIP_STATUS]: null,
             set(prop,value){
                 this[prop] = value
             },
@@ -26,32 +26,28 @@ class TripDataService{
                 return this[prop]
             }
         }
-        this.allowance_key = ['trip_object','status','trip_image']
     }
 
 
-    attach (observer,item){
-        // console.log("attach", observer,"with item", item)
-        const itemi = this.allowance_key.find(i=>i === item)
-        if (!itemi){
-            Alert.alert("invalid item")
+    attach (observer,key){
+        // console.log("attach", observer,"with key", key)
+        if (!Object.values(DATA_KEYS.TRIP).includes(key)){
+            console.warn('Key not allow')
             return
         }
-        if (!this.observers[item]){
-            this.observers[item] = []
+        if (!this.observers[key]){
+            this.observers[key] = []
         }
-        this.observers[item].push(observer)
+        this.observers[key].push(observer)
 
     }
 
-    detach(observer,item){
-        const itemi = this.allowance_key.find(i=>i === item)
-
-        if(!itemi){
-            Alert.alert("invalid item")
-            return 
+    detach(observer,key){
+        if (!Object.values(DATA_KEYS.TRIP).includes(key)){
+            console.warn('Key not allow')
+            return
         }
-        this.observers[item] = this.observers[item].filter(obs => obs !== observer)
+        this.observers[key] = this.observers[key].filter(obs => obs !== observer)
 
     }
 
@@ -81,8 +77,8 @@ class TripDataService{
         catch(secureStoreError){
             console.error`Error at set key ${STORAGE_KEYS.TRIPDATA} ${secureStoreError}`
         }
-        this.item.set("trip_object",tripdata)
-        this.notify("trip_object")
+        this.item.set(DATA_KEYS.TRIP.TRIP_DATA,tripdata)
+        this.notify(DATA_KEYS.TRIP.TRIP_DATA)
     }
     /** getTripData
      * trip_data={
@@ -127,10 +123,13 @@ class TripDataService{
         }
 
         const value = status ==="true"?true:false;
-        this.item.set('status',value)
-        this.notify('status')
+        this.item.set(DATA_KEYS.TRIP.TRIP_STATUS,value)
+        this.notify(DATA_KEYS.TRIP.TRIP_STATUS)
     }
-
+    /**
+     * 
+     * @returns trip status 
+     */
     async getTripStatus(){
         try{
             const status = await SecureStore.getItemAsync(STORAGE_KEYS.SETTINGS.TRIP_STATUS)
@@ -141,22 +140,32 @@ class TripDataService{
         }
     }
 
-    async setTripImageCover(imageUri){
-        
+    /**
+     * 
+     * @param {string} imageUri 
+     * @returns final image path inside documentDir
+     */
+    async setTripImageCover(imageUri,source='local'){
         try {
-            const trip_id = this.item.get('trip_object').trip_id
+            const trip_id = this.item.get(DATA_KEYS.TRIP.TRIP_DATA).trip_id
             const filename = `${trip_id}_cover.jpg`;
             const destination = documentDirectory + filename;
-
-            await copyAsync({
-            from: imageUri,      // source URI (camera / image picker)
-            to: destination,     // app private folder
-            });
+            if (source !=='local'){
+                console.log('callwed')
+                const result = await downloadAsync(imageUri,destination)
+                console.log(result)
+            } 
+            else{
+                await copyAsync({
+                from: imageUri,      // source URI (camera / image picker)
+                to: destination,     // app private folder
+                });
+            }
 
             console.log('Image saved at:', destination);
-            await SecureStore.setItemAsync('trip_image',destination)
-            this.item.set('trip_image',destination)
-            this.notify('trip_image')
+            await SecureStore.setItemAsync(STORAGE_KEYS.TRIP_IMAGE,destination)
+            this.item.set(DATA_KEYS.TRIP.TRIP_IMAGE,destination)
+            this.notify(DATA_KEYS.TRIP.TRIP_IMAGE)
             return destination;
         } 
         catch (err) {
@@ -164,10 +173,13 @@ class TripDataService{
     }
 
     }
-
-    async getTripImageUriCover(){
+    /**
+     * 
+     * @returns trip Image uri
+     */
+    async getTripImageCover(){
         try{
-            const imageUri = await SecureStore.getItemAsync('trip_image')
+            const imageUri = await SecureStore.getItemAsync(STORAGE_KEYS.TRIP_IMAGE)
             if(!imageUri){
                 return null
             }
@@ -178,18 +190,47 @@ class TripDataService{
         }
     }
 
-
+    /**
+     * delete the trip image
+     */
+    async deleteTripImageCover(){
+        try{
+            await SecureStore.deleteItemAsync(STORAGE_KEYS.TRIP_IMAGE) 
+        }
+        catch(secureStoreError){
+            console.error('fail to delete key',secureStoreError)
+        }
+        try{
+            const path = this.item.get(DATA_KEYS.TRIP.TRIP_IMAGE)
+            console.log(path)
+            await deleteAsync(path)
+        }
+        catch(err){
+            console.error('failed to delete trip image',err)
+        }
+    }
 
     /**
-     *
+     * delete the trip data object
      */
     async deleteTripData(){
-        try{
+        try{ 
             await SecureStore.deleteItemAsync(STORAGE_KEYS.TRIPDATA)
+
         }
         catch(secureStoreError){
             console.error(`Error at deleting ${STORAGE_KEYS.TRIPDATA}`)
         }
+       
+    }
+
+    /**
+     * This function will delete trip data, trip image, and set the trip status back to false
+     */
+    async deleteAllTripData(){
+        await this.deleteTripData()
+        await this.deleteTripImageCover()
+        await this.setTripStatus('false')
     }
 
     getObjectReady(trip_name, trip_id, created_time){
