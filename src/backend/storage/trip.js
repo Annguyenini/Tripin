@@ -19,6 +19,8 @@ class TripDataService{
             [DATA_KEYS.TRIP.TRIP_DATA]:null,
             [DATA_KEYS.TRIP.TRIP_STATUS]: null,
             [DATA_KEYS.TRIP.TRIP_STATUS]: null,
+            [DATA_KEYS.TRIP.ALL_TRIP]:[],
+
             set(prop,value){
                 this[prop] = value
             },
@@ -66,7 +68,7 @@ class TripDataService{
     /** Set user data 
      * @param {object}Tripdata - must be an object 
     */
-    async setTripData (tripdata){
+    async setCurrentTripData (tripdata){
         
         
         if(!tripdata||typeof(tripdata)!=='object'){
@@ -87,7 +89,7 @@ class TripDataService{
         "created_time":created_time
      * }
      * @returns an object of trip data or null if it empty */ 
-    async getTripData(){
+    async getCurrentTripData(){
         try{
             const tripdata = await SecureStore.getItemAsync(STORAGE_KEYS.TRIPDATA)
             if(tripdata){
@@ -103,7 +105,26 @@ class TripDataService{
         }
     }
 
-
+    setTripsData(tripsList){
+        try{
+            this.item.set(DATA_KEYS.TRIP.ALL_TRIP,tripsList)
+            this.notify(DATA_KEYS.TRIP.ALL_TRIP)
+            
+        }
+        catch(err){
+            console.error(err)
+        }
+    }
+    getTripsData(){
+        try{
+            const trip_data =this.item.get(DATA_KEYS.TRIP.ALL_TRIP)
+            return trip_data
+        }
+        catch(err){
+            console.error(err)
+            return null
+        }
+    }
 
     async setTripStatus(status){
         /**
@@ -213,7 +234,7 @@ class TripDataService{
     /**
      * delete the trip data object
      */
-    async deleteTripData(){
+    async deleteCurrentTripData(){
         try{ 
             await SecureStore.deleteItemAsync(STORAGE_KEYS.TRIPDATA)
 
@@ -227,8 +248,8 @@ class TripDataService{
     /**
      * This function will delete trip data, trip image, and set the trip status back to false
      */
-    async deleteAllTripData(){
-        await this.deleteTripData()
+    async resetCurrentTripData(){
+        await this.deleteCurrentTripData()
         await this.deleteTripImageCover()
         await this.setTripStatus('false')
     }
@@ -241,6 +262,8 @@ class TripDataService{
         }
         return tripdata
     }
+
+    
 
 }
 

@@ -3,7 +3,7 @@ import Trip from'../backend/trip/trip.js'
 import {mainScreenStyle} from '../styles/main_screen_styles.js'
 import { useRef, useState,useMemo, useEffect, use } from "react";
 import { TextInput } from "react-native-gesture-handler";
-import { TouchableOpacity,Text } from "react-native";
+import { TouchableOpacity,Text ,ScrollView} from "react-native";
 import {  StyleSheet,View,Image } from 'react-native';
 import { OverlayCard } from "./auth.js";
 import { authStyle } from "../styles/auth_style.js";
@@ -26,23 +26,39 @@ export const UserDataBottomSheet = ({
     const [imageUri,setImageUri] =useState(null)
     const [show_create_trip_filler, set_show_create_trip_filler] = useState(false)
     const[isOnATrip,setIsOnATrip] =useState(null)
+    const[trips,setTrips] = useState(null)
     const [userProfileImage, setUserProfileImage] = useState(UserDataService.getProfileImageUri())
     useEffect(()=>{
+      const fetch_trips = async()=>{
+        const tripss = TripDataService.getTripsData ()
+        setTrips(tripss)
+      }
+      fetch_trips()
       const update_state ={
         update(newState){
         setIsOnATrip(newState)
       }
-    }
-      TripDataService.attach(update_state,DATA_KEYS.TRIP.TRIP_STATUS)
+      }
+      
       const update_user_image={
         update(uri){
-          console.log('uri',uri)
           setUserProfileImage(uri)
         }
       }
+
+      const update_trips ={
+        update(trips){
+          setTrips(trips)
+        }
+      }
+
+      TripDataService.attach(update_state,DATA_KEYS.TRIP.TRIP_STATUS)
+      TripDataService.attach(update_trips,DATA_KEYS.TRIP.ALL_TRIP)
       UserDataService.attach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
-      return ()=>{TripDataService.detach(update_state,DATA_KEYS.TRIP.TRIP_STATUS)
-                UserDataService.detach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
+      return ()=>{
+        TripDataService.detach(update_state,DATA_KEYS.TRIP.TRIP_STATUS)
+        TripDataService.detach(update_trips,DATA_KEYS.TRIP.ALL_TRIP)
+        UserDataService.detach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
 
       }
 
@@ -58,38 +74,7 @@ export const UserDataBottomSheet = ({
     const handleTripPress=()=>{
 
     }
-    const trips = [
-  {
-    id: 1,
-    title: 'PARIS',
-    image: 'https://example.com/paris.jpg',
-  },
-  {
-    id: 2,
-    title: 'CA MAU',
-    image: 'https://example.com/camau.jpg',
-  },
-  {
-    id: 3,
-    title: 'DA LAT',
-    image: 'https://example.com/dalat.jpg',
-  },
-  {
-    id: 4,
-    title: 'NOTITLE',
-    image: 'https://example.com/abstract.jpg',
-  },
-  {
-    id: 5,
-    title: 'DA LAT',
-    image: 'https://example.com/dalat.jpg',
-  },
-  {
-    id: 6,
-    title: 'NOTITLE',
-    image: 'https://example.com/abstract.jpg',
-  },
-];
+    
 
     const request_new_trip = async()=>{
       const res = await Trip.requestNewTrip(trip_name,imageUri? imageUri:null)
@@ -118,32 +103,35 @@ export const UserDataBottomSheet = ({
 
         {/* bottom sheet user infos */}
         <BottomSheetScrollView contentContainerStyle={styles.content}>
-        {/* <Image source={userProfilePic}/> */}
-        
         <TouchableOpacity onPress={profile_picker}>
-        <View style = {mainScreenStyle.profilePic}><Image style= {{ width:'90%',height:'90%', borderRadius: 40}}source={userProfileImage? {uri:userProfileImage} :default_user_image}/></View>
+          <View style={mainScreenStyle.profilePic}>
+            <Image
+              style={{ width: '90%', height: '90%', borderRadius: 40 }}
+              source={userProfileImage ? { uri: userProfileImage } : default_user_image}
+            />
+          </View>
         </TouchableOpacity>
-        <Text style ={mainScreenStyle.displayname}>{userDisplayName}</Text>
-    
-        {/* <Text style={mainScreenStyle.userId}>{userId}</Text> */}
-        </BottomSheetScrollView>
-        
+
+        <Text style={mainScreenStyle.displayname}>{userDisplayName}</Text>
+      </BottomSheetScrollView>
+              
         <View style={mainScreenStyle.curentTripZone}>
-        <View style={mainScreenStyle.row}>
-          <Text style={mainScreenStyle.title}>All Trip</Text>
+          <View style={mainScreenStyle.row}>
+            <Text style={mainScreenStyle.title}>All Trip</Text>
 
-          {!isOnATrip && (
-            <TouchableOpacity
-              style={mainScreenStyle.button}
-              onPress={new_trip_filler}
-            >
-              <Text style={mainScreenStyle.buttonText}>+</Text>
-            </TouchableOpacity>
-          )}
+            {!isOnATrip && (
+              <TouchableOpacity
+                style={mainScreenStyle.button}
+                onPress={new_trip_filler}
+              >
+                <Text style={mainScreenStyle.buttonText}>+</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Make trips scrollable so it doesn’t push user info away */}
+            {renderTrips(trips, handleTripPress)}
         </View>
-
-        {renderTrips(trips, handleTripPress)}
-      </View>
        {/* {showCurrentTrip&&()} */}
         {/* <View style={mainScreenStyle.alltrip}>
           <Text style={mainScreenStyle.allTripTitle}>Browse All Trip</Text>

@@ -10,11 +10,12 @@ export const CurrentTripBox = ()=>{
     const[curesntTripName,setCurrentTripName] = useState(null)
     const[tripImageCover,setTripImageCover] = useState(null)
     useEffect(()=>{
+
+
       const get_trip_image=async()=>{
-        const imageUri = await TripDataService.getTripImageUriCover()
+        const imageUri = await TripDataService.getTripImageCover()
         setTripImageCover(imageUri)
       }
-      get_trip_image()
       const updateImage ={
         update(uri){
           setTripImageCover(uri)
@@ -34,7 +35,8 @@ export const CurrentTripBox = ()=>{
         TripService.startGPSWatch(currentState);
         return () => state.remove();
       }
-      
+      get_trip_image()
+
       appState()
         return ()=>TripDataService.detach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE)
     })

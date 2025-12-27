@@ -8,6 +8,7 @@ import * as API from '../../config/config'
 import UserDataService from '../storage/user'
 import TokenService from './token_service'
 import TripDataService from '../storage/trip'
+import MachineState from '../../app-core/state_control/machine_state'
 class Auth{
 
     async requestLogin(username,password){
@@ -44,17 +45,22 @@ class Auth{
         }
         if (data.trip_data){
             const trip_data = TripDataService.getObjectReady(data.trip_data.trip_name,data.trip_data.trip_id,data.trip_data.created_time)
-            await TripDataService.setTripData(trip_data)
+            await TripDataService.setCurrentTripData(trip_data)
             if(data.trip_data.trip_image){
             await TripDataService.setTripImageCover(data.trip_data.trip_image,'aws')
             }
             await TripDataService.setTripStatus('true')
+        }
+        if(data.all_trip_data){
+            TripDataService.setTripsData(data.all_trip_data)
         }
         // old code
         // UserDataService.setUserId(data.user_data.user_id)
         // UserDataService.setUserName(data.user_data.user_name)
         // UserDataService.setDisplayName(data.user_data.display_name)
         // 
+        MachineState.setState('READY')
+
         return respond.status;
      } 
     
@@ -111,7 +117,7 @@ class Auth{
         await TokenService.deleteToken("access_token")
         await TokenService.deleteToken("refresh_token")
         await UserDataService.deleteAllUserData();
-        await TripDataService.deleteAllTripData()
+        await TripDataService.resetCurrentTripData()
 
     }
     async authenticateToken(type){
@@ -133,7 +139,9 @@ class Auth{
         if(respond.status===401){
             return ({"message":data.message,"status": 401,"data":data})
         }
-        
+        if(respond.status ===429){
+            return({"message":null,"status": 429,"data":null})
+        }
         return({"message":data.message,"status": 200,"data":data})
         
     }
@@ -144,28 +152,31 @@ class Auth{
 
         const res = await this.authenticateToken("access_token");
         const data =await res.data
-        console.log(data)
+        // console.log(data)
         if (res.status===401){
-        if (data.code === "token_expired") {
-            const tokendata = await this.authenticateToken("refresh_token");
-        
-            if (tokendata.status === 401) {
-                await TokenService.deleteToken("access_token");
-                await TokenService.deleteToken("refresh_token");
-            return false;
-            } 
-            else if (tokendata.status === 200) {
-                await TokenService.deleteToken("access_token");
-                await this.requestNewAccessToken();
-                return await this.loginWithAccessToken();
+            if (data.code === "token_expired") {
+                const tokendata = await this.authenticateToken("refresh_token");
+            
+                if (tokendata.status === 401) {
+                    await TokenService.deleteToken("access_token");
+                    await TokenService.deleteToken("refresh_token");
+                return false;
+                } 
+                else if (tokendata.status === 200) {
+                    await TokenService.deleteToken("access_token");
+                    await this.requestNewAccessToken();
+                    return await this.loginWithAccessToken();
+                }
+            }
+            
+            else if (data.code === "token_invalid") {
+                    await TokenService.deleteToken("access_token");
+                    await TokenService.deleteToken("refresh_token");        
+                    return false;
             }
         }
-        
-        else if (data.code === "token_invalid") {
-                await TokenService.deleteToken("access_token");
-                await TokenService.deleteToken("refresh_token");        
-                return false;
-        }
+        if(res.status ===429){
+            return false
         }
         
         const userdata ={
@@ -181,14 +192,19 @@ class Auth{
 
         if (data.trip_data){
                 const trip_data = TripDataService.getObjectReady(data.trip_data.trip_name,data.trip_data.trip_id,data.trip_data.created_time)
-                await TripDataService.setTripData(trip_data)
+                await TripDataService.setCurrentTripData(trip_data)
                 if (data.trip_data.trip_image){
                     await TripDataService.setTripImageCover(data.trip_data.trip_image,'aws')
                 }
                 await TripDataService.setTripStatus('true')
             }
 
-
+        if(data.all_trip_data){
+            console.log('heloo')
+            console.log(data.all_trip_data)
+            TripDataService.setTripsData(data.all_trip_data)
+        }
+        MachineState.setState('READY')
         return true;
         };
     }

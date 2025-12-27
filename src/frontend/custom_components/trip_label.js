@@ -11,13 +11,14 @@ const TripCard = ({ trip, onPress }) => {
         style={styles.tripImage}
       />
       <Text style={styles.tripTitle}>
-        {trip.title}
+        {trip.trip_name}
       </Text>
     </TouchableOpacity>
   );
 };
 
 export const renderTrips = (trips, onTripPress) => {
+  if(!trips)return
   return (
     <FlatList
       data={trips}

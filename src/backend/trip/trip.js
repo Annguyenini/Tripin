@@ -35,7 +35,7 @@ class Trip{
             body: formData
         });
         const data = await respond.json();
-        // console.log(data)
+        console.log(data)
         // console.log(respond.status)
 
         const trip_id = data.trip_id
@@ -45,8 +45,10 @@ class Trip{
             const trip_data =TripDataService.getObjectReady(trip_name, trip_id,Date.now())
             console.assert(trip_data === null,"Trip data is null")
             // console.log(trip_data)
-            await TripDataService.setTripData(trip_data)
+            await TripDataService.setCurrentTripData(trip_data)
             await TripDataService.setTripStatus('true')
+
+            TripDataService.setTripsData(data.all_trip_data)
             return true
         }
 
@@ -99,7 +101,7 @@ class Trip{
             }
         }
         else if(res.status === 200){
-            await TripDataService.deleteTripData()
+            await TripDataService.deleteCurrentTripData()
             await TripDataService.setTripStatus('false')
             return true
         }

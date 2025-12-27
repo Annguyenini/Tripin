@@ -12,7 +12,7 @@ class LocalTripData extends LocalData{
     }   
 
     async initialize (){
-        const trip_data = await TripDataService.getTripData()
+        const trip_data = await TripDataService.getCurrentTripData()
         if (!trip_data) return
         this.trip_name = trip_data.trip_name
         this.trip_id = trip_data.trip_id

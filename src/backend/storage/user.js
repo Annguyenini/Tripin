@@ -114,11 +114,12 @@ class UserDataService{
 
     async setProfileImageUri(uri){
         const destination = documentDirectory+USER_PROFILE_IMAGE_PATH
+        console.log('uri',uri,'des',destination)
         try {
             await copyAsync({from:uri,to:destination })
         }
         catch(err){
-            console.error(err)
+            console.error('dsdsd',err)
         }
         this.items.set(DATA_KEYS.USER.USER_AVATAR,destination)
         this.notify(DATA_KEYS.USER.USER_AVATAR)

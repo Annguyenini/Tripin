@@ -32,12 +32,19 @@ export const mainScreenStyle = StyleSheet.create({
     right: 20,
   },
   curentTripZone: {
-    flex: 1,                  // fill screen
-    // justifyContent: 'top', // vertical center
-    top :0,
-    alignItems: 'center',     // horizontal center
-    // backgroundColor: '#fffffff',  // optional, makes white text visible
-    
+    flex: 4,                  // fill proportional space in parent
+    paddingTop: 10,           // small padding instead of top: 0
+    alignItems: 'center',     // center horizontally
+    width: '100%',
+  },
+
+  row: {
+    flexDirection: 'row',      // horizontal layout
+    justifyContent: 'space-between', // push items to edges
+    alignItems: 'center',      // vertical center
+    width: '90%',              // slightly inset for padding
+    marginBottom: 0,
+    marginTop:10,          // space below row
   },
   alltrip: {
     flex: 4,                  // fill screen
@@ -53,12 +60,7 @@ export const mainScreenStyle = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'left',
   },
-   row: {
-    flexDirection: 'row',      // horizontal layout
-  justifyContent: 'space-between', // push items to edges
-    alignItems: 'center',
-    width: '95%',                // span full width
-  },
+   
   title: {
     color: '#ffffffff',
     fontSize: 35,

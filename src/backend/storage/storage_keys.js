@@ -16,7 +16,8 @@ export const DATA_KEYS ={
     TRIP:{
         TRIP_DATA:'trip_data',
         TRIP_STATUS:'trip_status',
-        TRIP_IMAGE:'trip_image'
+        TRIP_IMAGE:'trip_image',
+        ALL_TRIP:'all_trip'
     },
     USER:{
         USER_DATA:'user_data',

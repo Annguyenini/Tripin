@@ -13,11 +13,12 @@ const { width } = Dimensions.get('window');
 
 export const loginWithAccessToken = async () => {
   const respond =await AuthService.loginWithAccessToken()
-  if ( respond=== true){
-    // only navigate if navigation is ready
-    navigate('Main');
-    return true;
+  console.log(respond)
+  if ( !respond){
+    return false;
   }
+  return true;
+  
 };
 export const AuthScreen= ( ) => {
   const navigation = useNavigation();
@@ -62,8 +63,8 @@ export const AuthScreen= ( ) => {
         setShowAleart(true);
         return;
       }
-      console.log("pass")
-      navigation.navigate('Main');
+      // console.log("pass")
+      // navigation.navigate('Main');
     }
 
 

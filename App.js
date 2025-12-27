@@ -7,7 +7,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { navigationRef } from './src/frontend/custom_function/navigationService.js';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
+import MachineState from './src/app-core/state_control/machine_state.js'
+import { navigate } from './src/frontend/custom_function/navigationService.js';
 import {
   TouchableOpacity,
   StyleSheet,
@@ -26,6 +27,7 @@ import{mainScreenStyle} from './src/styles/main_screen_styles.js'
 import{cameraStyle} from './src/styles/camera_style.js'
 import {CameraApp} from './src/frontend/camera/camera_layout.js'
 import { SettingScreen } from './src/frontend/setting_screen.js';
+import { Loading } from './src/frontend/custom_components/loading.js';
 const backgroundImage = require('./assets/image/main_background.png');
 const logo = require('./assets/image/main_logo.png');
 const { width, height } = Dimensions.get('window');
@@ -34,18 +36,40 @@ const Stack = createStackNavigator();
 
 export default function App() {
 
-  const [loaded] = useFonts({
+  const [loaded,setLoaded] = useState(false)
+  const [font]=useFonts({
     mainfont: require('./assets/fonts/font2.otf'),
   });
+  const [machineState,setMachineState]= useState(null)
     useEffect(() => {
+      const checkToken = async () => {
+        const status = await loginWithAccessToken();
+        if (!status){
+          setLoaded(true)
+        }
+      };
+      checkToken();
+      const machine_state={
+        update(state) {
+          console.log(state)
+          if(state ==='READY'){
+            setMachineState(true)
+            setTimeout(()=>{
+              navigate('Main')
+              setLoaded(true)
+            },2000)
 
-     const checkToken = async () => {
-    await loginWithAccessToken();
-    setLoading(false);
-  };
-  checkToken();
+          }
+        }
+      }
+      
+     
+    MachineState.attach(machine_state)
+  
+  return ()=>MachineState.detach(machine_state)
+
   }, []);
-  if (!loaded) return null;
+  if (!font) return null;
  
 
   return (
@@ -60,15 +84,19 @@ export default function App() {
             <Stack.Screen name="Auth" component={AuthScreen} />
           </Stack.Navigator>
         </NavigationContainer> */}
+
+        {!loaded &&<Loading></Loading>}
       <NavigationContainer  ref={navigationRef}>
           <Stack.Navigator>
             <Stack.Screen name="auth" component={AuthLayout}   options={{ headerShown: false }} // ← hides the "Auth" text
 />
-            <Stack.Screen name="Main" component={MainLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" tet
+{machineState && <><Stack.Screen name="Main" component={MainLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" tet
 />  
             <Stack.Screen name="Setting" component={SettingLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" text
 />  
             <Stack.Screen name ="Camera" component={CameraLayout} options={{headerShown: false}}/>
+            </>}
+          
           </Stack.Navigator>
         </NavigationContainer>
 
