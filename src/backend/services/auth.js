@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store'
 import {Platform } from 'react-native'
 
-import * as API from '../../config/config'
+import * as API from '../../config/config_api'
 // import { setSurfaceProps } from 'react-native/types_generated/Libraries/ReactNative/AppRegistryImpl';
 import UserDataService from '../storage/user'
 import TokenService from './token_service'
@@ -43,17 +43,7 @@ class Auth{
         if(data.user_data.avatar_uri){
             await UserDataService.downloadProfileImageUri(data.user_data.avatar_uri)
         }
-        if (data.trip_data){
-            const trip_data = TripDataService.getObjectReady(data.trip_data.trip_name,data.trip_data.trip_id,data.trip_data.created_time)
-            await TripDataService.setCurrentTripData(trip_data)
-            if(data.trip_data.trip_image){
-            await TripDataService.setTripImageCover(data.trip_data.trip_image,'aws')
-            }
-            await TripDataService.setTripStatus('true')
-        }
-        if(data.all_trip_data){
-            TripDataService.setTripsData(data.all_trip_data)
-        }
+       
         // old code
         // UserDataService.setUserId(data.user_data.user_id)
         // UserDataService.setUserName(data.user_data.user_name)
@@ -114,10 +104,7 @@ class Auth{
         return {"status":respond.status,"message":data.message}
     }
     async requestLogout(){
-        await TokenService.deleteToken("access_token")
-        await TokenService.deleteToken("refresh_token")
-        await UserDataService.deleteAllUserData();
-        await TripDataService.resetCurrentTripData()
+        
 
     }
     async authenticateToken(type){
@@ -190,20 +177,7 @@ class Auth{
 
         }
 
-        if (data.trip_data){
-                const trip_data = TripDataService.getObjectReady(data.trip_data.trip_name,data.trip_data.trip_id,data.trip_data.created_time)
-                await TripDataService.setCurrentTripData(trip_data)
-                if (data.trip_data.trip_image){
-                    await TripDataService.setTripImageCover(data.trip_data.trip_image,'aws')
-                }
-                await TripDataService.setTripStatus('true')
-            }
-
-        if(data.all_trip_data){
-            console.log('heloo')
-            console.log(data.all_trip_data)
-            TripDataService.setTripsData(data.all_trip_data)
-        }
+       
         MachineState.setState('READY')
         return true;
         };

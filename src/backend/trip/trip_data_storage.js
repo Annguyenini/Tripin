@@ -4,6 +4,7 @@ import * as SQLite from 'expo-sqlite';
 import * as DBCONFIG from '../../config/config_db'
 import TripData from '../../app-core/local_data/local_trip_data';
 import Trip from './trip';
+import trip from './trip_service';
 class TripDataStorage{
 
     constructor(){
@@ -52,7 +53,9 @@ CREATE TABLE IF NOT EXISTS trips (trip_id INTEGER PRIMARY KEY NOT NULL, trip_nam
         console.assert(typeof(trip_data_object)==='object', 'trip data must be an object')
         this.storage.push(trip_data_object);
         if(this.storage.length >=5){
-            const send_coor = await Trip.send_coordinates(this.storage)
+            const last_long = trip_data_object.coordinates.longitude
+            const last_lat = trip_data_object.coordinates.latitude
+            const send_coor = await Trip.send_coordinates(this.storage,last_long,last_lat)
             
             // await this.insert_into_DB()
 

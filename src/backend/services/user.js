@@ -1,4 +1,4 @@
-import * as API from '../../config/config'
+import * as API from '../../config/config_api'
 import UserData from '../../app-core/local_data/local_user_data'
 import UserDataService from '../storage/user'
 import TokenService from './token_service'

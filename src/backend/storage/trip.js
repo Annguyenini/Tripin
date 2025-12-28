@@ -1,6 +1,7 @@
 import { Alert } from 'react-native'
 import {STORAGE_KEYS,DATA_KEYS} from './storage_keys'
 import * as SecureStore from 'expo-secure-store'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { copyAsync, deleteAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
 class TripDataService{
     /**
@@ -18,7 +19,7 @@ class TripDataService{
         this.item = {
             [DATA_KEYS.TRIP.TRIP_DATA]:null,
             [DATA_KEYS.TRIP.TRIP_STATUS]: null,
-            [DATA_KEYS.TRIP.TRIP_STATUS]: null,
+            [DATA_KEYS.TRIP.TRIP_IMAGE]: null,
             [DATA_KEYS.TRIP.ALL_TRIP]:[],
 
             set(prop,value){
@@ -74,10 +75,11 @@ class TripDataService{
         if(!tripdata||typeof(tripdata)!=='object'){
         }
         try{
-            await SecureStore.setItemAsync(STORAGE_KEYS.TRIPDATA,JSON.stringify(tripdata))
+            // await SecureStore.setItemAsync(STORAGE_KEYS.TRIPDATA,JSON.stringify(tripdata))
+            await AsyncStorage.setItem(STORAGE_KEYS.TRIPDATA,JSON.stringify(tripdata))
         }
-        catch(secureStoreError){
-            console.error`Error at set key ${STORAGE_KEYS.TRIPDATA} ${secureStoreError}`
+        catch(asyncError){
+            console.error`Error at set key ${STORAGE_KEYS.TRIPDATA} ${asyncError}`
         }
         this.item.set(DATA_KEYS.TRIP.TRIP_DATA,tripdata)
         this.notify(DATA_KEYS.TRIP.TRIP_DATA)
@@ -91,7 +93,9 @@ class TripDataService{
      * @returns an object of trip data or null if it empty */ 
     async getCurrentTripData(){
         try{
-            const tripdata = await SecureStore.getItemAsync(STORAGE_KEYS.TRIPDATA)
+            // const tripdata = await SecureStore.getItemAsync(STORAGE_KEYS.TRIPDATA)
+            const tripdata = await AsyncStorage.getItem(STORAGE_KEYS.TRIPDATA)
+ 
             if(tripdata){
                 return JSON.parse(tripdata)
             }
@@ -99,8 +103,8 @@ class TripDataService{
                 return null
             }
         }
-        catch(secureStoreError){
-            console.error`Error at getting${STORAGE_KEYS.TRIPDATA} ${secureStoreError}`
+        catch(asyncError){
+            console.error`Error at getting${STORAGE_KEYS.TRIPDATA} ${asyncError}`
             return null
         }
     }
@@ -137,10 +141,12 @@ class TripDataService{
             return 
         }
         try{
-            await SecureStore.setItemAsync(STORAGE_KEYS.SETTINGS.TRIP_STATUS,status)
+            // await SecureStore.setItemAsync(STORAGE_KEYS.SETTINGS.TRIP_STATUS,status)
+            await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS.TRIP_STATUS,status)
+
         }
-        catch(secureStoreError){
-            console.error(`ERROR at set trip status ${secureStoreError}`)
+        catch(asyncError){
+            console.error(`ERROR at set trip status ${asyncError}`)
         }
 
         const value = status ==="true"?true:false;
@@ -153,11 +159,12 @@ class TripDataService{
      */
     async getTripStatus(){
         try{
-            const status = await SecureStore.getItemAsync(STORAGE_KEYS.SETTINGS.TRIP_STATUS)
+            // const status = await SecureStore.getItemAsync(STORAGE_KEYS.SETTINGS.TRIP_STATUS)
+            const status = await AsyncStorage.getItem(STORAGE_KEYS.SETTINGS.TRIP_STATUS)
             return status
         }
-        catch(secureStoreError){
-            console.error(`ERROR at get trip status ${secureStoreError}`)
+        catch(asyncError){
+            console.error(`ERROR at get trip status ${asyncError}`)
         }
     }
 
@@ -172,7 +179,6 @@ class TripDataService{
             const filename = `${trip_id}_cover.jpg`;
             const destination = documentDirectory + filename;
             if (source !=='local'){
-                console.log('callwed')
                 const result = await downloadAsync(imageUri,destination)
                 console.log(result)
             } 
@@ -183,8 +189,15 @@ class TripDataService{
                 });
             }
 
-            console.log('Image saved at:', destination);
-            await SecureStore.setItemAsync(STORAGE_KEYS.TRIP_IMAGE,destination)
+            // await SecureStore.setItemAsync(STORAGE_KEYS.TRIP_IMAGE,destination)
+            try{
+
+            
+                await AsyncStorage.setItem(STORAGE_KEYS.TRIP_IMAGE,destination)
+            }
+            catch(asyncError){
+                console.error(asyncError)
+            }
             this.item.set(DATA_KEYS.TRIP.TRIP_IMAGE,destination)
             this.notify(DATA_KEYS.TRIP.TRIP_IMAGE)
             return destination;
@@ -200,14 +213,16 @@ class TripDataService{
      */
     async getTripImageCover(){
         try{
-            const imageUri = await SecureStore.getItemAsync(STORAGE_KEYS.TRIP_IMAGE)
+            // const imageUri = await SecureStore.getItemAsync(STORAGE_KEYS.TRIP_IMAGE)
+            const imageUri = await AsyncStorage.getItem(STORAGE_KEYS.TRIP_IMAGE)
+
             if(!imageUri){
                 return null
             }
             return imageUri
         }
-        catch(secureStoreError){
-            console.error(secureStoreError)
+        catch(asyncError){
+            console.error(asyncError)
         }
     }
 
@@ -216,10 +231,10 @@ class TripDataService{
      */
     async deleteTripImageCover(){
         try{
-            await SecureStore.deleteItemAsync(STORAGE_KEYS.TRIP_IMAGE) 
+            await AsyncStorage.removeItem(STORAGE_KEYS.TRIP_IMAGE)
         }
-        catch(secureStoreError){
-            console.error('fail to delete key',secureStoreError)
+        catch(asyncError){
+            console.error('fail to delete key',asyncError)
         }
         try{
             const path = this.item.get(DATA_KEYS.TRIP.TRIP_IMAGE)
@@ -236,11 +251,11 @@ class TripDataService{
      */
     async deleteCurrentTripData(){
         try{ 
-            await SecureStore.deleteItemAsync(STORAGE_KEYS.TRIPDATA)
+            await AsyncStorage.removeItem(STORAGE_KEYS.TRIPDATA)
 
         }
-        catch(secureStoreError){
-            console.error(`Error at deleting ${STORAGE_KEYS.TRIPDATA}`)
+        catch(asyncError){
+            console.error(`Error at deleting ${STORAGE_KEYS.TRIPDATA}`,asyncError)
         }
        
     }

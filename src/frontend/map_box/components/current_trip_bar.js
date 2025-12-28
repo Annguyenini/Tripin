@@ -6,16 +6,19 @@ import TripDataService from "../../../backend/storage/trip";
 import TripData from "../../../app-core/local_data/local_trip_data";
 import Trip from "../../../backend/trip/trip";
 import { navigate } from "../../custom_function/navigationService";
+import LocationDataService from "../../../backend/storage/location";
+import { DATA_KEYS } from "../../../backend/storage/storage_keys";
 export const CurrentTripBar=()=>{
 
   const[onFullMode, setOnFullMode]=useState(false)
 
   const[duration,setDuration] = useState({hours:0,minutes:0})
-  const[degree,setDegree] = useState(null)
+  const [temp,setTemp] = useState(null)
   const[aqi,setAqi] = useState(null)
+  const[city,setCity] = useState(null)
   const[currentState,setCurrentState] =useState(AppState.currentState);
   const[createdTime,setCreatedTime] = useState(null)
-
+  
   const end_trip =async()=>{
     const status =await Trip.end_trip();
     if (status){
@@ -29,6 +32,24 @@ export const CurrentTripBar=()=>{
 
     }
     fetch()
+
+    const update_location_condition ={
+      update(codition){
+        setAqi(codition.aqi)
+        setTemp(codition.tempature)
+      }
+    }
+    const update_city={
+      update(city){
+        setCity(city)
+      }
+    }
+    LocationDataService.attach(update_location_condition,DATA_KEYS.LOCATION.CONDITIONS)
+    LocationDataService.attach(update_city,DATA_KEYS.LOCATION.CITY)
+    return ()=>{
+      LocationDataService.detach(update_location_condition,DATA_KEYS.LOCATION.CONDITIONS)
+      LocationDataService.detach(update_city,DATA_KEYS.LOCATION.CITY)
+    }
   },[createdTime])
 
   useEffect(()=>{
@@ -79,15 +100,15 @@ export const CurrentTripBar=()=>{
         </Pill>
 
         <Pill>
-          <Text style={styles.text}>0 C</Text>
+          <Text style={styles.text}>{temp} C</Text>
         </Pill>
 
         <Pill>
-          <Text style={styles.text}>PARIS</Text>
+          <Text style={styles.text}>{city}</Text>
         </Pill>
 
         <Pill>
-          <Text style={styles.text}>AQI: 42</Text>
+          <Text style={styles.text}>AQI: {aqi}</Text>
         </Pill>
         <RedPill>
           <TouchableOpacity onPress={end_trip}>

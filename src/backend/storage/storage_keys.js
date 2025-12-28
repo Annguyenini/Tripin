@@ -3,6 +3,8 @@ export const STORAGE_KEYS={
     USER:'user',
     TRIPDATA:'trip_data',
     TRIP_IMAGE:'trip_image', 
+    LOCATION_COND_DATA:'location_cond_data',
+    CURRENT_CITY:'current_city',
     SETTINGS:{
         TRIP_STATUS:'settings.trip_status',
         FOREGROUNDPERMISSION :"settings.foreground_permission",
@@ -22,6 +24,10 @@ export const DATA_KEYS ={
     USER:{
         USER_DATA:'user_data',
         USER_AVATAR:'user_avatar'
+    },
+    LOCATION:{
+        CONDITIONS:'location_data',
+        CITY: 'location.city'
     }
 
 }

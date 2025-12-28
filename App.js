@@ -28,6 +28,7 @@ import{cameraStyle} from './src/styles/camera_style.js'
 import {CameraApp} from './src/frontend/camera/camera_layout.js'
 import { SettingScreen } from './src/frontend/setting_screen.js';
 import { Loading } from './src/frontend/custom_components/loading.js';
+import Trip from './src/backend/trip/trip.js';
 const backgroundImage = require('./assets/image/main_background.png');
 const logo = require('./assets/image/main_logo.png');
 const { width, height } = Dimensions.get('window');
@@ -57,8 +58,7 @@ export default function App() {
             setTimeout(()=>{
               navigate('Main')
               setLoaded(true)
-            },2000)
-
+            },1000)
           }
         }
       }

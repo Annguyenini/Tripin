@@ -1,8 +1,10 @@
 import TokenService  from '../services/token_service';
 import AuthService from '../services/auth';
-import * as API from '../../config/config'
+import * as API from '../../config/config_api'
 import TripDataService from '../storage/trip';
 import TripData from '../../app-core/local_data/local_trip_data';
+import TripService  from './trip_service';
+import locationDataService from '../storage/location';
 class Trip{
 
     constructor(){
@@ -103,23 +105,28 @@ class Trip{
         else if(res.status === 200){
             await TripDataService.deleteCurrentTripData()
             await TripDataService.setTripStatus('false')
+            stop_task = await TripService.stopGPSWatch()
+            console.assert(stop_task,'Task not stop')
             return true
         }
     }
-    async send_coordinates(coor_object){
+    async send_coordinates(coor_object,last_long,last_lat){
         console.log("called")
         const token = await TokenService.getToken('access_token')
         const respond = await fetch(API.SEND_COORDINATES+`/${TripData.trip_id}/coordinates`,{
             method:'POST',
             headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
-            body:JSON.stringify({coordinates:coor_object})
+            body:JSON.stringify({coordinates:coor_object,longitude:last_long,latitude:last_lat})
         })
         const data = await respond.json()
+        console.log(data.geo_data,data.city)
+        await locationDataService.setCurrentLocationCondition(data.geo_data)
+        await locationDataService.setCurrentCity(data.city)
         if(respond.status ===401){
             console.log("401")
             if(data.code === 'token_expired'){
                 await AuthService.requestNewAccessToken()
-                return await this.send_coordinates(coor_object)
+                return await this.send_coordinates(coor_object,last_long,last_lat)
             }
             else if(data.code === 'token_invalid'){
                 return false
@@ -130,6 +137,39 @@ class Trip{
             return true;
         }
 
+    }
+    async requestTripsData(){
+        const token = await TokenService.getToken('access_token')
+        const respond = await fetch(API.REQUEST_TRIPS_DATA,{
+            method :'GET',
+            headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
+        })
+        if(respond.status ===401){
+            console.log("401")
+            if(data.code === 'token_expired'){
+                await AuthService.requestNewAccessToken()
+                return await this.requestTripsData()
+            }
+            else if(data.code === 'token_invalid'){
+                return false
+            }
+            return false 
+        }
+        const data = await respond.json()
+        console.log(data)
+
+         if (data.current_trip_data){
+            const trip_data = TripDataService.getObjectReady(data.trip_data.trip_name,data.trip_data.trip_id,data.trip_data.created_time)
+            await TripDataService.setCurrentTripData(trip_data)
+            if(data.trip_data.trip_image){
+            await TripDataService.setTripImageCover(data.trip_data.trip_image,'aws')
+            }
+            await TripDataService.setTripStatus('true')
+        }
+        if(data.all_trip_data){
+            TripDataService.setTripsData(data.all_trip_data)
+        }
+        return True
     }
 }
 
