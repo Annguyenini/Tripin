@@ -1,7 +1,8 @@
 import { CameraView, useCameraPermissions, FlashMode } from 'expo-camera';
 import { act,useState } from 'react';
 import * as MediaLibrary from 'expo-media-library';
-
+import TripData from '../../app-core/local_data/local_trip_data'
+import Trip from '../trip/trip';
 class CameraService{
     constructor(){
         this.album_name = "Tripin_album";
@@ -23,7 +24,13 @@ class CameraService{
         }
     }
 
-  }
+    }
+
+    async sendImageToServer(photoUri){
+        if(TripData.trip_id){
+            trip
+        }
+    }
 
   async recordVideo(cameraRef){
     if(cameraRef.current){

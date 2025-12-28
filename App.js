@@ -25,7 +25,7 @@ import { useFonts } from 'expo-font';
 import {styles} from './src/styles/style.js'
 import{mainScreenStyle} from './src/styles/main_screen_styles.js'
 import{cameraStyle} from './src/styles/camera_style.js'
-import {CameraApp} from './src/frontend/camera/camera_layout.js'
+import {CameraApp} from './src/frontend/camera/camera_main.js'
 import { SettingScreen } from './src/frontend/setting_screen.js';
 import { Loading } from './src/frontend/custom_components/loading.js';
 import Trip from './src/backend/trip/trip.js';

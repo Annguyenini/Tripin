@@ -5,6 +5,7 @@ import TripDataService from '../storage/trip';
 import TripData from '../../app-core/local_data/local_trip_data';
 import TripService  from './trip_service';
 import locationDataService from '../storage/location';
+import timestamp from '../addition_functions/get_current_time';
 class Trip{
 
     constructor(){
@@ -119,9 +120,7 @@ class Trip{
             body:JSON.stringify({coordinates:coor_object,longitude:last_long,latitude:last_lat})
         })
         const data = await respond.json()
-        console.log(data.geo_data,data.city)
-        await locationDataService.setCurrentLocationCondition(data.geo_data)
-        await locationDataService.setCurrentCity(data.city)
+        
         if(respond.status ===401){
             console.log("401")
             if(data.code === 'token_expired'){
@@ -134,6 +133,9 @@ class Trip{
             return false 
         }
         else if(respond.status===200){
+            console.log(data)
+            await locationDataService.setCurrentLocationCondition(data.geo_data)
+            await locationDataService.setCurrentCity(data.city)
             return true;
         }
 
@@ -144,6 +146,8 @@ class Trip{
             method :'GET',
             headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
         })
+        console.log(respond.status)
+
         if(respond.status ===401){
             console.log("401")
             if(data.code === 'token_expired'){
@@ -170,6 +174,21 @@ class Trip{
             TripDataService.setTripsData(data.all_trip_data)
         }
         return True
+    }
+
+    async sendTripImage(imageUri){
+        const token = await TokenService.getToken('access_token')
+        const image =  new FormData()
+        image.append('image',{
+            uri:imageUri,
+            type:'image/jpg',
+            name:`${TripData.trip_id}_${timestamp}.jpg`
+        })
+        const respond = await fetch(API.SEND_TRIP_IMAGES+`/${TripData.trip_id}/media`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json','Authorization':`${token}`},
+            
+        })
     }
 }
 

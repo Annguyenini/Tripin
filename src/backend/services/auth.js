@@ -173,7 +173,7 @@ class Auth{
         }
         await UserDataService.setUserData(userdata)
         if (data.user_data.avatar_uri){
-            await UserDataService.setProfileImageUri(data.user_data.avatar_uri)
+            await UserDataService.setProfileImageUri(data.user_data.avatar_uri,'aws')
 
         }
 

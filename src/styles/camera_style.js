@@ -32,25 +32,41 @@ export const cameraStyle = StyleSheet.create({
     fontWeight: 'bold',
   },
   topControls: {
-  position: 'absolute',
-  top: 50, // push it down a bit from the status bar
-  flexDirection: 'row',
-  justifyContent: 'space-around',
-  width: '100%',
-  paddingHorizontal: 40,
+    
+    position: 'absolute',
+    top: 50,
+    left: 20
 },
+ top_wrapper: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    height: 130,
+    zIndex: 10
+  },
+  top_shape: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+  },
 
   botControls: {
+    // position: 'absolute',
+    // bottom: 50,
+    // flexDirection: 'row',
+    // justifyContent: 'space-between',
+    // width: '100%',
+    // paddingHorizontal: 40,
+    // backgroundColor: '#494343ff',
+    //  height: 80, 
+    // borderRadius:20,
+    // alignItems: 'center',
+    
     position: 'absolute',
-    bottom: 50,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    bottom: 40,
     width: '100%',
-    paddingHorizontal: 40,
-    backgroundColor: '#494343ff',
-     height: 80, 
-    borderRadius:20,
-    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center'
   },
   icon:{
     size: 10,
@@ -81,6 +97,8 @@ export const cameraStyle = StyleSheet.create({
     borderColor: 'white',
   },
     outerCircle: {
+    position:'absolute',
+
     width: 80,
     height: 80,
     borderRadius: 40,
@@ -162,6 +180,25 @@ export const cameraStyle = StyleSheet.create({
   backgroundColor: 'rgba(255, 255, 255, 0.51)',
   zIndex: 1000, // High z-index to appear above everything
 },
+  middleBar:{
+      position: 'absolute',
+  bottom: 150,
+  // flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  width: '100%',
+  paddingHorizontal: 20,
+  height: 50,
+  borderRadius: 20,
+  // backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  captureMode:{ 
+  // position: 'absolute',
+  // left: '50%',
+  transform: [{ translateX: -150 }], // half of width of currentZoomZone
+  alignItems: 'left ',
+  justifyContent: 'left',
+  }
 });
 
 
@@ -174,11 +211,10 @@ export const camera_zoom = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.3)',
     paddingVertical: 10,   // smaller padding
     paddingHorizontal: 5,
-    alignItems: 'center',
     alignSelf: 'flex-start', // 👈 fix it to the left
     transform: [{ scale: 1 }], // 👈 make everything 70% smaller
     marginLeft: 0, // optional spacing from screen edge
-     transform: [{ translateX: 80 }]
+     transform: [{ translateX: 250 }]
   },
   zoom_text :{
     color: 'white',
@@ -204,14 +240,14 @@ export const camera_zoom = StyleSheet.create({
   zoomControls: {
   position: 'absolute',
   bottom: 150,
-  flexDirection: 'row',
+  // flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
   width: '100%',
   paddingHorizontal: 20,
   height: 50,
   borderRadius: 20,
-  backgroundColor: 'rgba(255,255,255,0.1)',
+  // backgroundColor: 'rgba(255,255,255,0.1)',
 },
 
 zoomButtonsGroup: {
@@ -253,7 +289,7 @@ currentZoomText: {
 centeredZoom: {
   position: 'absolute',
   left: '50%',
-  transform: [{ translateX: -25 }], // half of width of currentZoomZone
+  // transform: [{ translateX: -1 }], // half of width of currentZoomZone
   alignItems: 'center',
   justifyContent: 'center',
 },

@@ -10,6 +10,7 @@ export const REQUEST_NEW_TRIP_API = BASE_API+BASE_TRIP_API+"/request-new-trip"
 export const END_TRIP = BASE_API+BASE_TRIP_API+"/end-trip"
 export const SEND_COORDINATES = BASE_API+BASE_TRIP_API
 export const REQUEST_TRIPS_DATA = BASE_API+BASE_TRIP_API+'/trips'
+export const SEND_TRIP_IMAGES = BASE_API+BASE_TRIP_API
 
 export const BASE_USER_API = '/user'
 export const UPDATE_PROFILE_IMAGE = BASE_API+BASE_USER_API+'/update-avatar'

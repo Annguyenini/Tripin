@@ -112,14 +112,26 @@ class UserDataService{
     }
 
 
-    async setProfileImageUri(uri){
+    async setProfileImageUri(uri,location='local'){
         const destination = documentDirectory+USER_PROFILE_IMAGE_PATH
         console.log('uri',uri,'des',destination)
-        try {
-            await copyAsync({from:uri,to:destination })
+        if (location !== 'local'){
+             try {
+            
+                await downloadAsync(uri,destination )
+            }
+            catch(err){
+                console.error('dsdsd',err)
+            }
         }
-        catch(err){
-            console.error('dsdsd',err)
+        else{
+            try {
+                
+                await copyAsync({from:uri,to:destination })
+            }
+            catch(err){
+                console.error('dsdsd',err)
+            }
         }
         this.items.set(DATA_KEYS.USER.USER_AVATAR,destination)
         this.notify(DATA_KEYS.USER.USER_AVATAR)
@@ -137,9 +149,7 @@ class UserDataService{
 
        
         this.items.set(DATA_KEYS.USER.USER_AVATAR,destination)
-        console.log('32323')
         this.notify(DATA_KEYS.USER.USER_AVATAR)
-        console.log('complete download')
     }
 
     getProfileImageUri(){
