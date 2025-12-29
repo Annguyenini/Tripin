@@ -73,7 +73,9 @@ class TripDataService{
         
         
         if(!tripdata||typeof(tripdata)!=='object'){
+            console.log('trip_data must be object')
         }
+        console.log(tripdata)
         try{
             // await SecureStore.setItemAsync(STORAGE_KEYS.TRIPDATA,JSON.stringify(tripdata))
             await AsyncStorage.setItem(STORAGE_KEYS.TRIPDATA,JSON.stringify(tripdata))
@@ -111,6 +113,7 @@ class TripDataService{
 
     setTripsData(tripsList){
         try{
+            console.log('tripsList',tripsList)
             this.item.set(DATA_KEYS.TRIP.ALL_TRIP,tripsList)
             this.notify(DATA_KEYS.TRIP.ALL_TRIP)
             

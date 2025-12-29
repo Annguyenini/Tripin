@@ -6,6 +6,7 @@ import TripData from '../../app-core/local_data/local_trip_data';
 import TripService  from './trip_service';
 import locationDataService from '../storage/location';
 import timestamp from '../addition_functions/get_current_time';
+import LocationService from '../../app-core/local_data/local_location_data'
 class Trip{
 
     constructor(){
@@ -37,14 +38,15 @@ class Trip{
             headers:{"Authorization": `Bearer ${token}`},
             body: formData
         });
-        const data = await respond.json();
-        console.log(data)
-        // console.log(respond.status)
 
-        const trip_id = data.trip_id
+    
         // console.log(trip_id)
+        console.log(respond.status)
 
         if (respond.status ===200){
+            const data = await respond.json();
+            console.log(data)
+            const trip_id = data.trip_id
             const trip_data =TripDataService.getObjectReady(trip_name, trip_id,Date.now())
             console.assert(trip_data === null,"Trip data is null")
             // console.log(trip_data)
@@ -55,9 +57,7 @@ class Trip{
             return true
         }
 
-        if(respond.status === 401){
-            console.log("401")
-            console.log(data.code)
+        else if(respond.status === 401){
             if (data.code ==="token_expired"){
                 await AuthService.requestNewAccessToken()
                 return await this.requestNewTrip(trip_name)
@@ -66,14 +66,18 @@ class Trip{
             else if(data.code ==="token_invalid"){
                 return false
             }
-            else if(respond.status != 419 ){
-                return false
-            }
+           
             else if(data.code ==="failed"){
                 console.log("failed ")
                 return false 
 
             }
+        }
+        else if (respond.status === 419){
+            return false
+        }
+        else if (respond.status === 500){
+            return false
         }
         return true
     }
@@ -146,7 +150,6 @@ class Trip{
             method :'GET',
             headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
         })
-        console.log(respond.status)
 
         if(respond.status ===401){
             console.log("401")
@@ -162,33 +165,59 @@ class Trip{
         const data = await respond.json()
         console.log(data)
 
-         if (data.current_trip_data){
-            const trip_data = TripDataService.getObjectReady(data.trip_data.trip_name,data.trip_data.trip_id,data.trip_data.created_time)
+        if (data.current_trip_data){
+            const trip_data = TripDataService.getObjectReady(data.current_trip_data.trip_name,data.current_trip_data.trip_id,data.current_trip_data.created_time)
             await TripDataService.setCurrentTripData(trip_data)
-            if(data.trip_data.trip_image){
-            await TripDataService.setTripImageCover(data.trip_data.trip_image,'aws')
+            if(data.current_trip_data.trip_image){
+                await TripDataService.setTripImageCover(data.current_trip_data.trip_image,'aws')
             }
             await TripDataService.setTripStatus('true')
         }
         if(data.all_trip_data){
             TripDataService.setTripsData(data.all_trip_data)
         }
-        return True
+        return true
     }
 
     async sendTripImage(imageUri){
+        console.log('called')
         const token = await TokenService.getToken('access_token')
-        const image =  new FormData()
-        image.append('image',{
+        const coor = await LocationService.getCurrentCoor()
+        console.log(coor)
+        const longitude = coor.coords.longitude
+        const latitude = coor.coords.latitude
+        const form =  new FormData()
+        form.append('image',{
             uri:imageUri,
             type:'image/jpg',
-            name:`${TripData.trip_id}_${timestamp}.jpg`
+            name:`trip${TripData.trip_id}_${timestamp}.jpg`
         })
-        const respond = await fetch(API.SEND_TRIP_IMAGES+`/${TripData.trip_id}/media`,{
+        form.append('data',JSON.stringify({
+            trip_id:TripData.trip_id,
+            longitude:longitude,
+            latitude:latitude,
+            time_stamp : timestamp
+        }))
+        const respond = await fetch(API.SEND_TRIP_IMAGES+`/${TripData.trip_id}/upload`,{
             method:'POST',
-            headers:{'Content-Type':'application/json','Authorization':`${token}`},
-            
+            headers:{'Content_type':'multipart/form-data','Authorization':`${token}`},
+            body:form
         })
+        const data = await respond.json()
+        if(respond.status ===401){
+            
+            if (data.code === 'token_expired'){
+                await TokenService.requestNewAccessToken()
+                return await this.sendTripImage(imageUri)
+            }
+            else if (data.code === 'token_invalid'){
+                return false
+            }
+        }
+        else if (respond.status === 200){
+            console.log(data)
+            return true
+        }
     }
 }
 

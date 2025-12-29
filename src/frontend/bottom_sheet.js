@@ -31,6 +31,7 @@ export const UserDataBottomSheet = ({
     useEffect(()=>{
       const fetch_trips = async()=>{
         const tripss = TripDataService.getTripsData ()
+        console.log('trips',tripss)
         setTrips(tripss)
       }
       fetch_trips()

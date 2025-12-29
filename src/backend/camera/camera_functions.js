@@ -10,7 +10,7 @@ class CameraService{
     }
 
     async takePicture (cameraRef){
-    if (cameraRef.current){
+        if (cameraRef.current){
         try{
             const options = {quality: 1, base64 :true}; // control option for picture
             const photo =await cameraRef.current.takePictureAsync(options) // return a photo
@@ -19,17 +19,20 @@ class CameraService{
             return photo;
         }    
         catch(err){
-            console.error("Faild to take picture");
+            console.error("Failed to take picture",err);
             return null;
         }
-    }
+     }
 
     }
 
     async sendImageToServer(photoUri){
+        console.log('called')
         if(TripData.trip_id){
-            trip
+            console.log('sending')
+            await Trip.sendTripImage(photoUri)
         }
+        return
     }
 
   async recordVideo(cameraRef){

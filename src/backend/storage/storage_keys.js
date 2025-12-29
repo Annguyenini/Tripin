@@ -27,7 +27,11 @@ export const DATA_KEYS ={
     },
     LOCATION:{
         CONDITIONS:'location_data',
-        CITY: 'location.city'
+        CITY: 'location_city'
+    },
+    PERMISSIONS:{
+        FOREGROUNDPERMISSION :"settings.foreground_permission",
+        BACKGROUNDPERMISSION :"settings.background_permission",
     }
 
 }

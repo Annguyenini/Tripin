@@ -72,6 +72,7 @@ export const CameraApp = () => {
       console.log("pass");
       setPhoto(photo);
       setImage_icon(photo.uri);
+      await CameraService.sendImageToServer(photo.uri)
     }
   }
   const recordVideo = async () => {
