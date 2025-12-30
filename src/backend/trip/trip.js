@@ -115,13 +115,13 @@ class Trip{
             return true
         }
     }
-    async send_coordinates(coor_object,last_long,last_lat){
+    async send_coordinates(coor_object){
         console.log("called")
         const token = await TokenService.getToken('access_token')
         const respond = await fetch(API.SEND_COORDINATES+`/${TripData.trip_id}/coordinates`,{
             method:'POST',
             headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
-            body:JSON.stringify({coordinates:coor_object,longitude:last_long,latitude:last_lat})
+            body:JSON.stringify({coordinates:coor_object})
         })
         const data = await respond.json()
         
@@ -136,12 +136,8 @@ class Trip{
             }
             return false 
         }
-        else if(respond.status===200){
-            console.log(data)
-            await locationDataService.setCurrentLocationCondition(data.geo_data)
-            await locationDataService.setCurrentCity(data.city)
-            return true;
-        }
+        return true;
+        
 
     }
     async requestTripsData(){
@@ -150,6 +146,7 @@ class Trip{
             method :'GET',
             headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
         })
+        const data = await respond.json()
 
         if(respond.status ===401){
             console.log("401")
@@ -162,8 +159,6 @@ class Trip{
             }
             return false 
         }
-        const data = await respond.json()
-        console.log(data)
 
         if (data.current_trip_data){
             const trip_data = TripDataService.getObjectReady(data.current_trip_data.trip_name,data.current_trip_data.trip_id,data.current_trip_data.created_time)
@@ -178,6 +173,37 @@ class Trip{
         }
         return true
     }
+
+    async request_location_conditions(){
+        const coors = await LocationService.getCurrentCoor()
+        if(!coors){
+            return false
+        }
+        const longitude = coors.coords.longitude
+        const latitude = coors.coords.latitude
+        const respond = await fetch(API.REQUEST_LOCATION_CONDITIONS+`?longitude=${longitude}&latitude=${latitude}`,{
+            methods:'GET',
+            headers:{'Content-Type':'application/json','Authorization':`Bearer ${await TokenService.getToken('access_token')}`},
+        })
+        const data = await respond.json()
+        if(respond.status ===401){
+            if(data.code === 'token_expired'){
+                await AuthService.requestNewAccessToken()
+                return await this.request_location_conditions(longitude,latitude)
+            }
+            else if(data.code === 'token_invalid'){
+                return false
+            }
+            return false 
+        }
+        if (data.geo_data){
+            await locationDataService.setCurrentLocationCondition(data.geo_data)
+            await locationDataService.setCurrentCity(data.city)
+            return true
+        }
+        return false
+    }
+
 
     async sendTripImage(imageUri){
         console.log('called')
