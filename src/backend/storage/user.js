@@ -2,10 +2,11 @@ import * as SecureStore from 'expo-secure-store'
 import {DATA_KEYS} from './storage_keys'
 import {STORAGE_KEYS} from './storage_keys'
 import { copyAsync, deleteAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
+import Subject from './subject';
 const USER_PROFILE_IMAGE_PATH = 'user_profile.jpg'
-class UserDataService{
+class UserDataService extends Subject{
     constructor(){
-        this.observers ={};
+        super()
         this.items ={
             [DATA_KEYS.USER.USER_DATA] :null,
             [DATA_KEYS.USER.USER_AVATAR]:null,
@@ -18,58 +19,12 @@ class UserDataService{
         }
     }
 
-
-    /**
-     * add to the subcriber list
-     * @param {observer object} observer
-     * @param {string} key {@link DATA_KEYS.USER} 
-     * 
-     */
-    attach(observer,key){
-        if( !Object.values(DATA_KEYS.USER).includes(key)){
-            console.warn("Key not allow")
-            return
-        }
-        if(!this.observers[key]){
-            this.observers[key] = []
-        }
-        this.observers[key].push(observer)
-    }
-
-
-    /**
-     * detach from the subcriber list
-     * @param {observer object} observer 
-     */
-    detach(observer,key){
-        if( !Object.values(DATA_KEYS.USER).includes(key)){
-            console.warn("Key not allow")
-            return
-        }
-        this.observers[key] = this.observers[key].filter(obs=> obs !== observer);
-        }
-
-    /**
-     * notify all subcribers about the change 
-     */
-    notify(key){
-        if(!this.observers[key]){
-            return
-        }
-        for(const obs of this.observers[key]){
-            obs.update(this.items.get(key))
-        }
-    }
-
-
     /** Set user data 
      * @param {object}userdata - must be an object 
     */
     async setUserData (userdata){
         
-        
-        if(!userdata||typeof(userdata)!=='object'){
-        }
+    
         try{
             await SecureStore.setItemAsync(STORAGE_KEYS.USER,JSON.stringify(userdata))
         }
@@ -77,7 +32,8 @@ class UserDataService{
             console.error`Error at set key ${STORAGE_KEYS.USER}`
         }
         this.items.set(DATA_KEYS.USER.USER_DATA,userdata)
-        this.notify(DATA_KEYS.USER.USER_DATA)
+
+        this.notify(DATA_KEYS.USER.USER_DATA,userdata)
         
     }
     /** getUserData
@@ -108,7 +64,7 @@ class UserDataService{
             console.error(`Error at deleting ${STORAGE_KEYS.USER}`)
         }
         this.items.set(DATA_KEYS.USER.USER_DATA,null)
-        this.notify(DATA_KEYS.USER.USER_DATA)
+        this.notify(DATA_KEYS.USER.USER_DATA,null)
     }
 
 
@@ -134,7 +90,7 @@ class UserDataService{
             }
         }
         this.items.set(DATA_KEYS.USER.USER_AVATAR,destination)
-        this.notify(DATA_KEYS.USER.USER_AVATAR)
+        this.notify(DATA_KEYS.USER.USER_AVATAR,destination)
     }
 
     async downloadProfileImageUri(uri){
@@ -149,7 +105,7 @@ class UserDataService{
 
        
         this.items.set(DATA_KEYS.USER.USER_AVATAR,destination)
-        this.notify(DATA_KEYS.USER.USER_AVATAR)
+        this.notify(DATA_KEYS.USER.USER_AVATAR,destination)
     }
 
     getProfileImageUri(){

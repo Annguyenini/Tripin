@@ -32,8 +32,8 @@ export const mainScreenStyle = StyleSheet.create({
     right: 20,
   },
   curentTripZone: {
-    flex: 4,                  // fill proportional space in parent
-    paddingTop: 10,           // small padding instead of top: 0
+    flex: 1,                  // fill proportional space in parent
+    paddingTop: 70,           // small padding instead of top: 0
     alignItems: 'center',     // center horizontally
     width: '100%',
   },

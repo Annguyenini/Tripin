@@ -3,7 +3,8 @@ import {STORAGE_KEYS,DATA_KEYS} from './storage_keys'
 import * as SecureStore from 'expo-secure-store'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { copyAsync, deleteAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
-class TripDataService{
+import Subject from './subject';
+class TripDataService extends Subject{
     /**
      * trip data service, use to store trip_name...
      * struct of data object {
@@ -14,8 +15,7 @@ class TripDataService{
      * @returns
      */
     constructor(){
-        //since this object can keep track of 2 states
-        this.observers = {}
+        super()
         this.item = {
             [DATA_KEYS.TRIP.TRIP_DATA]:null,
             [DATA_KEYS.TRIP.TRIP_STATUS]: null,
@@ -30,41 +30,6 @@ class TripDataService{
             }
         }
     }
-
-
-    attach (observer,key){
-        // console.log("attach", observer,"with key", key)
-        if (!Object.values(DATA_KEYS.TRIP).includes(key)){
-            console.warn('Key not allow')
-            return
-        }
-        if (!this.observers[key]){
-            this.observers[key] = []
-        }
-        this.observers[key].push(observer)
-
-    }
-
-    detach(observer,key){
-        if (!Object.values(DATA_KEYS.TRIP).includes(key)){
-            console.warn('Key not allow')
-            return
-        }
-        this.observers[key] = this.observers[key].filter(obs => obs !== observer)
-
-    }
-
-    notify(item){
-        // console.log("notifing","observers",this.observers[item],"value",this.item.get(item) )
-        if (!this.observers[item]){
-            // console.log("return")
-            return;}
-        this.observers[item].forEach(obs => {
-            // console.log("object",obs,"update",this.item.get(item))
-            obs.update(this.item.get(item))
-        });
-    }
-
 
     /** Set user data 
      * @param {object}Tripdata - must be an object 
@@ -84,7 +49,7 @@ class TripDataService{
             console.error`Error at set key ${STORAGE_KEYS.TRIPDATA} ${asyncError}`
         }
         this.item.set(DATA_KEYS.TRIP.TRIP_DATA,tripdata)
-        this.notify(DATA_KEYS.TRIP.TRIP_DATA)
+        this.notify(DATA_KEYS.TRIP.TRIP_DATA,tripdata)
     }
     /** getTripData
      * trip_data={
@@ -115,7 +80,7 @@ class TripDataService{
         try{
             console.log('tripsList',tripsList)
             this.item.set(DATA_KEYS.TRIP.ALL_TRIP,tripsList)
-            this.notify(DATA_KEYS.TRIP.ALL_TRIP)
+            this.notify(DATA_KEYS.TRIP.ALL_TRIP,tripsList)
             
         }
         catch(err){
@@ -154,7 +119,7 @@ class TripDataService{
 
         const value = status ==="true"?true:false;
         this.item.set(DATA_KEYS.TRIP.TRIP_STATUS,value)
-        this.notify(DATA_KEYS.TRIP.TRIP_STATUS)
+        this.notify(DATA_KEYS.TRIP.TRIP_STATUS,value)
     }
     /**
      * 
@@ -202,7 +167,7 @@ class TripDataService{
                 console.error(asyncError)
             }
             this.item.set(DATA_KEYS.TRIP.TRIP_IMAGE,destination)
-            this.notify(DATA_KEYS.TRIP.TRIP_IMAGE)
+            this.notify(DATA_KEYS.TRIP.TRIP_IMAGE,destination)
             return destination;
         } 
         catch (err) {
@@ -228,6 +193,7 @@ class TripDataService{
             console.error(asyncError)
         }
     }
+
 
     /**
      * delete the trip image
@@ -282,6 +248,8 @@ class TripDataService{
     }
 
     
+
+
 
 }
 

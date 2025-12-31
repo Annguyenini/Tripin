@@ -38,48 +38,18 @@ class Trip{
             headers:{"Authorization": `Bearer ${token}`},
             body: formData
         });
-
-    
-        // console.log(trip_id)
-        console.log(respond.status)
-
-        if (respond.status ===200){
-            const data = await respond.json();
-            console.log(data)
-            const trip_id = data.trip_id
-            const trip_data =TripDataService.getObjectReady(trip_name, trip_id,Date.now())
-            console.assert(trip_data === null,"Trip data is null")
-            // console.log(trip_data)
-            await TripDataService.setCurrentTripData(trip_data)
-            await TripDataService.setTripStatus('true')
-
-            TripDataService.setTripsData(data.all_trip_data)
-            return true
-        }
-
-        else if(respond.status === 401){
+        const data =respond.json()
+        if(respond.status === 401){
             if (data.code ==="token_expired"){
                 await AuthService.requestNewAccessToken()
                 return await this.requestNewTrip(trip_name)
                 
             }
             else if(data.code ==="token_invalid"){
-                return false
-            }
-           
-            else if(data.code ==="failed"){
-                console.log("failed ")
-                return false 
-
+                return null
             }
         }
-        else if (respond.status === 419){
-            return false
-        }
-        else if (respond.status === 500){
-            return false
-        }
-        return true
+        return ({'status':respond.status, 'data':data})
     }
     async end_trip (){
         //oldcode
@@ -140,6 +110,36 @@ class Trip{
         
 
     }
+    async requestCurrentTripData(){
+        const token = await TokenService.getToken('access_token')
+        const respond = await fetch(API.REQUEST_CURRENT_TRIP_DATA,{
+            method :'GET',
+            headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
+        })
+        const data = await respond.json()
+
+        if(respond.status ===401){
+            console.log("401")
+            if(data.code === 'token_expired'){
+                await AuthService.requestNewAccessToken()
+                return await this.requestCurrentTripData()
+            }
+            else if(data.code === 'token_invalid'){
+                return false
+            }
+            return false 
+        }
+
+        if (data.current_trip_data){
+            const trip_data = TripDataService.getObjectReady(data.current_trip_data.trip_name,data.current_trip_data.trip_id,data.current_trip_data.created_time)
+            await TripDataService.setCurrentTripData(trip_data)
+            if(data.current_trip_data.trip_image){
+                await TripDataService.setTripImageCover(data.current_trip_data.trip_image,'aws')
+            }
+            await TripDataService.setTripStatus('true')
+        }
+        return true
+    }
     async requestTripsData(){
         const token = await TokenService.getToken('access_token')
         const respond = await fetch(API.REQUEST_TRIPS_DATA,{
@@ -158,15 +158,6 @@ class Trip{
                 return false
             }
             return false 
-        }
-
-        if (data.current_trip_data){
-            const trip_data = TripDataService.getObjectReady(data.current_trip_data.trip_name,data.current_trip_data.trip_id,data.current_trip_data.created_time)
-            await TripDataService.setCurrentTripData(trip_data)
-            if(data.current_trip_data.trip_image){
-                await TripDataService.setTripImageCover(data.current_trip_data.trip_image,'aws')
-            }
-            await TripDataService.setTripStatus('true')
         }
         if(data.all_trip_data){
             TripDataService.setTripsData(data.all_trip_data)
@@ -197,6 +188,7 @@ class Trip{
             return false 
         }
         if (data.geo_data){
+            console.log(data.geo_data)
             await locationDataService.setCurrentLocationCondition(data.geo_data)
             await locationDataService.setCurrentCity(data.city)
             return true

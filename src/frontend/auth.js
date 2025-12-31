@@ -9,17 +9,9 @@ import AuthService from '../backend/services/auth.js';
 import { useNavigation  } from '@react-navigation/native';
 import { navigate } from './custom_function/navigationService.js';
 import { OverlayCard } from './custom_function/overlay_card.js';
+import app_flow from '../app-core/flow/app_flow.js';
 const { width } = Dimensions.get('window');
 
-export const loginWithAccessToken = async () => {
-  const respond =await AuthService.loginWithAccessToken()
-  console.log(respond)
-  if ( !respond){
-    return false;
-  }
-  return true;
-  
-};
 export const AuthScreen= ( ) => {
   const navigation = useNavigation();
   
@@ -62,6 +54,9 @@ export const AuthScreen= ( ) => {
         setAlertType("Too many request please try again shortly!")
         setShowAleart(true);
         return;
+      }
+      else if(respond ===200){
+        await app_flow.setAuthorization(true)
       }
       // console.log("pass")
       // navigation.navigate('Main');

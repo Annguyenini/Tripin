@@ -32,6 +32,10 @@ export const DATA_KEYS ={
     PERMISSIONS:{
         FOREGROUNDPERMISSION :"settings.foreground_permission",
         BACKGROUNDPERMISSION :"settings.background_permission",
+    },
+    TRIP_CONTENTS:{
+        CURRENT_TRIP_COORDINATES:'current_trip_coordinates',
+        CURRENT_TRIP_MEDIA:'current_trip_medias',
     }
 
 }

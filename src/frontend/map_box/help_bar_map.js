@@ -18,6 +18,7 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
             update(newState){
             setIsOnATrip(newState)
            }
+        
     }
         TripDataService.attach(update_state,DATA_KEYS.TRIP.TRIP_STATUS)
 
@@ -25,6 +26,11 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
             setCurrentTripId(TripData.trip_id);
             setCurrentTripName(TripData.trip_name);
         }
+        const fetchTripStatus=async()=>{
+            const status = await TripDataService.getTripStatus()            
+            setIsOnATrip(status ==='true'? true:false)
+        }
+        fetchTripStatus()
         fetch_trip_data()
         return ()=>TripDataService.detach(update_state,DATA_KEYS.TRIP.TRIP_STATUS)
 

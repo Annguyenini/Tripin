@@ -1,27 +1,57 @@
 import React, { use, useEffect, useMemo, useState,useRef } from 'react'
 import MapboxGL from '@rnmapbox/maps'
 import {View} from 'react-native'
-import * as Location from "expo-location";
 import { HelpBarMap } from './help_bar_map';
-import { useFormState } from 'react-dom';
 import TripDataService from '../../backend/storage/trip';
+import TripContentsDataService from '../../backend/storage/trip_contents'
+import CoordinatesPointsLayout from './components/points';
+import { DATA_KEYS } from '../../backend/storage/storage_keys';
+import { useSafeAreaFrame } from 'react-native-safe-area-context';
 MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN)
 export const MapBoxLayout =({})=>{
     const mapRef = useRef(null);
     const [userLock,setUserLock]=useState(false)
-    // const [zoomLevel, setZoomLevel]= useState(14);
     const [isFollowingUser, setIsFollowingUser] = useState(true)
-    const fetchIsOnATrip =async()=>{
-        const trip_status = await TripDataService.getTripStatus()
-        if (trip_status ==='true'){
-        TripDataService.setTripStatus('true')
-        }
-        else{
-            
-        TripDataService.setTripStatus('false')
-        }
-    }
+
+
+  
     
+    const[isOnATrip,setIsOnATrip]= useState(null)
+
+    const[coorsList, setCoorList] = useState(null)
+    useEffect(()=>{
+        const fetchIsOnATrip =async()=>{
+            const trip_status = await TripDataService.getTripStatus()
+            setIsOnATrip(trip_status ==='true'? true:false)
+    }
+
+        const fetch = async()=>{
+            const coors = TripContentsDataService.item.get(DATA_KEYS.TRIP_CONTENTS.CURRENT_TRIP_COORDINATES)
+            setCoorList(coors)
+        }
+        const updateTripStatus={
+            update(newState){
+                setIsOnATrip(newState)
+            }
+        }
+        const updateCoorList={
+            update(list){
+                console.log('update',list)
+                setCoorList(list)
+            }
+        }
+        fetchIsOnATrip()
+        fetch()
+        
+        TripContentsDataService.attach(updateCoorList,DATA_KEYS.TRIP_CONTENTS.CURRENT_TRIP_COORDINATES)
+        TripContentsDataService.attach(updateTripStatus,DATA_KEYS.TRIP.TRIP_STATUS)
+        return()=>{
+            TripContentsDataService.detach(updateTripStatus,DATA_KEYS.TRIP.TRIP_STATUS)
+            TripContentsDataService.detach(updateCoorList,DATA_KEYS.TRIP_CONTENTS.CURRENT_TRIP_COORDINATES)
+        }
+        
+    })
+
     return(
         <View style={{flex:1}}> 
             
@@ -38,7 +68,7 @@ export const MapBoxLayout =({})=>{
                 if(!userLock){
                     setUserLock(true)
                 }
-                await fetchIsOnATrip()
+
                 
             }}
             onMapIdle={()=>{
@@ -57,6 +87,13 @@ export const MapBoxLayout =({})=>{
             // animationDuration={1}
             />
             <MapboxGL.UserLocation minDisplacement={2}/>
+            
+            {isOnATrip&&
+            
+            CoordinatesPointsLayout(coorsList)
+}
+            
+            
             </MapboxGL.MapView>
             
             <HelpBarMap isFollowingUser={isFollowingUser} setIsFollowingUser={setIsFollowingUser}></HelpBarMap>

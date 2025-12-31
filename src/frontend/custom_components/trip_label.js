@@ -1,4 +1,6 @@
 import { StyleSheet,TouchableOpacity,Image,Text,FlatList } from "react-native";
+import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+
 const TripCard = ({ trip, onPress }) => {
   return (
     <TouchableOpacity
@@ -20,7 +22,7 @@ const TripCard = ({ trip, onPress }) => {
 export const renderTrips = (trips, onTripPress) => {
   if(!trips)return
   return (
-    <FlatList
+    <BottomSheetFlatList
       data={trips}
       keyExtractor={(item) => item.id.toString()}
       numColumns={2}

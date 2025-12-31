@@ -1,4 +1,4 @@
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetScrollView,BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import Trip from'../backend/trip/trip.js'
 import {mainScreenStyle} from '../styles/main_screen_styles.js'
 import { useRef, useState,useMemo, useEffect, use } from "react";
@@ -94,7 +94,7 @@ export const UserDataBottomSheet = ({
 
         <BottomSheet
         ref={bottomSheetRef}
-        index={1} // start closed
+        index={0}  
         snapPoints={snapPoints}
         backgroundStyle={{ backgroundColor: '#2b2a2aff' }}
         handleIndicatorStyle={{ backgroundColor: '#0e0c0cff' }}
@@ -103,7 +103,7 @@ export const UserDataBottomSheet = ({
         
 
         {/* bottom sheet user infos */}
-        <BottomSheetScrollView contentContainerStyle={styles.content}>
+        <View style={styles.content}>
         <TouchableOpacity onPress={profile_picker}>
           <View style={mainScreenStyle.profilePic}>
             <Image
@@ -114,7 +114,7 @@ export const UserDataBottomSheet = ({
         </TouchableOpacity>
 
         <Text style={mainScreenStyle.displayname}>{userDisplayName}</Text>
-      </BottomSheetScrollView>
+      </View>
               
         <View style={mainScreenStyle.curentTripZone}>
           <View style={mainScreenStyle.row}>
@@ -163,6 +163,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   content: {
+    // position:'absolute',
     padding: 30,
     flexDirection: 'row',
     backgroundColor:'#3d3b3bff',

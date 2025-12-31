@@ -1,11 +1,12 @@
 import { CodegenTypes } from "react-native"
 import { DATA_KEYS,STORAGE_KEYS } from "./storage_keys"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import Subject from "./subject"
 
-class LocationDataService{
+class LocationDataService extends Subject{
     constructor(){
+        super()
             //since this object can keep track of 2 states
-            this.observers = {}
             this.item = {
                 [DATA_KEYS.LOCATION.CITY]:null,
                 [DATA_KEYS.LOCATION.CONDITIONS]: null,
@@ -17,43 +18,9 @@ class LocationDataService{
                 }
             }
         }
-    
-    
-        attach (observer,key){
-            // console.log("attach", observer,"with key", key)
-            if (!Object.values(DATA_KEYS.LOCATION).includes(key)){
-                console.warn('Key not allow')
-                return
-            }
-            if (!this.observers[key]){
-                this.observers[key] = []
-            }
-            this.observers[key].push(observer)
-    
-        }
-    
-        detach(observer,key){
-            if (!Object.values(DATA_KEYS.LOCATION).includes(key)){
-                console.warn('Key not allow')
-                return
-            }
-            this.observers[key] = this.observers[key].filter(obs => obs !== observer)
-    
-        }
-    
-        notify(item){
-            // console.log("notifing","observers",this.observers[item],"value",this.item.get(item) )
-            if (!this.observers[item]){
-                // console.log("return")
-                return;}
-            this.observers[item].forEach(obs => {
-                // console.log("object",obs,"update",this.item.get(item))
-                obs.update(this.item.get(item))
-            });
-        }
-
 
         async setCurrentLocationCondition(condition){
+            console.log('con',condition)
             try{
                 await AsyncStorage.setItem(STORAGE_KEYS.LOCATION_COND_DATA,JSON.stringify(condition))
                 
@@ -63,7 +30,7 @@ class LocationDataService{
                 return
             }
             this.item.set(DATA_KEYS.LOCATION.CONDITIONS,condition)
-            this.notify(DATA_KEYS.LOCATION.CONDITIONS)
+            this.notify(DATA_KEYS.LOCATION.CONDITIONS,condition)
         }
 
         async setCurrentCity(city){
@@ -75,7 +42,7 @@ class LocationDataService{
                 return
             }
             this.item.set(DATA_KEYS.LOCATION.CITY,city)
-            this.notify(DATA_KEYS.LOCATION.CITY)
+            this.notify(DATA_KEYS.LOCATION.CITY,city)
         }
 
         async getCurrentLocationCodition(){
@@ -109,7 +76,7 @@ class LocationDataService{
                 return 
             }
             this.item.set(DATA_KEYS.LOCATION.CONDITIONS,null)
-            this.notify(DATA_KEYS.LOCATION.CONDITIONS)
+            this.notify(DATA_KEYS.LOCATION.CONDITIONS,null)
         }
 
         async deleteCurrentCity(){
@@ -123,7 +90,7 @@ class LocationDataService{
             }
 
             this.item.set(DATA_KEYS.LOCATION.CITY,null)
-            this.notify(DATA_KEYS.LOCATION.CITY)
+            this.notify(DATA_KEYS.LOCATION.CITY,null)
         }
          
     

@@ -43,14 +43,8 @@ export const MainScreen = () =>{
       setUsername(UserData.user_name)
       setDisplayName(UserData.display_name)
     }
-    const get_trip_data =async()=>{
-      const trip_status =await Trip.requestTripsData()
-      
-      const location_condition = await Trip.request_location_conditions()
-    
-  }
+  
     fetch_userdata()
-    get_trip_data()
   }, []);
  
   const callCamera= ()=>{
