@@ -1,5 +1,6 @@
 import BottomSheet, { BottomSheetScrollView,BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import Trip from'../backend/trip/trip.js'
+import TripHandler from "../app-core/flow/trip_handler.js";
 import {mainScreenStyle} from '../styles/main_screen_styles.js'
 import { useRef, useState,useMemo, useEffect, use } from "react";
 import { TextInput } from "react-native-gesture-handler";
@@ -78,7 +79,7 @@ export const UserDataBottomSheet = ({
     
 
     const request_new_trip = async()=>{
-      const res = await Trip.requestNewTrip(trip_name,imageUri? imageUri:null)
+      const res = await TripHandler.requestNewTripHandler(trip_name,imageUri? imageUri:null)
       console.log("respond",res)
       if (res){
         console.log("successfully")

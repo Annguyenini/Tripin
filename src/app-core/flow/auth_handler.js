@@ -2,7 +2,7 @@ import Auth from '../../backend/services/auth'
 import TokenService from '../../backend/services/token_service';
 import { navigate } from '../../frontend/custom_function/navigationService';
 import UserDataService from '../../backend/storage/user'
-class AuthFlow{
+class AuthHandler{
     async loginHandler(username,password){
         const respond = await Auth.requestLogin(username,password)
         if(respond.status !=200) return respond.status;
@@ -12,8 +12,6 @@ class AuthFlow{
         await TokenService.deleteToken("refresh_token");
         await TokenService.setToken("refresh_token", token.refresh_token);
         await TokenService.setToken("access_token", token.access_token);
-
-        navigate('main')
 
         const userdata ={
             user_id :data.user_data.user_id,
@@ -35,9 +33,10 @@ class AuthFlow{
         // console.log(data)
         if (res.status===401){
             if (data.code === "token_expired") {
-                const tokendata = await this.authenticateToken("refresh_token");
+                const tokendata = await Auth.authenticateToken("refresh_token");
             
                 if (tokendata.status === 401) {
+                    
                     await TokenService.deleteToken("access_token");
                     await TokenService.deleteToken("refresh_token");
                 return false;
@@ -58,7 +57,6 @@ class AuthFlow{
         if(res.status ===429){
             return false
         }
-        navigate('Main')
         const userdata ={
             user_id: data.user_data.user_id,
             user_name: data.user_data.user_name,
@@ -71,6 +69,16 @@ class AuthFlow{
 
         }
         return true;
-        };
+    };
+    async signUpHandler(){
+        const respond = await Auth.requestSignup(email,displayName,username,password);
+        return(respond)
+    }
+    async emailVerificationHandler(email,code){
+        const respond = await Auth.requestVerifycation(email,code)
+        return respond
+    }
     
 }
+
+export default  new AuthHandler()

@@ -100,53 +100,53 @@ class Auth{
         return({"message":data.message,"status": 200,"data":data})
         
     }
-    async loginWithAccessToken(){
+    // async loginWithAccessToken(){
 
-        // console.log(await TokenService.getToken("access_token"))
-        // console.log(await TokenService.getToken("refresh_token"))
+    //     // console.log(await TokenService.getToken("access_token"))
+    //     // console.log(await TokenService.getToken("refresh_token"))
 
-        const res = await this.authenticateToken("access_token");
-        const data =await res.data
-        // console.log(data)
-        if (res.status===401){
-            if (data.code === "token_expired") {
-                const tokendata = await this.authenticateToken("refresh_token");
+    //     const res = await this.authenticateToken("access_token");
+    //     const data =await res.data
+    //     // console.log(data)
+    //     if (res.status===401){
+    //         if (data.code === "token_expired") {
+    //             const tokendata = await this.authenticateToken("refresh_token");
             
-                if (tokendata.status === 401) {
-                    await TokenService.deleteToken("access_token");
-                    await TokenService.deleteToken("refresh_token");
-                return false;
-                } 
-                else if (tokendata.status === 200) {
-                    await TokenService.deleteToken("access_token");
-                    await this.requestNewAccessToken();
-                    return await this.loginWithAccessToken();
-                }
-            }
+    //             if (tokendata.status === 401) {
+    //                 await TokenService.deleteToken("access_token");
+    //                 await TokenService.deleteToken("refresh_token");
+    //             return false;
+    //             } 
+    //             else if (tokendata.status === 200) {
+    //                 await TokenService.deleteToken("access_token");
+    //                 await this.requestNewAccessToken();
+    //                 return await this.loginWithAccessToken();
+    //             }
+    //         }
             
-            else if (data.code === "token_invalid") {
-                    await TokenService.deleteToken("access_token");
-                    await TokenService.deleteToken("refresh_token");        
-                    return false;
-            }
-        }
-        if(res.status ===429){
-            return false
-        }
+    //         else if (data.code === "token_invalid") {
+    //                 await TokenService.deleteToken("access_token");
+    //                 await TokenService.deleteToken("refresh_token");        
+    //                 return false;
+    //         }
+    //     }
+    //     if(res.status ===429){
+    //         return false
+    //     }
         
-        const userdata ={
-            user_id: data.user_data.user_id,
-            user_name: data.user_data.user_name,
-            display_name: data.user_data.display_name
-        }        
+    //     const userdata ={
+    //         user_id: data.user_data.user_id,
+    //         user_name: data.user_data.user_name,
+    //         display_name: data.user_data.display_name
+    //     }        
 
-        await UserDataService.setUserData(userdata)
-        if (data.user_data.avatar_uri){
-            await UserDataService.setProfileImageUri(data.user_data.avatar_uri,'aws')
+    //     await UserDataService.setUserData(userdata)
+    //     if (data.user_data.avatar_uri){
+    //         await UserDataService.setProfileImageUri(data.user_data.avatar_uri,'aws')
 
-        }
-        return true;
-        };
+    //     }
+    //     return true;
+    //     };
     }
 
     const AuthService = new Auth

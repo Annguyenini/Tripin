@@ -6,10 +6,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import {styles} from '../styles/style.js'
 import {authStyle} from '../styles/auth_style.js'
 import AuthService from '../backend/services/auth.js';  
+import AuthHandler from '../app-core/flow/auth_handler.js';
 import { useNavigation  } from '@react-navigation/native';
 import { navigate } from './custom_function/navigationService.js';
 import { OverlayCard } from './custom_function/overlay_card.js';
-import app_flow from '../app-core/flow/app_flow.js';
+import AppFlow from '../app-core/flow/app_flow.js';
 const { width } = Dimensions.get('window');
 
 export const AuthScreen= ( ) => {
@@ -44,7 +45,7 @@ export const AuthScreen= ( ) => {
     }
 
     if(action ==='Login'){
-      const respond =await AuthService.requestLogin(username,password);
+      const respond =await AuthHandler.loginHandler(username,password);
       if(respond===401){
         setAlertType('Account not found!')
         setShowAleart(true);
@@ -56,7 +57,7 @@ export const AuthScreen= ( ) => {
         return;
       }
       else if(respond ===200){
-        await app_flow.setAuthorization(true)
+        await AppFlow.onAuthSuccess()
       }
       // console.log("pass")
       // navigation.navigate('Main');
@@ -84,7 +85,7 @@ export const AuthScreen= ( ) => {
       setShowPML(true);
       return;
     }
-    const response = await AuthService.requestSignup(email,displayName,username,password);
+    const response = await AuthHandler.signUpHandler(email,displayName,username,password);
     if(response.status===401){
       setAlertType(response.message);
       setShowAleart(true);
@@ -102,7 +103,7 @@ export const AuthScreen= ( ) => {
       showAlert(true)
       return 
     }
-    const respond = await AuthService.requestVerifycation(email,verifyCode);
+    const respond = await AuthHandler.emailVerificationHandler(email,verifyCode);
     if(respond.status!=200){
       setAlertType(respond.message)
       setShowAleart(true)

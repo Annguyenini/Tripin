@@ -6,19 +6,22 @@ import TripDataService from '../../backend/storage/trip';
 import TripContentsDataService from '../../backend/storage/trip_contents'
 import CoordinatesPointsLayout from './components/points';
 import { DATA_KEYS } from '../../backend/storage/storage_keys';
-import { useSafeAreaFrame } from 'react-native-safe-area-context';
+import AppFlow from '../../app-core/flow/app_flow';
+import ImageLabel from './components/image_label';
+
 MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN)
 export const MapBoxLayout =({})=>{
     const mapRef = useRef(null);
     const [userLock,setUserLock]=useState(false)
     const [isFollowingUser, setIsFollowingUser] = useState(true)
-
-
-  
-    
     const[isOnATrip,setIsOnATrip]= useState(null)
 
     const[coorsList, setCoorList] = useState(null)
+    const[mediaList,setMediaList] =useState(null)
+
+    const sendMapRenderSignal= async()=>{
+        await AppFlow.onRenderMapSuccess()
+    }
     useEffect(()=>{
         const fetchIsOnATrip =async()=>{
             const trip_status = await TripDataService.getTripStatus()
@@ -27,7 +30,9 @@ export const MapBoxLayout =({})=>{
 
         const fetch = async()=>{
             const coors = TripContentsDataService.item.get(DATA_KEYS.TRIP_CONTENTS.CURRENT_TRIP_COORDINATES)
+            const media = TripContentsDataService.item.get(DATA_KEYS.TRIP_CONTENTS.CURRENT_TRIP_MEDIA)
             setCoorList(coors)
+            setMediaList(media)
         }
         const updateTripStatus={
             update(newState){
@@ -68,6 +73,7 @@ export const MapBoxLayout =({})=>{
                 if(!userLock){
                     setUserLock(true)
                 }
+                await sendMapRenderSignal()
 
                 
             }}
@@ -88,11 +94,8 @@ export const MapBoxLayout =({})=>{
             />
             <MapboxGL.UserLocation minDisplacement={2}/>
             
-            {isOnATrip&&
-            
-            CoordinatesPointsLayout(coorsList)
-}
-            
+            {isOnATrip&& coorsList && CoordinatesPointsLayout(coorsList)}
+            {isOnATrip&& mediaList && ImageLabel(mediaList)}
             
             </MapboxGL.MapView>
             

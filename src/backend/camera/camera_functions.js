@@ -3,6 +3,10 @@ import { act,useState } from 'react';
 import * as MediaLibrary from 'expo-media-library';
 import TripData from '../../app-core/local_data/local_trip_data'
 import Trip from '../trip/trip';
+import TripContentHandler from '../../app-core/flow/trip_contents_handler';
+import TripDataStorage from '../trip/trip_data_storage'
+import * as VideoThumbnails from 'expo-video-thumbnails';
+
 class CameraService{
     constructor(){
         this.album_name = "Tripin_album";
@@ -27,10 +31,10 @@ class CameraService{
     }
 
     async sendImageToServer(photoUri){
-        console.log('called')
         if(TripData.trip_id){
-            console.log('sending')
-            await Trip.sendTripImage(photoUri)
+            await TripContentHandler.uploadTripImageHandler(photoUri)
+            await TripDataStorage.push()
+
         }
         return
     }
@@ -57,9 +61,18 @@ class CameraService{
 
     if (this.video?.uri) {
         await this.saveMediaToAlbum(this.video.uri);
+        await this.sendVideoToServer(this.video.uri)
     } else {
         console.warn("No video URI found yet!");
     }
+  }
+  async sendVideoToServer(videoUri){
+        if(TripData.trip_id){
+                const {thumpnailUri} = await VideoThumbnails.getThumbnailAsync(videoUri)
+                await TripContentHandler.uploadTripVideoHandler(videoUri)
+                await TripDataStorage.push()
+            }
+        return
   }
   async saveMediaToAlbum(uri){
     // console.log (this.album_name)    

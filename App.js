@@ -43,10 +43,8 @@ export default function App() {
   const [authorization,setAuthorization]= useState(null)
     useEffect(() => {
       const checkToken = async () => {
-        const status = await AppFlow.requestAuthorization();
-        if (!status){
-          setLoaded(true)
-        }
+        const status = await AppFlow.tokenAuthorization();
+        setLoaded(true)
       };
       checkToken();
       

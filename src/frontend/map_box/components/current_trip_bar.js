@@ -4,7 +4,7 @@ import {curent_trip_styles} from '../../../styles/function/current_trip_header'
 import { use, useEffect, useMemo, useState } from "react";
 import TripDataService from "../../../backend/storage/trip";
 import TripData from "../../../app-core/local_data/local_trip_data";
-import Trip from "../../../backend/trip/trip";
+import TripHandler from "../../../app-core/flow/trip_handler";
 import { navigate } from "../../custom_function/navigationService";
 import LocationDataService from "../../../backend/storage/location";
 import { DATA_KEYS } from "../../../backend/storage/storage_keys";
@@ -20,7 +20,7 @@ export const CurrentTripBar=()=>{
   const[createdTime,setCreatedTime] = useState(null)
   
   const end_trip =async()=>{
-    const status =await Trip.end_trip();
+    const status =await TripHandler.endTripHandler();
     if (status){
       TripDataService.setTripStatus('false')
     }
@@ -32,7 +32,6 @@ export const CurrentTripBar=()=>{
       const city = await LocationDataService.getCurrentCity()
       const condition = await LocationDataService.getCurrentLocationCodition()
       const jsoncon = JSON.parse(condition)
-      console.log('test',condition,jsoncon.aqi,jsoncon.tempature)
       setCity(city)
       setAqi(jsoncon.aqi)
       setTemp(jsoncon.tempature)
@@ -41,7 +40,6 @@ export const CurrentTripBar=()=>{
 
     const update_location_condition ={
       update(condition){
-        console.log('condition',condition)
         setAqi(condition.aqi)
         setTemp(condition.tempature)
       }
