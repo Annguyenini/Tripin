@@ -2,7 +2,7 @@ import React, { use, useEffect, useMemo, useState,useRef } from 'react'
 import MapboxGL from '@rnmapbox/maps'
 import {View} from 'react-native'
 import { HelpBarMap } from './help_bar_map';
-import TripDataService from '../../backend/storage/trip';
+import CurrentTripDataService from '../../backend/storage/current_trip'
 import TripContentsDataService from '../../backend/storage/trip_contents'
 import CoordinatesPointsLayout from './components/points';
 import { DATA_KEYS } from '../../backend/storage/storage_keys';
@@ -24,8 +24,8 @@ export const MapBoxLayout =({})=>{
     }
     useEffect(()=>{
         const fetchIsOnATrip =async()=>{
-            const trip_status = await TripDataService.getTripStatus()
-            setIsOnATrip(trip_status ==='true'? true:false)
+            const trip_status = CurrentTripDataService.getCurrentTripStatus()
+            setIsOnATrip(trip_status)
     }
 
         const fetch = async()=>{
@@ -49,9 +49,9 @@ export const MapBoxLayout =({})=>{
         fetch()
         
         TripContentsDataService.attach(updateCoorList,DATA_KEYS.TRIP_CONTENTS.CURRENT_TRIP_COORDINATES)
-        TripContentsDataService.attach(updateTripStatus,DATA_KEYS.TRIP.TRIP_STATUS)
+        CurrentTripDataService.attach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
         return()=>{
-            TripContentsDataService.detach(updateTripStatus,DATA_KEYS.TRIP.TRIP_STATUS)
+            TripContentsDataService.detach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
             TripContentsDataService.detach(updateCoorList,DATA_KEYS.TRIP_CONTENTS.CURRENT_TRIP_COORDINATES)
         }
         
@@ -94,7 +94,7 @@ export const MapBoxLayout =({})=>{
             />
             <MapboxGL.UserLocation minDisplacement={2}/>
             
-            {isOnATrip&& coorsList && CoordinatesPointsLayout(coorsList)}
+            {/* {isOnATrip&& coorsList && CoordinatesPointsLayout(coorsList)} */}
             {isOnATrip&& mediaList && ImageLabel(mediaList)}
             
             </MapboxGL.MapView>

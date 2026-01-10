@@ -1,9 +1,9 @@
 import { CodegenTypes } from "react-native"
 import { DATA_KEYS,STORAGE_KEYS } from "./storage_keys"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import Subject from "./subject"
+import LocalStorage from "./localStorage"
 
-class LocationDataService extends Subject{
+class LocationDataService extends LocalStorage{
     constructor(){
         super()
             //since this object can keep track of 2 states
@@ -19,76 +19,36 @@ class LocationDataService extends Subject{
             }
         }
 
-        async setCurrentLocationCondition(condition){
-            console.log('con',condition)
-            try{
-                await AsyncStorage.setItem(STORAGE_KEYS.LOCATION_COND_DATA,JSON.stringify(condition))
-                
-            }
-            catch(asyncError){
-                console.error(`ERROR at set current location condition`,asyncError)
-                return
-            }
+        async setCurrentLocationConditionToLocal(condition){
+            await this.saveDataObjectToLocal(DATA_KEYS.LOCATION.CONDITIONS,condition)
             this.item.set(DATA_KEYS.LOCATION.CONDITIONS,condition)
             this.notify(DATA_KEYS.LOCATION.CONDITIONS,condition)
         }
 
-        async setCurrentCity(city){
-            try{
-                await AsyncStorage.setItem(STORAGE_KEYS.CURRENT_CITY,city)
-            }
-            catch(asyncError){
-                console.error(`Error at set current city`,asyncError)
-                return
-            }
+        async setCurrentCityToLocal(city){
+            await this.saveToLocal(STORAGE_KEYS.CURRENT_CITY,city)
+            
             this.item.set(DATA_KEYS.LOCATION.CITY,city)
             this.notify(DATA_KEYS.LOCATION.CITY,city)
         }
 
-        async getCurrentLocationCodition(){
-            try{
-                const codition = await AsyncStorage.getItem(STORAGE_KEYS.LOCATION_COND_DATA)
-                return codition
-            }   
-            catch(asyncError){
-                console.error('Error at get Current Location Condition',asyncError)
-                return null
-            }
+        async getCurrentLocationCoditionFromLocal(){
+            return await this.getDataObjectFromLocal(STORAGE_KEYS.LOCATION_COND_DATA)
+
         }
 
-        async getCurrentCity(){
-            try{
-                const city = await AsyncStorage.getItem(STORAGE_KEYS.CURRENT_CITY)
-                return city
-            }
-            catch(asyncError){
-                console.error('Error at retriving city', asyncError)
-                return null
-            }
+        async getCurrentCityFormLocal(){
+            return await this.getDataFromLocal(STORAGE_KEYS.CURRENT_CITY)
         }
 
         async deleteCurrentLocationCondition(){
-            try{
-                await AsyncStorage.removeItem(STORAGE_KEYS.LOCATION_COND_DATA)
-            }
-            catch(asyncError){
-                console.error('Error delete current location condition:',asyncError)
-                return 
-            }
+            await this.deleteDataFromLocal(DATA_KEYS.LOCATION.CONDITIONS)
             this.item.set(DATA_KEYS.LOCATION.CONDITIONS,null)
             this.notify(DATA_KEYS.LOCATION.CONDITIONS,null)
         }
 
         async deleteCurrentCity(){
-            try{
-                await AsyncStorage.removeItem(STORAGE_KEYS.CURRENT_CITY)
-
-            }
-            catch(asyncError){
-                console.error('Error at delete city',asyncError)
-                return
-            }
-
+            await this.deleteDataFromLocal(DATA_KEYS.LOCATION.CITY)
             this.item.set(DATA_KEYS.LOCATION.CITY,null)
             this.notify(DATA_KEYS.LOCATION.CITY,null)
         }

@@ -1,4 +1,4 @@
-import TripData from '../../app-core/local_data/local_trip_data'
+import CurrentTripDataService from '../../backend/storage/current_trip'
 import * as API from '../../config/config_api'
 import TripContentsDataService from '../storage/trip_contents'
 import TokenService from './token_service'
@@ -9,7 +9,7 @@ class TripContentService{
     async send_coordinates(coor_object){
         console.log("called")
         const token = await TokenService.getToken('access_token')
-        const respond = await fetch(API.SEND_COORDINATES+`/${TripData.trip_id}/coordinates`,{
+        const respond = await fetch(API.SEND_COORDINATES+`/${CurrentTripDataService.getCurrentTripId()}/coordinates`,{
             method:'POST',
             headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
             body:JSON.stringify({coordinates:coor_object})
@@ -20,7 +20,7 @@ class TripContentService{
             console.log("401")
             if(data.code === 'token_expired'){
                 await AuthService.requestNewAccessToken()
-                return await this.send_coordinates(coor_object,last_long,last_lat)
+                return await this.send_coordinates(coor_object)
             }
             else if(data.code === 'token_invalid'){
                 return false
@@ -34,7 +34,7 @@ class TripContentService{
 
     async requestCurrentTripCoordinates(){
         
-        const respond = await fetch(API.REQUEST_TRIP_COORDINATES+`/${TripData.trip_id}/coordinates`,{
+        const respond = await fetch(API.REQUEST_TRIP_COORDINATES+`/${CurrentTripDataService.getCurrentTripId()}/coordinates`,{
             method:'GET',
             headers:{'Authorization':`Bearer ${await TokenService.getToken('access_token')}`}
         })
@@ -82,15 +82,15 @@ class TripContentService{
         form.append('image',{
             uri:imageUri,
             type:'image/jpg',
-            name:`trip${TripData.trip_id}_${timestamp}.jpg`
+            name:`trip${CurrentTripDataService.getCurrentTripId()}_${timestamp}.jpg`
         })
         form.append('data',JSON.stringify({
-            trip_id:TripData.trip_id,
+            trip_id:CurrentTripDataService.getCurrentTripId(),
             longitude:longitude,
             latitude:latitude,
             time_stamp : timestamp
         }))
-        const respond = await fetch(API.SEND_MEDIAS_BASE+`/${TripData.trip_id}/upload`,{
+        const respond = await fetch(API.SEND_MEDIAS_BASE+`/${CurrentTripDataService.getCurrentTripId()}/upload`,{
             method:'POST',
             headers:{'Content_type':'multipart/form-data','Authorization':`Bearer ${token}`},
             body:form
@@ -112,7 +112,7 @@ class TripContentService{
     }
     async sendTripVideo(videoUri,thumbnailsUri,longitude,latitude){
         const form = new FormData()
-        const path = `trip${TripData.trip_id}_${timestamp}`
+        const path = `trip${CurrentTripDataService.getCurrentTripId()}_${timestamp}`
         form.append('video',{
             uri:videoUri,
             name:`${path}.mp4`,
@@ -129,7 +129,7 @@ class TripContentService{
             name:`${path}_thump.jpg`
         })
         const token = await TokenService.getToken('access_token')
-        const respond = await fetch(API.SEND_MEDIAS_BASE+`/${TripData.trip_id}/upload`,{
+        const respond = await fetch(API.SEND_MEDIAS_BASE+`/${CurrentTripDataService.getCurrentTripId()}/upload`,{
             method:'POST',
             headers:{'Content-Type':'multipart/form-data','Authorization':`Bearer ${token}`},
             body:form

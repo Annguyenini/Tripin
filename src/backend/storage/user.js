@@ -2,14 +2,18 @@ import * as SecureStore from 'expo-secure-store'
 import {DATA_KEYS} from './storage_keys'
 import {STORAGE_KEYS} from './storage_keys'
 import { copyAsync, deleteAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
-import Subject from './subject';
+import LocalStorage from './localStorage';
 const USER_PROFILE_IMAGE_PATH = 'user_profile.jpg'
-class UserDataService extends Subject{
+class UserDataService extends LocalStorage{
     constructor(){
         super()
         this.items ={
             [DATA_KEYS.USER.USER_DATA] :null,
+            [DATA_KEYS.USER.USER_ID] :null,
+            [DATA_KEYS.USER.USER_ROLE]:null,
+            [DATA_KEYS.USER.USER_NAME]:null,
             [DATA_KEYS.USER.USER_AVATAR]:null,
+            [DATA_KEYS.USER.USER_DISPLAY_NAME]:null,
             get(prop){
                 return this[prop]
             },
@@ -19,107 +23,91 @@ class UserDataService extends Subject{
         }
     }
 
+    getUserId(){
+        return this.items.get(DATA_KEYS.USER.USER_ID)
+    }
+
+
+    getUserName(){
+        return this.items.get(DATA_KEYS.USER.USER_NAME)
+    }
+    
+    getDisplayName(){
+        return this.items.get(DATA_KEYS.USER.USER_DISPLAY_NAME)
+    }
     /** Set user data 
      * @param {object}userdata - must be an object 
     */
-    async setUserData (userdata){
+    async setUserDataToLocal (userdata){
+        await this.saveDataObjectToLocal(DATA_KEYS.USER.USER_DATA,userdata)
         
-    
-        try{
-            await SecureStore.setItemAsync(STORAGE_KEYS.USER,JSON.stringify(userdata))
-        }
-        catch(secureStoreError){
-            console.error`Error at set key ${STORAGE_KEYS.USER}`
-        }
+        this.items.set(DATA_KEYS.USER.USER_NAME,userdata.user_name)
+        
+        this.items.set(DATA_KEYS.USER.USER_DISPLAY_NAME,userdata.display_name)
+
         this.items.set(DATA_KEYS.USER.USER_DATA,userdata)
 
+        this.items.set(DATA_KEYS.USER.USER_AVATAR,userdata.avatar)
+
         this.notify(DATA_KEYS.USER.USER_DATA,userdata)
-        
     }
+
+    async setUserAuthToLocal(userdata){
+        console.log('userdata',userdata)
+        await this.saveDataObjectToLocal(DATA_KEYS.USER.USER_AUTH,userdata)
+        this.items.set(DATA_KEYS.USER.USER_ID,userdata.user_id)
+        this.items.set(DATA_KEYS.USER.USER_ROLE,userdata.role)
+
+    }
+    async usingStoredUserData(){
+        const stored_userdata = await this.getDataObjectFromLocal(DATA_KEYS.USER.USER_DATA)
+        console.log('stored data',stored_userdata)
+        await this.setUserDataToLocal(stored_userdata)
+        return
+    }   
     /** getUserData
      * @returns an object of userdata or null if it empty */ 
-    async getUserData(){
-        try{
-            const userdata = await SecureStore.getItemAsync(STORAGE_KEYS.USER)
-            if(userdata){
-                return JSON.parse(userdata)
-            }
-            else{
-                return null
-            }
-        }
-        catch(secureStoreError){
-            console.error`Error at getting${STORAGE_KEYS.USER}`
-            return null
-        }
+    async getUserDataFromLocal(){
+        const user_data = await this.getDataObjectFromLocal(DATA_KEYS.USER.USER_DATA)
+        return user_data
+    }
+
+    async getUserAuthFromLocal(){
+        const user_data = await this.getDataObjectFromLocal(DATA_KEYS.USER.USER_AUTH)
+        return user_data
     }
     /**
      *
      */
-    async deleteUserData(){
-        try{
-            await SecureStore.deleteItemAsync(STORAGE_KEYS.USER)
-        }
-        catch(secureStoreError){
-            console.error(`Error at deleting ${STORAGE_KEYS.USER}`)
-        }
+    async deleteUserDataFromLocal(){
+        this.deleteDataFromLocal(DATA_KEYS.USER.USER_DATA)
         this.items.set(DATA_KEYS.USER.USER_DATA,null)
         this.notify(DATA_KEYS.USER.USER_DATA,null)
     }
 
 
-    async setProfileImageUri(uri,location='local'){
-        const destination = documentDirectory+USER_PROFILE_IMAGE_PATH
-        console.log('uri',uri,'des',destination)
-        if (location !== 'local'){
-             try {
-            
-                await downloadAsync(uri,destination )
-            }
-            catch(err){
-                console.error('dsdsd',err)
-            }
+    async setProfileImageUriToLocal(uri,location='local'){
+        if (!uri) return
+        let destination
+        if (location === 'local'){
+            destination = await this.saveImageToLocal(uri,USER_PROFILE_IMAGE_PATH)
         }
         else{
-            try {
-                
-                await copyAsync({from:uri,to:destination })
-            }
-            catch(err){
-                console.error('dsdsd',err)
-            }
+            destination = await this.downloadImageToLocal(uri,USER_PROFILE_IMAGE_PATH)
         }
         this.items.set(DATA_KEYS.USER.USER_AVATAR,destination)
         this.notify(DATA_KEYS.USER.USER_AVATAR,destination)
+        return destination
     }
 
-    async downloadProfileImageUri(uri){
-        const destination = documentDirectory+USER_PROFILE_IMAGE_PATH
-        try {
-            const result = await downloadAsync(uri,destination )
-            console.log('downloaded',result)
-        }
-        catch(err){
-            console.error(err)
-        }
-
-       
-        this.items.set(DATA_KEYS.USER.USER_AVATAR,destination)
-        this.notify(DATA_KEYS.USER.USER_AVATAR,destination)
-    }
-
+    
     getProfileImageUri(){
-        const imageUri = documentDirectory+USER_PROFILE_IMAGE_PATH
-        return imageUri
+        return this.items.get(DATA_KEYS.USER.USER_AVATAR)
     }
 
     async deleteProfileImage(){
-        try{
-            await deleteAsync(documentDirectory+USER_PROFILE_IMAGE_PATH)
-        }
-        catch(err){
-            console.error(err)
-        }
+        await this.deleteImageFromLocal(USER_PROFILE_IMAGE_PATH)
+
     }
 
     async deleteAllUserData(){

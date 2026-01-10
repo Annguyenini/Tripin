@@ -1,7 +1,8 @@
 import { CameraView, useCameraPermissions, FlashMode } from 'expo-camera';
 import { act,useState } from 'react';
 import * as MediaLibrary from 'expo-media-library';
-import TripData from '../../app-core/local_data/local_trip_data'
+// import TripData from '../../app-core/local_data/local_trip_data'
+import CurrentTripDataService from '../../backend/storage/current_trip'
 import Trip from '../trip/trip';
 import TripContentHandler from '../../app-core/flow/trip_contents_handler';
 import TripDataStorage from '../trip/trip_data_storage'
@@ -31,7 +32,7 @@ class CameraService{
     }
 
     async sendImageToServer(photoUri){
-        if(TripData.trip_id){
+        if(CurrentTripDataService.getCurrentTripId()){
             await TripContentHandler.uploadTripImageHandler(photoUri)
             await TripDataStorage.push()
 
@@ -67,9 +68,9 @@ class CameraService{
     }
   }
   async sendVideoToServer(videoUri){
-        if(TripData.trip_id){
+        if(CurrentTripDataService.getCurrentTripId()){
                 const {thumpnailUri} = await VideoThumbnails.getThumbnailAsync(videoUri)
-                await TripContentHandler.uploadTripVideoHandler(videoUri)
+                await TripContentHandler.uploadTripVideoHandler(videoUri,thumpnailUri)
                 await TripDataStorage.push()
             }
         return

@@ -2,9 +2,12 @@ import Auth from '../../backend/services/auth'
 import TokenService from '../../backend/services/token_service';
 import { navigate } from '../../frontend/custom_function/navigationService';
 import UserDataService from '../../backend/storage/user'
+import { ETAG_KEY } from '../../backend/services/etag/etag_keys';
+import Etag_Service from '../../backend/services/etag/etag_service';
 class AuthHandler{
     async loginHandler(username,password){
         const respond = await Auth.requestLogin(username,password)
+        
         if(respond.status !=200) return respond.status;
         const data = respond.data
         const token = data.tokens
@@ -13,24 +16,19 @@ class AuthHandler{
         await TokenService.setToken("refresh_token", token.refresh_token);
         await TokenService.setToken("access_token", token.access_token);
 
-        const userdata ={
-            user_id :data.user_data.user_id,
-            user_name : data.user_data.user_name,
-            display_name : data.user_data.display_name,
-            role:data.user_data.role
-        }
 
-        await UserDataService.setUserData(userdata)
-        if(data.user_data.avatar_uri){
-            await UserDataService.downloadProfileImageUri(data.user_data.avatar_uri)
-        }
+        await UserDataService.setUserAuthToLocal(data.user_data)
        
         return respond.status;
     }
+
     async loginWithTokenHandler(){
-        const res = await Auth.authenticateToken("access_token");
+        const userdata_etag = await Etag_Service.getEtagFromLocal(ETAG_KEY.USERDATA) 
+        
+        const res = await Auth.authenticateToken("access_token",userdata_etag);
+
         const data =await res.data
-        // console.log(data)
+        console.log(data)
         if (res.status===401){
             if (data.code === "token_expired") {
                 const tokendata = await Auth.authenticateToken("refresh_token");
@@ -57,19 +55,12 @@ class AuthHandler{
         if(res.status ===429){
             return false
         }
-        const userdata ={
-            user_id: data.user_data.user_id,
-            user_name: data.user_data.user_name,
-            display_name: data.user_data.display_name
-        }        
+        await UserDataService.setUserAuthToLocal(data.user_data)
 
-        await UserDataService.setUserData(userdata)
-        if (data.user_data.avatar_uri){
-            await UserDataService.setProfileImageUri(data.user_data.avatar_uri,'aws')
-
-        }
         return true;
+    
     };
+
     async signUpHandler(){
         const respond = await Auth.requestSignup(email,displayName,username,password);
         return(respond)

@@ -2,7 +2,7 @@ import TripContents from '../../backend/services/trip_contents'
 import LocationService from '../local_data/local_location_data'
 import locationDataService from '../../backend/storage/location'
 import TripContentsDataService from '../../backend/storage/trip_contents'
-import TripData from '../local_data/local_trip_data'
+import CurrentTripDataService from '../../backend/storage/current_trip'
 class TripContentHandler{
     async sendCoordinatesHandler(coors_object){
         const respond = await TripContents.send_coordinates(coors_object)
@@ -51,7 +51,7 @@ class TripContentHandler{
         return respond   
     }
     async requestCurrentTripMedias (){
-        const respond = await TripContents.requestTripMedias(TripData.trip_id)
+        const respond = await TripContents.requestTripMedias(CurrentTripDataService.getCurrentTripId())
         if(respond.status !==200) return
         const data = respond.data
         await TripContentsDataService.setCurrentMedias(data.medias)

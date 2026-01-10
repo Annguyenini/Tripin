@@ -2,6 +2,7 @@ import { navigate } from "../../frontend/custom_function/navigationService"
 import AuthHandler from "./auth_handler"
 import TripHandler from "./trip_handler"
 import TripContentsHandler from "./trip_contents_handler"
+import UserDataHandler from './user_handler'
 class AppFlow{
     constructor(){
         
@@ -11,18 +12,26 @@ class AppFlow{
         if(!loginViaToken){
             return false
         }
-        await this.onAuthSuccess()
+        if (!await this.onAuthSuccess()) return false
+
         return true
     }
     async onAuthSuccess(){
+        const requestUserData = await UserDataHandler.GetUserDataHandler()
+        if (!requestUserData){ return false}
         navigate('Main')
-        const trips = await TripHandler.requestAllTripHandler() 
-        return
+        return true
     }
+   
+    // request current trip-id
     async onRenderMapSuccess(){
-        const currentTrip = await TripHandler.requestCurrentTripDataHandler()
+        const trips = await TripHandler.requestAllTripHandler() 
+
+        const currentTripIdAndVersion = await TripHandler.requestCurrentTripHandler()        
+
         return
     }
+
     async onRenderCurrentLayoutsSuccess(){
         const currentTripCoors = await TripContentsHandler.requestCurrentTripCoordinatesHandler()
         const currentTripImage = await TripContentsHandler.requestCurrentTripMedias()

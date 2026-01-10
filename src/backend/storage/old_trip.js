@@ -3,8 +3,8 @@ import {STORAGE_KEYS,DATA_KEYS} from './storage_keys'
 import * as SecureStore from 'expo-secure-store'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { copyAsync, deleteAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
-import Subject from './subject';
-class TripDataService extends Subject{
+import LocalStorage from './localStorage';
+class TripDataService extends LocalStorage{
     /**
      * trip data service, use to store trip_name...
      * struct of data object {
@@ -136,6 +136,37 @@ class TripDataService extends Subject{
         }
     }
 
+    async setTripEtag(trip_id,etag){
+        etag_key = `trip:${trip_id}:etag`
+        try {
+            await AsyncStorage.setItem(etag_key,etag)
+        }
+        catch(asyncError){
+            console.error(asyncError)
+        }
+    }
+
+    async setTripEtag(trip_id,etag){
+        etag_key = `trip:${trip_id}:etag`
+        try {
+            await AsyncStorage.setItem(etag_key,etag)
+        }
+        catch(asyncError){
+            console.error(asyncError)
+        }
+    }
+
+    async getTripEtag(trip_id){
+        etag_key = `trip:${trip_id}:etag`
+        try {
+            const etag  = await AsyncStorage.getItem(etag_key)
+            return etag
+        }
+        catch(asyncError){
+            console.error(asyncError)
+            return null
+        }
+    }
     /**
      * 
      * @param {string} imageUri 

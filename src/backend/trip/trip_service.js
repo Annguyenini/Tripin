@@ -4,7 +4,7 @@ import Permission from '../storage/settings/permissions';
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
 import TripDataStorage from './trip_data_storage';
-import TripData from '../../app-core/local_data/local_trip_data';
+import CurrentTripDataService from '../../backend/storage/current_trip';
 
 const TASK_NAME = "background-location-task";
 
@@ -27,7 +27,7 @@ TaskManager.defineTask(TASK_NAME, async ({ data, error }) => {
   }
 
   const location = locations[0];
-  const trip_id = TripData.trip_id;
+  const trip_id = CurrentTripDataService.getCurrentTripId();
 
   if (!trip_id) {
     console.warn('No trip_id available');
@@ -65,7 +65,7 @@ export class TripService {
   }
 
   async init_trip_properties() {
-    this.trip_id = TripData.trip_id
+    this.trip_id = CurrentTripDataService.getCurrentTripId();
   }
 
   /**

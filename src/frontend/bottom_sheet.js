@@ -11,7 +11,9 @@ import { authStyle } from "../styles/auth_style.js";
 import { NewTripFiller } from "./functions/add_new_trip.js";
 import { CurrentTripHeader } from "./map_box/components/current_trip_bar.js";
 import { navigate } from "./custom_function/navigationService.js";
-import TripDataService from "../backend/storage/trip.js";
+import TripDataService from "../backend/storage/trips.js";
+import CurrentTripDataService from '../backend/storage/current_trip.js'
+// import TripData
 import UserDataService from'../backend/storage/user.js'
 import { DATA_KEYS } from "../backend/storage/storage_keys.js";
 import { renderTrips } from "./custom_components/trip_label.js";
@@ -28,10 +30,15 @@ export const UserDataBottomSheet = ({
     const [show_create_trip_filler, set_show_create_trip_filler] = useState(false)
     const[isOnATrip,setIsOnATrip] =useState(null)
     const[trips,setTrips] = useState(null)
-    const [userProfileImage, setUserProfileImage] = useState(UserDataService.getProfileImageUri())
+    const [userProfileImage, setUserProfileImage] = useState()
     useEffect(()=>{
+      const fetch_avatar = async ()=>{
+        const avatar =  UserDataService.getProfileImageUri()
+        setUserProfileImage(avatar)
+      }
+      fetch_avatar()
       const fetch_trips = async()=>{
-        const tripss = TripDataService.getTripsData ()
+        const tripss = TripDataService.getAllTripsList()
         console.log('trips',tripss)
         setTrips(tripss)
       }
@@ -54,12 +61,12 @@ export const UserDataBottomSheet = ({
         }
       }
 
-      TripDataService.attach(update_state,DATA_KEYS.TRIP.TRIP_STATUS)
-      TripDataService.attach(update_trips,DATA_KEYS.TRIP.ALL_TRIP)
+      CurrentTripDataService.attach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
+      TripDataService.attach(update_trips,DATA_KEYS.TRIP.ALL_TRIP_LIST)
       UserDataService.attach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
       return ()=>{
-        TripDataService.detach(update_state,DATA_KEYS.TRIP.TRIP_STATUS)
-        TripDataService.detach(update_trips,DATA_KEYS.TRIP.ALL_TRIP)
+        CurrentTripDataService.detach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
+        TripDataService.detach(update_trips,DATA_KEYS.TRIP.ALL_TRIP_LIST)
         UserDataService.detach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
 
       }
@@ -104,7 +111,7 @@ export const UserDataBottomSheet = ({
         
 
         {/* bottom sheet user infos */}
-        <View style={styles.content}>
+        <BottomSheetScrollView contentContainerStyle={styles.content}>
         <TouchableOpacity onPress={profile_picker}>
           <View style={mainScreenStyle.profilePic}>
             <Image
@@ -115,7 +122,7 @@ export const UserDataBottomSheet = ({
         </TouchableOpacity>
 
         <Text style={mainScreenStyle.displayname}>{userDisplayName}</Text>
-      </View>
+      </BottomSheetScrollView>
               
         <View style={mainScreenStyle.curentTripZone}>
           <View style={mainScreenStyle.row}>

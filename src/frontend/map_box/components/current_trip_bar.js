@@ -2,8 +2,9 @@ import { TouchableOpacity, View,Image,Text,StyleSheet,AppState } from "react-nat
 
 import {curent_trip_styles} from '../../../styles/function/current_trip_header'
 import { use, useEffect, useMemo, useState } from "react";
-import TripDataService from "../../../backend/storage/trip";
-import TripData from "../../../app-core/local_data/local_trip_data";
+// import TripDataService from "../../../backend/storage/trip";
+import CurrentTripDataService from '../../../backend/storage/current_trip'
+// import TripData from "../../../app-core/local_data/local_trip_data";
 import TripHandler from "../../../app-core/flow/trip_handler";
 import { navigate } from "../../custom_function/navigationService";
 import LocationDataService from "../../../backend/storage/location";
@@ -22,13 +23,13 @@ export const CurrentTripBar=()=>{
   const end_trip =async()=>{
     const status =await TripHandler.endTripHandler();
     if (status){
-      TripDataService.setTripStatus('false')
+      CurrentTripDataService.setTripStatusToLocal('false')
     }
   }
 
   useEffect(()=>{
     const fetch = async()=>{
-      setCreatedTime(TripData.created_time)
+      setCreatedTime(CurrentTripDataService.getCurrentCreatedTime())
       const city = await LocationDataService.getCurrentCity()
       const condition = await LocationDataService.getCurrentLocationCodition()
       const jsoncon = JSON.parse(condition)

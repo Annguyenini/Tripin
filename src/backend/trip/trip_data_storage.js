@@ -2,7 +2,7 @@
 
 import * as SQLite from 'expo-sqlite';
 import * as DBCONFIG from '../../config/config_db'
-import TripData from '../../app-core/local_data/local_trip_data';
+import CurrentTripDataService from '../../backend/storage/current_trip'
 import * as Location from 'expo-location'
 
 import TripContentsHandler from '../../app-core/flow/trip_contents_handler';
@@ -24,9 +24,9 @@ CREATE TABLE IF NOT EXISTS trips (trip_id INTEGER PRIMARY KEY NOT NULL, trip_nam
     }
 
     async init_new_trip(){
-        this.trip_name = TripData.trip_name
-        this.trip_id = TripData.trip_id
-        this.created_time = TripData.created_time
+        this.trip_name = CurrentTripDataService.getCurrentTripName()
+        this.trip_id = CurrentTripDataService.getCurrentTripId()
+        this.created_time = CurrentTripDataService.getCurrentCreatedTime()
         await this.db.execAsync(`INSERT INTO trips (trip_id,trip_name,created_time) VALUES (${this.trip_id},${this.trip_name},${this.created_time})`)    
         await this.db.execAsync`CREATE TABLE IF NOT EXISTS ${this.trip_name} (time_stamp INTEGER PRIMARY KEY,altitude TEXT NOT NULL, latitude TEXT NOT NULL, longitude TEXT NOT NULL, heading TEXT NOT NULL,speed TEXT NOT NULL);`
         await this.db.execAsync("COMMIT")

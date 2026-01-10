@@ -1,8 +1,8 @@
 import  MapboxGL from '@rnmapbox/maps'
 import {View,Image} from'react-native'
 const ImageLabel =(medias_objects)=>{
-    console.log('dsds',medias_objects)
     if (!medias_objects || medias_objects.length === 0) return null;
+        console.log('dsds',medias_objects)
 
 
     

@@ -1,8 +1,7 @@
 import TokenService  from '../services/token_service';
 import AuthService from '../services/auth';
 import * as API from '../../config/config_api'
-import TripData from '../../app-core/local_data/local_trip_data';
-
+import CurrentTripDataService from '../../backend/storage/current_trip'
 class Trip{
 
     constructor(){
@@ -23,7 +22,7 @@ class Trip{
         let formData = new FormData()
         formData.append('image',{
             uri:imageUri,
-            name:`cover_${TripData.trip_id}`,
+            name:`cover_${CurrentTripDataService.getCurrentTripId()}`,
             type:'image/jpeg'
         })
         formData.append('trip_name',trip_name)
@@ -53,7 +52,7 @@ class Trip{
         // const trip_data = awaitTripDataService.getTripData()
 
         // const trip_id =trip_data.trip_id 
-        const trip_id = TripData.trip_id
+        const trip_id = CurrentTripDataService.getCurrentTripId()
         // console.log("tripid",trip_id)
         const res = await fetch(API.END_TRIP,{
             method:"POST",
@@ -76,9 +75,11 @@ class Trip{
         return ({'status':res.status,'data':data})
     }
     
-    async requestCurrentTripData(){
+
+
+    async requestCurrentTripId(){
         const token = await TokenService.getToken('access_token')
-        const respond = await fetch(API.REQUEST_CURRENT_TRIP_DATA,{
+        const respond = await fetch(API.REQUEST_CURRENT_TRIP_ID,{
             method :'GET',
             headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
         })
@@ -87,7 +88,7 @@ class Trip{
         if(respond.status ===401){
             if(data.code === 'token_expired'){
                 await AuthService.requestNewAccessToken()
-                return await this.requestCurrentTripData()
+                return await this.requestCurrentTripId()
             }
             else if(data.code === 'token_invalid'){
                 return null
@@ -96,6 +97,32 @@ class Trip{
 
         return ({'status':respond.status,'data':data})
     }
+
+
+    async requestTripData(trip_id){
+        const token = await TokenService.getToken('access_token')
+        const respond = await fetch(API.REQUEST_TRIP_DATA,{
+            method :'POST',
+            headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
+            body: JSON.stringify({
+                trip_id:trip_id
+            })
+        })
+        const data = await respond.json()
+        if(respond.status ===401){
+            if(data.code === 'token_expired'){
+                await AuthService.requestNewAccessToken()
+                return await this.requestCurrentTripId()
+            }
+            else if(data.code === 'token_invalid'){
+                return null
+            }
+        }
+        return ({'status':respond.status,'data':data})
+        
+    }
+
+
     async requestTripsData(){
         const token = await TokenService.getToken('access_token')
         const respond = await fetch(API.REQUEST_TRIPS_DATA,{

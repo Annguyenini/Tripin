@@ -57,6 +57,7 @@ export const AuthScreen= ( ) => {
         return;
       }
       else if(respond ===200){
+        console.log('dsdsds')
         await AppFlow.onAuthSuccess()
       }
       // console.log("pass")

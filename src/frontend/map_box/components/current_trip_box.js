@@ -1,9 +1,8 @@
 import { View, Text, Image,StyleSheet,TouchableOpacity,AppState } from 'react-native';
 import { useEffect, useState } from "react";
-import TripData from '../../../app-core/local_data/local_trip_data';
 import { MaterialIcons } from '@expo/vector-icons'; // For the arrow icon
 import TripService from '../../../backend/trip/trip_service';
-import TripDataService from '../../../backend/storage/trip';
+import CurrentTripDataService from '../../../backend/storage/current_trip'
 import { DATA_KEYS } from '../../../backend/storage/storage_keys';
 export const CurrentTripBox = ()=>{
     const[currentState,setCurrentState] =useState(AppState.currentState);
@@ -13,7 +12,7 @@ export const CurrentTripBox = ()=>{
 
 
       const get_trip_image=async()=>{
-        const imageUri = await TripDataService.getTripImageCover()
+        const imageUri = CurrentTripDataService.getCurrentTripImageUri()
         setTripImageCover(imageUri)
       }
       const updateImage ={
@@ -21,9 +20,9 @@ export const CurrentTripBox = ()=>{
           setTripImageCover(uri)
         }
       }
-      TripDataService.attach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE);
+      CurrentTripDataService.attach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE);
       const appState =async()=>{
-        const tripStatus = await TripDataService.getTripStatus()
+        const tripStatus = CurrentTripDataService.getCurrentTripStatus()
 
         if (tripStatus ==='true'){
         TripService.init_trip_properties()
@@ -38,7 +37,7 @@ export const CurrentTripBox = ()=>{
       get_trip_image()
 
       appState()
-        return ()=>TripDataService.detach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE)
+        return ()=>CurrentTripDataService.detach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE)
     })
     return (
         <View style={styles.wrapper}>
@@ -60,7 +59,7 @@ export const CurrentTripBox = ()=>{
       </TouchableOpacity>
 
       {/* City name */}
-      <Text style={styles.tripName}>{TripData.trip_name}</Text>
+      <Text style={styles.tripName}>{CurrentTripDataService.getCurrentTripId()}</Text>
     </View>
     </View>
   );

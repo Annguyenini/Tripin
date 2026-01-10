@@ -5,12 +5,12 @@ import { View, TouchableOpacity, Text,Button, TextInput,Alert, StyleSheet, Dimen
 import {mainScreenStyle,footer} from '../styles/main_screen_styles.js'
 // import { Button } from 'react-native-web';
 import { navigate } from './custom_function/navigationService.js';
-import UserDataService from "../backend/storage/user.js"
 // import { Color } from 'react-native/types_generated/Libraries/Animated/AnimatedExports';
 import { LocationPermission } from './functions/location_permision.js';
 import { UserDataBottomSheet } from './bottom_sheet.js';
 // import Subject from './logics/observer.js'
-import UserData from '../app-core/local_data/local_user_data.js'
+// import UserData from '../app-core/local_data/local_user_data.js'
+import UserDataService from '../../src/backend/storage/user.js'
 import {ProfileImagePicker} from'./custom_components/profile_image_picker.js'
 const homeIcon = require('../../assets/image/home_icon.png')
 const cameraIcon = require('../../assets/image/camera_icon.png')
@@ -39,9 +39,9 @@ export const MainScreen = () =>{
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
       async function fetch_userdata(){
-      setUserId(UserData.user_id)
-      setUsername(UserData.user_name)
-      setDisplayName(UserData.display_name)
+      setUserId(UserDataService.getUserId())
+      setUsername(UserDataService.getUserName())
+      setDisplayName(UserDataService.getDisplayName())
     }
   
     fetch_userdata()

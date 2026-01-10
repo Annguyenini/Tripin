@@ -1,5 +1,5 @@
 import { DATA_KEYS } from "./storage_keys";
-import Subject from "./subject";
+import Subject from "./localStorage";
 
 class TripContentsDataService extends Subject{
     constructor(){
@@ -24,6 +24,9 @@ class TripContentsDataService extends Subject{
     }
     async setCurrentMedias(data_object){
         for (const obs of data_object){
+            if (obs.type==='video'){
+                continue
+            }
             this.item[DATA_KEYS.TRIP_CONTENTS.CURRENT_TRIP_MEDIA].push({
                 filename:obs.key,
                 type:obs.media_type,

@@ -1,5 +1,5 @@
 import LocalData from './local_data'
-import TripDataService from '../../backend/storage/trip'
+import TripDataService from '../../backend/storage/old_trip'
 import { DATA_KEYS } from '../../backend/storage/storage_keys';
 class LocalTripData extends LocalData{
     constructor(){
@@ -36,4 +36,4 @@ class LocalTripData extends LocalData{
     }
 }
 const TripData = new LocalTripData()
-export default TripData
+export default TripData 

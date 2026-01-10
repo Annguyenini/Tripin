@@ -6,7 +6,8 @@ import * as API from '../../config/config_api'
 // import { setSurfaceProps } from 'react-native/types_generated/Libraries/ReactNative/AppRegistryImpl';
 import UserDataService from '../storage/user'
 import TokenService from './token_service'
-
+import EtagService from './etag/etag_service';
+import { ETAG_KEY } from './etag/etag_keys';
 class Auth{
 
     async requestLogin(username,password){
@@ -17,7 +18,7 @@ class Auth{
             username:username,
             password:password 
         })});
-
+        console.log(respond.status)
         return ({'status':respond.status,'data':await respond.json()})
      } 
     
@@ -75,29 +76,30 @@ class Auth{
         
 
     }
-    async authenticateToken(type){
-        console.assert(type != "access_token"&& type!="refresh_token","Wrong token type")
+    async authenticateToken(type,etag=null){
+        console.assert(type === "access_token"&& type ==="refresh_token","Wrong token type")
         const token = await TokenService.getToken(type)
         console.assert(token == null,"token is null")
+        const headers={"Content-Type":"application/json",
+                "Authorization": `Bearer ${token}`,
+            } 
+        if (etag){
+            headers['If-None-Match'] = etag
+        }
         const respond = await fetch(API.LOGIN_TOKEN_API,{
             method : "POST",
-            headers:{"Content-Type":"application/json",
-                "Authorization": `Bearer ${token}`
-            } 
+            headers
             
         });
-        // console.log(access_token);
-        console.assert(respond.status===200,"Error at calling token checker")
+
+        if (respond.status === 304) {
+            return { message: "Not modified", status: 304, data: null }
+        }
+
         const data = await respond.json();
-        // console.log (data)
-        console.assert(data!= undefined,"Data at authenticateToken is undefined!")
-        if(respond.status===401){
-            return ({"message":data.message,"status": 401,"data":data})
-        }
-        if(respond.status ===429){
-            return({"message":null,"status": 429,"data":null})
-        }
-        return({"message":data.message,"status": 200,"data":data})
+        
+    
+        return({"message":data.message,"status": respond.status,"data":data})
         
     }
     // async loginWithAccessToken(){

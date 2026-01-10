@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions,Image,PanResponder
 import AuthService from '../backend/services/auth.js'
 import {navigate} from './custom_function/navigationService.js'
 import {settingStyle} from '../styles/setting_style.js'
-import TripDataService from '../backend/storage/trip.js'
+import CurrentTripDataService from '../../src/backend/storage/current_trip.js'
 import UserDataService from '../backend/storage/user.js'
 import TripService from '../backend/trip/trip_service.js';
 import TokenService from '../backend/services/token_service.js';
@@ -13,8 +13,7 @@ export const SettingScreen =()=>{
         await TokenService.deleteToken("access_token")
         await TokenService.deleteToken("refresh_token")
         await UserDataService.deleteAllUserData();
-        await TripDataService.resetCurrentTripData()
-        await TripDataService.deleteTripData()
+        await CurrentTripDataService.resetCurrentTripData()
         await TripService.stopGPSWatch()
         navigate("auth")
     }  
