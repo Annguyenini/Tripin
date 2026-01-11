@@ -31,21 +31,26 @@ export const mainScreenStyle = StyleSheet.create({
     top: 20,
     right: 20,
   },
-  curentTripZone: {
-    flex: 1,                  // fill proportional space in parent
-    paddingTop: 70,           // small padding instead of top: 0
-    alignItems: 'center',     // center horizontally
-    width: '100%',
-  },
+curentTripZone: {
+  width: '100%',
+  alignItems: 'center',   // centers children horizontally
+  // marginTop: 12,
+},
 
-  row: {
-    flexDirection: 'row',      // horizontal layout
-    justifyContent: 'space-between', // push items to edges
-    alignItems: 'center',      // vertical center
-    width: '90%',              // slightly inset for padding
-    marginBottom: 0,
-    marginTop:10,          // space below row
-  },
+row: {
+ flexDirection: 'row',
+  alignItems: 'center',
+  paddingBottom:20,
+  width: '90%',
+  alignSelf: 'center',
+  justifyContent: 'space-between',
+},
+userRow:{
+  flexDirection: 'row',
+  alignItems: 'center',   // vertical alignment
+  paddingBottom:20,
+  gap: 20,  
+},
   alltrip: {
     flex: 4,                  // fill screen
     justifyContent: 'top', // vertical center
@@ -66,7 +71,7 @@ export const mainScreenStyle = StyleSheet.create({
     fontSize: 35,
     fontFamily: 'mainfont',
       position: 'relative', 
-      top:-80,
+      // top:-80,
     marginBottom: 20,
     fontWeight: 'bold',
     textDecorationLine: 'underline',
@@ -79,7 +84,7 @@ export const mainScreenStyle = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative', 
-    top:-80,
+    // top:-80,
   },
   buttonText: {
     fontSize: 32,

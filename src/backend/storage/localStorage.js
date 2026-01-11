@@ -43,6 +43,7 @@ class LocalStorage {
             const object_data = await AsyncStorage.getItem(key)
  
             if(object_data){
+                console.log('data object',object_data)
                 return JSON.parse(object_data)
             }
             else{
@@ -54,6 +55,32 @@ class LocalStorage {
             return null
         }
     }
+    async saveArrayToLocal(key,data_array){
+        try{
+            await AsyncStorage.setItem(key,JSON.stringify(data_array))
+            return true
+        }
+        catch(err){
+            console.error(`Failed to save array data: `,err)
+            return false
+        }
+    }
+
+    async getArrayFromLocal(key){
+        if(typeof(key)!='string') {
+            return []
+        }
+
+        try{
+            const array = await AsyncStorage.getItem(key)
+            return array ? JSON.parse(array)  :[]
+        }
+        catch(err){
+            console.error('Error at get array from local: ',err)
+            return []
+        }
+    }
+
     async saveToLocal(key,data){
         if (typeof(data)!=='string' || typeof(key)!=='string'){
             console.error('AsyncStorage only allow string')
@@ -90,10 +117,11 @@ class LocalStorage {
         }
         try{
             await AsyncStorage.removeItem(key)
-            
+            return true
         }
         catch(asyncError){
             console.error`Error at getting ${key} ${asyncError}`
+            return false
         }
     }
 

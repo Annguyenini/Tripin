@@ -83,7 +83,9 @@ export const UserDataBottomSheet = ({
     const handleTripPress=()=>{
 
     }
-    
+    const refresh_user_trips=async()=>{
+      await TripHandler.refreshRequestALLTripsData()
+    }
 
     const request_new_trip = async()=>{
       const res = await TripHandler.requestNewTripHandler(trip_name,imageUri? imageUri:null)
@@ -110,46 +112,43 @@ export const UserDataBottomSheet = ({
       >
         
 
-        {/* bottom sheet user infos */}
-        <BottomSheetScrollView contentContainerStyle={styles.content}>
-        <TouchableOpacity onPress={profile_picker}>
-          <View style={mainScreenStyle.profilePic}>
-            <Image
-              style={{ width: '90%', height: '90%', borderRadius: 40 }}
-              source={userProfileImage ? { uri: userProfileImage } : default_user_image}
-            />
-          </View>
-        </TouchableOpacity>
-
-        <Text style={mainScreenStyle.displayname}>{userDisplayName}</Text>
-      </BottomSheetScrollView>
-              
-        <View style={mainScreenStyle.curentTripZone}>
-          <View style={mainScreenStyle.row}>
-            <Text style={mainScreenStyle.title}>All Trip</Text>
-
-            {!isOnATrip && (
-              <TouchableOpacity
-                style={mainScreenStyle.button}
-                onPress={new_trip_filler}
-              >
-                <Text style={mainScreenStyle.buttonText}>+</Text>
+        <BottomSheetScrollView contentContainerStyle={styles.container}>
+            
+            {/* User Header */}
+            <View style={styles.userCard}>
+              <TouchableOpacity onPress={profile_picker}>
+                <Image
+                  source={userProfileImage ? { uri: userProfileImage } : default_user_image}
+                  style={styles.avatar}
+                />
               </TouchableOpacity>
-            )}
-          </View>
 
-          {/* Make trips scrollable so it doesn’t push user info away */}
-            {renderTrips(trips, handleTripPress)}
-        </View>
-       {/* {showCurrentTrip&&()} */}
-        {/* <View style={mainScreenStyle.alltrip}>
-          <Text style={mainScreenStyle.allTripTitle}>Browse All Trip</Text>
-        </View> */}
-         {/* {showAllTrips&&()} */}
-        {/* Extra bottom padding so last content isn’t hidden behind toolbar */}
-        <View style={{ height: 80 }} />
+              <Text style={styles.displayName}>
+                {userDisplayName}
+              </Text>
+            </View>
 
-        
+            {/* Section Header */}
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>All Trips</Text>
+              <TouchableOpacity style ={styles.addBtn} onPress={refresh_user_trips}>
+                <Text >Refresh</Text>
+              </TouchableOpacity>
+              {!isOnATrip && (
+                <TouchableOpacity onPress={new_trip_filler} style={styles.addBtn}>
+                  <Text style={styles.addText}>+</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Content */}
+            <View style={styles.listContainer}>
+              {renderTrips(trips, handleTripPress)}
+            </View>
+
+            <View style={{ height: 80 }} />
+        </BottomSheetScrollView>
+
 
         {/* filer for new trip */}
         {show_create_trip_filler&&
@@ -159,30 +158,65 @@ export const UserDataBottomSheet = ({
      
     )
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // padding: 16,
-    justifyContent: 'center',
-    width:'95%',
-  },
-  title: {
-    fontSize: 22,
-    marginBottom: 16,
-  },
-  content: {
-    // position:'absolute',
-    padding: 30,
-    flexDirection: 'row',
-    backgroundColor:'#3d3b3bff',
-    borderRadius:20
-  },
-  currentTripHeaderOverlay: {
-    position: 'absolute',
-    top: -20, // distance from top of BottomSheet
-    left: 20,
-    right: 20,
-    zIndex: 20, // make sure it floats above everything
-  },
+const styles = StyleSheet.create({container: {
+  padding: 16,
+},
 
-});
+/* User Card */
+userCard: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 12,
+  padding: 16,
+  backgroundColor: '#3d3b3bff',
+  borderRadius: 20,
+  marginBottom: 16,
+},
+
+avatar: {
+  width: 56,
+  height: 56,
+  borderRadius: 28,
+},
+
+displayName: {
+  fontSize: 18,
+  fontWeight: '600',
+  color: '#fff',
+},
+
+/* Section Header */
+sectionHeader: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  width: '100%',
+  paddingHorizontal: 8,
+  marginBottom: 8,
+},
+
+sectionTitle: {
+  fontSize: 20,
+  fontWeight: '600',
+  color: '#fff',
+},
+
+addBtn: {
+  width: 32,
+  height: 32,
+  borderRadius: 16,
+  backgroundColor: '#555',
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+
+addText: {
+  fontSize: 20,
+  color: '#fff',
+},
+
+/* List */
+listContainer: {
+  width: '100%',
+},
+})

@@ -27,20 +27,37 @@ class TripDataService extends TripLocalDataStorage{
         }
     }
     async handleAllTripsList (trips_list){
-            for(const trip of trips_list){
-                trip.image = await this.saveTripImageToLocal(trip.image,`${trip.id}_cover.jpg`,'aws')
-                const key = this.getTripKeyReady(trip.user_id,trip.id)
-                await this.saveDataObjectToLocal(key,trip)
+        // save detail data for each trip 
+        for(const trip of trips_list){
+            trip.image = await this.saveTripImageToLocal(trip.image,`${trip.id}_cover.jpg`,'aws')
+            const key = this.getTripKeyReady(trip.user_id,trip.id)
+            await this.saveDataObjectToLocal(key,trip)
 
-            }
-
+        }
+        // save array to local 
+        const trip_list_to_local = await this.saveArrayToLocal(DATA_KEYS.TRIP.ALL_TRIP_LIST,trips_list)
         this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST,trips_list)
+
+        if(!trip_list_to_local){
+            return false
+        }
+        return true
     }
 
 
     async getTripDataFromLocal(user_id,trip_id){
         const key = this.getTripKeyReady(user_id,trip_id) 
         return await this.getDataObjectFromLocal(key)
+    }
+
+    async loadAllTripsListFromLocal(){
+        const trips_list = await this.getArrayFromLocal(DATA_KEYS.TRIP.ALL_TRIP_LIST)
+        if(trips_list){
+            this.item.set(DATA_KEYS.TRIP.ALL_TRIP_LIST,trips_list)
+            this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST,trips_list)
+        }
+
+        return true
     }
     getAllTripsList(){
         return this.item.get(DATA_KEYS.TRIP.ALL_TRIP_LIST)

@@ -17,17 +17,7 @@ const cameraIcon = require('../../assets/image/camera_icon.png')
 const galleryIcon = require('../../assets/image/gallery_icon.png')
 const settingIcon = require('../../assets/image/setting_icon.png')
 import { MapBoxLayout } from './map_box/map_box_layout.js';
-import { TripService } from '../backend/trip/trip_service.js';
-import Trip from '../backend/trip/trip.js';
-import MachineState from'../app-core/state_control/machine_state.js'
-// const fetchUserData = async()=>{
-//   const userProfilePic = await UserDataService.getUserProfilePic();
-//   const userDisplayName = await UserDataService.getUserDisplayName ();
-//   const userId = await UserDataService.getUserId();
-//   ///all trips is a dictionary
-//   let currentTrip = await UserDataService.getCurrentTrip();
-//   let allTrip = await UserDataService.getAllTrips();
-// }
+
 
 export const MainScreen = () =>{
 

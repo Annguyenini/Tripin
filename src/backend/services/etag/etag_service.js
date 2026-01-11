@@ -11,5 +11,8 @@ class EtagService extends LocalStorage{
     async getEtagFromLocal(key){
         return await this.getDataFromLocal(key)
     }
+    async deleteEtagFromLocal(key){
+        return await this.deleteDataFromLocal(key)
+    }
 }
 export default new EtagService()

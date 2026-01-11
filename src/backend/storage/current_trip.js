@@ -55,7 +55,6 @@ class CurrentTripDataService extends TripLocalDataStorage{
         if(!trip_data||typeof(trip_data)!=='object'){
             console.log('trip_data must be object')
         }
-        console.log(user_id,trip_id,trip_data)
         const key = this.getTripKeyReady(user_id,trip_id)
         await this.saveTripDataObjectToLocal(key,trip_data)
         this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
@@ -64,6 +63,25 @@ class CurrentTripDataService extends TripLocalDataStorage{
         this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_CREATED_TIME,trip_data.created_time)
         this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STORAGE_KEY,key)
         this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
+        return true
+    }
+
+    async getCurrentTripDataFromLocal(user_id,trip_id){
+        const key = this.getTripKeyReady(user_id,trip_id)
+        return await this.getTripDataObjectFromLocal(key)
+    }
+
+    async loadCurrentTripDataFromLocal(user_id,trip_id){
+        const trip_data = await this.getCurrentTripDataFromLocal(user_id,trip_id)
+        console.log('trip_data',trip_data)
+        if(!trip_data) return false
+        if(!await this.saveCurrentTripDataToLocal(user_id,trip_id,trip_data))return false
+        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image_uri)
+        console.log('image',trip_data.image_uri)
+        await this.setTripStatusToLocal('true')
+        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image_uri) 
+        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
+        return true
     }
     /** getTripData
      * trip_data={
@@ -73,7 +91,7 @@ class CurrentTripDataService extends TripLocalDataStorage{
      * }
      * @returns an object of trip data or null if it empty */ 
     
-    async getCurrentTripDataFromLocal(){        
+    getCurrentTripData(){        
         return this.getTripDataObjectFromLocal(this.item.get(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STORAGE_KEY))
     }
 
@@ -103,6 +121,7 @@ class CurrentTripDataService extends TripLocalDataStorage{
      */
     async setCurrentTripImageCoverToLocal(imageUri,trip_id,source='local'){
         const filename = `${trip_id}_cover.jpg`;
+        console.log('save to ',filename)
         const local_trip_imageuri = await this.saveTripImageToLocal(imageUri,filename,source)
         if (local_trip_imageuri){
             await this.saveTripDataToLocal(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,local_trip_imageuri)

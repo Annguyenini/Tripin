@@ -59,7 +59,7 @@ export const CurrentTripBox = ()=>{
       </TouchableOpacity>
 
       {/* City name */}
-      <Text style={styles.tripName}>{CurrentTripDataService.getCurrentTripId()}</Text>
+      <Text style={styles.tripName}>{CurrentTripDataService.getCurrentTripName()}</Text>
     </View>
     </View>
   );

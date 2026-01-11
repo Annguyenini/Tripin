@@ -2,6 +2,8 @@ import TokenService  from '../services/token_service';
 import AuthService from '../services/auth';
 import * as API from '../../config/config_api'
 import CurrentTripDataService from '../../backend/storage/current_trip'
+import EtagService from '../services/etag/etag_service';
+import { ETAG_KEY, GENERATE_TRIP_ETAG_KEY } from '../services/etag/etag_keys';
 class Trip{
 
     constructor(){
@@ -100,14 +102,24 @@ class Trip{
 
 
     async requestTripData(trip_id){
+
         const token = await TokenService.getToken('access_token')
+        const etag = await EtagService.getEtagFromLocal(GENERATE_TRIP_ETAG_KEY(trip_id))
+        const headers ={
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${token}`
+        }
+        if (etag){
+            headers['If-None-Match'] = etag
+        }
         const respond = await fetch(API.REQUEST_TRIP_DATA,{
             method :'POST',
-            headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
-            body: JSON.stringify({
+            headers:headers,
+            body:JSON.stringify({
                 trip_id:trip_id
             })
         })
+        if(respond.status ===304){return {'status':respond.status,'data':null}}
         const data = await respond.json()
         if(respond.status ===401){
             if(data.code === 'token_expired'){
@@ -125,10 +137,21 @@ class Trip{
 
     async requestTripsData(){
         const token = await TokenService.getToken('access_token')
+        const etag =  await EtagService.getEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST)
+        const headers = {
+            'Content-Type':'application/json',
+            'Authorization':`Bearer ${token}`
+        }
+        if (etag){
+            headers['If-None-Match']=etag
+        }
         const respond = await fetch(API.REQUEST_TRIPS_DATA,{
             method :'GET',
-            headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
+            headers:headers
         })
+
+        if(respond.status===304) return {'status':respond.status,'data':null}
+
         const data = await respond.json()
 
         if(respond.status ===401){
@@ -143,6 +166,7 @@ class Trip{
         }
         return {'status':respond.status,'data':data}
     }
+    
 }
 
 const trip = new Trip()

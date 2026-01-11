@@ -20,11 +20,13 @@ const TripCard = ({ trip, onPress }) => {
 };
 
 export const renderTrips = (trips, onTripPress) => {
+  console.log('trips',trips)
   if(!trips)return
   return (
     <BottomSheetFlatList
       data={trips}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) => 
+        item.id.toString()}
       numColumns={2}
       columnWrapperStyle={styles.row}
       renderItem={({ item }) => (

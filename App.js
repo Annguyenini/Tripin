@@ -1,13 +1,11 @@
 
 import React, { useState,useEffect } from 'react';
-import { AuthScreen, loginWithAccessToken} from './src/frontend/auth.js';
+import { AuthScreen} from './src/frontend/auth.js';
 import {MainScreen} from './src/frontend/mainscreen.js'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { navigationRef } from './src/frontend/custom_function/navigationService.js';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import MachineState from './src/app-core/state_control/machine_state.js'
-import { navigate } from './src/frontend/custom_function/navigationService.js';
 import {
   TouchableOpacity,
   StyleSheet,
