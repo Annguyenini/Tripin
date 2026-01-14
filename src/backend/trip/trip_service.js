@@ -160,6 +160,10 @@ export class TripService {
       return false;
     }
   }
+
+  async isAnyTask(){
+    return await Location.hasStartedLocationUpdatesAsync(TASK_NAME);
+  }
 }
 
 const trip = new TripService()

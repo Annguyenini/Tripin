@@ -3,11 +3,27 @@ import LocationService from '../local_data/local_location_data'
 import locationDataService from '../../backend/storage/location'
 import TripContentsDataService from '../../backend/storage/trip_contents'
 import CurrentTripDataService from '../../backend/storage/current_trip'
+import TripSync from './sync/trip_sync'
 class TripContentHandler{
-    async sendCoordinatesHandler(coors_object){
-        const respond = await TripContents.send_coordinates(coors_object)
+
+
+    async sendCoordinatesHandler(coors_object,version=null){
+        console.log('prepare', coors_object,version)
+        const respond = await TripContents.send_coordinates(coors_object,version)
+        if (respond.status ===409){
+            // prevent duplicate sync
+            if(TripSync.coordinatesSyncing){
+                TripSync.addIntoQueue('coordinate',version,coors_object)
+                return null
+            }
+            await TripSync.processTripCoordinatesSync(respond.data.missing_versions)
+        }
         return respond
     }
+
+
+
+
     async requestLocationConditionsHandler(){
         const coors = await LocationService.getCurrentCoor()
         if(!coors){

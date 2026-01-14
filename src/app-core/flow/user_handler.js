@@ -13,7 +13,6 @@ class UserDataHandler{
             if(!user_id) return false
         }
         const respond = await UserService.getUserData(user_id)
-        console.log(respond)
         if (respond.status ===304){
             await UserDataService.usingStoredUserData()
             return true
@@ -23,7 +22,6 @@ class UserDataHandler{
         }
         const data = respond.data
         const userdata = data.user_data
-        console.log('userdatdsa',userdata)
         if (userdata.avatar){
             userdata.avatar = await UserDataService.setProfileImageUriToLocal(userdata.avatar,'aws')
         }

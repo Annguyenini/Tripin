@@ -43,7 +43,6 @@ class LocalStorage {
             const object_data = await AsyncStorage.getItem(key)
  
             if(object_data){
-                console.log('data object',object_data)
                 return JSON.parse(object_data)
             }
             else{

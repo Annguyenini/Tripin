@@ -1,6 +1,7 @@
 import Trip from '../../backend/trip/trip'
 import TripService from '../../backend/trip/trip_service'
 import TripDataService from '../../backend/storage/trips'
+import TripDataStorage from '../../backend/trip/trip_data_storage'
 import CurrentTripDataService from '../../backend/storage/current_trip'
 import UserDataService from '../../backend/storage/user'
 import EtagService from '../../backend/services/etag/etag_service'
@@ -18,13 +19,15 @@ class TripHandler{
         const trip_image_uri = await CurrentTripDataService.setCurrentTripImageCoverToLocal(imageUri,trip_id)
         // tripdata object
         const trip_data = CurrentTripDataService.getObjectReady(trip_name,trip_id,Date.now(),trip_image_uri)
-
         // save tripdata
-        await CurrentTripDataService.saveCurrentTripDataToLocal(trip_data)
+        await CurrentTripDataService.saveCurrentTripDataToLocal(UserDataService.getUserId(),trip_id,trip_data)
 
         // set current trip app state to true
         await CurrentTripDataService.setTripStatusToLocal('true')
 
+        //create db sqlite
+        await TripDataStorage.init_new_trip()
+        
         return true
     }
 
@@ -46,7 +49,6 @@ class TripHandler{
             await TripDataService.handleAllTripsList(data.all_trip_data.trip_data_list)
         }
         if(data.etag){
-            console.log(data.etag)
             await EtagService.saveEtagToLocal(ETAG_KEY.ALL_TRIPS_LIST,data.etag)
         }
         return true
@@ -62,7 +64,6 @@ class TripHandler{
         const data = respond.data
         const trip_id = data.current_trip_id
         if (trip_id){
-            console.log('return trip id',trip_id)
             const current_trip_respond = await Trip.requestTripData(trip_id)
             const status = current_trip_respond.status
             if (status===304){
@@ -76,7 +77,6 @@ class TripHandler{
 
             const current_trip_data = current_trip_respond.data
             const trip_data = current_trip_data.trip_data 
-            console.log('return trip data', trip_data)
             if(trip_data!==null){
                 // const trip_data = TripDataService.getObjectReady(data.trip_data.trip_name,data.trip_data.trip_id,data.trip_data.created_time)
                 let trip_image_uri = null
@@ -88,7 +88,6 @@ class TripHandler{
                 await CurrentTripDataService.saveCurrentTripDataToLocal(UserDataService.getUserId(),trip_id,trip_data_object)
                 
             }
-            await CurrentTripDataService.setTripStatusToLocal('true')
 
             const trip_etag = current_trip_data.etag
 

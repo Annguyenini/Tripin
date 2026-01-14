@@ -25,10 +25,12 @@ class AppFlow{
    
     // request current trip-id
     async onRenderMapSuccess(){
-        const trips = await TripHandler.requestAllTripHandler() 
-
         const currentTripIdAndVersion = await TripHandler.requestCurrentTripHandler()        
 
+        return
+    }
+    async onRenderUserData(){
+        const trips = await TripHandler.requestAllTripHandler() 
         return
     }
 

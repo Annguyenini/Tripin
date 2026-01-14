@@ -28,7 +28,6 @@ class AuthHandler{
         const res = await Auth.authenticateToken("access_token",userdata_etag);
 
         const data =await res.data
-        console.log(data)
         if (res.status===401){
             if (data.code === "token_expired") {
                 const tokendata = await Auth.authenticateToken("refresh_token");

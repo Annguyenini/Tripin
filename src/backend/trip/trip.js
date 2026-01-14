@@ -35,11 +35,12 @@ class Trip{
             headers:{"Authorization": `Bearer ${token}`},
             body: formData
         });
-        const data =respond.json()
+        const data = await respond.json()
+        console.log(data)
         if(respond.status === 401){
             if (data.code ==="token_expired"){
                 await AuthService.requestNewAccessToken()
-                return await this.requestNewTrip(trip_name)
+                return await this.requestNewTrip(trip_name,imageUri)
                 
             }
             else if(data.code ==="token_invalid"){

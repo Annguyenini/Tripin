@@ -18,7 +18,6 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
     useEffect(()=>{
         const update_state ={
             update(newState){
-                console.log('newstate',newState)
             setIsOnATrip(newState)
            }
         
@@ -31,7 +30,6 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
         }
         const fetchTripStatus=async()=>{
             const status = CurrentTripDataService.getCurrentTripStatus() 
-            console.log('dsdsdssss',status)
             setIsOnATrip(status)
         }
         const sendCurrentTripLayoutSignal = async()=>{

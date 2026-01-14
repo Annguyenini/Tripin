@@ -1,4 +1,4 @@
-import BottomSheet, { BottomSheetScrollView,BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetScrollView,BottomSheetFlatList,BottomSheetView } from "@gorhom/bottom-sheet";
 import Trip from'../backend/trip/trip.js'
 import TripHandler from "../app-core/flow/trip_handler.js";
 import {mainScreenStyle} from '../styles/main_screen_styles.js'
@@ -16,7 +16,10 @@ import CurrentTripDataService from '../backend/storage/current_trip.js'
 // import TripData
 import UserDataService from'../backend/storage/user.js'
 import { DATA_KEYS } from "../backend/storage/storage_keys.js";
-import { renderTrips } from "./custom_components/trip_label.js";
+import {TripCard } from "./custom_components/trip_label.js";
+import { tripCardsStyle } from "../styles/function/tripcards.js";
+import AppFlow from "../app-core/flow/app_flow.js";
+import { TestScreen } from "../test_screen.js";
 const default_user_image = require('../../assets/image/profile_icon.png')
 export const UserDataBottomSheet = ({ 
   set_show_profile_picker,
@@ -31,18 +34,22 @@ export const UserDataBottomSheet = ({
     const[isOnATrip,setIsOnATrip] =useState(null)
     const[trips,setTrips] = useState(null)
     const [userProfileImage, setUserProfileImage] = useState()
+    const [testScreen,setTestScreen] = useState(false)
     useEffect(()=>{
       const fetch_avatar = async ()=>{
         const avatar =  UserDataService.getProfileImageUri()
         setUserProfileImage(avatar)
       }
       fetch_avatar()
-      const fetch_trips = async()=>{
-        const tripss = TripDataService.getAllTripsList()
-        console.log('trips',tripss)
-        setTrips(tripss)
+      // const fetch_trips = async()=>{
+      //   const tripss = TripDataService.getAllTripsList()
+      //   setTrips(tripss)
+      // }
+      // fetch_trips()
+      const callbackRenderSuccessfully = async()=>{
+        await AppFlow.onRenderUserData()
+
       }
-      fetch_trips()
       const update_state ={
         update(newState){
         setIsOnATrip(newState)
@@ -64,6 +71,8 @@ export const UserDataBottomSheet = ({
       CurrentTripDataService.attach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
       TripDataService.attach(update_trips,DATA_KEYS.TRIP.ALL_TRIP_LIST)
       UserDataService.attach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
+
+      callbackRenderSuccessfully()
       return ()=>{
         CurrentTripDataService.detach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
         TripDataService.detach(update_trips,DATA_KEYS.TRIP.ALL_TRIP_LIST)
@@ -83,15 +92,16 @@ export const UserDataBottomSheet = ({
     const handleTripPress=()=>{
 
     }
+    const testScreenHandler=()=>{
+      setTestScreen(prev => prev ===true ? false:true)
+      console.log(testScreen)
+    }
     const refresh_user_trips=async()=>{
       await TripHandler.refreshRequestALLTripsData()
     }
-
     const request_new_trip = async()=>{
       const res = await TripHandler.requestNewTripHandler(trip_name,imageUri? imageUri:null)
-      console.log("respond",res)
       if (res){
-        console.log("successfully")
         set_show_create_trip_filler(false)
         await TripDataService.setTripStatus('true')
         await TripDataService.setTripImageCover(imageUri)
@@ -110,50 +120,61 @@ export const UserDataBottomSheet = ({
         handleIndicatorStyle={{ backgroundColor: '#0e0c0cff' }}
         
       >
-        
-
-        <BottomSheetScrollView contentContainerStyle={styles.container}>
-            
-            {/* User Header */}
-            <View style={styles.userCard}>
-              <TouchableOpacity onPress={profile_picker}>
-                <Image
-                  source={userProfileImage ? { uri: userProfileImage } : default_user_image}
-                  style={styles.avatar}
-                />
-              </TouchableOpacity>
-
-              <Text style={styles.displayName}>
-                {userDisplayName}
-              </Text>
-            </View>
-
-            {/* Section Header */}
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>All Trips</Text>
-              <TouchableOpacity style ={styles.addBtn} onPress={refresh_user_trips}>
-                <Text >Refresh</Text>
-              </TouchableOpacity>
-              {!isOnATrip && (
-                <TouchableOpacity onPress={new_trip_filler} style={styles.addBtn}>
-                  <Text style={styles.addText}>+</Text>
-                </TouchableOpacity>
+        <BottomSheetFlatList
+              data={trips}
+              keyExtractor={(item) => 
+                item.id.toString()}
+              numColumns={2}
+              columnWrapperStyle={tripCardsStyle.row}
+              renderItem={({ item }) => (
+                <TripCard trip={item} onPress={handleTripPress} />
               )}
-            </View>
+              showsVerticalScrollIndicator={false}
 
-            {/* Content */}
-            <View style={styles.listContainer}>
-              {renderTrips(trips, handleTripPress)}
-            </View>
+               ListHeaderComponent={
+              <>
 
-            <View style={{ height: 80 }} />
-        </BottomSheetScrollView>
+              {/*userdata*/}
+              <View style={styles.userCard}>
+          <TouchableOpacity onPress={profile_picker}>
+            <Image
+              source={userProfileImage ? { uri: userProfileImage } : default_user_image}
+              style={styles.avatar}
+            />
+          </TouchableOpacity>
 
+          <Text style={styles.displayName}>
+            {userDisplayName}
+          </Text>
+          <TouchableOpacity onPress={testScreenHandler}>
+            <Text style={{color:'red'}}>
+              test
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-        {/* filer for new trip */}
+        {/* Section Header */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>All Trips</Text>
+          <TouchableOpacity style ={styles.addBtn} onPress={refresh_user_trips}>
+            <Text >Refresh</Text>
+          </TouchableOpacity>
+          {!isOnATrip && (
+            <TouchableOpacity onPress={new_trip_filler} style={styles.addBtn}>
+              <Text style={styles.addText}>+</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+              </>
+               }
+
+        contentContainerStyle={{ paddingBottom: 80 }}
+
+            />
+               
         {show_create_trip_filler&&
         <NewTripFiller set_show_create_trip_filler ={set_show_create_trip_filler} set_trip_name={set_trip_name} request_new_trip={request_new_trip} setImageUri={setImageUri} imageUri={imageUri}/>}
-
+        {testScreen && <TestScreen testScreenHandler={testScreenHandler}></TestScreen>}
       </BottomSheet>
      
     )
@@ -218,5 +239,6 @@ addText: {
 /* List */
 listContainer: {
   width: '100%',
+  paddingBottom:200,
 },
 })

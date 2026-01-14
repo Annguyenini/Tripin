@@ -53,7 +53,6 @@ class UserDataService extends LocalStorage{
     }
 
     async setUserAuthToLocal(userdata){
-        console.log('userdata',userdata)
         await this.saveDataObjectToLocal(DATA_KEYS.USER.USER_AUTH,userdata)
         this.items.set(DATA_KEYS.USER.USER_ID,userdata.user_id)
         this.items.set(DATA_KEYS.USER.USER_ROLE,userdata.role)
@@ -61,7 +60,6 @@ class UserDataService extends LocalStorage{
     }
     async usingStoredUserData(){
         const stored_userdata = await this.getDataObjectFromLocal(DATA_KEYS.USER.USER_DATA)
-        console.log('stored data',stored_userdata)
         await this.setUserDataToLocal(stored_userdata)
         return
     }   

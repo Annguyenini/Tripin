@@ -6,31 +6,33 @@ import AuthService from './auth'
 import timestamp from '../addition_functions/get_current_time'
 class TripContentService{
 
-    async send_coordinates(coor_object){
-        console.log("called")
+    async send_coordinates(coor_object,version){
         const token = await TokenService.getToken('access_token')
         const respond = await fetch(API.SEND_COORDINATES+`/${CurrentTripDataService.getCurrentTripId()}/coordinates`,{
             method:'POST',
             headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
-            body:JSON.stringify({coordinates:coor_object})
+            body:JSON.stringify({
+                coordinates:coor_object,
+                version:version})
         })
         const data = await respond.json()
-        
+        console.log(data)
         if(respond.status ===401){
-            console.log("401")
             if(data.code === 'token_expired'){
                 await AuthService.requestNewAccessToken()
-                return await this.send_coordinates(coor_object)
+                return await this.send_coordinates(coor_object,version)
             }
             else if(data.code === 'token_invalid'){
-                return false
+                return {'status':respond.status}
             }
-            return false 
+                return {'status':respond.status}
         }
-        return true;
+        return {'status':respond.status,'data':data}
         
 
     }
+
+    async
 
     async requestCurrentTripCoordinates(){
         

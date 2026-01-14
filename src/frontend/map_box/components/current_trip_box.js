@@ -54,9 +54,9 @@ export const CurrentTripBox = ()=>{
         </View>
 
       {/* Arrow button */}
-      <TouchableOpacity style={styles.arrowButton}>
+      {/* <TouchableOpacity style={styles.arrowButton}>
         <MaterialIcons name="arrow-forward-ios" size={20} color="white" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       {/* City name */}
       <Text style={styles.tripName}>{CurrentTripDataService.getCurrentTripName()}</Text>
