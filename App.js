@@ -24,7 +24,7 @@ import {CameraApp} from './src/frontend/camera/camera_main.js'
 import { SettingScreen } from './src/frontend/setting_screen.js';
 import { Loading } from './src/frontend/custom_components/loading.js';
 import AppFlow from './src/app-core/flow/app_flow.js'
-
+import AlbumScreen from './src/frontend/albums/album.js';
 
 const backgroundImage = require('./assets/image/main_background.png');
 const logo = require('./assets/image/main_logo.png');
@@ -74,7 +74,7 @@ export default function App() {
             <Stack.Screen name="Setting" component={SettingLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" text
 />  
             <Stack.Screen name ="Camera" component={CameraLayout} options={{headerShown: false}}/>
-          
+            <Stack.Screen name ='Album' component={AlbumLayout} options={{headerShown: false}}/>
           </Stack.Navigator>
         </NavigationContainer>
 
@@ -118,6 +118,14 @@ function SettingLayout(){
       <ImageBackground source={backgroundImage} style={mainScreenStyle.backgroundImage}>
         <Image source={logo} style={mainScreenStyle.logo} />
         <SettingScreen />
+      </ImageBackground>
+  )
+}
+function AlbumLayout(){
+  return(
+      <ImageBackground source={backgroundImage} style={mainScreenStyle.backgroundImage}>
+        <Image source={logo} style={mainScreenStyle.logo} />
+        <AlbumScreen />
       </ImageBackground>
   )
 }

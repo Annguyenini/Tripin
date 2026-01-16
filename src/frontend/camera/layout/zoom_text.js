@@ -7,4 +7,4 @@ const ZoomText=({zoom})=>{
             </View>
             )
 }
-export default ZoomText
+export default ZoomText 

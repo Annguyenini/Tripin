@@ -43,6 +43,9 @@ export const MainScreen = () =>{
   const callSetting =()=>{
     const res = navigate("Setting");
   } 
+  const callAlbum =()=>{
+    const res = navigate('Album')
+  }
 
     return(
       
@@ -58,7 +61,7 @@ export const MainScreen = () =>{
         <TouchableOpacity style={footer.fotterbutton} onPress={callCamera} >
             <Image source = {cameraIcon} style ={footer.fottericon}/>
         </TouchableOpacity>
-        <TouchableOpacity style={footer.fotterbutton}>
+        <TouchableOpacity style={footer.fotterbutton} onPress={callAlbum}>
             <Image source = {galleryIcon} style ={footer.fottericon}/>
         </TouchableOpacity>
         <TouchableOpacity onPress={callSetting}>

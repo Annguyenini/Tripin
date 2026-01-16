@@ -15,6 +15,8 @@ import CameraZoomLayout from './layout/zoom_bar.js';
 import BotBarControl from './layout/bot_bar.js';
 import ZoomText from './layout/zoom_text.js';
 import CatureOption from './layout/capture_option.js';
+import { runOnJS } from 'react-native-worklets';
+import { scheduleOnRN } from 'react-native-worklets';
 const { width, height } = Dimensions.get('window');
 
 const exitCamera = () => {
@@ -35,8 +37,9 @@ export const CameraApp = () => {
   const [currentMode, setCurrentMode] = useState("picture")
   const [recording, setRecording] = useState(false);
   const [facing, setFacing] = useState('back');
-  const [zoom, setZoom] = useState(0.16); // Back to useState
-  const [lastZoom, setLastZoom] = useState(null);
+  const [zoom, setZoom] = useState(0.17); // Back to useState
+  const lastZoom = useRef(0)
+  // const [lastZoom, setLastZoom] = useState(null);
   const [flash, setFlash] = useState('off');
   const [showFlash, setShowFlash] = useState(false);
   const [image_icon, setImage_icon] = useState('file:///var/mobile/Containers/Data/Application/5DBFCD23-AFBA-4281-914D-12EAF42C9416/Library/Caches/ExponentExperienceData/@anonymous/tripin-abf3e43d-29e4-438a-86c2-3c5425c1f3da/Camera/5FF144A7-2825-4CB6-A11A-62C455ED9E60.jpg');
@@ -69,7 +72,6 @@ export const CameraApp = () => {
     }, 150);
     const photo = await CameraService.takePicture(cameraRef);
     if (photo) {
-      console.log("pass");
       setPhoto(photo);
       setImage_icon(photo.uri);
       await CameraService.sendImageToServer(photo.uri)
@@ -142,55 +144,71 @@ export const CameraApp = () => {
       zoomInterval.current = null;
     }
   }
-  const onPinch = useCallback(
-      (event) => {
-        // 'worklet'
-        // console.log(event)
-        const velocity = event.velocity / 15;
-        const outFactor = lastZoom *(Platform.OS === 'ios' ? 40 : 15);
-        let newZoom =
-            velocity > 0
-                ? zoom + event.scale * velocity * (Platform.OS === 'ios' ? 0.01 : 25) // prettier-ignore
-                : zoom - (event.scale * (outFactor || 1)) * Math.abs(velocity) * (Platform.OS === 'ios' ? 0.02: 50); // prettier-ignore
+  // const onPinch = useCallback(
+  //     (event) => {
+  //       // 'worklet'
+  //       // console.log(event)
+  //       const velocity = event.velocity / 15;
+  //       const outFactor = lastZoom *(Platform.OS === 'ios' ? 40 : 15);
+  //       let newZoom =
+  //           velocity > 0
+  //               ? zoom + event.scale * velocity * (Platform.OS === 'ios' ? 0.01 : 25) // prettier-ignore
+  //               : zoom - (event.scale * (outFactor || 1)) * Math.abs(velocity) * (Platform.OS === 'ios' ? 0.02: 50); // prettier-ignore
 
-        if (newZoom < 0) newZoom = 0;
-        else if (newZoom > 1) newZoom = 1;
+  //       if (newZoom < 0) newZoom = 0;
+  //       else if (newZoom > 1) newZoom = 1;
 
-        setZoom(newZoom);
-      },
-      [zoom, setZoom,lastZoom,setLastZoom]
-    );
-  const onPinchEnd = useCallback(
-    (event) => {
-      'worklet'; 
-      setLastZoom(zoom);
-    },
-    [zoom, setLastZoom]
-  );
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderGrant: () => {
-      // Touch started
-    },
-    onPanResponderMove: (evt, gestureState) => {
-      // For basic zoom, you could use dy (vertical movement)
-      const zoomChange = gestureState.dx * 0.003;
-      const newZoom = Math.min(Math.max(zoom + zoomChange, 0), 1);
-      setZoom(newZoom);
-    },
-  });
-  // Pinch gesture without Reanimated
-  const zoomPinch = useMemo(() => 
-    Gesture.Pinch()
-    .onUpdate(onPinch)
-    .onEnd(onPinchEnd),
-    [onPinch]
+  //       setZoom(newZoom);
+  //     },
+  //     [zoom, setZoom,lastZoom,setLastZoom]
+  //   );
+  // const onPinchEnd = useCallback(
+  //   (event) => {
+  //     'worklet'; 
+  //     setLastZoom(zoom);
+  //   },
+  //   [zoom, setLastZoom]
+  // );
+  // const panResponder = PanResponder.create({
+  //   onStartShouldSetPanResponder: () => true,
+  //   onMoveShouldSetPanResponder: () => true,
+  //   onPanResponderGrant: () => {
+  //     // Touch started
+  //   },
+  //   onPanResponderMove: (evt, gestureState) => {
+  //     // For basic zoom, you could use dy (vertical movement)
+  //     const zoomChange = gestureState.dx * 0.003;
+  //     const newZoom = Math.min(Math.max(zoom + zoomChange, 0), 1);
+  //     setZoom(newZoom);
+  //   },
+  // });
+  // // Pinch gesture without Reanimated
+  // const zoomPinch = useMemo(() => 
+  //   Gesture.Pinch()
+  //   .onUpdate(onPinch)
+  //   .onEnd(onPinchEnd),
+  //   [onPinch]
   
-       // Add zoom as dependency
-  );
- 
+  //      // Add zoom as dependency
+  // );
+  const updateLastZoom =(zoom)=>{
+    lastZoom.current = zoom
+  }
+  const onZoom = useCallback((event)=>{
+    'worklet'
+    console.log(event)
+    const scaleOffset = (event.scale -  1) * 0.3;
+    const newZoom = Math.max(0,Math.min(lastZoom.current+scaleOffset,1))
+    scheduleOnRN(setZoom,newZoom)
+  },[])
+  const onEndZoom = useCallback(() => {
+    'worklet';
+    scheduleOnRN(updateLastZoom, zoom);
+  }, [zoom]);
 
+  const zoomPinch = Gesture.Pinch()
+    .onUpdate(onZoom)
+    .onEnd(onEndZoom)
   return (
     <View style={cameraStyle.container}>
         {/* Check for permission */}
@@ -206,7 +224,7 @@ export const CameraApp = () => {
       <GestureDetector gesture={zoomPinch}>
         <View style={{ flex: 1 }}>
           <CameraView
-            {...panResponder.panHandlers}
+            // {...panResponder.panHandlers}
 
             ref={cameraRef}
             style={{ width, height }}
@@ -226,7 +244,7 @@ export const CameraApp = () => {
       <View style={cameraStyle.middleBar}>
         <CatureOption toggleCameraMode={toggleCameraMode} currentMode={currentMode}></CatureOption>
         <ZoomText zoom={zoom}></ZoomText>
-        <CameraZoomLayout startZooming = {startZooming} callZooming ={callZooming} stopZooming={stopZooming} zoom={zoom}/>
+        {/* <CameraZoomLayout startZooming = {startZooming} callZooming ={callZooming} stopZooming={stopZooming} zoom={zoom}/> */}
 
       </View >
       <View>

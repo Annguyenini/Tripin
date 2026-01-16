@@ -3,6 +3,7 @@ import AuthHandler from "./auth_handler"
 import TripHandler from "./trip_handler"
 import TripContentsHandler from "./trip_contents_handler"
 import UserDataHandler from './user_handler'
+import Albumdb from "../../backend/album/albumdb"
 class AppFlow{
     constructor(){
         
@@ -20,9 +21,12 @@ class AppFlow{
         const requestUserData = await UserDataHandler.GetUserDataHandler()
         if (!requestUserData){ return false}
         navigate('Main')
+        await this.initDBs()
         return true
     }
-   
+    async initDBs(){
+        await Albumdb.initUserAlbum()
+    }
     // request current trip-id
     async onRenderMapSuccess(){
         const currentTripIdAndVersion = await TripHandler.requestCurrentTripHandler()        

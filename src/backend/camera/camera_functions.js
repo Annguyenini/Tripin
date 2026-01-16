@@ -7,7 +7,7 @@ import Trip from '../trip/trip';
 import TripContentHandler from '../../app-core/flow/trip_contents_handler';
 import TripDataStorage from '../trip/trip_data_storage'
 import * as VideoThumbnails from 'expo-video-thumbnails';
-
+import Albumdb from '../album/albumdb';
 class CameraService{
     constructor(){
         this.album_name = "Tripin_album";
@@ -19,8 +19,9 @@ class CameraService{
         try{
             const options = {quality: 1, base64 :true}; // control option for picture
             const photo =await cameraRef.current.takePictureAsync(options) // return a photo
-            // console.log(photo.uri)
+            console.log(photo.uri)
             this.saveMediaToAlbum(photo.uri)
+            await this.sendImageToServer(photo.uri)
             return photo;
         }    
         catch(err){
@@ -35,7 +36,6 @@ class CameraService{
         if(CurrentTripDataService.getCurrentTripId()){
             await TripContentHandler.uploadTripImageHandler(photoUri)
             await TripDataStorage.push()
-
         }
         return
     }
@@ -79,9 +79,11 @@ class CameraService{
     // console.log (this.album_name)    
     const album = await MediaLibrary.getAlbumAsync(this.album_name);
     const asset = await MediaLibrary.createAssetAsync(uri)
+    console.log(asset)
     try{
         if(album){
             await MediaLibrary.addAssetsToAlbumAsync([asset],album,false)
+            await Albumdb.addMediaIntoDB(asset.mediaType,asset.uri,asset.creationTime)
         }
         else{
             await MediaLibrary.createAlbumAsync(this.album_name,asset);

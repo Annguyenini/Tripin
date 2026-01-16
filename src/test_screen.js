@@ -5,6 +5,7 @@ import UserDataService from './backend/storage/user';
 import CurrentTripDataService from './backend/storage/current_trip';
 import TripService  from './backend/trip/trip_service';
 import TripDataStorage from './backend/trip/trip_data_storage';
+import Albumn from './backend/album/albumdb';
 export const TestScreen = ({testScreenHandler}) => {
   const [gpsStatus, setGpsStatus] = useState('GPS task not running');
   const [sqlText, setSqlText] = useState('No SQL data fetched');
@@ -12,6 +13,9 @@ export const TestScreen = ({testScreenHandler}) => {
   const onGetSQLPress = async() => {
     await TripDataStorage.getAllCoordinates()
   };
+  const onGetAlbumPress = async ()=>{
+    await Albumn.printDbtoconsole()
+  }
   useEffect(()=>{
     const fetchGPSTask=async()=>{
         const status =await TripService.isAnyTask()
@@ -49,7 +53,18 @@ export const TestScreen = ({testScreenHandler}) => {
         >
           <Text>print data from SQL to console</Text>
         </TouchableOpacity>
-
+        <TouchableOpacity
+                onPress={onGetAlbumPress}
+                style={{
+                  marginTop: 12,
+                  padding: 10,
+                  backgroundColor: '#e0e0e0',
+                  borderRadius: 6,
+                  alignItems: 'center',
+                }}
+            >
+          <Text>print data from album to console</Text>
+        </TouchableOpacity>
        
 
         {/* GPS status */}
