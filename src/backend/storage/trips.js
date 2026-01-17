@@ -29,8 +29,12 @@ class TripDataService extends TripLocalDataStorage{
     async handleAllTripsList (trips_list){
         // save detail data for each trip 
         for(const trip of trips_list){
-            trip.image = await this.saveTripImageToLocal(trip.image,`${trip.id}_cover.jpg`,'aws')
             const key = this.getTripKeyReady(trip.user_id,trip.id)
+            const exists_data = await this.getDataObjectFromLocal(key)
+            if(exists_data.trip_informations_version === trip.trip_informations_version){
+                continue
+            }
+            trip.image = await this.saveTripImageToLocal(trip.image,`${trip.id}_cover.jpg`,'aws')
             await this.saveDataObjectToLocal(key,trip)
 
         }

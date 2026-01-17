@@ -45,4 +45,15 @@ export const Albumstyles = StyleSheet.create({
     borderRadius: 16,
     margin:2,
   },
+   overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)', // optional dim
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlayImage: {
+    width: 100,
+    height: 100,
+    tintColor: 'white', // optional
+  },
 });

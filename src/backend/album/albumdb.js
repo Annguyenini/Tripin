@@ -9,7 +9,46 @@ import * as FileSystem from'expo-file-system/legacy'
 
 class Album {
     constuctor(){
-        
+        this.AlbumsArray =[]
+        this.observers =[]
+    }
+    attach(observer){
+        if (!this.observers) this.observers =[];
+        if(this.observers.find(obs => obs ===observer)) return 
+        this.observers.push(observer)
+    }
+    detach(observer){
+        this.observers = this.observers.filter(obs =>obs !==observer)
+    }
+    notify(){
+        for(const obs of this.observers){
+            obs.update(this.AlbumsArray)
+        }
+    }
+
+    addToAlbumArray(object){
+        if(typeof(object)!=='object'){
+            console.error('Failed to add into Album array ',err)
+            return
+        }
+        this.AlbumsArray.unshift(object)
+        this.notify()
+        console.log(object)
+    }
+
+    async getAlbumAssetObjectReady(media_asset_object){
+        if(typeof(media_asset_object) != 'object') {
+            console.error('media_assest must be object')
+            return null
+        }
+        const location = await LocationData.getCurrentCoor()
+        const longitude = location ? location.coords.longitude : null
+        const latitude = location ? location.coords.latitude : null
+        const trip_name = CurrentTripDataService.getCurrentTripName()
+        media_asset_object['longitude'] =longitude
+        media_asset_object['latitude']=latitude
+        media_asset_object['trip_name']=trip_name
+        return media_asset_object
     }
 
     async initUserAlbum(){
@@ -22,6 +61,7 @@ class Album {
         catch(err){
             console.error(err)
         }
+        this.AlbumsArray = await this.getMergedMediasArray()
     }
     async addMediaIntoDB(media_type,media_path,time){
         const location = await LocationData.getCurrentCoor()
@@ -32,18 +72,18 @@ class Album {
         try{
             await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()} (media_type,media_path,latitude,longitude,trip_name,time_stamp) VALUES (?,?,?,?,?,?)`
                 ,[media_type,media_path,latitude,longitude,trip_name,time])        
-            console.log(time)
             }
         catch(err){
             console.error(err)
         }
     }
-    async printDbtoconsole(){
+    
+    async getAllMediasFromDb(){
         const DB = await SqliteService.connectDB()
         let result 
         try{
             result = await DB.getAllAsync(`SELECT * FROM user_${UserDataService.getUserId()}`)
-            console.log(result)
+            return result
         }
         catch(err){
             console.error(err)
@@ -55,7 +95,9 @@ class Album {
         const options = {
             album : album,
             sortBy : [MediaLibrary.SortBy.creationTime],
-            first:100
+            first:100,
+            mediaType:['video','photo']
+            
         }
         if (media_type){
             options ['mediaType'] = media_type
@@ -63,12 +105,32 @@ class Album {
         let result =[]
         try{
             const assets = await MediaLibrary.getAssetsAsync(options)
-            
             return assets.assets
         }
         catch(err){
             console.error('Error at getting asset from album',err)
         }
+    }
+    async mergeMediasFromAlbumAndDB(db_array,album_array){
+        let hash_map ={}
+        for(const object of album_array){
+            hash_map[object.uri]=object
+        }
+        for(const object of db_array){
+            if(hash_map[object.media_path]){
+                hash_map[object.media_path]['latitude'] = object.latitude
+                hash_map[object.media_path]['longitude'] = object.longitude
+                hash_map[object.media_path]['trip_name']=object.trip_name
+            }
+        }
+        return([...Object.values(hash_map)])
+    }
+
+    async getMergedMediasArray(){
+        const db_medias = await this.getAllMediasFromDb()
+        const album_medias = await this.getAllMediasFromAlbumn()
+        const result = await this.mergeMediasFromAlbumAndDB(db_medias,album_medias)
+        return result
     }
     // async handlerAllMediasFromAlbumn(data_array){
     //     if (!data_array) return null

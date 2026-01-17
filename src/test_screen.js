@@ -14,7 +14,7 @@ export const TestScreen = ({testScreenHandler}) => {
     await TripDataStorage.getAllCoordinates()
   };
   const onGetAlbumPress = async ()=>{
-    await Albumn.printDbtoconsole()
+    await Albumn.getAllMediasFromAlbumn()
   }
   useEffect(()=>{
     const fetchGPSTask=async()=>{

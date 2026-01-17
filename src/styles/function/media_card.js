@@ -60,7 +60,9 @@ export const mediaCardStyle=StyleSheet.create
     borderRadius: 10
   },
   video :{
-     width: 300, 
-    height: 200, 
+       width:'100%',
+    height: '100%',
+        borderRadius: 10
+
   }
 })

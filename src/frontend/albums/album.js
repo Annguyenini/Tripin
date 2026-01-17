@@ -31,24 +31,32 @@ import MediaViewCard from './viewer_card';
 // for (let i = 30; i <=40; i++){
 //     IMAGES.push({id:'i',uri :'https://picsum.photos/400/400?random=${i + 1}'})
 // }
-
+const videoPauseIcon = require('../../../assets/image/video_pause_icon.png')
 export default function AlbumScreen() {
     const [Images ,setImages]=useState([])
     const [imageVisible,setImageVisible]= useState(false)
     const [currentMedia,setCurrentMedia] = useState(null)
     const [currentMediaType,setCurrentMediaType] = useState(null)
-
     useEffect(()=>{
         const fetchImages=async()=>{
-            const assets = await AlbumService.getAllMediasFromAlbumn()
+            const assets = await AlbumService.getMergedMediasArray()
+            
             setImages(assets)
         }
+        const updateImages ={
+          update(newImages){
+            setImages(newImages)
+          }
+        }
+        AlbumService.attach(updateImages)
         fetchImages()
+        return ()=>AlbumService.detach(updateImages)
     },[])
 
     const onCallMainScreen =()=>{
         navigate('Main')
     }
+
 
 
     const handleImageClick=(item)=>{
@@ -71,7 +79,18 @@ export default function AlbumScreen() {
         contentContainerStyle={Albumstyles.list}
         renderItem={({ item }) => (
             <TouchableOpacity onPress={()=>handleImageClick(item)}>
+              
           <Image source={{ uri: item.uri }} style={Albumstyles.image} />
+          {
+                item.mediaType ==='video' &&
+                 <View style={Albumstyles.overlay}>
+                  <Image
+                    source={videoPauseIcon} 
+                    resizeMode="contain"
+                    style={Albumstyles.overlayImage}
+                  />
+                </View>
+              }
           </TouchableOpacity>
         )}
       />

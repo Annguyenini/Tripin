@@ -61,8 +61,9 @@ class CameraService{
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (this.video?.uri) {
-        await this.saveMediaToAlbum(this.video.uri);
+        const asset = await this.saveMediaToAlbum(this.video.uri);
         await this.sendVideoToServer(this.video.uri)
+        return asset
     } else {
         console.warn("No video URI found yet!");
     }
@@ -79,14 +80,17 @@ class CameraService{
     // console.log (this.album_name)    
     const album = await MediaLibrary.getAlbumAsync(this.album_name);
     const asset = await MediaLibrary.createAssetAsync(uri)
-    console.log(asset)
     try{
         if(album){
             await MediaLibrary.addAssetsToAlbumAsync([asset],album,false)
             await Albumdb.addMediaIntoDB(asset.mediaType,asset.uri,asset.creationTime)
+            const asset_object = await Albumdb.getAlbumAssetObjectReady(asset)
+            Albumdb.addToAlbumArray(asset_object)
+            return asset
         }
         else{
             await MediaLibrary.createAlbumAsync(this.album_name,asset);
+            await this.saveMediaToAlbum(uri)
         }
     }
     catch(error){

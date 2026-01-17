@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo,useCallback } from 'react';
+import React, { useState, useRef, useMemo,useCallback, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image ,PanResponder} from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { cameraStyle } from '../../styles/camera_style.js';
@@ -17,6 +17,7 @@ import ZoomText from './layout/zoom_text.js';
 import CatureOption from './layout/capture_option.js';
 import { runOnJS } from 'react-native-worklets';
 import { scheduleOnRN } from 'react-native-worklets';
+import AlbumService from '../../backend/album/albumdb.js';
 const { width, height } = Dimensions.get('window');
 
 const exitCamera = () => {
@@ -42,13 +43,31 @@ export const CameraApp = () => {
   // const [lastZoom, setLastZoom] = useState(null);
   const [flash, setFlash] = useState('off');
   const [showFlash, setShowFlash] = useState(false);
-  const [image_icon, setImage_icon] = useState('file:///var/mobile/Containers/Data/Application/5DBFCD23-AFBA-4281-914D-12EAF42C9416/Library/Caches/ExponentExperienceData/@anonymous/tripin-abf3e43d-29e4-438a-86c2-3c5425c1f3da/Camera/5FF144A7-2825-4CB6-A11A-62C455ED9E60.jpg');
+  const [image_icon, setImage_icon] = useState(null);
+  const [imageIconType,setImageIconType]=useState(null)
   const [image_flash_icon, setFlashIcon] = useState(require('../../../assets/image/camera_flash_off.png'));
   const [isCameraReady,setCameraReady] = useState(false);
   const zoomInterval = useRef(null);
   const baseZoom = useRef(0.16);
   const leftZoomModeList =[0,1,1.6]
   const rightZoomModeList =[3,5,10];
+
+  useEffect(()=>{
+    const fetchImages = async()=>{
+      setImage_icon(AlbumService.AlbumsArray[0].uri)
+      setImageIconType(AlbumService.AlbumsArray[0].mediaType)
+    }
+    const updateImages={
+      update(newArray){
+        setImage_icon(newArray[0].mediaType)
+      }
+    }
+    AlbumService.attach(updateImages)
+    fetchImages()
+    return ()=>AlbumService.detach(updateImages)
+  },[])
+
+
 
   const toggleFlash = () => {
     setFlashIcon(prev => prev === require("../../../assets/image/camera_flash_off.png") ? require('../../../assets/image/camera_flash_on.png') : require('../../../assets/image/camera_flash_off.png'));
@@ -74,44 +93,38 @@ export const CameraApp = () => {
     if (photo) {
       setPhoto(photo);
       setImage_icon(photo.uri);
-      await CameraService.sendImageToServer(photo.uri)
+      setImageIconType('photo')
     }
   }
   const recordVideo = async () => {
-  console.log("record");
-  
-  // Check if camera is ready
-  if (!isCameraReady) {
-    console.log("Camera not ready");
-    return;
-  }
-  
-  if (!recording && cameraRef.current) {
-    try {
-      console.log("Starting recording...");
-      setRecording(true); // Set recording BEFORE starting
-      
-      const video = await CameraService.recordVideo(cameraRef);
-      
-      if (video) {
-        console.log("Video recorded:", video.uri);
-        await setThumnail(video.uri)
-
-        setVideo(video);
-      }
-    } catch (err) {
-      console.error("Recording error:", err);
-      setRecording(false); // Reset if error occurs
+    console.log("record");
+    
+    // Check if camera is ready
+    if (!isCameraReady) {
+      console.log("Camera not ready");
+      return;
     }
-  }
+    
+    if (!recording && cameraRef.current) {
+      try {
+        console.log("Starting recording...");
+        setRecording(true); // Set recording BEFORE starting
+        const video = await CameraService.recordVideo(cameraRef);
+      } catch (err) {
+        console.error("Recording error:", err);
+        setRecording(false); // Reset if error occurs
+      }
+    }
 };
   const stopRecording = async()=>{
     console.log("stop record")
+    let asset
     if(recording){
-      CameraService.stopRecording(cameraRef);
+      asset = await CameraService.stopRecording(cameraRef);
     }
     setRecording(false)
-    console.log(video.uri)
+    setImage_icon(asset.uri)
+    setImageIconType('video')
     // await CameraService.saveMediaToAlbum(video.uri)
   }
   const callZooming =(mode)=>{
@@ -128,15 +141,16 @@ export const CameraApp = () => {
       });
     }, 16);
   }
-  const setThumnail = async(videoUri)=>{
-    try{
-      const {uri} = await VideoThumbnails.getThumbnailAsync(videoUri)
-      setImage_icon(uri);
-    }
-    catch(e){
-      console.error(e);
-    }
-  }
+  // const setThumnail = async(videoUri)=>{
+  //   try{
+  //     const {uri} = await VideoThumbnails.getThumbnailAsync(videoUri)
+  //     console.log(uri)
+  //     setImage_icon(uri);
+  //   }
+  //   catch(e){
+  //     console.error(e);
+  //   }
+  // }
   // // Stop zooming for bar
   const stopZooming = () => {
     if (zoomInterval.current) {
@@ -144,53 +158,6 @@ export const CameraApp = () => {
       zoomInterval.current = null;
     }
   }
-  // const onPinch = useCallback(
-  //     (event) => {
-  //       // 'worklet'
-  //       // console.log(event)
-  //       const velocity = event.velocity / 15;
-  //       const outFactor = lastZoom *(Platform.OS === 'ios' ? 40 : 15);
-  //       let newZoom =
-  //           velocity > 0
-  //               ? zoom + event.scale * velocity * (Platform.OS === 'ios' ? 0.01 : 25) // prettier-ignore
-  //               : zoom - (event.scale * (outFactor || 1)) * Math.abs(velocity) * (Platform.OS === 'ios' ? 0.02: 50); // prettier-ignore
-
-  //       if (newZoom < 0) newZoom = 0;
-  //       else if (newZoom > 1) newZoom = 1;
-
-  //       setZoom(newZoom);
-  //     },
-  //     [zoom, setZoom,lastZoom,setLastZoom]
-  //   );
-  // const onPinchEnd = useCallback(
-  //   (event) => {
-  //     'worklet'; 
-  //     setLastZoom(zoom);
-  //   },
-  //   [zoom, setLastZoom]
-  // );
-  // const panResponder = PanResponder.create({
-  //   onStartShouldSetPanResponder: () => true,
-  //   onMoveShouldSetPanResponder: () => true,
-  //   onPanResponderGrant: () => {
-  //     // Touch started
-  //   },
-  //   onPanResponderMove: (evt, gestureState) => {
-  //     // For basic zoom, you could use dy (vertical movement)
-  //     const zoomChange = gestureState.dx * 0.003;
-  //     const newZoom = Math.min(Math.max(zoom + zoomChange, 0), 1);
-  //     setZoom(newZoom);
-  //   },
-  // });
-  // // Pinch gesture without Reanimated
-  // const zoomPinch = useMemo(() => 
-  //   Gesture.Pinch()
-  //   .onUpdate(onPinch)
-  //   .onEnd(onPinchEnd),
-  //   [onPinch]
-  
-  //      // Add zoom as dependency
-  // );
   const updateLastZoom =(zoom)=>{
     lastZoom.current = zoom
   }
@@ -244,12 +211,12 @@ export const CameraApp = () => {
       <View style={cameraStyle.middleBar}>
         <CatureOption toggleCameraMode={toggleCameraMode} currentMode={currentMode}></CatureOption>
         <ZoomText zoom={zoom}></ZoomText>
-        {/* <CameraZoomLayout startZooming = {startZooming} callZooming ={callZooming} stopZooming={stopZooming} zoom={zoom}/> */}
+        <CameraZoomLayout startZooming = {startZooming} callZooming ={callZooming} stopZooming={stopZooming} zoom={zoom}/>
 
       </View >
       <View>
 
-        <BotBarControl recordVideo={recordVideo} stopRecording={stopRecording} toggleCameraMode = {toggleCameraMode} shutterButtonAction ={shutterButtonAction} currentMode={currentMode} recording={recording} image_icon={image_icon}/>
+        <BotBarControl recordVideo={recordVideo} stopRecording={stopRecording} toggleCameraMode = {toggleCameraMode} shutterButtonAction ={shutterButtonAction} currentMode={currentMode} recording={recording} image_icon={image_icon} type={imageIconType}/>
       </View>
     </View>
   );

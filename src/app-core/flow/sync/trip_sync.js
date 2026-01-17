@@ -23,7 +23,7 @@ class TripSync {
             switch(item.itemType){
                 case 'coordinate':
                     await TripContentsService.send_coordinates(item.data,item.version)
-            }
+            }Q
             this.pennding.shift()
             
         }
