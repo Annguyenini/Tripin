@@ -4,14 +4,15 @@ import { OverlayCard } from './frontend/custom_function/overlay_card';
 import UserDataService from './backend/storage/user';
 import CurrentTripDataService from './backend/storage/current_trip';
 import TripService  from './backend/trip/trip_service';
-import TripDataStorage from './backend/trip/trip_data_storage';
+import TripDataStorage from './backend/trip/trip_coordinate_service';
 import Albumn from './backend/album/albumdb';
 export const TestScreen = ({testScreenHandler}) => {
   const [gpsStatus, setGpsStatus] = useState('GPS task not running');
   const [sqlText, setSqlText] = useState('No SQL data fetched');
 
   const onGetSQLPress = async() => {
-    await TripDataStorage.getAllCoordinates()
+    const data =await TripDataStorage.getAllCoordinatesFromTripId(CurrentTripDataService.getCurrentTripId())
+    console.log(data)
   };
   const onGetAlbumPress = async ()=>{
     await Albumn.getAllMediasFromAlbumn()
@@ -36,7 +37,7 @@ export const TestScreen = ({testScreenHandler}) => {
 
         {/* Trip data */}
         <Text style={{ marginTop: 10 }}>🧭 Current Trip</Text>
-        <Text>Name: {CurrentTripDataService.getCurrentTripName()}</Text>
+        <Text>: {CurrentTripDataService.getCurrentTripName()}</Text>
         <Text>Status: {CurrentTripDataService.getCurrentTripStatus()? 'true':'false'}</Text>
         <Text>ID: {CurrentTripDataService.getCurrentTripId()}</Text>
 

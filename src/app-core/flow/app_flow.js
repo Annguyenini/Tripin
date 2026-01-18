@@ -21,7 +21,7 @@ class AppFlow{
         const requestUserData = await UserDataHandler.GetUserDataHandler()
         if (!requestUserData){ return false}
         navigate('Main')
-        await this.initDBs()
+        // await this.initDBs()
         return true
     }
     async initDBs(){

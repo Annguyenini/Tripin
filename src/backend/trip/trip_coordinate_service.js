@@ -2,13 +2,14 @@
 
 import * as SQLite from 'expo-sqlite';
 import * as DBCONFIG from '../../config/config_db'
-import CurrentTripDataService from '../../backend/storage/current_trip'
+import CurrentTripDataService from '../storage/current_trip'
 import * as Location from 'expo-location'
 import SqliteService from '../storage/sqlite/sqlite';
 import TripContentsHandler from '../../app-core/flow/trip_contents_handler';
 import { documentDirectory } from 'expo-file-system/legacy';
 import {SQLITEDBNAME} from '../../config/config_db'
-class TripDataStorage {
+import CoordinatesSubject from '../../backend/trip/trip_coordiantes_subject'
+class CurrentTripCoordinateService {
 
     constructor(){
         this.storage = []
@@ -62,13 +63,11 @@ class TripDataStorage {
     }
 
 
-    async getAllCoordinates(){
+    async getAllCoordinatesFromTripId(trip_id){
         const DB = await SqliteService.connectDB()
         try{
-            const allRows = await DB.getAllAsync(`SELECT * FROM trip_${CurrentTripDataService.getCurrentTripId()}`)
-            for (const row of allRows){
-                console.log(row)
-            }
+            const allRows = await DB.getAllAsync(`SELECT * FROM trip_${trip_id}`)
+            return allRows
         }
         catch(err){
             console.error (err)
@@ -98,6 +97,7 @@ class TripDataStorage {
 
         console.assert(typeof(trip_data_object)==='object', 'trip data must be an object')
         this.storage.push(trip_data_object);
+        CoordinatesSubject.addCoordinateToArray(trip_data_object)
         if(this.storage.length >=5){
             const version =  await this.insert_into_DB()
             const send_coor = await TripContentsHandler.sendCoordinatesHandler(this.storage,version)
@@ -113,5 +113,5 @@ class TripDataStorage {
 
 
 
-const trip_storage = new TripDataStorage()
+const trip_storage = new CurrentTripCoordinateService()
 export default trip_storage

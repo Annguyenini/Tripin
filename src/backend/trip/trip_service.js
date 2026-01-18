@@ -3,7 +3,7 @@ import * as TRIPCONFIG from '../../config/config_db'
 import Permission from '../storage/settings/permissions';
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
-import TripDataStorage from './trip_data_storage';
+import TripDataStorage from './trip_coordinate_service';
 import CurrentTripDataService from '../../backend/storage/current_trip';
 
 const TASK_NAME = "background-location-task";
@@ -128,7 +128,7 @@ export class TripService {
         accuracy: performance,
         timeInterval: trackingTime,
         pausesUpdatesAutomatically: false,
-        distanceInterval: 5,
+        distanceInterval: 50,
         showsBackgroundLocationIndicator: true, // iOS - shows blue bar
         foregroundService: { // Android
           notificationTitle: 'Trip Tracking',

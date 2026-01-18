@@ -27,6 +27,7 @@ export const DATA_KEYS ={
         CURRENT_TRIP_CREATED_TIME :'current_created_time',
         CURRENT_TRIP_STATUS:'trip_status',
         CURRENT_TRIP_STORAGE_KEY :'trip_storage_key',
+        CURRENT_TRIP_COORDINATES_ARRAY:'current_coordinate_array'
     },
     USER:{
         USER_DATA:'user_data',

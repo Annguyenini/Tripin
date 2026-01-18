@@ -8,13 +8,19 @@ class TripContentService{
 
     async send_coordinates(coor_object,version){
         const token = await TokenService.getToken('access_token')
-        const respond = await fetch(API.SEND_COORDINATES+`/${CurrentTripDataService.getCurrentTripId()}/coordinates`,{
-            method:'POST',
-            headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
-            body:JSON.stringify({
-                coordinates:coor_object,
-                version:version})
-        })
+        try{
+            const respond = await fetch(API.SEND_COORDINATES+`/${CurrentTripDataService.getCurrentTripId()}/coordinates`,{
+                method:'POST',
+                headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
+                body:JSON.stringify({
+                    coordinates:coor_object,
+                    version:version})
+            })
+        }
+        catch(err){
+            console.log(err)
+            return  {'status':404}
+        }
         const data = await respond.json()
         console.log(data)
         if(respond.status ===401){

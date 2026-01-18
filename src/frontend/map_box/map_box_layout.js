@@ -15,10 +15,6 @@ export const MapBoxLayout =({})=>{
     const [userLock,setUserLock]=useState(false)
     const [isFollowingUser, setIsFollowingUser] = useState(true)
     const[isOnATrip,setIsOnATrip]= useState(null)
-
-    const[coorsList, setCoorList] = useState(null)
-    const[mediaList,setMediaList] =useState(null)
-
     const sendMapRenderSignal= async()=>{
         await AppFlow.onRenderMapSuccess()
     }
@@ -28,31 +24,17 @@ export const MapBoxLayout =({})=>{
             setIsOnATrip(trip_status)
     }
 
-        const fetch = async()=>{
-            const coors = TripContentsDataService.item.get(DATA_KEYS.TRIP_CONTENTS.CURRENT_TRIP_COORDINATES)
-            const media = TripContentsDataService.item.get(DATA_KEYS.TRIP_CONTENTS.CURRENT_TRIP_MEDIA)
-            setCoorList(coors)
-            setMediaList(media)
-        }
         const updateTripStatus={
             update(newState){
                 setIsOnATrip(newState)
             }
         }
-        const updateCoorList={
-            update(list){
-                console.log('update',list)
-                setCoorList(list)
-            }
-        }
         fetchIsOnATrip()
         fetch()
         
-        TripContentsDataService.attach(updateCoorList,DATA_KEYS.TRIP_CONTENTS.CURRENT_TRIP_COORDINATES)
         CurrentTripDataService.attach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
         return()=>{
             TripContentsDataService.detach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
-            TripContentsDataService.detach(updateCoorList,DATA_KEYS.TRIP_CONTENTS.CURRENT_TRIP_COORDINATES)
         }
         
     })
@@ -94,8 +76,8 @@ export const MapBoxLayout =({})=>{
             />
             <MapboxGL.UserLocation minDisplacement={2}/>
             
-            {/* {isOnATrip&& coorsList && CoordinatesPointsLayout(coorsList)} */}
-            {isOnATrip&& mediaList && ImageLabel(mediaList)}
+            {isOnATrip && <CoordinatesPointsLayout trip_id={CurrentTripDataService.getCurrentTripId()}></CoordinatesPointsLayout>}
+            {/* {isOnATrip&& mediaList && ImageLabel(mediaList)} */}
             
             </MapboxGL.MapView>
             

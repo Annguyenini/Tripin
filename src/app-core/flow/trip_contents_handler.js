@@ -12,10 +12,15 @@ class TripContentHandler{
         const respond = await TripContents.send_coordinates(coors_object,version)
         if (respond.status ===409){
             // prevent duplicate sync
+                        console.log('missing1')
+
             if(TripSync.coordinatesSyncing){
+                            console.log('missing2')
+
                 TripSync.addIntoQueue('coordinate',version,coors_object)
                 return null
             }
+            console.log('missing')
             await TripSync.processTripCoordinatesSync(respond.data.missing_versions)
         }
         return respond

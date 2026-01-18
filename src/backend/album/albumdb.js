@@ -56,7 +56,7 @@ class Album {
         try{
         
             await DB.execAsync(`CREATE TABLE IF NOT EXISTS "user_${UserDataService.getUserId()}"( id INTEGER PRIMARY KEY AUTOINCREMENT, media_type TEXT NOT NULL,
-                 media_path TEXT NOT NULL, latitude REAL DEFAULT NULL, longitude REAL DEFAULT NULL, trip_name TEXT DEFAULT NULL, time_stamp TEXT NOT NULL);`)
+                 media_path TEXT NOT NULL, latitude REAL DEFAULT NULL, longitude REAL DEFAULT NULL, trip_name TEXT DEFAULT NULL, time_stamp TEXT NOT NULL,version INT DEFAULT 0);`)
         }
         catch(err){
             console.error(err)

@@ -29,6 +29,7 @@ class CurrentTripDataService extends TripLocalDataStorage{
             [DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_CREATED_TIME]:null,
             [DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS]:false,
             [DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STORAGE_KEY]:null,
+            [DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_COORDINATES_ARRAY]:[],
             set(prop,value){
                 this[prop] = value
             },
@@ -67,6 +68,8 @@ class CurrentTripDataService extends TripLocalDataStorage{
         this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
         return true
     }
+
+
 
     async getCurrentTripDataFromLocal(user_id,trip_id){
         const key = this.getTripKeyReady(user_id,trip_id)
@@ -143,6 +146,11 @@ class CurrentTripDataService extends TripLocalDataStorage{
         await this.deleteImageFromLocal(file_path)
     }
 
+
+
+
+
+
     /**
      * delete the trip data object
      */
@@ -162,6 +170,7 @@ class CurrentTripDataService extends TripLocalDataStorage{
         this._init_values()
     }
 
+
     getObjectReady(trip_name, trip_id, created_time,image_uri){
         const tripdata ={
             "trip_name":trip_name,
@@ -173,6 +182,9 @@ class CurrentTripDataService extends TripLocalDataStorage{
     }
 
 
+    async initCurrentCoordinatesArray (){
+
+    }
 
 
 
