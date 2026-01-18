@@ -8,68 +8,68 @@ import { ETAG_KEY } from './etag/etag_keys'
 class UserService {
 
     async updateUserProfileImage(uri){
-        const formdata = new FormData()
-        const token = await TokenService.getToken('access_token')
-        formdata.append('image',{
-            uri:uri,
-            name:`user${UserDataService.getUserId()}_profile_pic`,
-            type:'image/jpeg'
-        })
-        const respond = await fetch(API.UPDATE_PROFILE_IMAGE,{
-            method:'POST',
-            headers:{'Authorization':`Bearer ${token}`},
-            body: formdata
-        })
-        const data = await respond.json()
-        if(respond.status === 401){
-            if(data.code ==='token_expired'){
-                await AuthService.requestNewAccessToken()
-                return this.updateUserProfileImage(uri)
+        try{
+            const formdata = new FormData()
+            const token = await TokenService.getToken('access_token')
+            formdata.append('image',{
+                uri:uri,
+                name:`user${UserDataService.getUserId()}_profile_pic`,
+                type:'image/jpeg'
+            })
+            const respond = await fetch(API.UPDATE_PROFILE_IMAGE,{
+                method:'POST',
+                headers:{'Authorization':`Bearer ${token}`},
+                body: formdata
+            })
+            const data = await respond.json()
+            if(respond.status === 401){
+                if(data.code ==='token_expired'){
+                    await AuthService.requestNewAccessToken()
+                    return this.updateUserProfileImage(uri)
+                }
             }
-            else if(data.code === 'token_invalid'){
-                return false
-            }
+            return ({'ok':true,'status':respond.status,'data':data})
         }
-        else if(respond.status === 419){
-            return false
-        }
-        else if(respond.status ===200){
-            return true
+        catch(err){
+            console.error('Failed at update User profile image')
+            return ({'ok':false})
         }   
     }
     async getUserData(user_id){
-        const token = await TokenService.getToken('access_token')
-        const etag = await EtagService.getEtagFromLocal(ETAG_KEY.USERDATA)
+        try{
+            const token = await TokenService.getToken('access_token')
+            const etag = await EtagService.getEtagFromLocal(ETAG_KEY.USERDATA)
+            
+            const headers ={
+                'Authorization':`Bearer ${token}`
+            }
+            if (etag){
+                headers['If-None-Match'] = etag
+            }
+            const respond = await fetch(API.GET_USER_DATA+``,{
+                method:'GET',
+                headers:headers
+            })
+            if(respond.status ===304){
+                return ({'status':respond.status,'data':null})
+            }
+            const data = await respond.json()
+            if(respond.status === 401){
+                if(data.code ==='token_expired'){
+                    await AuthService.requestNewAccessToken()
+                    return this.getUserData(user_id)
+                }
+            }
         
-        const headers ={
-            'Authorization':`Bearer ${token}`
+            return ({'ok':true,'status':respond.status,'data':data})
+    
         }
-        if (etag){
-            headers['If-None-Match'] = etag
-        }
-        const respond = await fetch(API.GET_USER_DATA+``,{
-            method:'GET',
-            headers:headers
-        })
-        if(respond.status ===304){
-            return ({'status':respond.status,'data':null})
-        }
-        const data = await respond.json()
-        if(respond.status === 401){
-            if(data.code ==='token_expired'){
-                await AuthService.requestNewAccessToken()
-                return this.getUserData(user_id)
-            }
-            else if(data.code === 'token_invalid'){
-                return null
-            }
-        }
-        else if(respond.status === 419){
-            return null
-        }
-       
-        return ({'status':respond.status,'data':data})
+    catch(err){
+        console.error('Failed at get user data: ',err)
+        return ({'ok':false})
     }
+    }
+    
 }
 
 const userService = new UserService()

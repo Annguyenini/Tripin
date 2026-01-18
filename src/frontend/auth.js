@@ -46,18 +46,21 @@ export const AuthScreen= ( ) => {
 
     if(action ==='Login'){
       const respond =await AuthHandler.loginHandler(username,password);
-      if(respond===401){
+      if(!respond.ok){
+        setAlertType('There are an error occur with the server! Please try again shortly')
+        setShowAleart(true);
+      }
+      if(respond.status===401){
         setAlertType('Account not found!')
         setShowAleart(true);
         return;
       }
-      else if (respond === 429){
+      else if (respond.status === 429){
         setAlertType("Too many request please try again shortly!")
         setShowAleart(true);
         return;
       }
-      else if(respond ===200){
-        console.log('dsdsds')
+      else if(respond.status ===200){
         await AppFlow.onAuthSuccess()
       }
       // console.log("pass")
@@ -87,7 +90,7 @@ export const AuthScreen= ( ) => {
       return;
     }
     const response = await AuthHandler.signUpHandler(email,displayName,username,password);
-    if(response.status===401){
+    if(!response.ok || response.status===401){
       setAlertType(response.message);
       setShowAleart(true);
       return;
@@ -105,6 +108,11 @@ export const AuthScreen= ( ) => {
       return 
     }
     const respond = await AuthHandler.emailVerificationHandler(email,verifyCode);
+    if(!respond.ok){
+      setAlertType('Server failed')
+      setShowAleart(true)
+      return;
+    }
     if(respond.status!=200){
       setAlertType(respond.message)
       setShowAleart(true)

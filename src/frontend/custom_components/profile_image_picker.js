@@ -17,7 +17,7 @@ export const ProfileImagePicker =({set_show_profile_picker})=>{
     }
     const updateUserProfileImage =async()=>{
       const respond = await UserService.updateUserProfileImage(imageUri)
-      if(respond){
+      if(respond.ok){
         await UserDataService.setProfileImageUri(imageUri);
         set_show_profile_picker(false)
       }

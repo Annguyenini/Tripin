@@ -14,160 +14,164 @@ class Trip{
          * send via FORMDATA
          * @param trip_name - tripname
          */
-        // if there are no token found return false
-        const token = await TokenService.getToken("access_token");
-        // console.log(token)
-        if (!token) {
-            return false 
-        }
 
-        let formData = new FormData()
-        formData.append('image',{
-            uri:imageUri,
-            name:`cover_${CurrentTripDataService.getCurrentTripId()}`,
-            type:'image/jpeg'
-        })
-        formData.append('trip_name',trip_name)
+        try{
+            // if there are no token found return false
+            const token = await TokenService.getToken("access_token");
+            let formData = new FormData()
+            formData.append('image',{
+                uri:imageUri,
+                name:`cover_${CurrentTripDataService.getCurrentTripId()}`,
+                type:'image/jpeg'
+            })
+            formData.append('trip_name',trip_name)
 
-        // only send trip name b/c we took userdata straight out from token
-        const respond = await fetch(API.REQUEST_NEW_TRIP_API,{
-            method:"POST",
-            headers:{"Authorization": `Bearer ${token}`},
-            body: formData
-        });
-        const data = await respond.json()
-        console.log(data)
-        if(respond.status === 401){
-            if (data.code ==="token_expired"){
-                await AuthService.requestNewAccessToken()
-                return await this.requestNewTrip(trip_name,imageUri)
-                
+            // only send trip name b/c we took userdata straight out from token
+            const respond = await fetch(API.REQUEST_NEW_TRIP_API,{
+                method:"POST",
+                headers:{"Authorization": `Bearer ${token}`},
+                body: formData
+            });
+            const data = await respond.json()
+            console.log(data)
+            if(respond.status === 401){
+                if (data.code ==="token_expired"){
+                    await AuthService.requestNewAccessToken()
+                    return await this.requestNewTrip(trip_name,imageUri)
+                    
+                }
             }
-            else if(data.code ==="token_invalid"){
-                return null
-            }
+            return ({'ok':true,'status':respond.status, 'data':data})
         }
-        return ({'status':respond.status, 'data':data})
+        catch(err){
+            console.error('Fail at request new trip: ',err)
+            return ({'ok':false})
+        }   
     }
     async end_trip (){
-        //oldcode
-        const token = await TokenService.getToken('access_token')
-        // const trip_data = awaitTripDataService.getTripData()
-
-        // const trip_id =trip_data.trip_id 
-        const trip_id = CurrentTripDataService.getCurrentTripId()
-        // console.log("tripid",trip_id)
-        const res = await fetch(API.END_TRIP,{
-            method:"POST",
-            headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
-            body:JSON.stringify({
-                trip_id:trip_id
+        try{
+            const token = await TokenService.getToken('access_token')
+            const trip_id = CurrentTripDataService.getCurrentTripId()
+            const res = await fetch(API.END_TRIP,{
+                method:"POST",
+                headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},
+                body:JSON.stringify({
+                    trip_id:trip_id
+                })
             })
-        })
-        const data = await res.json()
-        if (res.status===401){
-            // console.log(data.code)
-            if(data.code ==="token_expired"){
-                await AuthService.requestNewAccessToken()
-                return await this.end_trip()
+            const data = await res.json()
+            if (res.status===401){
+                // console.log(data.code)
+                if(data.code ==="token_expired"){
+                    await AuthService.requestNewAccessToken()
+                    return await this.end_trip()
+                }
             }
-            else if(data.code==="token_invalid"){
-                return null
-            }
+            return ({'ok':true,'status':res.status,'data':data})
         }
-        return ({'status':res.status,'data':data})
+        catch(err){
+            console.error('Failed at end trip: ',err)
+            return ({'ok':false})
+        }
     }
+
     
 
 
     async requestCurrentTripId(){
-        const token = await TokenService.getToken('access_token')
-        const respond = await fetch(API.REQUEST_CURRENT_TRIP_ID,{
-            method :'GET',
-            headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
-        })
-        const data = await respond.json()
+        try{
+            const token = await TokenService.getToken('access_token')
+            const respond = await fetch(API.REQUEST_CURRENT_TRIP_ID,{
+                method :'GET',
+                headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
+            })
+            const data = await respond.json()
 
-        if(respond.status ===401){
-            if(data.code === 'token_expired'){
-                await AuthService.requestNewAccessToken()
-                return await this.requestCurrentTripId()
+            if(respond.status ===401){
+                if(data.code === 'token_expired'){
+                    await AuthService.requestNewAccessToken()
+                    return await this.requestCurrentTripId()
+                }
             }
-            else if(data.code === 'token_invalid'){
-                return null
-            }
+
+            return ({'ok':true,'status':respond.status,'data':data})
         }
-
-        return ({'status':respond.status,'data':data})
+        catch(err){
+            console.error('Failef at request current trip id', err)
+            return ({'ok':false})
+        }
     }
 
 
     async requestTripData(trip_id){
-
-        const token = await TokenService.getToken('access_token')
-        const etag = await EtagService.getEtagFromLocal(GENERATE_TRIP_ETAG_KEY(trip_id))
-        const headers ={
-            'Content-Type':'application/json',
-            'Authorization':`Bearer ${token}`
-        }
-        if (etag){
-            headers['If-None-Match'] = etag
-        }
-        const respond = await fetch(API.REQUEST_TRIP_DATA,{
-            method :'POST',
-            headers:headers,
-            body:JSON.stringify({
-                trip_id:trip_id
+        try{
+            const token = await TokenService.getToken('access_token')
+            const etag = await EtagService.getEtagFromLocal(GENERATE_TRIP_ETAG_KEY(trip_id))
+            const headers ={
+                'Content-Type':'application/json',
+                'Authorization':`Bearer ${token}`
+            }
+            if (etag){
+                headers['If-None-Match'] = etag
+            }
+            const respond = await fetch(API.REQUEST_TRIP_DATA,{
+                method :'POST',
+                headers:headers,
+                body:JSON.stringify({
+                    trip_id:trip_id
+                })
             })
-        })
-        if(respond.status ===304){return {'status':respond.status,'data':null}}
-        const data = await respond.json()
-        if(respond.status ===401){
-            if(data.code === 'token_expired'){
-                await AuthService.requestNewAccessToken()
-                return await this.requestCurrentTripId()
+            if(respond.status ===304){return {'status':respond.status,'data':null}}
+            const data = await respond.json()
+            if(respond.status ===401){
+                if(data.code === 'token_expired'){
+                    await AuthService.requestNewAccessToken()
+                    return await this.requestCurrentTripId()
+                }
             }
-            else if(data.code === 'token_invalid'){
-                return null
-            }
+            return ({'ok':true,'status':respond.status,'data':data})
         }
-        return ({'status':respond.status,'data':data})
-        
+        catch(err){
+            console.error("failed at get trip data with: ",err)
+            return ({'ok':false})
+        }    
     }
 
 
     async requestTripsData(){
-        const token = await TokenService.getToken('access_token')
-        const etag =  await EtagService.getEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST)
-        const headers = {
-            'Content-Type':'application/json',
-            'Authorization':`Bearer ${token}`
-        }
-        if (etag){
-            headers['If-None-Match']=etag
-        }
-        const respond = await fetch(API.REQUEST_TRIPS_DATA,{
-            method :'GET',
-            headers:headers
-        })
-
-        if(respond.status===304) return {'status':respond.status,'data':null}
-
-        const data = await respond.json()
-
-        if(respond.status ===401){
-            console.log("401")
-            if(data.code === 'token_expired'){
-                await AuthService.requestNewAccessToken()
-                return await this.requestTripsData()
+        try{
+            const token = await TokenService.getToken('access_token')
+            const etag =  await EtagService.getEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST)
+            const headers = {
+                'Content-Type':'application/json',
+                'Authorization':`Bearer ${token}`
             }
-            else if(data.code === 'token_invalid'){
-                return null
+            if (etag){
+                headers['If-None-Match']=etag
             }
+            const respond = await fetch(API.REQUEST_TRIPS_DATA,{
+                method :'GET',
+                headers:headers
+            })
+
+            if(respond.status===304) return {'status':respond.status,'data':null}
+
+            const data = await respond.json()
+
+            if(respond.status ===401){
+                console.log("401")
+                if(data.code === 'token_expired'){
+                    await AuthService.requestNewAccessToken()
+                    return await this.requestTripsData()
+                }
+            }
+            return {'ok':true,'status':respond.status,'data':data}
         }
-        return {'status':respond.status,'data':data}
+        catch(err){
+            console.error('Failed at request all trip data: ',err)
+            return ({'ok':false})
+        }
     }
-    
 }
 
 const trip = new Trip()

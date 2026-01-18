@@ -13,6 +13,7 @@ class UserDataHandler{
             if(!user_id) return false
         }
         const respond = await UserService.getUserData(user_id)
+        if(!respond.ok) return false
         if (respond.status ===304){
             await UserDataService.usingStoredUserData()
             return true

@@ -8,7 +8,7 @@ class AuthHandler{
     async loginHandler(username,password){
         const respond = await Auth.requestLogin(username,password)
         
-        if(respond.status !=200) return respond.status;
+        if(!respond.ok || respond.status !=200) return respond;
         const data = respond.data
         const token = data.tokens
         await TokenService.deleteToken("access_token");
@@ -19,14 +19,14 @@ class AuthHandler{
 
         await UserDataService.setUserAuthToLocal(data.user_data)
        
-        return respond.status;
+        return respond;
     }
 
     async loginWithTokenHandler(){
         const userdata_etag = await Etag_Service.getEtagFromLocal(ETAG_KEY.USERDATA) 
         
         const res = await Auth.authenticateToken("access_token",userdata_etag);
-
+        if(!res.ok )return false
         const data =await res.data
         if (res.status===401){
             if (data.code === "token_expired") {
