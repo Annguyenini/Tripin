@@ -9,32 +9,40 @@ import * as FileSystem from'expo-file-system/legacy'
 import TripDatabase from '../database/TripDatabaseService'
 
 class Album {
-    constuctor(){
+    constructor(){
         this.AlbumsArray =[]
         this.observers =[]
     }
     attach(observer){
-        if (!this.observers) this.observers =[];
+        console.log('attach',observer)
         if(this.observers.find(obs => obs ===observer)) return 
         this.observers.push(observer)
     }
     detach(observer){
+        console.log('dettach')
         this.observers = this.observers.filter(obs =>obs !==observer)
     }
     notify(){
+        console.log('notify',this.observers)
         for(const obs of this.observers){
             obs.update(this.AlbumsArray)
         }
     }
 
     addToAlbumArray(object){
-        if(typeof(object)!=='object'){
-            console.error('Failed to add into Album array ',err)
-            return
+        // console.log(this.AlbumsArray)
+        // if(typeof(object)!=='object'){
+        //     console.error('Failed to add into Album array ')
+        //     return
+        // }
+        try{
+            console.log('is array frozen at add ',Object.isFrozen(this.AlbumsArray))
+            this.AlbumsArray.unshift(object)
         }
-        this.AlbumsArray.unshift(object)
-        this.notify()
-        console.log(object)
+        catch(err){
+            console.error('Failed to add into Album array ',err)
+        }
+            this.notify()
     }
 
     async getAlbumAssetObjectReady(media_asset_object){
@@ -55,8 +63,8 @@ class Album {
     async initUserAlbum(){
         const DB = await SqliteService.connectDB()
         try{
-        
-            await DB.execAsync(`CREATE TABLE IF NOT EXISTS "user_${UserDataService.getUserId()}"( id INTEGER PRIMARY KEY AUTOINCREMENT, media_type TEXT NOT NULL,
+            await DB.execAsync(`DROP TABLE IF EXISTS "user_${UserDataService.getUserId()}"`)
+            await DB.execAsync(`CREATE TABLE IF NOT EXISTS "user_${UserDataService.getUserId()}_album"( id INTEGER PRIMARY KEY AUTOINCREMENT, media_type TEXT NOT NULL,
                  media_path TEXT NOT NULL, 
                  latitude REAL DEFAULT NULL, 
                  longitude REAL DEFAULT NULL, 
@@ -68,18 +76,20 @@ class Album {
         catch(err){
             console.error(err)
         }
-        this.AlbumsArray = await this.getMergedMediasArray()
+        const mergedData = await this.getMergedMediasArray()
+        this.AlbumsArray = [...mergedData] 
+        console.log('is array frozen ',Object.isFrozen(this.AlbumsArray))
     }
     async addMediaIntoDB(media_type,media_path,time){
         const location = await LocationData.getCurrentCoor()
         const longitude = location ? location.coords.longitude : null
         const latitude = location ? location.coords.latitude : null
-        const trip_id = CurrentTripDataService.getCurrentTripName()
+        const trip_id = CurrentTripDataService.getCurrentTripId()
         const trip_name = CurrentTripDataService.getCurrentTripName()
-        const current_version = await TripDatabase.getTripMediaVersion()
+        const current_version = await TripDatabase.getTripMediaVersion(trip_id)
         const DB = await SqliteService.connectDB()
         try{
-            await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()} (media_type,media_path,latitude,longitude,trip_id,trip_name,time_stamp,version) VALUES (?,?,?,?,?,?,?,?)`
+            await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()}_album (media_type,media_path,latitude,longitude,trip_id,trip_name,time_stamp,version) VALUES (?,?,?,?,?,?,?,?)`
                 ,[media_type,media_path,latitude,longitude,trip_id,trip_name,time,current_version+1])        
             }
         catch(err){
@@ -91,7 +101,7 @@ class Album {
         const DB = await SqliteService.connectDB()
         let result 
         try{
-            result = await DB.getAllAsync(`SELECT * FROM user_${UserDataService.getUserId()}`)
+            result = await DB.getAllAsync(`SELECT * FROM user_${UserDataService.getUserId()}_album`)
             return result
         }
         catch(err){
@@ -149,5 +159,5 @@ class Album {
     //     }
     // }
 }
-
-export default new Album 
+const Albumdb = new Album()
+export default Albumdb

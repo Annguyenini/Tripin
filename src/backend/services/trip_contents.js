@@ -109,7 +109,7 @@ class TripContentService{
             if(respond.status ===401){
                 
                 if (data.code === 'token_expired'){
-                    await TokenService.requestNewAccessToken()
+                    await AuthService.requestNewAccessToken()
                     return await this.sendTripImage(imageUri,longitude,latitude)
                 }
             }

@@ -104,8 +104,10 @@ class TripDataBaseService{
      */
     async getVersion(version_type,trip_id){
         try{
+            console.log('version',version_type,trip_id)
             const DB = await SqliteService.connectDB()
             const version = await DB.getFirstAsync(`SELECT ${version_type} FROM trips WHERE trip_id =?`,[trip_id])
+            console.log(version)
             return version[version_type]
         }
         catch(err){

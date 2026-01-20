@@ -58,7 +58,6 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
      * @param {*} trip_data_object - the object it self
      */
     async push (trip_data_object = null){
-        console.log(trip_data_object)
         if (trip_data_object === null){
             const temp = await Location.getCurrentPositionAsync()
             const payload = {

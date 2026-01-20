@@ -2,31 +2,45 @@ import { mediaCardStyle } from "../../styles/function/media_card"
 import { View,TouchableOpacity,Text,Modal,Image } from "react-native"
 import Video from 'react-native-video'
 import { Gesture,GestureDetector } from "react-native-gesture-handler"
-import { useEffect, useState } from "react"
+import { useEffect, useState,useRef } from "react"
 import AlbumService from "../../backend/album/albumdb"
 import { scheduleOnRN } from "react-native-worklets"
 
 
 
 export default function MediaViewCard({title,uri,type,visible,onClose}) {
-  const [currentAssetsArray, setCurrentAssetsArray] = useState(AlbumService.AlbumsArray)
-  const [currentIndex, setCurrentIndex] = useState(currentAssetsArray.findIndex(assest => assest.uri ===uri))
-  useEffect(()=>{
-    const updateArray ={
-      update(newArray){
-        setCurrentAssetsArray(newArray)
-      }
-    }
-    // const getCurrentIndex=()=>{
-    //   const new_index =currentAssetsArray.findIndex(assest => assest.uri ===uri)
-    //   setCurrentIndex(new_index)
-    // }
-    // getCurrentIndex()
-    AlbumService.attach(updateArray)
+  const [currentAssetsArray, setCurrentAssetsArray] = useState([...AlbumService.AlbumsArray])
+  const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(assest => assest.uri ===uri),0))
+  const observerRef = useRef(null)
+  // console.log('array',currentAssetsArray)
+  console.log('index',currentIndex)
+  // useEffect(()=>{
+  //  if(!observerRef.current){
+  //   observerRef.current={
+  //     update(newArray){
+  //       console.log('update')
+  //       setCurrentAssetsArray(newArray)
+  //     }  
+  //    }
+  // }
+  //   const getCurrentIndex=()=>{
+  //     const new_index =currentAssetsArray.findIndex(assest => assest.uri ===uri)
+  //     setCurrentIndex(new_index)
+  //   }
+  //   getCurrentIndex()
+  //   AlbumService.attach(observerRef.current)
     
-    return()=>AlbumService.detach(updateArray)
+  //   return()=>AlbumService.detach(observerRef.current)
   
-  },[])
+  // },[uri])
+  // useEffect(()=>{
+  //   if(currentAssetsArray.length >=1){
+  //     const newIndex = currentAssetsArray.findIndex(asset => asset.uri === uri)
+  //     if (newIndex !== currentIndex && newIndex !== -1) {
+  //       setCurrentIndex(newIndex)
+  //     }
+  //   }
+  // },[currentAssetsArray,uri])
   const changeMedia = Gesture.Pan()
 //  velX -250  250
   .onEnd((e)=>{

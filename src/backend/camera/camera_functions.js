@@ -17,8 +17,7 @@ class CameraService{
         try{
             const options = {quality: 1, base64 :true}; // control option for picture
             const photo =await cameraRef.current.takePictureAsync(options) // return a photo
-            console.log(photo.uri)
-            this.saveMediaToAlbum(photo.uri)
+            await this.saveMediaToAlbum(photo.uri)
             await this.sendImageToServer(photo.uri)
             return photo;
         }    
@@ -83,6 +82,7 @@ class CameraService{
             await MediaLibrary.addAssetsToAlbumAsync([asset],album,false)
             await Albumdb.addMediaIntoDB(asset.mediaType,asset.uri,asset.creationTime)
             const asset_object = await Albumdb.getAlbumAssetObjectReady(asset)
+            // console.log(asset)
             Albumdb.addToAlbumArray(asset_object)
             return asset
         }

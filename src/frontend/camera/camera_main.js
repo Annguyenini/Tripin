@@ -59,7 +59,9 @@ export const CameraApp = () => {
     }
     const updateImages={
       update(newArray){
-        setImage_icon(newArray[0].mediaType)
+        console.log('update')
+        setImage_icon(newArray[0].uri)
+        setImageIconType(newArray[0].mediaType)
       }
     }
     AlbumService.attach(updateImages)
