@@ -7,8 +7,8 @@ import CurrentTripDataService from '../../../backend/storage/current_trip'
 // import TripData from "../../../app-core/local_data/local_trip_data";
 import TripHandler from "../../../app-core/flow/trip_handler";
 import { navigate } from "../../custom_function/navigationService";
-import LocationDataService from "../../../backend/storage/location";
-import { DATA_KEYS } from "../../../backend/storage/storage_keys";
+import LocationDataService from "../../../backend/storage/current_location_data_service";
+import { DATA_KEYS } from "../../../backend/storage/keys/storage_keys";
 export const CurrentTripBar=()=>{
 
   const[onFullMode, setOnFullMode]=useState(false)

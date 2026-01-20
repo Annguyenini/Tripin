@@ -1,16 +1,14 @@
 import  MapboxGL from '@rnmapbox/maps'
 import { useEffect, useState } from 'react';
-import { DATA_KEYS } from '../../../backend/storage/storage_keys';
-import TripContentsDataService from '../../../backend/storage/trip_contents'
-import TripDataStorage from '../../../backend/trip/trip_coordinate_service'
-import CoordinatesSubject from '../../../backend/trip/trip_coordiantes_subject'
+import TripDataStorage from '../../../backend/trip_coordinates/current_trip_coordinate_service'
+import CoordinatesSubject from '../../../backend/trip_coordinates/trip_coordiantes_subject'
 const CoordinatesPointsLayout =({trip_id})=> {
   const [coordinates,setCoordinates] = useState([])
   const modifyIntoGeoJson =(object)=>{
     const modified = [...object.map((obj)=>{
       return [obj.longitude,obj.latitude]
     })]
-    console.log(modified)
+    // console.log(modified)
     setCoordinates(modified)
   }
   useEffect (()=>{
@@ -19,14 +17,14 @@ const CoordinatesPointsLayout =({trip_id})=> {
       CoordinatesSubject.initCoordinatesArray(newCoords)
       modifyIntoGeoJson(newCoords)
     }
-    // const updateWatchList ={
-    //   update(newCoords){
-    //     modifyIntoGeoJson(newCoords)
-    //   }
-    // }
+    const updateWatchList ={
+      update(newCoords){
+        modifyIntoGeoJson(newCoords)
+      }
+    }
     setUpWatchList()
-    // CoordinatesSubject.attach(updateWatchList)
-    // return()=>CoordinatesSubject.detach(updateWatchList)
+    CoordinatesSubject.attach(updateWatchList)
+    return()=>CoordinatesSubject.detach(updateWatchList)
   },[])
     if(!coordinates) return
     const geoJson ={

@@ -3,9 +3,8 @@ import MapboxGL from '@rnmapbox/maps'
 import {View} from 'react-native'
 import { HelpBarMap } from './help_bar_map';
 import CurrentTripDataService from '../../backend/storage/current_trip'
-import TripContentsDataService from '../../backend/storage/trip_contents'
 import CoordinatesPointsLayout from './components/points';
-import { DATA_KEYS } from '../../backend/storage/storage_keys';
+import { DATA_KEYS } from '../../backend/storage/keys/storage_keys';
 import AppFlow from '../../app-core/flow/app_flow';
 import ImageLabel from './components/image_label';
 
@@ -34,7 +33,7 @@ export const MapBoxLayout =({})=>{
         
         CurrentTripDataService.attach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
         return()=>{
-            TripContentsDataService.detach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
+            CurrentTripDataService.detach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
         }
         
     })

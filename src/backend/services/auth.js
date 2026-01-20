@@ -116,11 +116,6 @@ class Auth{
                 headers
                 
             });
-
-            if (respond.status === 304) {
-                return {'ok':true, message: "Not modified", status: 304, data: null }
-            }
-
             const data = await respond.json();
             return({'ok':true,"message":data.message,"status": respond.status,"data":data})
         }

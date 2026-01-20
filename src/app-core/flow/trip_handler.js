@@ -1,12 +1,21 @@
-import Trip from '../../backend/trip/trip'
-import TripService from '../../backend/trip/trip_service'
+import Trip from '../../backend/services/trip'
+import TripService from '../../backend/gps_logic/gps_logic'
 import TripDataService from '../../backend/storage/trips'
-import TripDataStorage from '../../backend/trip/trip_coordinate_service'
+import TripDataStorage from '../../backend/trip_coordinates/current_trip_coordinate_service'
 import CurrentTripDataService from '../../backend/storage/current_trip'
 import UserDataService from '../../backend/storage/user'
 import EtagService from '../../backend/services/etag/etag_service'
 import { ETAG_KEY ,GENERATE_TRIP_ETAG_KEY} from '../../backend/services/etag/etag_keys'
+import TripDatabaseService from '../../backend/database/TripDatabaseService'
 class TripHandler{
+    /**
+     * 
+     * @param {*} trip_name 
+     * @param {*} imageUri 
+     * process new trip and save it to the data service
+     * @returns boolean of sucess or no
+     */
+    // current depend on the server
     async requestNewTripHandler(trip_name,imageUri =null){
         const respond = await Trip.requestNewTrip(trip_name,imageUri)
         if(respond.status!==200)return false
@@ -27,13 +36,20 @@ class TripHandler{
 
         //create db sqlite
         await TripDataStorage.init_new_trip()
+
+        const trip_object = TripDatabaseService.getObjectReady(UserDataService.getUserId(),trip_id,trip_name,imageUri)
+        console.log('re',trip_object)
+        await TripDatabaseService.addTripToDatabase(trip_object)
         
         return true
     }
-
+    /**
+     * request information of all trips and pass it to a handle class
+     * @returns boolean of status
+     */
     async requestAllTripHandler (){
         const respond = await Trip.requestTripsData()
-        
+        // if match 
         if(respond.status ===304){
             if (await TripDataService.loadAllTripsListFromLocal()){
                 return true
@@ -53,11 +69,19 @@ class TripHandler{
         }
         return true
     }
-    async refreshRequestALLTripsData(){
+    /**
+     * refresh all trips data, simply request again to server
+     * @returns 
+     */
+    async refreshAllTripsData(){
         await EtagService.deleteEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST)
         return await this.requestAllTripHandler()
     } 
 
+    /**
+     * request current trip handler, fetch trip_id, current trip_data then save it to local
+     * @returns 
+     */
     async requestCurrentTripHandler(){
         const respond = await Trip.requestCurrentTripId()
         if (respond.status!==200) return false
@@ -96,7 +120,12 @@ class TripHandler{
         }
         return true
     } 
-
+    /**
+     * 
+     * @param {*} trip_id 
+     * request trip data base on trip_id
+     * @returns 
+     */
     async requestTripDataHandler(trip_id){
         // return the process status not the data status meaning if the data is none, it will also return true
         const respond = await Trip.requestTripData(trip_id)
@@ -104,7 +133,11 @@ class TripHandler{
         const data = respond.data
         return data ? data : null
     }
-
+    /**
+     * handle end trip
+     * @returns 
+     */
+    // currently depend on server
     async endTripHandler(){
         const respond = await Trip.end_trip()
         if(!respond || respond.status!==200)return

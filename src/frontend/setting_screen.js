@@ -5,7 +5,7 @@ import {navigate} from './custom_function/navigationService.js'
 import {settingStyle} from '../styles/setting_style.js'
 import CurrentTripDataService from '../../src/backend/storage/current_trip.js'
 import UserDataService from '../backend/storage/user.js'
-import TripService from '../backend/trip/trip_service.js';
+import TripService from '../backend/gps_logic/gps_logic.js';
 import TokenService from '../backend/services/token_service.js';
 export const SettingScreen =()=>{
     const callLogout = async ()=>{

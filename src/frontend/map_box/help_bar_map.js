@@ -7,7 +7,7 @@ import CurrentTripDataService from '../../backend/storage/current_trip.js'
 // import TripDataService from '../../backend/storage/trip.js'
 // import {subject} from '../logics/observer.js';
 // import TripData from '../../app-core/local_data/local_trip_data.js'
-import { DATA_KEYS } from '../../backend/storage/storage_keys.js'
+import { DATA_KEYS } from '../../backend/storage/keys/storage_keys.js'
 import AppFlow from '../../app-core/flow/app_flow.js'
 export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
     const navigation_icon = require('../../../assets/image/navigation_notoutline_icon.png')
@@ -33,7 +33,7 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
             setIsOnATrip(status)
         }
         const sendCurrentTripLayoutSignal = async()=>{
-            await AppFlow.onRenderCurrentLayoutsSuccess()
+            // await AppFlow.onRenderCurrentLayoutsSuccess()
         }
         fetchTripStatus()
         fetch_trip_data()

@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { STORAGE_KEYS ,DATA_KEYS } from '../storage_keys'
+import { STORAGE_KEYS ,DATA_KEYS } from '../keys/storage_keys'
 class Permission{
 
     constructor(){

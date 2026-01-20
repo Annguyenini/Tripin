@@ -1,9 +1,9 @@
 import { Alert } from 'react-native'
-import {STORAGE_KEYS,DATA_KEYS} from './storage_keys'
+import {STORAGE_KEYS,DATA_KEYS} from './keys/storage_keys'
 import * as SecureStore from 'expo-secure-store'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { copyAsync, deleteAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
-import TripLocalDataStorage from './trip_v2'
+import TripLocalDataStorage from './base/trip_base'
 class TripDataService extends TripLocalDataStorage{
     /**
      * trip data service, use to store trip_name...

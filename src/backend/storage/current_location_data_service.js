@@ -1,7 +1,7 @@
 import { CodegenTypes } from "react-native"
-import { DATA_KEYS,STORAGE_KEYS } from "./storage_keys"
+import { DATA_KEYS,STORAGE_KEYS } from "./keys/storage_keys"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import LocalStorage from "./localStorage"
+import LocalStorage from "./base/localStorage"
 
 class LocationDataService extends LocalStorage{
     constructor(){

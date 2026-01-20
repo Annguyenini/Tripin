@@ -51,7 +51,7 @@ class UserService {
                 headers:headers
             })
             if(respond.status ===304){
-                return ({'status':respond.status,'data':null})
+                return ({'ok':true,'status':respond.status,'data':null})
             }
             const data = await respond.json()
             if(respond.status === 401){

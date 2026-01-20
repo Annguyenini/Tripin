@@ -1,6 +1,7 @@
-import SqliteService from '../../../backend/storage/sqlite/sqlite'
+import SqliteService from '../../../backend/database/sqlite/sqlite'
 import CurrentTripDataService from '../../../backend/storage/current_trip'
 import TripContentsService from '../../../backend/services/trip_contents'
+import TripDatabaseService from '../../../backend/database/TripDatabaseService'
 class TripSync {
     constructor(){
         this.pennding = []
@@ -33,9 +34,9 @@ class TripSync {
     async processTripCoordinatesSync(server_version){
         this.coordinatesSyncing = true
         const DB = await SqliteService.connectDB()
-        const current_version = await DB.getFirstAsync('PRAGMA user_version')
-        console.log(current_version.user_version,server_version)
-        for(let i = server_version; i <= current_version.user_version; i++){
+        const current_version = await TripDatabaseService.getTripCoordinateVersion(CurrentTripDataService.getCurrentTripId())
+        console.log(current_version,server_version)
+        for(let i = server_version; i <= current_version; i++){
             try{
                 const rows = await DB.getAllAsync(`SELECT * FROM trip_${CurrentTripDataService.getCurrentTripId()} WHERE version = ?`,[i])
                 const payload = rows.map(row=>({

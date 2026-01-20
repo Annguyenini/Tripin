@@ -1,4 +1,5 @@
 class CoordinatesSubject {
+    // watcher class for map box render logic
     constructor(){
         this.watchArray =[]
         this.observers =[]
@@ -20,6 +21,7 @@ class CoordinatesSubject {
         this.watchArray = array
     }
     addCoordinateToArray(coords_object){
+        if (!this.watchArray) this.watchArray =[];
         const new_object = {altitude:coords_object.coordinates.altitude,
             latitude:coords_object.coordinates.latitude,
             longitude:coords_object.coordinates.longitude,
@@ -27,10 +29,10 @@ class CoordinatesSubject {
             speed:coords_object.coordinates.speed,
             time_stamp:coords_object.time_stamp
         }
-        
+        console.assert(this.watchArray !== undefined,"Watch array is undefined")        
         this.watchArray.push(new_object)
         this.notify()
     }
 
 }
-export default new CoordinatesSubject
+export default new CoordinatesSubject()

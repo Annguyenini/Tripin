@@ -1,11 +1,9 @@
-import { CameraView, useCameraPermissions, FlashMode } from 'expo-camera';
-import { act,useState } from 'react';
+
 import * as MediaLibrary from 'expo-media-library';
 // import TripData from '../../app-core/local_data/local_trip_data'
 import CurrentTripDataService from '../../backend/storage/current_trip'
-import Trip from '../trip/trip';
 import TripContentHandler from '../../app-core/flow/trip_contents_handler';
-import TripDataStorage from '../trip/trip_coordinate_service'
+import TripDataStorage from '../trip_coordinates/current_trip_coordinate_service'
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import Albumdb from '../album/albumdb';
 class CameraService{

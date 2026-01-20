@@ -1,6 +1,6 @@
 import LocalData from './local_data'
 import TripDataService from '../../backend/storage/old_trip'
-import { DATA_KEYS } from '../../backend/storage/storage_keys';
+import { DATA_KEYS } from '../../backend/storage/keys/storage_keys';
 class LocalTripData extends LocalData{
     constructor(){
         super()

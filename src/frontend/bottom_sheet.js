@@ -1,21 +1,14 @@
 import BottomSheet, { BottomSheetScrollView,BottomSheetFlatList,BottomSheetView } from "@gorhom/bottom-sheet";
-import Trip from'../backend/trip/trip.js'
 import TripHandler from "../app-core/flow/trip_handler.js";
-import {mainScreenStyle} from '../styles/main_screen_styles.js'
 import { useRef, useState,useMemo, useEffect, use } from "react";
-import { TextInput } from "react-native-gesture-handler";
 import { TouchableOpacity,Text ,ScrollView} from "react-native";
 import {  StyleSheet,View,Image } from 'react-native';
-import { OverlayCard } from "./auth.js";
-import { authStyle } from "../styles/auth_style.js";
 import { NewTripFiller } from "./functions/add_new_trip.js";
-import { CurrentTripHeader } from "./map_box/components/current_trip_bar.js";
-import { navigate } from "./custom_function/navigationService.js";
 import TripDataService from "../backend/storage/trips.js";
 import CurrentTripDataService from '../backend/storage/current_trip.js'
 // import TripData
 import UserDataService from'../backend/storage/user.js'
-import { DATA_KEYS } from "../backend/storage/storage_keys.js";
+import { DATA_KEYS } from "../backend/storage/keys/storage_keys.js";
 import {TripCard } from "./custom_components/trip_label.js";
 import { tripCardsStyle } from "../styles/function/tripcards.js";
 import AppFlow from "../app-core/flow/app_flow.js";
@@ -97,7 +90,7 @@ export const UserDataBottomSheet = ({
       console.log(testScreen)
     }
     const refresh_user_trips=async()=>{
-      await TripHandler.refreshRequestALLTripsData()
+      await TripHandler.refreshAllTripsData()
     }
     const request_new_trip = async()=>{
       const res = await TripHandler.requestNewTripHandler(trip_name,imageUri? imageUri:null)

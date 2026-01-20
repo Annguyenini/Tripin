@@ -1,4 +1,4 @@
-import LocalStorage from "../../storage/localStorage";
+import LocalStorage from "../../storage/base/localStorage";
 // import { ETAG_KEY } from "./etag_keys";
 class EtagService extends LocalStorage{
     constructor(){

@@ -1,7 +1,7 @@
 import { Alert } from "react-native";
 import UserDataService from "../../backend/storage/user";
 import LocalData from './local_data'
-import { DATA_KEYS } from "../../backend/storage/storage_keys";
+import { DATA_KEYS } from "../../backend/storage/keys/storage_keys";
 class UserData extends LocalData{
     /**
      * 

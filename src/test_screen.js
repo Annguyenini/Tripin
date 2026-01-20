@@ -3,9 +3,10 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { OverlayCard } from './frontend/custom_function/overlay_card';
 import UserDataService from './backend/storage/user';
 import CurrentTripDataService from './backend/storage/current_trip';
-import TripService  from './backend/trip/trip_service';
-import TripDataStorage from './backend/trip/trip_coordinate_service';
+import TripService  from './backend/gps_logic/gps_logic';
+import TripDataStorage from './backend/trip_coordinates/current_trip_coordinate_service';
 import Albumn from './backend/album/albumdb';
+import TripDatabaseService from './backend/database/TripDatabaseService';
 export const TestScreen = ({testScreenHandler}) => {
   const [gpsStatus, setGpsStatus] = useState('GPS task not running');
   const [sqlText, setSqlText] = useState('No SQL data fetched');
@@ -15,7 +16,7 @@ export const TestScreen = ({testScreenHandler}) => {
     console.log(data)
   };
   const onGetAlbumPress = async ()=>{
-    await Albumn.getAllMediasFromAlbumn()
+    await TripDatabaseService.getAllDataFromdb()
   }
   useEffect(()=>{
     const fetchGPSTask=async()=>{

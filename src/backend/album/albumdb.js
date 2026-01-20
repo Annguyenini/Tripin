@@ -1,4 +1,4 @@
-import SqliteService from '../storage/sqlite/sqlite'
+import SqliteService from '../database/sqlite/sqlite'
 import UserDataService from '../storage/user'
 import LocationData from '../../app-core/local_data/local_location_data'
 import timestamp from '../addition_functions/get_current_time'
@@ -6,6 +6,7 @@ import * as MediaLibrary from 'expo-media-library';
 import CurrentTripDataService from '../../backend/storage/current_trip'
 
 import * as FileSystem from'expo-file-system/legacy'
+import TripDatabase from '../database/TripDatabaseService'
 
 class Album {
     constuctor(){
@@ -56,7 +57,13 @@ class Album {
         try{
         
             await DB.execAsync(`CREATE TABLE IF NOT EXISTS "user_${UserDataService.getUserId()}"( id INTEGER PRIMARY KEY AUTOINCREMENT, media_type TEXT NOT NULL,
-                 media_path TEXT NOT NULL, latitude REAL DEFAULT NULL, longitude REAL DEFAULT NULL, trip_name TEXT DEFAULT NULL, time_stamp TEXT NOT NULL,version INT DEFAULT 0);`)
+                 media_path TEXT NOT NULL, 
+                 latitude REAL DEFAULT NULL, 
+                 longitude REAL DEFAULT NULL, 
+                 trip_id INTEGER DEFAULT NULL,
+                 trip_name TEXT DEFAULT NULL, 
+                 time_stamp TEXT NOT NULL,
+                 version INTEGER DEFAULT 0);`)
         }
         catch(err){
             console.error(err)
@@ -67,11 +74,13 @@ class Album {
         const location = await LocationData.getCurrentCoor()
         const longitude = location ? location.coords.longitude : null
         const latitude = location ? location.coords.latitude : null
+        const trip_id = CurrentTripDataService.getCurrentTripName()
         const trip_name = CurrentTripDataService.getCurrentTripName()
+        const current_version = await TripDatabase.getTripMediaVersion()
         const DB = await SqliteService.connectDB()
         try{
-            await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()} (media_type,media_path,latitude,longitude,trip_name,time_stamp) VALUES (?,?,?,?,?,?)`
-                ,[media_type,media_path,latitude,longitude,trip_name,time])        
+            await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()} (media_type,media_path,latitude,longitude,trip_id,trip_name,time_stamp,version) VALUES (?,?,?,?,?,?,?,?)`
+                ,[media_type,media_path,latitude,longitude,trip_id,trip_name,time,current_version+1])        
             }
         catch(err){
             console.error(err)

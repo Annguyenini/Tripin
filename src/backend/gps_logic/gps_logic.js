@@ -3,8 +3,8 @@ import * as TRIPCONFIG from '../../config/config_db'
 import Permission from '../storage/settings/permissions';
 import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
-import TripDataStorage from './trip_coordinate_service';
-import CurrentTripDataService from '../../backend/storage/current_trip';
+import TripDataStorage from '../trip_coordinates/current_trip_coordinate_service';
+import CurrentTripDataService from '../storage/current_trip';
 
 const TASK_NAME = "background-location-task";
 
@@ -49,6 +49,7 @@ TaskManager.defineTask(TASK_NAME, async ({ data, error }) => {
   console.log('Background location payload:', payload);
   
   try {
+    if(!TripDataStorage) console.error('trip data service is undefiend')
     await TripDataStorage.push(payload);
     // console.log('Successfully saved location');
   } catch (error) {

@@ -1,6 +1,5 @@
 import CurrentTripDataService from '../../backend/storage/current_trip'
 import * as API from '../../config/config_api'
-import TripContentsDataService from '../storage/trip_contents'
 import TokenService from './token_service'
 import AuthService from './auth'
 import timestamp from '../addition_functions/get_current_time'
@@ -35,18 +34,22 @@ class TripContentService{
     }
 
 
-    async requestCurrentTripCoordinates(){
+    async requestTripCoordinates(trip_id,version){
         try{
-            const respond = await fetch(API.REQUEST_TRIP_COORDINATES+`/${CurrentTripDataService.getCurrentTripId()}/coordinates`,{
+
+            const respond = await fetch(API.REQUEST_TRIP_COORDINATES+`/${trip_id}/coordinates`,{
                 method:'GET',
-                headers:{'Authorization':`Bearer ${await TokenService.getToken('access_token')}`}
+                headers:{'Authorization':`Bearer ${await TokenService.getToken('access_token')}`},
+                body: JSON.stringify({
+                    version:version
+                })
             })
         
             const data = await respond.json()
             if(respond.status ===401){
                 if(data.code === 'token_expired'){
                     await AuthService.requestNewAccessToken()
-                    return await this.requestTripsData()
+                    return await this.requestTripCoordinates()
                 }
             }            
             return ({'ok':true,'status':respond.status,'data':data})
