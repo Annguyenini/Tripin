@@ -63,7 +63,6 @@ class Album {
     async initUserAlbum(){
         const DB = await SqliteService.connectDB()
         try{
-            await DB.execAsync(`DROP TABLE IF EXISTS "user_${UserDataService.getUserId()}"`)
             await DB.execAsync(`CREATE TABLE IF NOT EXISTS "user_${UserDataService.getUserId()}_album"( id INTEGER PRIMARY KEY AUTOINCREMENT, media_type TEXT NOT NULL,
                  media_path TEXT NOT NULL, 
                  latitude REAL DEFAULT NULL, 
@@ -91,12 +90,24 @@ class Album {
         try{
             await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()}_album (media_type,media_path,latitude,longitude,trip_id,trip_name,time_stamp,version) VALUES (?,?,?,?,?,?,?,?)`
                 ,[media_type,media_path,latitude,longitude,trip_id,trip_name,time,current_version+1])        
-            }
+            
+            await TripDatabase.updateTripMediaVersion(trip_id,current_version+1)
+        }
         catch(err){
             console.error(err)
         }
     }
-    
+    async getAssestsFromTripId(trip_id){
+        try{
+            const DB = await SqliteService.connectDB()
+            const result = await DB.getAllAsync(`SELECT * FROM user_${UserDataService.getUserId()}_album WHERE trip_id = ?`,[trip_id])
+            return result
+        }
+        catch(err){
+            console.error('Failed to get all assets from album database: ',err)
+            return null
+        }
+    }
     async getAllMediasFromDb(){
         const DB = await SqliteService.connectDB()
         let result 

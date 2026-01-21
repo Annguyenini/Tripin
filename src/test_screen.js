@@ -16,7 +16,10 @@ export const TestScreen = ({testScreenHandler}) => {
     console.log(data)
   };
   const onGetAlbumPress = async ()=>{
-    await TripDatabaseService.getAllDataFromdb()
+    console.log(await Albumn.getAllMediasFromDb())
+  }
+  const onGetUserDb = async()=>{
+    console.log(await TripDatabaseService.getAllDataFromdb())
   }
   useEffect(()=>{
     const fetchGPSTask=async()=>{
@@ -67,7 +70,18 @@ export const TestScreen = ({testScreenHandler}) => {
             >
           <Text>print data from album to console</Text>
         </TouchableOpacity>
-       
+       <TouchableOpacity
+                onPress={onGetUserDb}
+                style={{
+                  marginTop: 12,
+                  padding: 10,
+                  backgroundColor: '#e0e0e0',
+                  borderRadius: 6,
+                  alignItems: 'center',
+                }}
+            >
+          <Text>print data from user to console</Text>
+        </TouchableOpacity>
 
         {/* GPS status */}
         <Text>📡 GPS Task: {gpsStatus}</Text>

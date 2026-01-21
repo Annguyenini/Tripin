@@ -6,6 +6,7 @@ import TripContentHandler from '../../app-core/flow/trip_contents_handler';
 import TripDataStorage from '../trip_coordinates/current_trip_coordinate_service'
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import Albumdb from '../album/albumdb';
+import trip_album_subject from '../trip_album/trip_album_subject';
 class CameraService{
     constructor(){
         this.album_name = "Tripin_album";
@@ -84,6 +85,7 @@ class CameraService{
             const asset_object = await Albumdb.getAlbumAssetObjectReady(asset)
             // console.log(asset)
             Albumdb.addToAlbumArray(asset_object)
+            trip_album_subject.addAssetIntoArray(asset_object)
             return asset
         }
         else{

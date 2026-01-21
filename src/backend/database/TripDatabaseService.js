@@ -46,7 +46,7 @@ class TripDataBaseService{
     async getAllDataFromdb (){
         try{
             const DB = await SqliteService.connectDB()
-            console.log(await DB.getAllAsync(`SELECT * FROM trips`))
+            return await DB.getAllAsync(`SELECT * FROM trips`)
         }
         catch(err){
             console.error(err)
@@ -157,6 +157,7 @@ class TripDataBaseService{
      * @returns 
      */
     async updateTripMediaVersion(trip_id,new_version){
+        console.log('update version',trip_id,new_version)
         return await this.updateValueInDatabase('media_version',new_version,'trip_id',trip_id)
     }
   

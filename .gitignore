@@ -105,3 +105,4 @@ web-build/
 .vscode
 
 server/
+test_output/

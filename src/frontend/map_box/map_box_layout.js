@@ -76,7 +76,7 @@ export const MapBoxLayout =({})=>{
             <MapboxGL.UserLocation minDisplacement={2}/>
             
             {isOnATrip && <CoordinatesPointsLayout trip_id={CurrentTripDataService.getCurrentTripId()}></CoordinatesPointsLayout>}
-            {/* {isOnATrip&& mediaList && ImageLabel(mediaList)} */}
+            {isOnATrip && <ImageLabel trip_id={CurrentTripDataService.getCurrentTripId()}></ImageLabel>}
             
             </MapboxGL.MapView>
             
