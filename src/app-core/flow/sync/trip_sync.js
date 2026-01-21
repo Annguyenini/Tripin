@@ -2,11 +2,13 @@ import SqliteService from '../../../backend/database/sqlite/sqlite'
 import CurrentTripDataService from '../../../backend/storage/current_trip'
 import TripContentsService from '../../../backend/services/trip_contents'
 import TripDatabaseService from '../../../backend/database/TripDatabaseService'
+import UserDataService from '../../../backend/storage/user'
 class TripSync {
     constructor(){
         this.pennding = []
         this.syncing = false
         this.coordinatesSyncing = false
+        this.mediasSyncing = false
     }
     addIntoQueue(itemType,version=null,data){
         this.pennding.push({
@@ -24,13 +26,25 @@ class TripSync {
             switch(item.itemType){
                 case 'coordinate':
                     await TripContentsService.send_coordinates(item.data,item.version)
-            }
+                case 'photo':
+                    await TripContentsService.sendTripImage(item.version,CurrentTripDataService.getCurrentTripId(),item.media_path,item.longitude,item.latitude)
+                }
             this.pennding.shift()
             
         }
         this.syncing = false
     }
-
+    async processTripMediaSync(server_version){
+        const DB = await SqliteService.connectDB()
+        const user_id = UserDataService.getUserId()
+        const trip_id = CurrentTripDataService.getCurrentTripId()
+        const medias = await DB.getAllAsync(`SELECT * FROM user_${user_id}_album WHERE trip_id = ? AND version >= ?`,[trip_id,server_version])
+        console.log(medias)
+        for(const media of medias){
+            this.addIntoQueue(media.media_type,media.version,media)
+        }
+        await this.process()
+    }
     async processTripCoordinatesSync(server_version){
         this.coordinatesSyncing = true
         const DB = await SqliteService.connectDB()

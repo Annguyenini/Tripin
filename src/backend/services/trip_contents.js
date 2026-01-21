@@ -82,24 +82,25 @@ class TripContentService{
     }
 
 
-    async sendTripImage(imageUri,longitude,latitude){
+    async sendTripImage(version,trip_id,imageUri,longitude,latitude){
         try{
             const token = await TokenService.getToken('access_token')
             const form =  new FormData()
             form.append('image',{
                 uri:imageUri,
                 type:'image/jpg',
-                name:`trip${CurrentTripDataService.getCurrentTripId()}_${timestamp}.jpg`
+                name:`trip${trip_id}_${timestamp}.jpg`
             })
             form.append('data',JSON.stringify({
-                trip_id:CurrentTripDataService.getCurrentTripId(),
+                trip_id:trip_id,
                 longitude:longitude,
                 latitude:latitude,
-                time_stamp : timestamp
+                time_stamp : timestamp,
+                version :String(version)
             }))
 
         
-            const respond = await fetch(API.SEND_MEDIAS_BASE+`/${CurrentTripDataService.getCurrentTripId()}/upload`,{
+            const respond = await fetch(API.SEND_MEDIAS_BASE+`/${trip_id}/upload`,{
                 method:'POST',
                 headers:{'Content_type':'multipart/form-data','Authorization':`Bearer ${token}`},
                 body:form

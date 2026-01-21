@@ -7,6 +7,7 @@ import TripDataStorage from '../trip_coordinates/current_trip_coordinate_service
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import Albumdb from '../album/albumdb';
 import trip_album_subject from '../trip_album/trip_album_subject';
+import TripDatabaseService from '../database/TripDatabaseService';
 class CameraService{
     constructor(){
         this.album_name = "Tripin_album";
@@ -18,8 +19,7 @@ class CameraService{
         try{
             const options = {quality: 1, base64 :true}; // control option for picture
             const photo =await cameraRef.current.takePictureAsync(options) // return a photo
-            await this.saveMediaToAlbum(photo.uri)
-            await this.sendImageToServer(photo.uri)
+            await this.sendImagehandler(photo.uri)
             return photo;
         }    
         catch(err){
@@ -30,9 +30,18 @@ class CameraService{
 
     }
 
-    async sendImageToServer(photoUri){
-        if(CurrentTripDataService.getCurrentTripId()){
-            await TripContentHandler.uploadTripImageHandler(photoUri)
+    async sendImagehandler(photoUri){
+        try{
+            await this.saveMediaToAlbum(photoUri)
+        
+        }
+        catch(err){
+            console.error('Failed to save iamge to local db')
+        }
+        const trip_id = CurrentTripDataService.getCurrentTripId()
+        if(trip_id){
+            const version = await TripDatabaseService.getTripMediaVersion(trip_id)
+            await TripContentHandler.uploadTripImageHandler(version,trip_id,photoUri)
             await TripDataStorage.push()
         }
         return
@@ -90,7 +99,7 @@ class CameraService{
         }
         else{
             await MediaLibrary.createAlbumAsync(this.album_name,asset);
-            await this.saveMediaToAlbum(uri)
+            return await this.saveMediaToAlbum(uri)
         }
     }
     catch(error){

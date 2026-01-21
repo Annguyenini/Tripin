@@ -92,9 +92,11 @@ class Album {
                 ,[media_type,media_path,latitude,longitude,trip_id,trip_name,time,current_version+1])        
             
             await TripDatabase.updateTripMediaVersion(trip_id,current_version+1)
+            return current_version
         }
         catch(err){
             console.error(err)
+            throw new Error('Failed to insert to db')
         }
     }
     async getAssestsFromTripId(trip_id){

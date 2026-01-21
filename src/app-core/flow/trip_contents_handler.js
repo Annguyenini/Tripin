@@ -62,13 +62,20 @@ class TripContentHandler{
         }
         return true
     }
-    async uploadTripImageHandler(imageUri){
+    async uploadTripImageHandler(version,trip_id,imageUri){
         if (!imageUri)return
         const coor = await LocationService.getCurrentCoor()
         const longitude = coor.coords.longitude
         const latitude = coor.coords.latitude
-        const respond = await TripContents.sendTripImage(imageUri,longitude,latitude)
-        
+        const respond = await TripContents.sendTripImage(version,trip_id,imageUri,longitude,latitude)
+        console.log(respond)
+        const data = respond.data
+        if (respond.status === 409){
+            console.log('claeed')
+            await TripSync.processTripMediaSync(data.missing_versions)
+        }
+        if(!respond.ok || respond.status !==200) return 
+
         return respond   
     }
     async uploadTripVideoHandler(videoUri,thumbnailsUri){
