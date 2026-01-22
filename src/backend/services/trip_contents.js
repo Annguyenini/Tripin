@@ -2,7 +2,8 @@ import CurrentTripDataService from '../../backend/storage/current_trip'
 import * as API from '../../config/config_api'
 import TokenService from './token_service'
 import AuthService from './auth'
-import timestamp from '../addition_functions/get_current_time'
+import getTimestamp from '../addition_functions/get_current_time'
+import * as FileSystem from 'expo-file-system/legacy'
 class TripContentService{
 
     async send_coordinates(coor_object,version){
@@ -82,26 +83,33 @@ class TripContentService{
     }
 
 
-    async sendTripImage(imageUri,longitude,latitude){
+    async sendTripImage(version,trip_id,imageUri,longitude,latitude){
         try{
             const token = await TokenService.getToken('access_token')
             const form =  new FormData()
+            const fileInfo = await FileSystem.getInfoAsync(imageUri)
+            console.log(fileInfo)
+
+            // if(imageUri.startsWith('ph://')){
+            //     im
+            // }
             form.append('image',{
                 uri:imageUri,
-                type:'image/jpg',
-                name:`trip${CurrentTripDataService.getCurrentTripId()}_${timestamp}.jpg`
+                type:'image/jpeg',
+                name:`trip${trip_id}_${getTimestamp()}.jpg`
             })
             form.append('data',JSON.stringify({
-                trip_id:CurrentTripDataService.getCurrentTripId(),
-                longitude:longitude,
-                latitude:latitude,
-                time_stamp : timestamp
+                trip_id:String(trip_id),
+                longitude:String(longitude),
+                latitude:String(latitude),
+                time_stamp : getTimestamp(),
+                version :String(version)
             }))
 
         
-            const respond = await fetch(API.SEND_MEDIAS_BASE+`/${CurrentTripDataService.getCurrentTripId()}/upload`,{
+            const respond = await fetch(API.SEND_MEDIAS_BASE+`/${trip_id}/upload`,{
                 method:'POST',
-                headers:{'Content_type':'multipart/form-data','Authorization':`Bearer ${token}`},
+                headers:{'Authorization':`Bearer ${token}`},
                 body:form
             })
         
@@ -110,7 +118,7 @@ class TripContentService{
                 
                 if (data.code === 'token_expired'){
                     await AuthService.requestNewAccessToken()
-                    return await this.sendTripImage(imageUri,longitude,latitude)
+                    return await this.sendTripImage(version,trip_id,imageUri,longitude,latitude)
                 }
             }
             return({'ok':true,'status':respond.status,'data':data})
@@ -120,10 +128,10 @@ class TripContentService{
             return({'ok':false})
         }
     }
-    async sendTripVideo(videoUri,thumbnailsUri,longitude,latitude){
+    async sendTripVideo(trip_id,video_version,videoUri,longitude,latitude){
         try{
             const form = new FormData()
-            const path = `trip${CurrentTripDataService.getCurrentTripId()}_${timestamp}`
+            const path = `trip${trip_id}_${getTimestamp()}`
             form.append('video',{
                 uri:videoUri,
                 name:`${path}.mp4`,
@@ -132,25 +140,22 @@ class TripContentService{
             form.append('data',JSON.stringify({
                 longitude:longitude,
                 latitude:latitude,
-                time_stamp:timestamp
+                time_stamp:getTimestamp(),
+                video_version:video_version,
             }))
-            form.append('thumpnail',{
-                uri:thumbnailsUri,
-                type:'image/jpg',
-                name:`${path}_thump.jpg`
-            })
+
             const token = await TokenService.getToken('access_token')
         
-            const respond = await fetch(API.SEND_MEDIAS_BASE+`/${CurrentTripDataService.getCurrentTripId()}/upload`,{
+            const respond = await fetch(API.SEND_MEDIAS_BASE+`/${trip_id}/upload`,{
                 method:'POST',
                 headers:{'Content-Type':'multipart/form-data','Authorization':`Bearer ${token}`},
                 body:form
             })
-        
+            const data = await respond.json()
             if(respond.status===401){
                 if (data.code === 'token_expired'){
-                    await TokenService.requestNewAccessToken()
-                    return await this.sendTripVideo(videoUri,longitude,latitude)
+                    await AuthService.requestNewAccessToken()
+                    return await this.sendTripVideo(trip_id,video_version,videoUri,longitude,latitude)
                 }
             }
             return({'ok':true,'status':respond.status,'data':data})

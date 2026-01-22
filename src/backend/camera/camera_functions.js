@@ -7,6 +7,7 @@ import TripDataStorage from '../trip_coordinates/current_trip_coordinate_service
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import Albumdb from '../album/albumdb';
 import trip_album_subject from '../trip_album/trip_album_subject';
+import TripDatabaseService from '../database/TripDatabaseService';
 class CameraService{
     constructor(){
         this.album_name = "Tripin_album";
@@ -18,8 +19,7 @@ class CameraService{
         try{
             const options = {quality: 1, base64 :true}; // control option for picture
             const photo =await cameraRef.current.takePictureAsync(options) // return a photo
-            await this.saveMediaToAlbum(photo.uri)
-            await this.sendImageToServer(photo.uri)
+            await this.saveImagehandler(photo.uri)
             return photo;
         }    
         catch(err){
@@ -30,13 +30,6 @@ class CameraService{
 
     }
 
-    async sendImageToServer(photoUri){
-        if(CurrentTripDataService.getCurrentTripId()){
-            await TripContentHandler.uploadTripImageHandler(photoUri)
-            await TripDataStorage.push()
-        }
-        return
-    }
 
   async recordVideo(cameraRef){
     if(cameraRef.current){
@@ -59,38 +52,82 @@ class CameraService{
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (this.video?.uri) {
-        const asset = await this.saveMediaToAlbum(this.video.uri);
-        await this.sendVideoToServer(this.video.uri)
+        try{
+            await this.sendVideoHandler(this.video.uri)}
+            catch(err){
+                console.error("failed to save video!",err)
+            }
         return asset
     } else {
         console.warn("No video URI found yet!");
     }
   }
-  async sendVideoToServer(videoUri){
-        if(CurrentTripDataService.getCurrentTripId()){
-                const {thumpnailUri} = await VideoThumbnails.getThumbnailAsync(videoUri)
-                await TripContentHandler.uploadTripVideoHandler(videoUri,thumpnailUri)
-                await TripDataStorage.push()
+  
+    async saveImagehandler(photoUri){
+        let asset
+        let version
+        try{
+            asset = await this.saveMediaToLocalAlbum(photoUri)
+            version = await Albumdb.addMediaIntoDB(asset.mediaType,photoUri,asset.uri,asset.creationTime)
+            const asset_object = await Albumdb.getAlbumAssetObjectReady(asset)
+            Albumdb.addToAlbumArray(asset_object)
+            trip_album_subject.addAssetIntoArray(asset_object)
+        }
+        catch(err){
+            console.error('Failed to save iamge to local db')
+        }
+        const trip_id = CurrentTripDataService.getCurrentTripId()
+        if(trip_id){
+            try{
+                TripContentHandler.uploadTripImageHandler(version,trip_id,photoUri)
+                TripDataStorage.push()
             }
+            catch(err){
+                console.error(err)
+            }
+        }
         return
-  }
-  async saveMediaToAlbum(uri){
+    }
+    async sendVideoHandler(videoUri){        
+        let video_asset
+        let video_version
+        try{
+            video_asset = await this.saveMediaToLocalAlbum(videoUri)
+            video_version = await Albumdb.addMediaIntoDB(video_asset.mediaType,videoUri,video_asset.uri,video_asset.creationTime)
+            const asset_object = await Albumdb.getAlbumAssetObjectReady(video_asset)
+            Albumdb.addToAlbumArray(asset_object)
+            trip_album_subject.addAssetIntoArray(asset_object)
+        }
+        catch(err){
+            console.error('Failed to save video to local db',err)
+        }
+
+        if(CurrentTripDataService.getCurrentTripId()){
+            try{
+                const trip_id = CurrentTripDataService.getCurrentTripId()
+                TripContentHandler.uploadTripVideoHandler(video_version,trip_id,videoUri)
+                TripDataStorage.push()
+            }
+            catch(err){
+                console.log('Failed to send video',err)
+            }
+        }
+        return
+    }
+
+  async saveMediaToLocalAlbum(uri){
     // console.log (this.album_name)    
     const album = await MediaLibrary.getAlbumAsync(this.album_name);
     const asset = await MediaLibrary.createAssetAsync(uri)
+    console.log(asset)
     try{
         if(album){
-            await MediaLibrary.addAssetsToAlbumAsync([asset],album,false)
-            await Albumdb.addMediaIntoDB(asset.mediaType,asset.uri,asset.creationTime)
-            const asset_object = await Albumdb.getAlbumAssetObjectReady(asset)
-            // console.log(asset)
-            Albumdb.addToAlbumArray(asset_object)
-            trip_album_subject.addAssetIntoArray(asset_object)
+            await MediaLibrary.addAssetsToAlbumAsync([asset],album,false)            
             return asset
         }
         else{
             await MediaLibrary.createAlbumAsync(this.album_name,asset);
-            await this.saveMediaToAlbum(uri)
+            return await this.saveMediaToLocalAlbum(uri)
         }
     }
     catch(error){

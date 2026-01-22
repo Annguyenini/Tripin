@@ -1,6 +1,6 @@
 import  MapboxGL from '@rnmapbox/maps'
 import { useEffect, useState } from 'react';
-import {View,Image} from'react-native'
+import {View,Image, TouchableOpacity} from'react-native'
 import TripAlbumSubject from '../../../backend/trip_album/trip_album_subject';
 import Albumdb from '../../../backend/album/albumdb';
 const ImageLabel =({trip_id})=>{
@@ -20,15 +20,22 @@ const ImageLabel =({trip_id})=>{
     initArray()
     return ()=>TripAlbumSubject.detach(updateAssetsArray)
   },[])  
+
+
+  const handleLable=(item)=>{
+    console.log(item)
+  }
   if(!currentAssetsArray || currentAssetsArray.length <1) return 
    return (
     <>
       {currentAssetsArray.map((media, index) => (
+
         <MapboxGL.MarkerView
           key={`marker-${index}`}
           id={`marker-${index}`}
           coordinate={[media.longitude,media.latitude]}
         >
+          <TouchableOpacity onPress={()=>handleLable(media)}>
           <View style={{ width: 50, height: 50 }}>
             <Image
               source={{ uri: media.media_path }}
@@ -36,6 +43,7 @@ const ImageLabel =({trip_id})=>{
               resizeMode="cover"
             />
           </View>
+          </TouchableOpacity>
         </MapboxGL.MarkerView>
       ))}
     </>
