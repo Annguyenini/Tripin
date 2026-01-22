@@ -120,9 +120,14 @@ export const CameraApp = () => {
 };
   const stopRecording = async()=>{
     console.log("stop record")
+    
     let asset
-    if(recording){
-      asset = await CameraService.stopRecording(cameraRef);
+    try{
+      if(recording){
+        asset = await CameraService.stopRecording(cameraRef);
+      }
+    }
+    catch(err){
     }
     setRecording(false)
     setImage_icon(asset.uri)

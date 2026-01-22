@@ -71,19 +71,23 @@ class TripContentHandler{
         console.log(respond)
         const data = respond.data
         if (respond.status === 409){
-            console.log('claeed')
             await TripSync.processTripMediaSync(data.missing_versions)
         }
         if(!respond.ok || respond.status !==200) return 
 
         return respond   
     }
-    async uploadTripVideoHandler(videoUri,thumbnailsUri){
+    async uploadTripVideoHandler(video_version,trip_id,videoUri){
         if (!videoUri)return
         const coor = await LocationService.getCurrentCoor()
         const longitude = coor.coords.longitude
         const latitude = coor.coords.latitude
-        const respond = await TripContents.sendTripVideo(videoUri,thumbnailsUri,longitude,latitude)
+        const respond = await TripContents.sendTripVideo(trip_id,video_version,videoUri,longitude,latitude)
+         const data = respond.data
+        if (respond.status === 409){
+            await TripSync.processTripMediaSync(data.missing_versions)
+        }
+        if(!respond.ok || respond.status !==200) return 
         return respond   
     }
     // async requestSTripMedias (){

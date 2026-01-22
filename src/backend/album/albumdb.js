@@ -41,6 +41,7 @@ class Album {
         }
         catch(err){
             console.error('Failed to add into Album array ',err)
+            throw new Error('Error at add to watch')
         }
             this.notify()
     }
@@ -65,6 +66,7 @@ class Album {
         try{
             await DB.execAsync(`CREATE TABLE IF NOT EXISTS "user_${UserDataService.getUserId()}_album"( id INTEGER PRIMARY KEY AUTOINCREMENT, media_type TEXT NOT NULL,
                  media_path TEXT NOT NULL, 
+                 library_media_path TEXT NOT NULL,
                  latitude REAL DEFAULT NULL, 
                  longitude REAL DEFAULT NULL, 
                  trip_id INTEGER DEFAULT NULL,
@@ -79,7 +81,7 @@ class Album {
         this.AlbumsArray = [...mergedData] 
         console.log('is array frozen ',Object.isFrozen(this.AlbumsArray))
     }
-    async addMediaIntoDB(media_type,media_path,time){
+    async addMediaIntoDB(media_type,media_path,library_media_path,time){
         const location = await LocationData.getCurrentCoor()
         const longitude = location ? location.coords.longitude : null
         const latitude = location ? location.coords.latitude : null
@@ -88,11 +90,11 @@ class Album {
         const current_version = await TripDatabase.getTripMediaVersion(trip_id)
         const DB = await SqliteService.connectDB()
         try{
-            await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()}_album (media_type,media_path,latitude,longitude,trip_id,trip_name,time_stamp,version) VALUES (?,?,?,?,?,?,?,?)`
-                ,[media_type,media_path,latitude,longitude,trip_id,trip_name,time,current_version+1])        
+            await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()}_album (media_type,media_path,library_media_path,latitude,longitude,trip_id,trip_name,time_stamp,version) VALUES (?,?,?,?,?,?,?,?,?)`
+                ,[media_type,media_path,library_media_path,latitude,longitude,trip_id,trip_name,time,current_version+1])        
             
             await TripDatabase.updateTripMediaVersion(trip_id,current_version+1)
-            return current_version
+            return current_version+1
         }
         catch(err){
             console.error(err)

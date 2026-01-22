@@ -27,7 +27,9 @@ class TripSync {
                 case 'coordinate':
                     await TripContentsService.send_coordinates(item.data,item.version)
                 case 'photo':
-                    await TripContentsService.sendTripImage(item.version,CurrentTripDataService.getCurrentTripId(),item.media_path,item.longitude,item.latitude)
+                    await TripContentsService.sendTripImage(item.version,CurrentTripDataService.getCurrentTripId(),item.data.media_path,item.data.longitude,item.data.latitude)
+                case 'video':
+                    await TripContentsService.sendTripVideo(CurrentTripDataService.getCurrentTripId(),item.version,item.data.media_path,item.data.longitude,item.data.latitude)
                 }
             this.pennding.shift()
             
