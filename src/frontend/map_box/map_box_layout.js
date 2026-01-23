@@ -67,7 +67,7 @@ export const MapBoxLayout =({})=>{
             <MapboxGL.Camera 
             followUserLocation={isFollowingUser}   // <-- key part
             followUserMode="normal"
-            // followZoomLevel={userLock?zoomLevel:undefined}
+            followZoomLevel={13}
             // centerCoordinate={[20, 20]} // lat 20 just looks nice
             // followZoomLevel={zoomLevel}
             // animationMode="easeTo"
