@@ -29,5 +29,11 @@ class TripAlbumSubject {
         this.notify()
     }
 
+    initAlbumObject(array){
+        for (const item of array){
+            const gridX = item
+        }
+    }
+    
 }
 export default new TripAlbumSubject()

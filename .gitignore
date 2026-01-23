@@ -106,3 +106,5 @@ web-build/
 
 server/
 test_output/
+test.py
+test2.py

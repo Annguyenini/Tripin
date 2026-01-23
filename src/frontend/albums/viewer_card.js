@@ -5,42 +5,17 @@ import { Gesture,GestureDetector } from "react-native-gesture-handler"
 import { useEffect, useState,useRef } from "react"
 import AlbumService from "../../backend/album/albumdb"
 import { scheduleOnRN } from "react-native-worklets"
+import MediaViewDataCard from "./viewer_data_card"
 
 
-
-export default function MediaViewCard({title,uri,type,visible,onClose}) {
-  const [currentAssetsArray, setCurrentAssetsArray] = useState([...AlbumService.AlbumsArray])
-  const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(assest => assest.uri ===uri),0))
+export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray}) {
+  console.log(AssetArray)
+  if(!AssetArray || AssetArray.length <=0) return null
+  const [currentAssetsArray, setCurrentAssetsArray] = useState([...AssetArray])
+  const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(assest => assest.uri? assest.uri : assest.library_media_path === uri),0))
+  const [dataVisible, setDataVisible] = useState(false)
   const observerRef = useRef(null)
-  // console.log('array',currentAssetsArray)
   console.log('index',currentIndex)
-  // useEffect(()=>{
-  //  if(!observerRef.current){
-  //   observerRef.current={
-  //     update(newArray){
-  //       console.log('update')
-  //       setCurrentAssetsArray(newArray)
-  //     }  
-  //    }
-  // }
-  //   const getCurrentIndex=()=>{
-  //     const new_index =currentAssetsArray.findIndex(assest => assest.uri ===uri)
-  //     setCurrentIndex(new_index)
-  //   }
-  //   getCurrentIndex()
-  //   AlbumService.attach(observerRef.current)
-    
-  //   return()=>AlbumService.detach(observerRef.current)
-  
-  // },[uri])
-  // useEffect(()=>{
-  //   if(currentAssetsArray.length >=1){
-  //     const newIndex = currentAssetsArray.findIndex(asset => asset.uri === uri)
-  //     if (newIndex !== currentIndex && newIndex !== -1) {
-  //       setCurrentIndex(newIndex)
-  //     }
-  //   }
-  // },[currentAssetsArray,uri])
   const changeMedia = Gesture.Pan()
 //  velX -250  250
   .onEnd((e)=>{
@@ -54,6 +29,10 @@ export default function MediaViewCard({title,uri,type,visible,onClose}) {
       scheduleOnRN (setCurrentIndex,new_index)
     }
   })  
+
+  const ImageDataDisplayHandler =()=>{
+    setDataVisible(true)
+  }
   return (
         
         <Modal
@@ -70,10 +49,13 @@ export default function MediaViewCard({title,uri,type,visible,onClose}) {
                   <TouchableOpacity style={mediaCardStyle.exitButton} onPress={onClose}>
                     <Text style={mediaCardStyle.exitText}>X</Text>
                   </TouchableOpacity>
-                  {type ==="photo" ? <Image style ={mediaCardStyle.image} source ={{uri:currentAssetsArray[currentIndex].uri}}></Image> 
+                  <TouchableOpacity style={mediaCardStyle.dataButton} onPress={ImageDataDisplayHandler}>
+                    <Text style={mediaCardStyle.exitText}>...</Text>
+                  </TouchableOpacity>
+                  {type ==="photo" ? <Image style ={mediaCardStyle.image} source ={{uri:currentAssetsArray[currentIndex].uri ?currentAssetsArray[currentIndex].uri :currentAssetsArray[currentIndex].media_path }}></Image> 
                   : <Video
                     style ={mediaCardStyle.video}
-                    source={{uri:currentAssetsArray[currentIndex].uri}}
+                    source={{uri:currentAssetsArray[currentIndex].uri ?currentAssetsArray[currentIndex].uri :currentAssetsArray[currentIndex].media_path}}
                     controls={true}       // shows play/pause
                     resizeMode="cover"
                     paused={false}>
@@ -82,7 +64,14 @@ export default function MediaViewCard({title,uri,type,visible,onClose}) {
                   
                   }
                 </View>
+                 {dataVisible && <MediaViewDataCard tripName={currentAssetsArray[currentIndex].trip_name}
+                                                  lat={currentAssetsArray[currentIndex].latitude}
+                                                  lng={currentAssetsArray[currentIndex].longitude}
+                                                  date={currentAssetsArray[currentIndex].time_stamp ? currentAssetsArray[currentIndex].time_stamp : currentAssetsArray[currentIndex].creationTime}
+                                                  visible={dataVisible}
+                                                  onClose={()=>setDataVisible(false)}/>}
               </View>
+             
             </GestureDetector>
 
           </Modal>

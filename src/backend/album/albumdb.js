@@ -151,12 +151,13 @@ class Album {
             hash_map[object.uri]=object
         }
         for(const object of db_array){
-            if(hash_map[object.media_path]){
-                hash_map[object.media_path]['latitude'] = object.latitude
-                hash_map[object.media_path]['longitude'] = object.longitude
-                hash_map[object.media_path]['trip_name']=object.trip_name
+            if(hash_map[object.library_media_path]){
+                hash_map[object.library_media_path]['latitude'] = object.latitude
+                hash_map[object.library_media_path]['longitude'] = object.longitude
+                hash_map[object.library_media_path]['trip_name']=object.trip_name
             }
         }
+        console.log(hash_map)
         return([...Object.values(hash_map)])
     }
 

@@ -62,7 +62,6 @@ export default function AlbumScreen() {
     const handleImageClick=(item)=>{
         setCurrentMedia(item.uri)
         setCurrentMediaType(item.mediaType)
-        console.log(item)
         setImageVisible( prev =>prev === true?  false :true)
     }
   return (
@@ -95,7 +94,7 @@ export default function AlbumScreen() {
         )}
       />
       {imageVisible && 
-      <MediaViewCard title ={'test'} uri ={currentMedia} type={currentMediaType} visible ={imageVisible} onClose={()=>setImageVisible(false)}></MediaViewCard>
+      <MediaViewCard title ={'test'} uri ={currentMedia} type={currentMediaType} visible ={imageVisible} onClose={()=>setImageVisible(false)} AssetArray={AlbumService.AlbumsArray}></MediaViewCard>
 
       }
     </View>

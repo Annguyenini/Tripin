@@ -41,6 +41,18 @@ export const mediaCardStyle=StyleSheet.create
     alignItems: 'center',
     zIndex: 10,
   },
+   dataButton: {
+    position: 'absolute',
+    top: 50,
+    right: 10,
+    backgroundColor: '#eee', // light gray
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
   exitText: {
     color: '#333',
     fontWeight: 'bold',

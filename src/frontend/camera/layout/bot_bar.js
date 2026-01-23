@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity,Image } from 'react-native';
 import { cameraStyle,camera_zoom } from '../../../styles/camera_style.js';
 import MediaViewCard from '../../albums/viewer_card.js';
 import { useState } from 'react';
+import AlbumService from '../../../backend/album/albumdb.js'
 const cameraSetting_icon = require('../../../../assets/image/camera_setting.png');
 
 const BotBarControl = ({currentMode,recording,image_icon,type,shutterButtonAction})=>{
@@ -27,7 +28,7 @@ const BotBarControl = ({currentMode,recording,image_icon,type,shutterButtonActio
             <TouchableOpacity style={cameraStyle.flipButton} onPress={()=>setVisible(true)}>
               <Image source={{ uri: image_icon }} style={[cameraStyle.icon, { width: 70, height: 70 }]} />
             </TouchableOpacity>
-            {visible && <MediaViewCard title={'test'} uri={image_icon} type ={type} visible={visible} onClose={()=>setVisible(false)}></MediaViewCard>}
+            {visible && <MediaViewCard title={'test'} uri={image_icon} type ={type} visible={visible} onClose={()=>setVisible(false)} AssetArray={AlbumService.AlbumsArray}></MediaViewCard>}
           </View>)
 }
 
