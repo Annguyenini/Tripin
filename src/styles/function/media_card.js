@@ -76,5 +76,46 @@ export const mediaCardStyle=StyleSheet.create
     height: '100%',
         borderRadius: 10
 
-  }
+  },
+
+  clusterImage:{
+
+    width:'100%',
+    height: '80%', 
+    borderRadius: 10
+  },
+  clusterVideo :{
+       width:'100%',
+    height: '80%',
+        borderRadius: 10
+
+  },
+  clusterCard: {
+    width: width * 0.4,
+    marginRight: 12,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+
+  imageList: {
+    width: "100%",
+    height: width * 0.4,
+    borderRadius: 14,
+  },
+  text: {
+    marginTop: 6,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  bottomListContainer: {
+  position: "absolute",
+  bottom: 10, // distance from bottom
+  width: "100%",
+  zIndex: 20,
+},
 })

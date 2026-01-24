@@ -37,7 +37,9 @@ export const MapBoxLayout =({})=>{
         }
         
     })
-
+    const zoomHandler =(e)=>{
+        // console.log(e.properties.zoom)
+    }
     return(
         <View style={{flex:1}}> 
             
@@ -61,7 +63,7 @@ export const MapBoxLayout =({})=>{
             onMapIdle={()=>{
                 setIsFollowingUser(false)
             }}
-
+            onCameraChanged={zoomHandler}
             >   
             
             <MapboxGL.Camera 
