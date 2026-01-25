@@ -8,14 +8,14 @@ import { scheduleOnRN } from "react-native-worklets"
 import MediaViewDataCard from "./viewer_data_card"
 
 
-export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray,isCluster}) {
+export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray,isBottomList}) {
   if(!AssetArray || AssetArray.length <=0) return null
 
   const [currentAssetsArray, setCurrentAssetsArray] = useState([...AssetArray])
   const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(asset => asset.uri ? asset.uri : asset.library_media_path === uri),0))
   const [dataVisible, setDataVisible] = useState(false)
   const observerRef = useRef(null)
-
+  const [isFullScreen,setFullScreen] = useState(false)
   const changeMedia = Gesture.Pan()
     .onEnd((e)=>{
       if(e.velocityX >=250){
@@ -29,7 +29,9 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
     })  
 
   const ImageDataDisplayHandler =()=> setDataVisible(true)
-
+  const fullScreenHanlder =()=>{ 
+    setFullScreen(prev => prev === false ? true : false) 
+    console.log(isFullScreen)}
   return (
     <Modal
       animationType="fade"
@@ -39,23 +41,25 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
     >
       <GestureDetector gesture={changeMedia}>
         <View style={mediaCardStyle.overlayContainer}>
-          <View style={mediaCardStyle.card}>
+          <View style={isFullScreen ? mediaCardStyle.fullCard : mediaCardStyle.card}>
             <TouchableOpacity style={mediaCardStyle.exitButton} onPress={onClose}>
               <Text style={mediaCardStyle.exitText}>X</Text>
             </TouchableOpacity>
             <TouchableOpacity style={mediaCardStyle.dataButton} onPress={ImageDataDisplayHandler}>
               <Text style={mediaCardStyle.exitText}>...</Text>
+            </TouchableOpacity> 
+            <TouchableOpacity style={mediaCardStyle.fullscreenButton} onPress={fullScreenHanlder}>
+              <Text style={mediaCardStyle.exitText}>⛶</Text>
             </TouchableOpacity>
-
             {/* Media Display */}
             {type === "photo" ? (
               <Image 
-                style={isCluster ? mediaCardStyle.clusterImage : mediaCardStyle.image} 
+                style={isFullScreen? mediaCardStyle.fullImage : mediaCardStyle.image} 
                 source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].media_path }}
               />
             ) : (
               <Video
-                style={isCluster ? mediaCardStyle.clusterVideo : mediaCardStyle.video}
+                style={isFullScreen ? mediaCardStyle.fullVideo:  mediaCardStyle.video}
                 source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].media_path}}
                 controls
                 resizeMode="cover"
@@ -77,7 +81,7 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
           )}
 
           {/* Bottom Horizontal List for clusters */}
-          {isCluster && (
+          {isBottomList && !isFullScreen && (
             <View style={mediaCardStyle.bottomListContainer}>
               <FlatList
                 data={AssetArray}

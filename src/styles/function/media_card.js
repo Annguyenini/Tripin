@@ -24,14 +24,41 @@ export const mediaCardStyle=StyleSheet.create
     shadowRadius: 5,
     elevation: 5,
     alignContent:'center',
+    // justifyContent: 'center',
+      justifyContent: 'flex-start', // top
+        flexDirection: 'row',
+        
+
+
+  },
+  fullCard: {
+    width: width * 1,
+    height:height*1,
+    padding: 2,
+    backgroundColor: '#555555ff', // card white
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+    alignContent:'center',
     justifyContent: 'center',
         flexDirection: 'row',
 
 
   },
+ buttons: {
+  position: 'absolute',  // crucial
+  top: 10,               // distance from top
+  right: 100,             // distance from right
+  flexDirection: 'row',  // horizontal layout
+  gap: 10,               // spacing between buttons (or use marginRight)
+  zIndex: 10,            // make sure it sits above content
+},
   exitButton: {
     position: 'absolute',
-    top: 10,
+    top: 40,
     right: 10,
     backgroundColor: '#eee', // light gray
     width: 30,
@@ -43,8 +70,20 @@ export const mediaCardStyle=StyleSheet.create
   },
    dataButton: {
     position: 'absolute',
-    top: 50,
+    top: 80,
     right: 10,
+    backgroundColor: '#eee', // light gray
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+   fullscreenButton: {
+    position: 'absolute',
+    top: 40,
+    right: 50,
     backgroundColor: '#eee', // light gray
     width: 30,
     height: 30,
@@ -78,33 +117,33 @@ export const mediaCardStyle=StyleSheet.create
 
   },
 
-  clusterImage:{
+  fullImage:{
 
     width:'100%',
-    height: '80%', 
+    height: '100%', 
     borderRadius: 10
   },
-  clusterVideo :{
+  fullVideo :{
        width:'100%',
-    height: '80%',
+    height: '100%',
         borderRadius: 10
 
   },
   clusterCard: {
-    width: width * 0.4,
-    marginRight: 12,
+    width: width * 0.15,
+    // marginRight: 12,
     backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 8,
+    padding: 2,
     shadowColor: "#000",
     shadowOpacity: 0.15,
     shadowRadius: 8,
-    elevation: 4,
+    // elevation: 4,
   },
 
   imageList: {
     width: "100%",
-    height: width * 0.4,
+    height: width * 0.15,
     borderRadius: 14,
   },
   text: {
@@ -114,8 +153,13 @@ export const mediaCardStyle=StyleSheet.create
   },
   bottomListContainer: {
   position: "absolute",
+  alignContent :'center',
+  alignItems:'center',
+  padding:5,
+  margin:10,
   bottom: 10, // distance from bottom
   width: "100%",
   zIndex: 20,
+
 },
 })

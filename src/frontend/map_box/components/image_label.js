@@ -1,5 +1,5 @@
 import  MapboxGL from '@rnmapbox/maps'
-import { useEffect, useState,useMemo } from 'react';
+import { useEffect, useState,useMemo,useCallback } from 'react';
 import {View,Image, TouchableOpacity,Text} from'react-native'
 import TripAlbumSubject from '../../../backend/trip_album/trip_album_subject';
 import Albumdb from '../../../backend/album/albumdb';
@@ -8,30 +8,55 @@ import { computeCluster } from '../../../backend/addition_functions/compute_clus
 import {imageLabelStyle} from '../../../styles/function/image_label'
 // figure how to re render the shit!!!!!!!!!
 const RenderImageLable =({clusters,mapKey, onClick})=>{
-  // console.log('new',currentAssetsArray)
+  console.log('new',clusters)
+  if(! clusters) return null
+
   return (
+      // clusters.map((cluster) => (
+      //   <View key={cluster.cluster_id}>
+      //     {cluster.members.map((media,) => (
+      //   <MapboxGL.MarkerView
+      //     key={`marker-${media.id}-${mapKey}-${media.library_media_path}`}
+      //     id={`marker-${media.id}`}
+      //     coordinate={[media.longitude, media.latitude]}
+      //   >
+      //     <TouchableOpacity onPress={()=>onClick(media,cluster.cluster_id)}>
+      //       <View style={{ width: 50, height: 50 }}>
+      //         <Image
+      //           source={{ uri: media.media_path }}
+      //           style={{ width: 50, height: 50, borderRadius: 15 }}
+      //           resizeMode="cover"
+      //         />
+      //         <View style={imageLabelStyle.badge}>
+      //           <Text style={imageLabelStyle.badgeText}>3</Text>
+      //         </View>
+      //       </View>
+      //     </TouchableOpacity>
+      //   </MapboxGL.MarkerView>
+      //   ))}
+      //   </View>
+      // ))
       clusters.map((cluster) => (
         <View key={cluster.cluster_id}>
-          {cluster.members.map((media) => (
+
         <MapboxGL.MarkerView
-          key={`marker-${media.id}-${mapKey}-${media.library_media_path}`}
-          id={`marker-${media.id}`}
-          coordinate={[media.longitude, media.latitude]}
+          key={`marker-${cluster.cluster_id}`}
+          id={`marker-${cluster.cluster_id}`}
+          coordinate={[cluster.center.lng, cluster.center.lat]}
         >
-          <TouchableOpacity onPress={()=>onClick(media,cluster.cluster_id)}>
+          <TouchableOpacity onPress={()=>onClick(cluster.members[0],cluster.cluster_id)}>
             <View style={{ width: 50, height: 50 }}>
               <Image
-                source={{ uri: media.media_path }}
+                source={{ uri: cluster.members[0].media_path }}
                 style={{ width: 50, height: 50, borderRadius: 15 }}
                 resizeMode="cover"
               />
               <View style={imageLabelStyle.badge}>
-                <Text style={imageLabelStyle.badgeText}>3</Text>
+                <Text style={imageLabelStyle.badgeText}>{cluster.members.length}</Text>
               </View>
             </View>
           </TouchableOpacity>
         </MapboxGL.MarkerView>
-        ))}
         </View>
       ))
     )
@@ -69,16 +94,38 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
     return () => TripAlbumSubject.detach(updateAssetsArray)
   }, [trip_id])
 
-  useMemo(()=>{
+  const calClusters = useMemo(()=>{
     const Cluster950 =computeCluster(currentAssetsArray,950)
     const Cluster250 =computeCluster(currentAssetsArray,250)
+    const Cluster3 = computeCluster(currentAssetsArray,3)
+    const Cluster2 = computeCluster(currentAssetsArray,2)
+    const Cluster1 = computeCluster(currentAssetsArray,0.5)
 
-    clusters.set(950,[...Cluster950])
-    clusters.set(250,[...Cluster250])
-    setCurrentCluster(Cluster250)
-    console.log(Cluster250)
+    return ({
+      13: [...Cluster950],
+      15: [...Cluster250],
+      20:[... Cluster3],
+      21:[...Cluster2],
+      22:[...Cluster1]
+    })
   },[currentAssetsArray])
 
+  clusters.set(13, calClusters[13])
+  clusters.set(15, calClusters[15])
+  clusters.set(20, calClusters[20])
+  clusters.set(21, calClusters[21])
+  clusters.set(22, calClusters[22])
+  const requestLabel =useCallback(()=>{
+    setCurrentCluster(clusters.get(zoomLevel))
+    console.log(clusters.get(zoomLevel))
+  },[zoomLevel])
+
+  useEffect(()=>{
+    requestLabel()
+  },[requestLabel])
+
+  // console.log(clusters.get(13))
+  // setCurrentDisplayCluster()
   if (!currentAssetsArray || currentAssetsArray.length < 1) return null
 
   const labelDisplayHandler = (media, cluster_id)=>{
@@ -91,7 +138,7 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
   return (
     <View key={mapKey}> 
       <RenderImageLable clusters={currentCluster} mapKey={mapKey} onClick={labelDisplayHandler}></RenderImageLable>
-    {visible && <MediaViewCard title={'test'} uri={currentAsset.library_media_path} type={currentAsset.media_type} visible={visible} onClose={()=>setVisible(false)} AssetArray={currentDisplayCluster} isCluster={true}/>}
+    {visible && <MediaViewCard title={'test'} uri={currentAsset.library_media_path} type={currentAsset.media_type} visible={visible} onClose={()=>setVisible(false)} AssetArray={currentDisplayCluster} isBottomList={true}/>}
     </View>
   )
 }
