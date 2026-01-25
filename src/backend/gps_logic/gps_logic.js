@@ -129,7 +129,7 @@ export class TripService {
         accuracy: performance,
         timeInterval: trackingTime,
         pausesUpdatesAutomatically: false,
-        distanceInterval: 50,
+        distanceInterval: 500,
         showsBackgroundLocationIndicator: true, // iOS - shows blue bar
         foregroundService: { // Android
           notificationTitle: 'Trip Tracking',
