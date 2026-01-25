@@ -14,6 +14,7 @@ export const MapBoxLayout =({})=>{
     const [userLock,setUserLock]=useState(false)
     const [isFollowingUser, setIsFollowingUser] = useState(true)
     const[isOnATrip,setIsOnATrip]= useState(null)
+    const [zoomLevel,setZoomLevel] = useState(0)
     const sendMapRenderSignal= async()=>{
         await AppFlow.onRenderMapSuccess()
     }
@@ -37,7 +38,15 @@ export const MapBoxLayout =({})=>{
         }
         
     })
+    const allowedZooms = [13, 15, 20, 21, 22];
 
+    const zoomHandler = (e) => {
+    const zoom = Math.floor(e.properties.zoom);
+
+    if (allowedZooms.includes(zoom)) {
+        setZoomLevel(zoom);
+    }
+    };
     return(
         <View style={{flex:1}}> 
             
@@ -61,7 +70,7 @@ export const MapBoxLayout =({})=>{
             onMapIdle={()=>{
                 setIsFollowingUser(false)
             }}
-
+            onCameraChanged={zoomHandler}
             >   
             
             <MapboxGL.Camera 
@@ -76,7 +85,7 @@ export const MapBoxLayout =({})=>{
             <MapboxGL.UserLocation minDisplacement={2}/>
             
             {isOnATrip && <CoordinatesPointsLayout trip_id={CurrentTripDataService.getCurrentTripId()}></CoordinatesPointsLayout>}
-            {isOnATrip && <ImageLabel trip_id={CurrentTripDataService.getCurrentTripId()}></ImageLabel>}
+            {isOnATrip && <ImageLabel trip_id={CurrentTripDataService.getCurrentTripId()} zoomLevel={zoomLevel}></ImageLabel>}
             
             </MapboxGL.MapView>
             
