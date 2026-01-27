@@ -5,7 +5,6 @@ import TripService from '../../../backend/gps_logic/gps_logic';
 import CurrentTripDataService from '../../../backend/storage/current_trip'
 import { DATA_KEYS } from '../../../backend/storage/keys/storage_keys';
 export const CurrentTripBox = ()=>{
-    const[currentState,setCurrentState] =useState(AppState.currentState);
     const[curesntTripName,setCurrentTripName] = useState(null)
     const[tripImageCover,setTripImageCover] = useState(null)
     useEffect(()=>{
@@ -21,24 +20,10 @@ export const CurrentTripBox = ()=>{
         }
       }
       CurrentTripDataService.attach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE);
-      const appState =async()=>{
-        const tripStatus = CurrentTripDataService.getCurrentTripStatus()
-
-        if (tripStatus ==='true'){
-        TripService.init_trip_properties()
-        }
-        const state = AppState.addEventListener('change' ,nextState=>{
-        setCurrentState(nextState)
-        });
-        // await location_logic();
-        TripService.startGPSWatch(currentState);
-        return () => state.remove();
-      }
+      TripService.startGPSWatch();
       get_trip_image()
-
-      appState()
         return ()=>CurrentTripDataService.detach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE)
-    })
+    },[])
     return (
         <View style={styles.wrapper}>
     <View style={styles.card}>

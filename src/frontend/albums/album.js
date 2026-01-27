@@ -15,22 +15,6 @@ const FILTERS = ['All', 'Trips', 'Photos', 'Videos'];
 import AlbumService from '../../backend/album/albumdb';
 import { navigate } from '../custom_function/navigationService';
 import MediaViewCard from './viewer_card';
-// const IMAGE_SIZE = (Dimensions.get('window').width - 32) / 3;
-
-
-// mock data (replace with MediaLibrary assets)
-// const IMAGES = [
-//   { id: '1', uri: 'https://picsum.photos/400/400?1' },
-//   { id: '2', uri: 'https://picsum.photos/400/400?2' },
-//   { id: '3', uri: 'https://picsum.photos/400/400?3' },
-//   { id: '4', uri: 'https://picsum.photos/400/400?4' },
-//   { id: '5', uri: 'https://picsum.photos/400/400?5' },
-//   { id: '6', uri: 'https://picsum.photos/400/400?6' },
-// ];
-// let IMAGES =[]
-// for (let i = 30; i <=40; i++){
-//     IMAGES.push({id:'i',uri :'https://picsum.photos/400/400?random=${i + 1}'})
-// }
 const videoPauseIcon = require('../../../assets/image/video_pause_icon.png')
 export default function AlbumScreen() {
     const [Images ,setImages]=useState([])

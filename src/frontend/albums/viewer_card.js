@@ -6,6 +6,7 @@ import { useEffect, useState,useRef } from "react"
 import AlbumService from "../../backend/album/albumdb"
 import { scheduleOnRN } from "react-native-worklets"
 import MediaViewDataCard from "./viewer_data_card"
+const videoPauseIcon = require('../../../assets/image/video_pause_icon.png')
 
 
 export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray,isBottomList}) {
@@ -52,15 +53,15 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
               <Text style={mediaCardStyle.exitText}>⛶</Text>
             </TouchableOpacity>
             {/* Media Display */}
-            {type === "photo" ? (
+            {currentAssetsArray[currentIndex].media_type === "photo" ? (
               <Image 
                 style={isFullScreen? mediaCardStyle.fullImage : mediaCardStyle.image} 
-                source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].media_path }}
+                source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path }}
               />
             ) : (
               <Video
                 style={isFullScreen ? mediaCardStyle.fullVideo:  mediaCardStyle.video}
-                source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].media_path}}
+                source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path}}
                 controls
                 resizeMode="cover"
                 paused={false}
@@ -93,6 +94,16 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
                   <View style={mediaCardStyle.clusterCard}>
                     <TouchableOpacity onPress={()=>setCurrentIndex(index)}>
                     <Image source={{ uri: item.library_media_path }} style={mediaCardStyle.imageList} />
+                    {
+                      item.media_type === 'video' && 
+                      <View style ={mediaCardStyle.ImageListOverlay}>
+                        <Image
+                        source={videoPauseIcon} 
+                        resizeMode="contain" 
+                        style ={mediaCardStyle.overlayImage}>
+                        </Image>
+                      </View>
+                    }
                     </TouchableOpacity>
                   </View>
                 )}

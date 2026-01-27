@@ -20,13 +20,13 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
     async init_new_trip(){
         return await this.create_trip(CurrentTripDataService.getCurrentTripId())
     }
-    async insert_into_DB(){
+    async insert_into_DB(temp_storage){
         const DB = await SqliteService.connectDB()
 
         const current_version = await TripDatabase.getTripCoordinateVersion(CurrentTripDataService.getCurrentTripId())+1 
         await DB.withTransactionAsync(async()=>{
             
-        for(const item of this.storage){
+        for(const item of temp_storage){
 
             try{
                 await DB.runAsync(`INSERT INTO trip_${CurrentTripDataService.getCurrentTripId()} (altitude, latitude, longitude,heading,speed,time_stamp,version) VALUES (?,?,?,?,?,?,?)`,[item.coordinates.altitude,item.coordinates.latitude,
@@ -78,11 +78,16 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
         this.storage.push(trip_data_object);
         CoordinatesSubject.addCoordinateToArray(trip_data_object)
         if(this.storage.length >=5){
-            const version =  await this.insert_into_DB()
-            await TripDatabase.updateTripCorrdinateVersion(CurrentTripDataService.getCurrentTripId(),version)
-            const send_coor = await TripContentsHandler.sendCoordinatesHandler(this.storage,version)
-            // const request_con = await Trip.request_location_conditions()
+            //using an temp 
+            const temp_storage = [...this.storage] 
             this.storage.length = 0
+
+            const version =  await this.insert_into_DB(temp_storage)
+            
+            await TripDatabase.updateTripCorrdinateVersion(CurrentTripDataService.getCurrentTripId(),version)
+            
+            const send_coor = await TripContentsHandler.sendCoordinatesHandler(temp_storage,version)
+            // const request_con = await Trip.request_location_conditions()
         }
 
     }

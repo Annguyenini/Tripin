@@ -16,13 +16,13 @@ class TripContentHandler{
         if (respond.status ===409){
             // prevent duplicate sync
             if(TripSync.coordinatesSyncing){
-                TripSync.addIntoQueue('coordinate',version,coors_object)
-                return null
+                TripSync.addIntoQueue('coordinate',version,coors_object)   
+                return respond.ok
             }
             console.log('missing')
             await TripSync.processTripCoordinatesSync(respond.data.missing_versions)
         }
-        return respond
+        return respond.ok
     }
 
 

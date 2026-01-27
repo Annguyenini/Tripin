@@ -18,4 +18,19 @@ export const imageLabelStyle = StyleSheet.create({
     fontSize: 10,
     fontWeight: "700",
   },
+  videoOverlayCard :{
+        ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)', // optional dim
+    justifyContent: 'center',
+    alignItems: 'center',
+        borderRadius: 9,
+
+  },
+  overlayImage: {
+    width: 100,
+    height: 100,
+    tintColor: 'white', // optional
+    borderRadius: 9,
+
+  },
 })

@@ -32,6 +32,17 @@ class LocationDataService extends LocalStorage{
             this.notify(DATA_KEYS.LOCATION.CITY,city)
         }
 
+        // mock fucntions 
+        async setCurrentLocationCondition(condition){
+            this.item.set(DATA_KEYS.LOCATION.CONDITIONS,condition)
+            this.notify(DATA_KEYS.LOCATION.CONDITIONS,condition)
+        }
+
+        async setCurrentCity(city){            
+            this.item.set(DATA_KEYS.LOCATION.CITY,city)
+            this.notify(DATA_KEYS.LOCATION.CITY,city)
+        }
+
         async getCurrentLocationCoditionFromLocal(){
             return await this.getDataObjectFromLocal(STORAGE_KEYS.LOCATION_COND_DATA)
 

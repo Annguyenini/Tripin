@@ -157,7 +157,7 @@ class Album {
                 hash_map[object.library_media_path]['trip_name']=object.trip_name
             }
         }
-        console.log(hash_map)
+        // console.log(hash_map)
         return([...Object.values(hash_map)])
     }
 

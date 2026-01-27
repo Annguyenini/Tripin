@@ -162,4 +162,15 @@ export const mediaCardStyle=StyleSheet.create
   zIndex: 20,
 
 },
+ ImageListOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)', // optional dim
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlayImage: {
+    width: 100,
+    height: 100,
+    tintColor: 'white', // optional
+  },
 })
