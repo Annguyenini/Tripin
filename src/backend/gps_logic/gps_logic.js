@@ -1,7 +1,7 @@
 import GPSTask from "./gps_task"
 import GPSCallbackHandler from "./gps_callback_handler"
 import * as TrackingState from './gps_states'
-export default class GPSLocgic {
+class GPSLogic {
     constructor (){
         this.islogicRuning = false
         this.currentMode=null
@@ -54,7 +54,7 @@ export default class GPSLocgic {
     
 }
 
-
+export default new GPSLogic()
 
 
 

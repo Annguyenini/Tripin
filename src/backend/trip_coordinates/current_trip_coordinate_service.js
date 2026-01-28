@@ -77,7 +77,7 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
         console.assert(this.storage,"storage undefined")
         this.storage.push(trip_data_object);
         CoordinatesSubject.addCoordinateToArray(trip_data_object)
-        if(this.storage.length >=5){
+        if(this.storage.length >=2){
             //using an temp 
             const temp_storage = [...this.storage] 
             this.storage.length = 0

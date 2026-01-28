@@ -82,9 +82,7 @@ export const UserDataBottomSheet = ({
     const profile_picker =()=>{
       set_show_profile_picker(true)
     }
-    const handleTripPress=()=>{
 
-    }
     const testScreenHandler=()=>{
       setTestScreen(prev => prev ===true ? false:true)
       console.log(testScreen)
@@ -120,7 +118,7 @@ export const UserDataBottomSheet = ({
               numColumns={2}
               columnWrapperStyle={tripCardsStyle.row}
               renderItem={({ item }) => (
-                <TripCard trip={item} onPress={handleTripPress} />
+                <TripCard trip={item} />
               )}
               showsVerticalScrollIndicator={false}
 

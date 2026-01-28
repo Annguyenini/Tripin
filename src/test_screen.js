@@ -9,7 +9,6 @@ import Albumn from './backend/album/albumdb';
 import TripDatabaseService from './backend/database/TripDatabaseService';
 import * as Location from 'expo-location'
 import GPSLocgic from './backend/gps_logic/gps_logic';
-const GpsLocgic = new GPSLocgic() 
 export const TestScreen = ({testScreenHandler}) => {
   const gpsTask = useRef(null)
 
@@ -29,7 +28,7 @@ export const TestScreen = ({testScreenHandler}) => {
   const startGPSTask = async ()=>{
     if (gpsTask.current) {
       gpsTask.current = null
-      await GpsLocgic.endGPSLogic()
+      await GPSLocgic.endGPSLogic()
       return
     }
     console.log('test')

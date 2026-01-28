@@ -1,6 +1,7 @@
 
 import * as CoordinateCal from '../coordinates/coordinates_cal'
- class GPSCallbackHandler{
+import CurrentTripCoordinateService from '../trip_coordinates/current_trip_coordinate_service' 
+class GPSCallbackHandler{
     constructor(){
         this.lastPayload = null
         this.observers =[]
@@ -30,8 +31,8 @@ import * as CoordinateCal from '../coordinates/coordinates_cal'
             const {latitude:lat2,longitude:lng2} = payload.coordinates
             const distance = CoordinateCal.haversineDistance(lat1,lng1,lat2,lng2)
             console.log('call back distance',distance)
-
-            if (distance <= 5)return
+            this.lastPayload = payload
+            if (distance <= 10)return
         }
         const {speed} = payload.coordinates
         console.log('call back speed', speed)
@@ -44,6 +45,8 @@ import * as CoordinateCal from '../coordinates/coordinates_cal'
             this.currentMode = 'auto'
             this.notify('auto')
         }
+        CurrentTripCoordinateService.push(payload)
+        this.lastPayload = payload
         // process new coords
         return
     }

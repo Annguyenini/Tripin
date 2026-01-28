@@ -15,13 +15,18 @@ export const boxesOverlap=(a,b)=>{
     a.maxLng < b.minLng ||
     a.minLng > b.maxLng
 )}
-export const haversineDistance=(lat1, lng1, lat2,lng2)=>{
+const toRad = (deg) => deg * Math.PI / 180;
 
-        const R =6371000
-        const Rdel_lat = toRad(lat2-lat1);
-        const Rdel_lng = toRad(lng2 =lng1);
-        const a  = (Math.sin(Rdel_lat/2)**2) + (Math.cos(toRad(lat1))* Math.cos(toRad(lat2)) * Math.sin(Rdel_lng/2)**2);
-        const c = 2 *Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-        return R * c
-        
-    }
+export const haversineDistance = (lat1, lng1, lat2, lng2) => {
+    const R = 6371000; // Earth radius in meters
+    const deltaLat = toRad(lat2 - lat1);
+    const deltaLng = toRad(lng2 - lng1);
+
+    const a = Math.sin(deltaLat / 2) ** 2 +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(deltaLng / 2) ** 2;
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // distance in meters
+};
+

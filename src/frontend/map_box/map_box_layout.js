@@ -7,37 +7,52 @@ import CoordinatesPointsLayout from './components/points';
 import { DATA_KEYS } from '../../backend/storage/keys/storage_keys';
 import AppFlow from '../../app-core/flow/app_flow';
 import ImageLabel from './components/image_label';
+import MarkerSubject from "./functions/marker_subject"
 
 MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN)
 export const MapBoxLayout =({})=>{
     const mapRef = useRef(null);
     const [userLock,setUserLock]=useState(false)
     const [isFollowingUser, setIsFollowingUser] = useState(true)
-    const[isOnATrip,setIsOnATrip]= useState(null)
+    const[isDisplay,setIsDisplay]= useState(null)
     const [zoomLevel,setZoomLevel] = useState(0)
+    const [currentDisplayTripId,setcurrentDisplayTripId]= useState(null)
     const sendMapRenderSignal= async()=>{
         await AppFlow.onRenderMapSuccess()
     }
-    useEffect(()=>{
+     useEffect(()=>{
         const fetchIsOnATrip =async()=>{
             const trip_status = CurrentTripDataService.getCurrentTripStatus()
-            setIsOnATrip(trip_status)
-    }
-
+            setIsDisplay(trip_status)
+        }
+        const fetchTripId = ()=>{
+            const trip_id = CurrentTripDataService.getCurrentTripId()
+            setcurrentDisplayTripId(trip_id)
+            MarkerSubject.setTripId(trip_id)
+        }
         const updateTripStatus={
             update(newState){
-                setIsOnATrip(newState)
+                setIsDisplay(newState)
             }
         }
+        const updateTripId={
+            update(newTripId){
+                console.log('update')
+                setcurrentDisplayTripId(newTripId)
+            }
+        }
+        fetchTripId()
         fetchIsOnATrip()
-        fetch()
         
         CurrentTripDataService.attach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
+        MarkerSubject.attach(updateTripId)
         return()=>{
             CurrentTripDataService.detach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
+            MarkerSubject.dettach(updateTripId)
+
         }
         
-    })
+    },[])
     const allowedZooms = [13, 15, 20, 21, 22];
 
     const zoomHandler = (e) => {
@@ -84,8 +99,8 @@ export const MapBoxLayout =({})=>{
             />
             <MapboxGL.UserLocation minDisplacement={2}/>
             
-            {isOnATrip && <CoordinatesPointsLayout trip_id={CurrentTripDataService.getCurrentTripId()}></CoordinatesPointsLayout>}
-            {isOnATrip && <ImageLabel trip_id={CurrentTripDataService.getCurrentTripId()} zoomLevel={zoomLevel}></ImageLabel>}
+            {isDisplay && <CoordinatesPointsLayout trip_id={currentDisplayTripId}></CoordinatesPointsLayout>}
+            {isDisplay && <ImageLabel trip_id={currentDisplayTripId} zoomLevel={zoomLevel}></ImageLabel>}
             
             </MapboxGL.MapView>
             

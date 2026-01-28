@@ -1,9 +1,9 @@
 import { View, Text, Image,StyleSheet,TouchableOpacity,AppState } from 'react-native';
 import { useEffect, useState } from "react";
 import { MaterialIcons } from '@expo/vector-icons'; // For the arrow icon
-import TripService from '../../../backend/gps_logic/gps_logic';
 import CurrentTripDataService from '../../../backend/storage/current_trip'
 import { DATA_KEYS } from '../../../backend/storage/keys/storage_keys';
+const default_image = require('../../../../assets/icon.png')
 export const CurrentTripBox = ()=>{
     const[curesntTripName,setCurrentTripName] = useState(null)
     const[tripImageCover,setTripImageCover] = useState(null)
@@ -20,7 +20,6 @@ export const CurrentTripBox = ()=>{
         }
       }
       CurrentTripDataService.attach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE);
-      TripService.startGPSWatch();
       get_trip_image()
         return ()=>CurrentTripDataService.detach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE)
     },[])
@@ -31,7 +30,7 @@ export const CurrentTripBox = ()=>{
       <View style={styles.background} />
 
       {/* Image */}
-      <Image source={{uri:tripImageCover}} style={styles.image} />
+      <Image source={ tripImageCover ? {uri:tripImageCover} :default_image} style={styles.image} />
 
       {/* LIVE badge */}
         <View style={styles.liveBadge}>

@@ -14,7 +14,7 @@ export const SettingScreen =()=>{
         await TokenService.deleteToken("refresh_token")
         await UserDataService.deleteAllUserData();
         await CurrentTripDataService.resetCurrentTripData()
-        await TripService.stopGPSWatch()
+        await TripService.endGPSLogic()
         navigate("auth")
     }  
     const returnToMainScreen =()=>{

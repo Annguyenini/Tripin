@@ -55,12 +55,20 @@ class TripContentHandler{
         if(respond.status ===304) return true
         const data = respond.data
         if (data.coordinates){
-            if (await this.TripCoordinateDatabaseService.handlerCoordinateFromServer(data.coordinates))
+            if (await this.TripCoordinateDatabaseService.handlerCoordinateFromServer(data.coordinates,trip_id))
             {
                 await TripDatabaseService.updateTripCorrdinateVersion(trip_id,data.newest_version)
             }
         }
         return true
+    }
+    async requestTripMediasHandler(trip_id){
+        const version = await TripDatabaseService.getTripMediaVersion(trip_id)
+        const respond = await TripContents.requestTripMedias(trip_id,version)
+        if(!respond.ok) return false
+        if (respond.status!==200) return false
+        if(respond.status ===304) return true
+
     }
     async uploadTripImageHandler(version,trip_id,imageUri){
         if (!imageUri)return
