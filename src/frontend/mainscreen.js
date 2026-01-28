@@ -1,5 +1,6 @@
-import React, { useMemo, useState,useRef, useEffect } from 'react';
+import React, { useMemo, useState,useRef, useEffect, useCallback } from 'react';
 import * as ScreenOrientation from 'expo-screen-orientation';
+
 import {Image} from 'react-native'
 import { View, TouchableOpacity, Text,Button, TextInput,Alert, StyleSheet, Dimensions } from 'react-native';
 import {mainScreenStyle,footer} from '../styles/main_screen_styles.js'
@@ -12,11 +13,16 @@ import { UserDataBottomSheet } from './bottom_sheet.js';
 // import UserData from '../app-core/local_data/local_user_data.js'
 import UserDataService from '../../src/backend/storage/user.js'
 import {ProfileImagePicker} from'./custom_components/profile_image_picker.js'
+import { AppState } from 'react-native';
+import { startForegroundGPSTracker,endForegroundGPSTracker } from '../backend/gps_logic/foreground_gps_logic.js';
+import CurrenTripDataService from '../backend/storage/current_trip.js'
+import GPSLogic from '../backend/gps_logic/gps_logic.js';
 const homeIcon = require('../../assets/image/home_icon.png')
 const cameraIcon = require('../../assets/image/camera_icon.png')
 const galleryIcon = require('../../assets/image/gallery_icon.png')
 const settingIcon = require('../../assets/image/setting_icon.png')
 import { MapBoxLayout } from './map_box/map_box_layout.js';
+import { DATA_KEYS } from '../backend/storage/keys/storage_keys.js';
 
 
 export const MainScreen = () =>{
@@ -25,18 +31,69 @@ export const MainScreen = () =>{
   const [user_name, setUsername ] = useState(null)
   const [display_name,setDisplayName] = useState(null)
   const[show_profile_picker,set_show_profile_picker] =useState(false)
-
+  const [state, setState] = useState(AppState.currentState)
+  const [CurrentTripStatus,setCurrentTripStatus]=useState(null)
+  const gpsTask = useRef(null)
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-      async function fetch_userdata(){
       setUserId(UserDataService.getUserId())
       setUsername(UserDataService.getUserName())
       setDisplayName(UserDataService.getDisplayName())
+    
+      const getTripstatus =()=>{
+        setCurrentTripStatus(CurrenTripDataService.getCurrentTripStatus())
+      }
+      getTripstatus()
+      
+      const update_status={
+        update(newStatus){
+          setCurrentTripStatus(newStatus)
+        }
+      }
+      CurrenTripDataService.attach(update_status,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
+      return ()=> CurrenTripDataService.detach(update_status,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
+    }, []);
+// app state tracker
+  useEffect(()=>{
+    const backgroundGPSTask =async()=>{
+      if(!CurrentTripStatus) {
+        await GPSLogic.endGPSLogic()
+        return
+      }
+      await GPSLogic.startGPSLogic()
     }
-  
-    fetch_userdata()
-  }, []);
+    backgroundGPSTask()
+  },[CurrentTripStatus])
+  useEffect(()=>{
+
+    const initGps= async()=>{
+      gpsTask.current = await startForegroundGPSTracker()
+    }
+    initGps()
+    const getState = AppState.addEventListener('change' ,nextState=>{
+        setState(nextState)
+        if(nextState ==='active'){
+          if(!gpsTask.current){
+            gpsTask.current = startForegroundGPSTracker()
+          }
+        }
+        else{
+          endForegroundGPSTracker()
+          gpsTask.current =(null)
+        }
+      });
+      return ()=>{
+        getState.remove()
+        gpsTask.current =(null)
+        endForegroundGPSTracker()
+      }
+  },[])
+  console.log(state)
  
+  // useEffect(async()=>{
+  //   console.log(state)
+  // },[state])
+
   const callCamera= ()=>{
     const res = navigate("Camera");
   }
@@ -46,7 +103,6 @@ export const MainScreen = () =>{
   const callAlbum =()=>{
     const res = navigate('Album')
   }
-
     return(
       
       <View style={styles.container}> 

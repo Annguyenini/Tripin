@@ -19,11 +19,13 @@ class Trip{
             // if there are no token found return false
             const token = await TokenService.getToken("access_token");
             let formData = new FormData()
-            formData.append('image',{
+            if(imageUri){
+                formData.append('image',{
                 uri:imageUri,
                 name:`cover_${CurrentTripDataService.getCurrentTripId()}`,
                 type:'image/jpeg'
             })
+            }
             formData.append('trip_name',trip_name)
 
             // only send trip name b/c we took userdata straight out from token

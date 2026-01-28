@@ -31,7 +31,6 @@ const logo = require('./assets/image/main_logo.png');
 const { width, height } = Dimensions.get('window');
 const Stack = createStackNavigator();
 
-
 export default function App() {
 
   const [loaded,setLoaded] = useState(false)

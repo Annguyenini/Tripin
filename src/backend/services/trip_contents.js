@@ -36,23 +36,28 @@ class TripContentService{
 
 
     async requestTripCoordinates(trip_id,version){
-        try{
+                console.log(trip_id,version)
 
+        try{
+            if(!trip_id) return
             const respond = await fetch(API.REQUEST_TRIP_COORDINATES+`/${trip_id}/coordinates`,{
                 method:'GET',
-                headers:{'Authorization':`Bearer ${await TokenService.getToken('access_token')}`},
-                body: JSON.stringify({
-                    version:version
-                })
+                headers:{'Authorization':`Bearer ${await TokenService.getToken('access_token')}`,
+            'Version':version},
+
             })
-        
+            if(respond.status ===304){
+                return({'ok':true,'status':respond.status})
+
+            }   
             const data = await respond.json()
             if(respond.status ===401){
                 if(data.code === 'token_expired'){
                     await AuthService.requestNewAccessToken()
-                    return await this.requestTripCoordinates()
+                    return await this.requestTripCoordinates(trip_id,version)
                 }
-            }            
+            }
+                    
             return ({'ok':true,'status':respond.status,'data':data})
         }
         catch(err){
@@ -168,17 +173,21 @@ class TripContentService{
     }
 
 
-    async requestTripMedias(trip_id){
+    async requestTripMedias(trip_id,version){
         try{
             const respond = await fetch(API.REQUEST_TRIP_MEDIAS+`/${trip_id}/medias`,{
                 method :'GET',
-                headers:{'Authorization':`Bearer ${await TokenService.getToken('access_token')}`}
+                headers:{'Authorization':`Bearer ${await TokenService.getToken('access_token')}`,
+            'Version':version}
             })
+            if(respond.status ===304){
+                return({'ok':true,'status':respond.status})            
+            }
             const data = await respond.json()
             if(respond.status===401){
                 if (data.code === 'token_expired'){
                     await TokenService.requestNewAccessToken()
-                    return await this.sendTripVideo(videoUri,longitude,latitude)
+                    return await this.requestTripMedias(trip_id,version)
                 }
             }
             return({'ok':true,'status':respond.status,'data':data})

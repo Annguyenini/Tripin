@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { OverlayCard } from './frontend/custom_function/overlay_card';
 import UserDataService from './backend/storage/user';
@@ -7,7 +7,11 @@ import TripService  from './backend/gps_logic/gps_logic';
 import TripDataStorage from './backend/trip_coordinates/current_trip_coordinate_service';
 import Albumn from './backend/album/albumdb';
 import TripDatabaseService from './backend/database/TripDatabaseService';
+import * as Location from 'expo-location'
+import GPSLocgic from './backend/gps_logic/gps_logic';
 export const TestScreen = ({testScreenHandler}) => {
+  const gpsTask = useRef(null)
+
   const [gpsStatus, setGpsStatus] = useState('GPS task not running');
   const [sqlText, setSqlText] = useState('No SQL data fetched');
 
@@ -21,9 +25,19 @@ export const TestScreen = ({testScreenHandler}) => {
   const onGetUserDb = async()=>{
     console.log(await TripDatabaseService.getAllDataFromdb())
   }
+  const startGPSTask = async ()=>{
+    if (gpsTask.current) {
+      gpsTask.current = null
+      await GPSLocgic.endGPSLogic()
+      return
+    }
+    console.log('test')
+     gpsTask.current = await GpsLocgic.startGPSLogic()
+  }
+  
   useEffect(()=>{
     const fetchGPSTask=async()=>{
-        const status =await TripService.isAnyTask()
+        const status = GpsLocgic.isAnyTask()
         if(status){
             setGpsStatus('running')
         }
@@ -81,6 +95,18 @@ export const TestScreen = ({testScreenHandler}) => {
                 }}
             >
           <Text>print data from user to console</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+                onPress={startGPSTask}
+                style={{
+                  marginTop: 12,
+                  padding: 10,
+                  backgroundColor: '#e0e0e0',
+                  borderRadius: 6,
+                  alignItems: 'center',
+                }}
+            >
+          <Text>Gps task test: {gpsTask.current ? 'on':'off'}</Text>
         </TouchableOpacity>
 
         {/* GPS status */}
