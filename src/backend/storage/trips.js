@@ -53,7 +53,11 @@ class TripDataService extends TripLocalDataStorage{
         const key = this.getTripKeyReady(user_id,trip_id) 
         return await this.getDataObjectFromLocal(key)
     }
+    async saveTripDataToLocal(user_id,trip_id,data){
+        const key = this.getTripKeyReady(user_id,trip_id) 
+        return await this.saveDataObjectToLocal(key,data)
 
+    }
     async loadAllTripsListFromLocal(){
         const trips_list = await this.getArrayFromLocal(DATA_KEYS.TRIP.ALL_TRIP_LIST)
         if(trips_list){

@@ -20,13 +20,14 @@ export const MapBoxLayout =({})=>{
     const sendMapRenderSignal= async()=>{
         await AppFlow.onRenderMapSuccess()
     }
-     useEffect(()=>{
+    useEffect(()=>{
         const fetchIsOnATrip =async()=>{
             const trip_status = CurrentTripDataService.getCurrentTripStatus()
             setIsDisplay(trip_status)
         }
         const fetchTripId = ()=>{
             const trip_id = CurrentTripDataService.getCurrentTripId()
+            console.log('trip_id',trip_id)
             setcurrentDisplayTripId(trip_id)
             MarkerSubject.setTripId(trip_id)
         }
@@ -45,10 +46,12 @@ export const MapBoxLayout =({})=>{
         fetchIsOnATrip()
         
         CurrentTripDataService.attach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
-        MarkerSubject.attach(updateTripId)
+        CurrentTripDataService.attach(updateTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
+        MarkerSubject.attach(updateTripId,MarkerSubject.EVENTS.TRIP_ID)
         return()=>{
             CurrentTripDataService.detach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
-            MarkerSubject.dettach(updateTripId)
+            CurrentTripDataService.detach(updateTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
+            MarkerSubject.detach(updateTripId,MarkerSubject.EVENTS.TRIP_ID)
 
         }
         

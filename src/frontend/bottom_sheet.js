@@ -148,7 +148,7 @@ export const UserDataBottomSheet = ({
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>All Trips</Text>
           <TouchableOpacity style ={styles.addBtn} onPress={refresh_user_trips}>
-            <Text >Refresh</Text>
+            <Text >↺</Text>
           </TouchableOpacity>
           {!isOnATrip && (
             <TouchableOpacity onPress={new_trip_filler} style={styles.addBtn}>
@@ -217,13 +217,13 @@ addBtn: {
   width: 32,
   height: 32,
   borderRadius: 16,
-  backgroundColor: '#555',
+  backgroundColor: '#ffffff',
   alignItems: 'center',
   justifyContent: 'center',
 },
 
 addText: {
-  fontSize: 20,
+  fontSize: 30,
   color: '#fff',
 },
 

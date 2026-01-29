@@ -1,23 +1,27 @@
-class MarkerSubject{
+import LocalStorage from "../../../backend/storage/base/localStorage"
+import CurrentTripDataService from'../../../backend/storage/current_trip'
+class MarkerSubject extends(LocalStorage){
     constructor(){
-        this.observers =[]
+        super()
         this.currentMarkerTrip = null
-    }
-    attach(observer){
-        this.observers.push(observer)
-    }
-    dettach(observer){
-        this.observers = this.observers.filter(obs => obs !==observer)
-    }
-    notify(newItem){
-        if(this.observers.length <=0) return
-        for(const obs of this.observers){
-            obs.update(newItem)
+        this.EVENTS ={
+            TRIP_ID:'trip_id'
         }
     }
+    
+   
     setTripId(trip_id){
         this.currentMarkerTrip = trip_id
-        this.notify(trip_id)
+        this.notify(this.EVENTS.TRIP_ID,trip_id)
+        return
+    }
+    getTripId(){
+        return this.currentMarkerTrip
+    }
+    setTripIdDefault(){
+        this.currentMarkerTrip = CurrentTripDataService.getCurrentTripId()
+        this.notify(this.EVENTS.TRIP_ID,CurrentTripDataService.getCurrentTripId())
+        return
     }
 }
 export default new MarkerSubject()
