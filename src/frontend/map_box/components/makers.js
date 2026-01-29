@@ -26,6 +26,7 @@ export const Marker =({})=>{
             }
             const updateTripId={
                 update(newTripId){
+                    console.log('update',newTripId)
                     setcurrentDisplayTripId(newTripId)
                 }
             }
@@ -33,10 +34,10 @@ export const Marker =({})=>{
             fetchIsOnATrip()
             
             CurrentTripDataService.attach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
-            MarkerSubject.attach(updateTripId)
+            MarkerSubject.attach(updateTripId,MarkerSubject.EVENTS.TRIP_ID)
             return()=>{
                 CurrentTripDataService.detach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
-                MarkerSubject.dettach(updateTripId)
+                MarkerSubject.dettach(updateTripId,MarkerSubject.EVENTS.TRIP_ID)
 
             }
             

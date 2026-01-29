@@ -128,10 +128,20 @@ class TripHandler{
      */
     async requestTripDataHandler(trip_id){
         // return the process status not the data status meaning if the data is none, it will also return true
+        const user_id = UserDataService.getUserId()
         const respond = await Trip.requestTripData(trip_id)
-        if(respond.status!==200) return false
+        if(!respond.ok || respond.status ===304) {
+            return await TripDataService.getTripDataFromLocal(user_id,trip_id)
+        }
+        if(respond.status!==200) return null
         const data = respond.data
-        return data ? data : null
+        const trip_data = data.trip_data
+        const etag = data.etag
+        if (await TripDataService.saveTripDataToLocal(user_id,trip_id,trip_data)){
+            const etag_key = EtagService.GENERATE_TRIP_ETAG_KEY(trip_id)
+            await EtagService.saveEtagToLocal(etag_key,etag)
+        }
+        return trip_data
     }
     /**
      * handle end trip
