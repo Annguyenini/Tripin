@@ -4,13 +4,12 @@ import { tripCardsStyle } from "../../styles/function/tripcards";
 import marker_subject from "../map_box/functions/marker_subject";
 import trip_contents_handler from "../../app-core/flow/trip_contents_handler";
 import TripSelectedSubject from "../map_box/functions/trip_selected_subject";
+import CurrentTripDataService from '../../backend/storage/current_trip'
 const default_image = require('../../../assets/icon.png')
 
 export const TripCard = ({ trip }) => {
   const pressHandler = async (trip)=>{
-    console.log('trip_id',trip.id)
-    console.log('trip_d',trip)
-
+    if(trip.id === CurrentTripDataService.getCurrentTripId()) return 
     marker_subject.setTripId(trip.id)
     TripSelectedSubject.set(TripSelectedSubject.EVENTS.IS_SELECTED,true)
     TripSelectedSubject.set(TripSelectedSubject.EVENTS.TRIP_ID,trip.id)

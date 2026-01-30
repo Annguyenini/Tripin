@@ -2,112 +2,95 @@ import React, { use, useEffect, useMemo, useState,useRef } from 'react'
 import MapboxGL from '@rnmapbox/maps'
 import {View} from 'react-native'
 import { HelpBarMap } from './help_bar_map';
-import CurrentTripDataService from '../../backend/storage/current_trip'
 import CoordinatesPointsLayout from './components/points';
-import { DATA_KEYS } from '../../backend/storage/keys/storage_keys';
 import AppFlow from '../../app-core/flow/app_flow';
 import ImageLabel from './components/image_label';
-import MarkerSubject from "./functions/marker_subject"
-
+import mapData from './map_data';
 MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN)
 export const MapBoxLayout =({})=>{
+    console.log( 'render')
+    const zoomRef = useRef(0)
+    const renderRef = useRef(false)
     const mapRef = useRef(null);
     const [userLock,setUserLock]=useState(false)
     const [isFollowingUser, setIsFollowingUser] = useState(true)
-    const[isDisplay,setIsDisplay]= useState(null)
-    const [zoomLevel,setZoomLevel] = useState(0)
-    const [currentDisplayTripId,setcurrentDisplayTripId]= useState(null)
+    // const isFollowingUser = useRef(true)
+    const [zoomLevel,setZoomLevel] = useState(13)
+    const {isDisplay,currentDisplayTripId,centerCoords,tripSelected} = mapData()
     const sendMapRenderSignal= async()=>{
+        if(renderRef.current)return
+        renderRef.current = true
         await AppFlow.onRenderMapSuccess()
+       
     }
-    useEffect(()=>{
-        const fetchIsOnATrip =async()=>{
-            const trip_status = CurrentTripDataService.getCurrentTripStatus()
-            setIsDisplay(trip_status)
-        }
-        const fetchTripId = ()=>{
-            const trip_id = CurrentTripDataService.getCurrentTripId()
-            console.log('trip_id',trip_id)
-            setcurrentDisplayTripId(trip_id)
-            MarkerSubject.setTripId(trip_id)
-        }
-        const updateTripStatus={
-            update(newState){
-                setIsDisplay(newState)
-            }
-        }
-        const updateTripId={
-            update(newTripId){
-                console.log('update')
-                setcurrentDisplayTripId(newTripId)
-            }
-        }
-        fetchTripId()
-        fetchIsOnATrip()
-        
-        CurrentTripDataService.attach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
-        CurrentTripDataService.attach(updateTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
-        MarkerSubject.attach(updateTripId,MarkerSubject.EVENTS.TRIP_ID)
-        return()=>{
-            CurrentTripDataService.detach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
-            CurrentTripDataService.detach(updateTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
-            MarkerSubject.detach(updateTripId,MarkerSubject.EVENTS.TRIP_ID)
 
-        }
-        
-    },[])
     const allowedZooms = [13, 15, 20, 21, 22];
 
     const zoomHandler = (e) => {
-    const zoom = Math.floor(e.properties.zoom);
-
-    if (allowedZooms.includes(zoom)) {
-        setZoomLevel(zoom);
-    }
+        const zoom = Math.floor(e.properties.zoom);
+        if(zoom === zoomRef.current) {
+            return
+        }
+        if (allowedZooms.includes(zoom)) {
+            setZoomLevel(zoom);
+        }
+        zoomRef.current=zoom
     };
+    // const setIsFollowingUser=(state)=>{
+    //     isFollowingUser.current = state
+    //     console.log(isFollowingUser.current)
+
+    // }
+    const moveTo =()=>{
+        mapRef.current?.flyTo(centerCoords, 1000); // 1000ms duration
+    }
+    // console.log(isDisplay,currentDisplayTripId,centerCoords)
     return(
         <View style={{flex:1}}> 
             
             <MapboxGL.MapView style ={{flex:1}}
-            ref={mapRef}
-            projection="globe"
-            scrollEnabled = {true}
-            compassEnabled ={true}
-            scaleBarEnabled ={true}
-            scaleBarPosition ={{top:1, right:8}}
-                heading={45}
-                pitch={45}
-            onDidFinishLoadingMap={async ()=>{
-                if(!userLock){
-                    setUserLock(true)
-                }
-                await sendMapRenderSignal()
+                ref={mapRef}
+                projection="globe"
+                scrollEnabled = {true}
+                compassEnabled ={true}
+                scaleBarEnabled ={true}
+                scaleBarPosition ={{top:1, right:8}}
+                    heading={45}
+                    pitch={45}
+                onDidFinishLoadingMap={async ()=>{
+                    // if(!userLock){
+                    //     setUserLock(true)
+                    // }
+                    await sendMapRenderSignal()
 
-                
-            }}
-            onMapIdle={()=>{
-                setIsFollowingUser(false)
-            }}
-            onCameraChanged={zoomHandler}
+                    
+                }}
+
+                onMapIdle={()=>{
+                    setIsFollowingUser(false)
+                }}
+                onCameraChanged={zoomHandler}
+            
             >   
             
             <MapboxGL.Camera 
-            followUserLocation={isFollowingUser}   // <-- key part
+            followUserLocation={isFollowingUser}  
             followUserMode="normal"
             followZoomLevel={13}
-            // centerCoordinate={[20, 20]} // lat 20 just looks nice
+            centerCoordinate={centerCoords? centerCoords :undefined} // lat 20 just looks nice
+            zoomLevel={centerCoords? 16:13}
             // followZoomLevel={zoomLevel}
             // animationMode="easeTo"
             // animationDuration={1}
             />
             <MapboxGL.UserLocation minDisplacement={2}/>
             
-            {isDisplay && <CoordinatesPointsLayout trip_id={currentDisplayTripId}></CoordinatesPointsLayout>}
-            {isDisplay && <ImageLabel trip_id={currentDisplayTripId} zoomLevel={zoomLevel}></ImageLabel>}
+            { (isDisplay||tripSelected)&&<CoordinatesPointsLayout trip_id={currentDisplayTripId}></CoordinatesPointsLayout>}
+            { (isDisplay||tripSelected)&&<ImageLabel trip_id={currentDisplayTripId} zoomLevel={zoomLevel}></ImageLabel>}
             
             </MapboxGL.MapView>
             
-            <HelpBarMap isFollowingUser={isFollowingUser} setIsFollowingUser={setIsFollowingUser}></HelpBarMap>
+            <HelpBarMap isFollowingUser={isFollowingUser} setIsFollowingUser={()=>setIsFollowingUser(true)}></HelpBarMap>
             
         </View>
     )

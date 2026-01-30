@@ -26,25 +26,20 @@ import { DATA_KEYS } from '../backend/storage/keys/storage_keys.js';
 
 
 export const MainScreen = () =>{
-
-  const [user_id, setUserId] = useState(null)
-  const [user_name, setUsername ] = useState(null)
-  const [display_name,setDisplayName] = useState(null)
+  console.log('render main')
+  const [user_id, setUserId] = useState(UserDataService.getUserId())
+  const [user_name, setUsername ] = useState(UserDataService.getUserName())
+  const [display_name,setDisplayName] = useState(UserDataService.getDisplayName())
+  const isUserDataReady = useRef(false)
+  // const user_id = useRef(null)
+  // const user_name =useRef(null)
+  // const display_name =useRef(null)
   const[show_profile_picker,set_show_profile_picker] =useState(false)
   const [state, setState] = useState(AppState.currentState)
-  const [CurrentTripStatus,setCurrentTripStatus]=useState(null)
+  const [CurrentTripStatus,setCurrentTripStatus]=useState(CurrenTripDataService.getCurrentTripStatus())
   const gpsTask = useRef(null)
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-      setUserId(UserDataService.getUserId())
-      setUsername(UserDataService.getUserName())
-      setDisplayName(UserDataService.getDisplayName())
-    
-      const getTripstatus =()=>{
-        setCurrentTripStatus(CurrenTripDataService.getCurrentTripStatus())
-      }
-      getTripstatus()
-      
       const update_status={
         update(newStatus){
           setCurrentTripStatus(newStatus)
@@ -71,6 +66,7 @@ export const MainScreen = () =>{
     }
     initGps()
     const getState = AppState.addEventListener('change' ,nextState=>{
+      if(state ===nextState) return
         setState(nextState)
         if(nextState ==='active'){
           if(!gpsTask.current){
@@ -103,12 +99,19 @@ export const MainScreen = () =>{
   const callAlbum =()=>{
     const res = navigate('Album')
   }
+  const RenderMap = useCallback(()=>{
+    return(<MapBoxLayout></MapBoxLayout>)
+  },[])
     return(
       
       <View style={styles.container}> 
       <LocationPermission></LocationPermission>
-      <MapBoxLayout style={{ height: '70%' }}></MapBoxLayout>
+      
+      {RenderMap()
+      }
+      {
       <UserDataBottomSheet  userId={user_id} userDisplayName = {display_name} set_show_profile_picker={set_show_profile_picker}/>
+      }
       <View style={footer.footerContainer}>
         <View style={footer.fotterrow}>
         <TouchableOpacity style={footer.fotterbutton}>

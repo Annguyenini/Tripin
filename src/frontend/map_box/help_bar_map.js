@@ -18,6 +18,7 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
     const [currentTripId, setCurrentTripId] =useState(null)
     const [isOnATrip,setIsOnATrip] = useState(null)
     const [tripSelectedDisplay,setTripSelectedDisplay] =useState(false)
+    const [isTripBoxDisplay,setIsTripBoxDisplay]=useState(false)
     useEffect(()=>{
         const update_state ={
             update(newState){
@@ -44,6 +45,7 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
             update(newState){
                 console.log('update',newState)
                 setTripSelectedDisplay(newState)
+                setIsTripBoxDisplay(newState)
             }
         }
         TripSelectedSubject.attach(update_trip_selected,TripSelectedSubject.EVENTS.IS_SELECTED)
@@ -59,13 +61,13 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
             {isOnATrip&&
             <>
             <CurrentTripBar ></CurrentTripBar> 
-            <CurrentTripBox isMinimize={tripSelectedDisplay}></CurrentTripBox>
+            <CurrentTripBox isMinimize={isTripBoxDisplay}></CurrentTripBox>
 
             </>
             }
             {
                 tripSelectedDisplay&&
-                <DisplayTripBox onHide={()=>setTripSelectedDisplay(false)}/>
+                <DisplayTripBox onHide={()=>setIsTripBoxDisplay(prev => prev === true ? false:true)} isFullDisplay={isTripBoxDisplay}/>
             }
             <TouchableOpacity style ={helpBarMapStyle.recenterButton} onPress={()=>{
                 setIsFollowingUser(true)

@@ -1,5 +1,5 @@
 
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,useRef } from 'react';
 import { AuthScreen} from './src/frontend/auth.js';
 import {MainScreen} from './src/frontend/mainscreen.js'
 import { NavigationContainer } from '@react-navigation/native';
@@ -32,15 +32,15 @@ const { width, height } = Dimensions.get('window');
 const Stack = createStackNavigator();
 
 export default function App() {
-
   const [loaded,setLoaded] = useState(false)
+  const authentication =useRef(false)
   const [font]=useFonts({
     mainfont: require('./assets/fonts/font2.otf'),
   });
-  const [authorization,setAuthorization]= useState(null)
     useEffect(() => {
       const checkToken = async () => {
         const status = await AppFlow.tokenAuthorization();
+        authentication.current = status
         setLoaded(true)
       };
       checkToken();
@@ -76,7 +76,7 @@ export default function App() {
             <Stack.Screen name ='Album' component={AlbumLayout} options={{headerShown: false}}/>
           </Stack.Navigator>
         </NavigationContainer>
-
+          
 
     {/* <AuthScreen/> */}
       {/* </ImageBackground>sas
@@ -94,7 +94,8 @@ function AuthLayout() {
       </ImageBackground>
   );
 }
-function MainLayout() {
+const MainLayout =()=> {
+  console.log('render1')
   return (
       <ImageBackground source={backgroundImage} style={mainScreenStyle.backgroundImage}>
         <Image source={logo} style={mainScreenStyle.logo} />
