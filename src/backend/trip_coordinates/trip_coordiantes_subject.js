@@ -19,6 +19,8 @@ class CoordinatesSubject {
     }
     initCoordinatesArray(array){
         this.watchArray = array
+        this.notify()
+
     }
     addCoordinateToArray(coords_object){
         if (!this.watchArray) this.watchArray =[];

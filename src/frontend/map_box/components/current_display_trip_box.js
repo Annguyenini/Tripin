@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {View,Image,Text,TouchableOpacity} from 'react-native'
 import TripSelectedSubject from "../functions/trip_selected_subject"
 import MarkerSubject from "../functions/marker_subject"
@@ -6,12 +6,17 @@ import {currentTripDisplayBoxStyle} from '../../../styles/function/trip_display_
 import TripDataService from '../../../backend/storage/trips'
 import TripHandler from "../../../app-core/flow/trip_handler"
 import TripCoordinateDatabase from "../../../backend/database/trip_coordinate_database"
+import CurrentTripDataService from '../../../backend/storage/current_trip'
+import TripCoordinateSubject from '../../../backend/trip_coordinates/trip_coordiantes_subject'
+import * as CoordinatesCal from '../../../backend/coordinates/coordinates_cal'
 const default_image = require('../../../../assets/icon.png')
-export const DisplayTripBox =({onHide})=>{
+export const DisplayTripBox =({isFullDisplay,onHide})=>{
     const[tripid,setTripid] = useState(TripSelectedSubject.get(TripSelectedSubject.EVENTS.TRIP_ID))
     const[tripData,setTripData] = useState(TripSelectedSubject.get(TripSelectedSubject.EVENTS.TRIP_DATA))
     const[tripDuration,setTripDuration] = useState({hours:0,minutes:0,seconds:0})
-    const[coordinates,setCoordinates] =useState(null)
+    const[coordinates,setCoordinates] =useState(TripCoordinateSubject.watchArray)
+    const[distance,setDistance] =useState({km:0,m:0})
+    const currentTripStatus = CurrentTripDataService.getCurrentTripStatus()
     useEffect(()=>{
         const update_tripid={
             update(newTripId){
@@ -23,11 +28,18 @@ export const DisplayTripBox =({onHide})=>{
                 setTripData(newTripData)
             }
         }
+        const update_trip_coords_array ={
+            update(newArray){
+                setCoordinates(newArray)
+            }
+        }
+        TripCoordinateSubject.attach(update_trip_coords_array)
         TripSelectedSubject.attach(update_tripid,TripSelectedSubject.EVENTS.TRIP_ID)
         TripSelectedSubject.attach(update_tripdata,TripSelectedSubject.EVENTS.TRIP_DATA)
 
 
         return () => {
+            TripCoordinateSubject.detach(update_trip_coords_array)
             TripSelectedSubject.detach(update_tripid,TripSelectedSubject.EVENTS.TRIP_ID)
             TripSelectedSubject.detach(update_tripdata,TripSelectedSubject.EVENTS.TRIP_DATA)
             
@@ -35,7 +47,6 @@ export const DisplayTripBox =({onHide})=>{
     },[])
     useEffect(()=>{
         const calDuration =()=>{
-            console.log('called')
             let dur 
             if(tripData.ended_time){
                 dur = tripData.ended_time - tripData.created_time
@@ -53,9 +64,17 @@ export const DisplayTripBox =({onHide})=>{
         calDuration()
 
     },[tripid])
-
-    useEffect(()=>{
-    })
+    const totalDistanceTravel = useMemo(()=>{
+        const filtedArray = [...coordinates.map((coord)=>{
+            return[coord.latitude,coord.longitude]
+        })]
+        const distance_m = CoordinatesCal.TotalDistanceTravel(filtedArray)
+        const km = distance_m / 1000
+        const km_floor = Math.floor(km)
+        const m = Math.floor((km - km_floor)*1000)
+        setDistance({km:km_floor,m:m})
+    },[coordinates,tripid])
+    console.log(distance)
     const onClose=()=>{
         TripSelectedSubject.set(TripSelectedSubject.EVENTS.IS_SELECTED, false)
         TripSelectedSubject.set(TripSelectedSubject.EVENTS.TRIP_ID, null)
@@ -63,11 +82,11 @@ export const DisplayTripBox =({onHide})=>{
 
     }
     if(!tripid) return null
-        console.log(tripDuration)
+        // console.log(tripDuration)
 
     return (
         <View style={currentTripDisplayBoxStyle.wrapper}>
-            <View style={currentTripDisplayBoxStyle.card}>
+            {isFullDisplay&&<View style={currentTripDisplayBoxStyle.card}>
               {/* Background layer */}
               <View style={currentTripDisplayBoxStyle.background} />
 
@@ -75,20 +94,28 @@ export const DisplayTripBox =({onHide})=>{
               <TouchableOpacity style={currentTripDisplayBoxStyle.arrowButton} onPress={onHide}>
                 <Text style={currentTripDisplayBoxStyle.arrowText}>→</Text>
               </TouchableOpacity>
-                <TouchableOpacity onPress={onClose}>
+                <TouchableOpacity onPress={onClose} style={currentTripDisplayBoxStyle.closeButton}>
                     <Text>X</Text>
                 </TouchableOpacity>
                 {/* Trip Name  */}
-                <Text>{tripData.trip_name}</Text>
+                <Text style ={currentTripDisplayBoxStyle.tripName}>{tripData.trip_name}</Text>
                 {/* trip image */}
                 <Image style ={currentTripDisplayBoxStyle.image}source={tripData.image ? {uri:tripData.image} :default_image}/>
                 {/* trip duration */}
-                <Text>Duration: {tripDuration.hours !== 0 ? tripDuration.hours +'h':''} 
+                <Text style={currentTripDisplayBoxStyle.infoText}>Duration: {tripDuration.hours !== 0 ? tripDuration.hours +'h':''} 
                     {tripDuration.minutes !== 0 ? tripDuration.minutes +'m':''} {tripDuration.seconds !== 0? tripDuration.seconds +'s':''}</Text>
-                
+                {/* trip Distance */}
                 {/* distance */}
-
-            </View>
+                <Text style={currentTripDisplayBoxStyle.infoText}>Total Distance: {distance.km !== 0 ? distance.km +'km':''} {distance.m !==0 ? distance.m +'m': ''}</Text>
+            </View>}
+            {
+                !isFullDisplay && 
+                <View style={currentTripDisplayBoxStyle.minimizecard}>
+                    <TouchableOpacity style={currentTripDisplayBoxStyle.minimizearrowButton} onPress={onHide}>
+                    <Text style={currentTripDisplayBoxStyle.arrowText}>←</Text>
+                </TouchableOpacity>
+                </View>
+            }
             </View>
     )
 }

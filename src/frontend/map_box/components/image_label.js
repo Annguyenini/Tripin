@@ -75,7 +75,6 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
     initArray()
     return () => TripAlbumSubject.detach(updateAssetsArray)
   }, [trip_id])
-
   const clusters = useMemo(()=>{
     return new Map([
       [13, computeCluster(currentAssetsArray,950)],
@@ -85,7 +84,6 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
       [22, computeCluster(currentAssetsArray,0.5)]
     ])
   },[currentAssetsArray])
-
 
   const currentCluster =useMemo(()=>{
     return(clusters.get(zoomLevel)??[])
