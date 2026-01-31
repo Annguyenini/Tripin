@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react"
 import {View,Image,Text,TouchableOpacity} from 'react-native'
 import TripSelectedSubject from "../functions/trip_selected_subject"
-import MarkerSubject from "../functions/marker_subject"
 import {currentTripDisplayBoxStyle} from '../../../styles/function/trip_display_box_style'
 import TripDataService from '../../../backend/storage/trips'
 import TripHandler from "../../../app-core/flow/trip_handler"
 import TripCoordinateDatabase from "../../../backend/database/trip_coordinate_database"
 import CurrentTripDataService from '../../../backend/storage/current_trip'
 import TripCoordinateSubject from '../../../backend/trip_coordinates/trip_coordiantes_subject'
+import TripDisplayObserver from '../functions/trip_display_observer'
 import * as CoordinatesCal from '../../../backend/coordinates/coordinates_cal'
 const default_image = require('../../../../assets/icon.png')
 export const DisplayTripBox =({isFullDisplay,onHide})=>{
@@ -65,10 +65,12 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
 
     },[tripid])
     const totalDistanceTravel = useMemo(()=>{
-        const filtedArray = [...coordinates.map((coord)=>{
+        // const filtedArray = [...coordinates.map((coord)=>{
+        //     return[coord.latitude,coord.longitude]
+        // })]
+        const distance_m = CoordinatesCal.TotalDistanceTravel([...coordinates.map((coord)=>{
             return[coord.latitude,coord.longitude]
-        })]
-        const distance_m = CoordinatesCal.TotalDistanceTravel(filtedArray)
+        })])
         const km = distance_m / 1000
         const km_floor = Math.floor(km)
         const m = Math.floor((km - km_floor)*1000)
@@ -77,8 +79,10 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
     console.log(distance)
     const onClose=()=>{
         TripSelectedSubject.set(TripSelectedSubject.EVENTS.IS_SELECTED, false)
-        TripSelectedSubject.set(TripSelectedSubject.EVENTS.TRIP_ID, null)
-        MarkerSubject.setTripIdDefault()
+        TripSelectedSubject.set(TripSelectedSubject.EVENTS.TRIP_ID, CurrentTripDataService.getCurrentTripId())
+        // set the display trip back to the current if it is
+        TripDisplayObserver.setTripState(false,CurrentTripDataService.getCurrentTripStatus(),
+    CurrentTripDataService.getCurrentTripData(),CurrentTripDataService.getCurrentTripId())
 
     }
     if(!tripid) return null

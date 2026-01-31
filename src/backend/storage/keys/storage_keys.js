@@ -1,4 +1,4 @@
-
+    
 export const STORAGE_KEYS={
     USER:'user',
     TRIPDATA:'trip_data',

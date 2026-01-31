@@ -1,21 +1,17 @@
 import { StyleSheet,TouchableOpacity,Image,Text,FlatList } from "react-native";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { tripCardsStyle } from "../../styles/function/tripcards";
-import marker_subject from "../map_box/functions/marker_subject";
 import trip_contents_handler from "../../app-core/flow/trip_contents_handler";
 import TripSelectedSubject from "../map_box/functions/trip_selected_subject";
+import TripDisplayObserver from "../map_box/functions/trip_display_observer";
 import CurrentTripDataService from '../../backend/storage/current_trip'
 const default_image = require('../../../assets/icon.png')
 
 export const TripCard = ({ trip }) => {
   const pressHandler = async (trip)=>{
     if(trip.id === CurrentTripDataService.getCurrentTripId()) return 
-    marker_subject.setTripId(trip.id)
-    TripSelectedSubject.set(TripSelectedSubject.EVENTS.IS_SELECTED,true)
-    TripSelectedSubject.set(TripSelectedSubject.EVENTS.TRIP_ID,trip.id)
-    TripSelectedSubject.set(TripSelectedSubject.EVENTS.TRIP_DATA,trip)
+    TripDisplayObserver.setTripState(true,false,trip,trip.id)
     await trip_contents_handler.requestTripCoordinatesHandler(trip.id)
-    
   }
   return (
     <TouchableOpacity

@@ -71,11 +71,16 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
             }
             <TouchableOpacity style ={helpBarMapStyle.recenterButton} onPress={()=>{
                 setIsFollowingUser(true)
-            }}>
-                
+                }}
+            >
                 <Image style ={helpBarMapStyle.icon} source={isFollowingUser? navigation_icon :navigation_outline_icon}/>
             </TouchableOpacity>
-
+            <TouchableOpacity style ={helpBarMapStyle.recenterButton} onPress={()=>{
+                setIsFollowingUser(true)
+                }}
+            >
+                <Image style ={helpBarMapStyle.icon} source={isFollowingUser? navigation_icon :navigation_outline_icon}/>
+            </TouchableOpacity>
         </View>
     )
 }

@@ -8,7 +8,7 @@ import { computeCluster } from '../../../backend/addition_functions/compute_clus
 import {imageLabelStyle} from '../../../styles/function/image_label'
 // figure how to re render the shit!!!!!!!!!
 const videoPauseIcon = require('../../../../assets/image/video_pause_icon.png')
-
+const image_icon = require('../../../../assets/image/gallery_icon.png')
 const RenderImageLable =({clusters,mapKey, onClick})=>{
   if(! clusters) return null
 

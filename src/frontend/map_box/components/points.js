@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import TripDataStorage from '../../../backend/trip_coordinates/current_trip_coordinate_service'
 import CoordinatesSubject from '../../../backend/trip_coordinates/trip_coordiantes_subject'
 const CoordinatesPointsLayout =({trip_id})=> {
+  console.log('point',trip_id)
   const [coordinates,setCoordinates] = useState([])
   const modifyIntoGeoJson =(object)=>{
     const modified = [...object.map((obj)=>{
@@ -51,7 +52,7 @@ const CoordinatesPointsLayout =({trip_id})=> {
 
     ],
   };
-
+    console.log(geoJson)
     return(
         <MapboxGL.ShapeSource id ='route' shape={geoJson}>
           <MapboxGL.LineLayer

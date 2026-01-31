@@ -33,4 +33,17 @@ export const imageLabelStyle = StyleSheet.create({
     borderRadius: 9,
 
   },
+  displayButton :{
+    backgroundColor: "#fff",
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 3,
+  },
 })

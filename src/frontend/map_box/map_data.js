@@ -7,64 +7,22 @@ import CoordinatesSubject from '../../backend/trip_coordinates/trip_coordiantes_
 import * as CoordinateCal from '../../backend/coordinates/coordinates_cal'
 const mapData = ()=>{
     const [currentDisplayTripId,setcurrentDisplayTripId]= useState(CurrentTripDataService.getCurrentTripId())
-    const [tripSelected,setTripSelected] = useState(false)
-    const [isDisplay,setIsDisplay]= useState(CurrentTripDataService.getCurrentTripStatus())
     const [tripSelectedCoordsArray,setTripSelectedCoordsArray] = useState([])
     useEffect(()=>{
-        // const fetchIsOnATrip =async()=>{
-        //     const trip_status = CurrentTripDataService.getCurrentTripStatus()
-        //     setIsDisplay(trip_status)
-        // }
-        // const fetchTripId = ()=>{
-        //     const trip_id = CurrentTripDataService.getCurrentTripId()
-        //     setcurrentDisplayTripId(trip_id)
-        //     MarkerSubject.setTripId(trip_id)
-        // }
-        const updateTripStatus={
-            update(newState){
-                setIsDisplay(newState)
-            }
-        }
         const updateTripId={
             update(newTripId){
                 setcurrentDisplayTripId(newTripId)
             }
         }
-        // fetchTripId()
-        // fetchIsOnATrip()
-        
-        CurrentTripDataService.attach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
+
         CurrentTripDataService.attach(updateTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
         MarkerSubject.attach(updateTripId,MarkerSubject.EVENTS.TRIP_ID)
         return()=>{
-            CurrentTripDataService.detach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
             CurrentTripDataService.detach(updateTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
             MarkerSubject.detach(updateTripId,MarkerSubject.EVENTS.TRIP_ID)
 
         }
         
-    },[])
-    useEffect(()=>{
-
-        const updateTripSelected={
-            update(newState){
-                if(!newState){
-                    setTripSelectedCoordsArray([])
-                }
-                setTripSelected(newState)
-            }
-        }
-        const updateTripSelectedCoordsArray={
-            update(newArray){
-                setTripSelectedCoordsArray(newArray)
-            }
-        }
-        TripSelectedSubject.attach(updateTripSelected,TripSelectedSubject.EVENTS.IS_SELECTED)
-        CoordinatesSubject.attach(updateTripSelectedCoordsArray)
-        return()=>{
-            TripSelectedSubject.detach(updateTripSelected,TripSelectedSubject.EVENTS.IS_SELECTED)
-            CoordinatesSubject.detach(updateTripSelectedCoordsArray)
-        }
     },[])
     useEffect(()=>{
 
@@ -86,6 +44,6 @@ const mapData = ()=>{
         const {latitude:new_lat,longitude:new_lon} = CoordinateCal.CoorFromDistance(latitude,longitude,130,270) 
         return  [new_lon,new_lat]
     },[currentDisplayTripId,tripSelectedCoordsArray])
-    return ({currentDisplayTripId,isDisplay,centerCoords,tripSelected})  
+    return ({centerCoords})  
 }
 export default mapData

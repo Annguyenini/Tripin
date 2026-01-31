@@ -6,6 +6,7 @@ import CoordinatesPointsLayout from './components/points';
 import AppFlow from '../../app-core/flow/app_flow';
 import ImageLabel from './components/image_label';
 import mapData from './map_data';
+import {Marker} from './components/makers'
 MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN)
 export const MapBoxLayout =({})=>{
     console.log( 'render')
@@ -16,7 +17,7 @@ export const MapBoxLayout =({})=>{
     const [isFollowingUser, setIsFollowingUser] = useState(true)
     // const isFollowingUser = useRef(true)
     const [zoomLevel,setZoomLevel] = useState(13)
-    const {isDisplay,currentDisplayTripId,centerCoords,tripSelected} = mapData()
+    const {centerCoords} = mapData()
     const sendMapRenderSignal= async()=>{
         if(renderRef.current)return
         renderRef.current = true
@@ -85,8 +86,9 @@ export const MapBoxLayout =({})=>{
             />
             <MapboxGL.UserLocation minDisplacement={2}/>
             
-            { (isDisplay||tripSelected)&&<CoordinatesPointsLayout trip_id={currentDisplayTripId}></CoordinatesPointsLayout>}
-            { (isDisplay||tripSelected)&&<ImageLabel trip_id={currentDisplayTripId} zoomLevel={zoomLevel}></ImageLabel>}
+            {/* { (isDisplay||tripSelected)&&<CoordinatesPointsLayout trip_id={currentDisplayTripId}></CoordinatesPointsLayout>}
+            { (isDisplay||tripSelected)&&<ImageLabel trip_id={currentDisplayTripId} zoomLevel={zoomLevel}></ImageLabel>} */}
+            <Marker zoomLevel={zoomLevel}></Marker>
             
             </MapboxGL.MapView>
             
