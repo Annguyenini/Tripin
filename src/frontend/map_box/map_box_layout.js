@@ -17,7 +17,7 @@ export const MapBoxLayout =({})=>{
     const [isFollowingUser, setIsFollowingUser] = useState(true)
     // const isFollowingUser = useRef(true)
     const [zoomLevel,setZoomLevel] = useState(13)
-    const {centerCoords} = mapData()
+    // const {centerCoords} = undefined
     const sendMapRenderSignal= async()=>{
         if(renderRef.current)return
         renderRef.current = true
@@ -42,9 +42,7 @@ export const MapBoxLayout =({})=>{
     //     console.log(isFollowingUser.current)
 
     // }
-    const moveTo =()=>{
-        mapRef.current?.flyTo(centerCoords, 1000); // 1000ms duration
-    }
+
     // console.log(isDisplay,currentDisplayTripId,centerCoords)
     return(
         <View style={{flex:1}}> 
@@ -78,8 +76,8 @@ export const MapBoxLayout =({})=>{
             followUserLocation={isFollowingUser}  
             followUserMode="normal"
             followZoomLevel={13}
-            centerCoordinate={centerCoords? centerCoords :undefined} // lat 20 just looks nice
-            zoomLevel={centerCoords? 16:13}
+            // centerCoordinate={centerCoords? centerCoords :undefined} // lat 20 just looks nice
+            // zoomLevel={centerCoords? 16:13}
             // followZoomLevel={zoomLevel}
             // animationMode="easeTo"
             // animationDuration={1}

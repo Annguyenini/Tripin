@@ -25,7 +25,7 @@ class CurrentDisplayCoordinateObserver extends(LocalStorage){
             time_stamp:coords_object.time_stamp
         }
         this.CoordsArray[trip_id].push(coords_object)
-        this.notify(this.GENERATE_KEY(trip_id,this.CoordsArray[trip_id]))
+        this.notify(this.GENERATE_KEY(trip_id),this.CoordsArray[trip_id])
     }
 }
 export default new CurrentDisplayCoordinateObserver()

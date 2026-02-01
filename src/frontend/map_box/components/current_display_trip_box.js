@@ -2,19 +2,20 @@ import { useEffect, useMemo, useState } from "react"
 import {View,Image,Text,TouchableOpacity} from 'react-native'
 import {currentTripDisplayBoxStyle} from '../../../styles/function/trip_display_box_style'
 import CurrentTripDataService from '../../../backend/storage/current_trip'
-import TripCoordinateSubject from '../../../backend/trip_coordinates/trip_coordiantes_subject'
+import CurrentDisplayCoordinateObserver from "../functions/current_display_coordinates_observer"
 import TripDisplayObserver from '../functions/trip_display_observer'
 import * as CoordinatesCal from '../../../backend/coordinates/coordinates_cal'
 const default_image = require('../../../../assets/icon.png')
 export const DisplayTripBox =({isFullDisplay,onHide})=>{
     const[tripData,setTripData] = useState(TripDisplayObserver.getTripNeedRender())
     const[tripDuration,setTripDuration] = useState({hours:0,minutes:0,seconds:0})
-    const[coordinates,setCoordinates] =useState(TripCoordinateSubject.watchArray)
+    const[coordinates,setCoordinates] =useState(CurrentDisplayCoordinateObserver.CoordsArray[tripData.trip_id])
     const[distance,setDistance] =useState({km:0,m:0})
     const currentTripStatus = CurrentTripDataService.getCurrentTripStatus()
     useEffect(()=>{
         const update_tripdata={
             update(newTripData){
+                console.log(newTripData)
                 setTripData(newTripData)
             }
         }
@@ -23,16 +24,17 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
                 setCoordinates(newArray)
             }
         }
-        TripCoordinateSubject.attach(update_trip_coords_array)
+        CurrentDisplayCoordinateObserver.attach(update_trip_coords_array,CurrentDisplayCoordinateObserver.GENERATE_KEY(tripData.trip_id))
         TripDisplayObserver.attach(update_tripdata,TripDisplayObserver.EVENTS)
 
 
         return () => {
-            TripCoordinateSubject.detach(update_trip_coords_array)
+            CurrentDisplayCoordinateObserver.detach(update_trip_coords_array,CurrentDisplayCoordinateObserver.GENERATE_KEY(tripData.trip_id))
             TripDisplayObserver.detach(update_tripdata,TripDisplayObserver.EVENTS)
             
         }
     },[])
+    if(!coordinates) return null
     useEffect(()=>{
         const calDuration =()=>{
             let dur 
