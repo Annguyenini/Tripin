@@ -6,15 +6,16 @@ import CurrentTripDataService from '../storage/current_trip'
 import * as Location from 'expo-location'
 import SqliteService from '../database/sqlite/sqlite';
 import TripContentsHandler from '../../app-core/flow/trip_contents_handler';
-import CoordinatesSubject from './trip_coordiantes_subject'
 import TripCoordinateDatabase from '../database/trip_coordinate_database';
 import TripDatabase from '../database/TripDatabaseService'
+import CurrentDisplayCoordinateObserver from '../../frontend/map_box/functions/current_display_coordinates_observer';
 class CurrentTripCoordinateService extends TripCoordinateDatabase{
 // storing trip coordinate to db
 
     constructor(){
         super()
         this.storage = []
+        this.isTimerStart = false
     }
 
     async init_new_trip(){
@@ -51,13 +52,33 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
             console.error (err)
         }
     }
-
+    startTimer(){
+        if(this.isTimerStart) return
+        this.isTimerStart =true
+        setTimeout(()=>{
+            console.log('start timer')
+            this.coordinatesStorageHandler()
+            this.isTimerStart = false
+        },30000)
+    }
+    async coordinatesStorageHandler(){
+        const temp_storage = [...this.storage] 
+        this.storage.length = 0
+        if (temp_storage.length ===0) return
+        const version =  await this.insert_into_DB(temp_storage)
+        
+        await TripDatabase.updateTripCorrdinateVersion(CurrentTripDataService.getCurrentTripId(),version)
+        
+        const send_coor = await TripContentsHandler.sendCoordinatesHandler(temp_storage,version)
+        // const request_con = await Trip.request_location_conditions()
+    }
     /**
      * 
      * @param {*} time - timestamp of an object
      * @param {*} trip_data_object - the object it self
      */
     async push (trip_data_object = null){
+        console.log('push')
         if (trip_data_object === null){
             const temp = await Location.getCurrentPositionAsync()
             const payload = {
@@ -76,18 +97,11 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
         console.assert(typeof(trip_data_object)==='object', 'trip data must be an object')
         console.assert(this.storage,"storage undefined")
         this.storage.push(trip_data_object);
-        CoordinatesSubject.addCoordinateToArray(trip_data_object)
+        CurrentDisplayCoordinateObserver.addCoorddinateToArray(CurrentTripDataService.getCurrentTripId(),trip_data_object)
+        this.startTimer()
         if(this.storage.length >=2){
             //using an temp 
-            const temp_storage = [...this.storage] 
-            this.storage.length = 0
-
-            const version =  await this.insert_into_DB(temp_storage)
-            
-            await TripDatabase.updateTripCorrdinateVersion(CurrentTripDataService.getCurrentTripId(),version)
-            
-            const send_coor = await TripContentsHandler.sendCoordinatesHandler(temp_storage,version)
-            // const request_con = await Trip.request_location_conditions()
+            this.coordinatesStorageHandler()
         }
 
     }

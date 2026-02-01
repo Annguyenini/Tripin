@@ -152,7 +152,6 @@ class TripHandler{
         const respond = await Trip.end_trip()
         if(!respond || respond.status!==200)return
         await CurrentTripDataService.resetCurrentTripData()
-        stop_task = await TripService.stopGPSWatch()
         console.assert(stop_task,'Task not stop')
         return true
     }   

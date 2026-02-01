@@ -116,7 +116,7 @@ class GPSTask {
         }
         catch(error){
             console.error('Faild to end test: ',error)
-            throw new ERROR ('FAILED TO END TASK')
+            throw new error ('FAILED TO END TASK')
         }
     }
 }

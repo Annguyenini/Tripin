@@ -1,51 +1,42 @@
-import { View } from "react-native"
-import {useState,useEffect} from'react'
-import { DATA_KEYS } from '../../../backend/storage/keys/storage_keys';
+import { TouchableOpacity, View,Image } from "react-native"
+import React, { useRef } from "react"
+import {useState,useEffect, useCallback} from'react'
 import CoordinatesPointsLayout from '../components/points';
 import ImageLabel from '../components/image_label';
-import CurrentTripDataService from '../../../backend/storage/current_trip'
-import MarkerSubject from "../functions/marker_subject"
-export const Marker =({})=>{
-    const[isDisplay,setIsDisplay]= useState(null)
-    const [currentDisplayTripId,setcurrentDisplayTripId]= useState(null)
-    
-    useEffect(()=>{
-            const fetchIsOnATrip =async()=>{
-                const trip_status = CurrentTripDataService.getCurrentTripStatus()
-                setIsDisplay(trip_status)
-            }
-            const fetchTripId = ()=>{
-                const trip_id = CurrentTripDataService.getCurrentTripId()
-                setcurrentDisplayTripId(trip_id)
-                MarkerSubject.setTripId(trip_id)
-            }
-            const updateTripStatus={
-                update(newState){
-                    setIsDisplay(newState)
-                }
-            }
-            const updateTripId={
-                update(newTripId){
-                    console.log('update',newTripId)
-                    setcurrentDisplayTripId(newTripId)
-                }
-            }
-            fetchTripId()
-            fetchIsOnATrip()
-            
-            CurrentTripDataService.attach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
-            MarkerSubject.attach(updateTripId,MarkerSubject.EVENTS.TRIP_ID)
-            return()=>{
-                CurrentTripDataService.detach(updateTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
-                MarkerSubject.dettach(updateTripId,MarkerSubject.EVENTS.TRIP_ID)
+import TripDisplayObserver from "../functions/trip_display_observer";
+const image_icon = require('../../../../assets/image/gallery_icon.png')
 
+export const Marker =({zoomLevel})=>{
+    const[currentDisplayTripData,setCurrentDisplayTripData]= useState(TripDisplayObserver.getTripNeedRender())
+    const currentTripId = useRef()
+    useEffect(()=>{
+            console.log('marker')
+            const update_current_display_trip={
+                update(new_data){
+                    console.log('update',new_data)
+                    setCurrentDisplayTripData(new_data)
+                }
+            }
+            TripDisplayObserver.attach(update_current_display_trip,TripDisplayObserver.EVENTS)            
+            return()=>{
+                TripDisplayObserver.detach(update_current_display_trip,TripDisplayObserver.EVENTS)            
             }
             
         },[])
+    // const RenderCoordiantes = (()=>{
+    //     return()
+
+    // },[currentDisplayTripId])
+
     return (
-        <View>
-            {isDisplay && <CoordinatesPointsLayout trip_id={currentDisplayTripId}></CoordinatesPointsLayout>}
-            {isDisplay && <ImageLabel trip_id={currentDisplayTripId} zoomLevel={zoomLevel}></ImageLabel>}
+        <View style={{flex:1}}>
+           
+
+            {currentDisplayTripData && <CoordinatesPointsLayout trip_id={currentDisplayTripData.trip_id ? currentDisplayTripData.trip_id : currentDisplayTripData.id}></CoordinatesPointsLayout>}
+            {currentDisplayTripData && <ImageLabel trip_id={currentDisplayTripData.trip_id ? currentDisplayTripData.trip_id : currentDisplayTripData.id} zoomLevel={zoomLevel}></ImageLabel>}
+         <Image source ={{uri:image_icon}}>
+
+            </Image>
         </View>
     )
 }

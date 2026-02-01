@@ -71,12 +71,6 @@ class CurrentTripDataService extends TripLocalDataStorage{
     }
 
 
-
-    async getCurrentTripDataFromLocal(user_id,trip_id){
-        const key = this.getTripKeyReady(user_id,trip_id)
-        return await this.getTripDataObjectFromLocal(key)
-    }
-
     async loadCurrentTripDataFromLocal(user_id,trip_id){
         const trip_data = await this.getCurrentTripDataFromLocal(user_id,trip_id)
         if(!trip_data) return false
@@ -100,15 +94,12 @@ class CurrentTripDataService extends TripLocalDataStorage{
         return this.getTripDataObjectFromLocal(this.item.get(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STORAGE_KEY))
     }
 
-    async setTripStatusToLocal(status){
-        /**
-         * status must be string
-         */
-        await this.saveTripDataToLocal(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,status)
-        const value = (status ==="true"?true:false);
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,value)
-        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,value)
+    async getCurrentTripDataFromLocal(user_id,trip_id){
+        const key = this.getTripKeyReady(user_id,trip_id)
+        return await this.getTripDataObjectFromLocal(key)
     }
+
+
     /**
      * 
      * @returns trip status 
@@ -148,7 +139,15 @@ class CurrentTripDataService extends TripLocalDataStorage{
         await this.deleteImageFromLocal(file_path)
     }
 
-
+    async setTripStatusToLocal(status){
+        /**
+         * status must be string
+         */
+        await this.saveTripDataToLocal(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,status)
+        const value = (status ==="true"?true:false);
+        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,value)
+        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,value)
+    }
 
 
 
@@ -166,10 +165,10 @@ class CurrentTripDataService extends TripLocalDataStorage{
      */
     async resetCurrentTripData(){
         await this.deleteTripImageCoverFromLocal()
-
         await this.deleteCurrentTripDataFromLocal()
         await this.setTripStatusToLocal('false')
         this._init_values()
+        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,null)
     }
 
 

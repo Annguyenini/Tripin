@@ -7,52 +7,48 @@ import CurrentTripDataService from '../../backend/storage/current_trip.js'
 // import TripDataService from '../../backend/storage/trip.js'
 // import {subject} from '../logics/observer.js';
 // import TripData from '../../app-core/local_data/local_trip_data.js'
-import { DATA_KEYS } from '../../backend/storage/keys/storage_keys.js'
-import AppFlow from '../../app-core/flow/app_flow.js'
 import {DisplayTripBox} from './components/current_display_trip_box'
-import TripSelectedSubject from './functions/trip_selected_subject'
+import TripDisplayObserver from './functions/trip_display_observer'
+import { DATA_KEYS } from '../../backend/storage/keys/storage_keys'
 export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
     const navigation_icon = require('../../../assets/image/navigation_notoutline_icon.png')
     const navigation_outline_icon = require('../../../assets/image/navigation_outline_icon.png')
-    const [currentTripName, setCurrentTripName] = useState(null)
-    const [currentTripId, setCurrentTripId] =useState(null)
     const [isOnATrip,setIsOnATrip] = useState(null)
-    const [tripSelectedDisplay,setTripSelectedDisplay] =useState(false)
+    const [isTripSelected,setIsTripSelected] =useState(false)
     const [isTripBoxDisplay,setIsTripBoxDisplay]=useState(false)
+    let current_trip_id = CurrentTripDataService.getCurrentTripId()
     useEffect(()=>{
-        const update_state ={
-            update(newState){
-            setIsOnATrip(newState)
-           }
-        
-        }
-        CurrentTripDataService.attach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
-        const fetch_trip_data =()=>{
-            setCurrentTripId(CurrentTripDataService.getCurrentTripId());
-            setCurrentTripName(CurrentTripDataService.getCurrentTripName());
-        }
-        const fetchTripStatus=async()=>{
-            const status = CurrentTripDataService.getCurrentTripStatus() 
-            setIsOnATrip(status)
-        }
-        const sendCurrentTripLayoutSignal = async()=>{
-            // await AppFlow.onRenderCurrentLayoutsSuccess()
-        }
-        fetchTripStatus()
-        fetch_trip_data()
-        sendCurrentTripLayoutSignal()
-        const update_trip_selected ={
-            update(newState){
-                console.log('update',newState)
-                setTripSelectedDisplay(newState)
-                setIsTripBoxDisplay(newState)
+        const updateNewDisplayTrip ={
+            update(newTripdata){
+                // when there are no trip need to render
+                if(!newTripdata){
+                    setIsOnATrip(false)
+                    setIsTripBoxDisplay(false)
+                    setIsTripBoxDisplay(false)
+                }
+                //when the current trip need to render
+                if(newTripdata.trip_id === current_trip_id){
+                    setIsOnATrip(true)
+                    setIsTripBoxDisplay(false)
+                    setIsTripSelected(false)
+                    return
+                }
+                setIsTripSelected(true)
+                setIsTripBoxDisplay(true)
             }
         }
-        TripSelectedSubject.attach(update_trip_selected,TripSelectedSubject.EVENTS.IS_SELECTED)
+        const updateCurrentTripId={
+            update(newTripid){
+                current_trip_id = newTripid
+            }
+        }
+        CurrentTripDataService.attach(updateCurrentTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
+        TripDisplayObserver.attach(updateNewDisplayTrip,TripDisplayObserver.EVENTS)
 
         return ()=>{
-            CurrentTripDataService.detach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
-            TripSelectedSubject.detach(update_trip_selected,TripSelectedSubject.EVENTS.IS_SELECTED)
+            TripDisplayObserver.detach(updateNewDisplayTrip,TripDisplayObserver.EVENTS)
+            CurrentTripDataService.detach(updateCurrentTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
+
         }
 
     },[])
@@ -66,16 +62,21 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
             </>
             }
             {
-                tripSelectedDisplay&&
+                isTripSelected&&
                 <DisplayTripBox onHide={()=>setIsTripBoxDisplay(prev => prev === true ? false:true)} isFullDisplay={isTripBoxDisplay}/>
             }
             <TouchableOpacity style ={helpBarMapStyle.recenterButton} onPress={()=>{
                 setIsFollowingUser(true)
-            }}>
-                
+                }}
+            >
                 <Image style ={helpBarMapStyle.icon} source={isFollowingUser? navigation_icon :navigation_outline_icon}/>
             </TouchableOpacity>
-
+            <TouchableOpacity style ={helpBarMapStyle.recenterButton} onPress={()=>{
+                setIsFollowingUser(true)
+                }}
+            >
+                <Image style ={helpBarMapStyle.icon} source={isFollowingUser? navigation_icon :navigation_outline_icon}/>
+            </TouchableOpacity>
         </View>
     )
 }

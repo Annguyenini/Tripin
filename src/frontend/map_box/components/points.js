@@ -1,7 +1,7 @@
 import  MapboxGL from '@rnmapbox/maps'
 import { useEffect, useState } from 'react';
 import TripDataStorage from '../../../backend/trip_coordinates/current_trip_coordinate_service'
-import CoordinatesSubject from '../../../backend/trip_coordinates/trip_coordiantes_subject'
+import CurrentDisplayCoordinateObserver from '../functions/current_display_coordinates_observer';
 const CoordinatesPointsLayout =({trip_id})=> {
   const [coordinates,setCoordinates] = useState([])
   const modifyIntoGeoJson =(object)=>{
@@ -14,7 +14,7 @@ const CoordinatesPointsLayout =({trip_id})=> {
   useEffect (()=>{
     const setUpWatchList =async()=>{
       const newCoords = await TripDataStorage.getAllCoordinatesFromTripId(trip_id)
-      CoordinatesSubject.initCoordinatesArray(newCoords)
+      CurrentDisplayCoordinateObserver.setDefaultCoordsArray(trip_id,newCoords)
       modifyIntoGeoJson(newCoords)
     }
     const updateWatchList ={
@@ -23,8 +23,8 @@ const CoordinatesPointsLayout =({trip_id})=> {
       }
     }
     setUpWatchList()
-    CoordinatesSubject.attach(updateWatchList)
-    return()=>CoordinatesSubject.detach(updateWatchList)
+    CurrentDisplayCoordinateObserver.attach(updateWatchList,CurrentDisplayCoordinateObserver.GENERATE_KEY(trip_id))
+    return()=>CurrentDisplayCoordinateObserver.detach(updateWatchList,CurrentDisplayCoordinateObserver.GENERATE_KEY(trip_id))
   },[trip_id])
     if(!coordinates) return
     const geoJson ={
@@ -51,7 +51,7 @@ const CoordinatesPointsLayout =({trip_id})=> {
 
     ],
   };
-
+    console.log(geoJson)
     return(
         <MapboxGL.ShapeSource id ='route' shape={geoJson}>
           <MapboxGL.LineLayer
