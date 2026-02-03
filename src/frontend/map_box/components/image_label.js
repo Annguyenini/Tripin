@@ -6,6 +6,7 @@ import Albumdb from '../../../backend/album/albumdb';
 import MediaViewCard from '../../albums/viewer_card';
 import { computeCluster } from '../../../backend/addition_functions/compute_cluster';
 import {imageLabelStyle} from '../../../styles/function/image_label'
+import TripContentHandler from '../../../app-core/flow/trip_contents_handler';
 // figure how to re render the shit!!!!!!!!!
 const videoPauseIcon = require('../../../../assets/image/video_pause_icon.png')
 const image_icon = require('../../../../assets/image/gallery_icon.png')
@@ -59,7 +60,14 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
 
   useEffect(() => {
     const initArray = async () => {
-      const albumArray = await Albumdb.getAssestsFromTripId(trip_id)
+      let albumArray 
+      const respond = await TripContentHandler.requestTripMediasHandler(trip_id)
+      if(respond.ok && respond.status === 304){
+        albumArray = await Albumdb.getAssestsFromTripId(trip_id)
+      }
+      else{
+        albumArray = respond.data.medias
+      }
       TripAlbumSubject.initAlbumArray(albumArray)
       setCurrentAssetsArray([...albumArray])
     }

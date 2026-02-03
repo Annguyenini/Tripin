@@ -19,10 +19,12 @@ class TripSync {
     }
 
     async process(){
-        if (this.syncing) return
+         if (this.syncing) return
         this.syncing = true
         while(this.pennding.length !==0){
             const item = this.pennding[0]
+            console.log(item)
+
             switch(item.itemType){
                 case 'coordinate':
                     await TripContentsService.send_coordinates(item.data,item.version)

@@ -1,7 +1,7 @@
 import TripContents from '../../backend/services/trip_contents'
 import LocationService from '../local_data/local_location_data'
 import locationDataService from '../../backend/storage/current_location_data_service'
-import TripSync from './sync/trip_sync'
+import TripSync from './sync/trip_contents_sync'
 import TripDatabaseService from '../../backend/database/TripDatabaseService'
 import TripCoordinateDatabase from '../../backend/database/trip_coordinate_database'
 class TripContentHandler{
@@ -66,8 +66,7 @@ class TripContentHandler{
         const version = await TripDatabaseService.getTripMediaVersion(trip_id)
         const respond = await TripContents.requestTripMedias(trip_id,version)
         if(!respond.ok) return false
-        if (respond.status!==200) return false
-        if(respond.status ===304) return true
+        return respond
 
     }
     async uploadTripImageHandler(version,trip_id,imageUri){

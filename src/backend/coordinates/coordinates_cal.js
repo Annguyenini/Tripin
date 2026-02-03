@@ -49,7 +49,6 @@ export const CoorFromDistance=(lat, lon, distance_m, bearing_deg)=>{
 }
 
 export const TotalDistanceTravel=(coords_array)=>{
-    console.log(coords_array)
     let total_m = 0
     let last_coor = null
     for (const coord of coords_array){

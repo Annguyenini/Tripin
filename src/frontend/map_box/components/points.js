@@ -51,7 +51,6 @@ const CoordinatesPointsLayout =({trip_id})=> {
 
     ],
   };
-    console.log(geoJson)
     return(
         <MapboxGL.ShapeSource id ='route' shape={geoJson}>
           <MapboxGL.LineLayer

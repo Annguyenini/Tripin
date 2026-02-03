@@ -8,25 +8,32 @@ import UserDataService from '../storage/user'
 import TokenService from './token_service'
 import EtagService from './etag/etag_service';
 import { ETAG_KEY } from './etag/etag_keys';
+import fetchFunction from './fetch_function';
 class Auth{
-
-    async requestLogin(username,password){
+    async authenticateToken(type,etag=null){
         try{
-            const respond = await fetch(API.LOGIN_API,{
-                method: "POST", 
-                headers:{"Content-Type":"application/json"}, 
-                body: JSON.stringify({
-                username:username,
-                password:password 
-            })});
-            console.log(respond.status)
-            return ({'ok':true,'status':respond.status,'data':await respond.json()})
+            console.assert(type === "access_token"&& type ==="refresh_token","Wrong token type")
+            const token = await TokenService.getToken(type)
+            console.assert(token == null,"token is null")
+            const headers={"Content-Type":"application/json",
+                    "Authorization": `Bearer ${token}`,
+                } 
+            if (etag){
+                headers['If-None-Match'] = etag
+            }
+            const respond = await fetch(API.LOGIN_TOKEN_API,{
+                method : "POST",
+                headers
+                
+            });
+            const data = await respond.json();
+            return({'ok':true,"message":data.message,"status": respond.status,"data":data})
         }
         catch(err){
-            console.error('Failed at request login: ',err)
-            return ({'ok':false})
-        }
-    } 
+            console.error('Failed at token auth: ',err)
+            return({'ok':false})
+        }    
+    }
     
     async requestNewAccessToken(){
         try{
@@ -54,76 +61,48 @@ class Auth{
         }
     }
     
-    async requestSignup(email,displayName,username,password){
-        try{
-            const respond = await fetch(API.SIGN_UP_API,{
-                method: "POST", 
-                headers:{"Content-Type":"application/json"}, 
-                body: JSON.stringify({
-                email:email,
-                displayName:displayName,
+    async requestLogin(username,password){
+        const respond = await fetchFunction(API.LOGIN_API,{
+            method :'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
                 username:username,
-                password:password 
-            })});
-            // console.assert(respond.status===200,"Error At request Sign Up back end!")
-            const data = await respond.json();
-            // console.assert(data!=undefined,"Data at request signup is undefined!")
+                password:password
+            })
+        })
+        return respond
+    } 
 
-            return {'ok':true,"status":respond.status,"message":data.message};
-        }
-        catch(err){
-            console.error('Failed at request signup: ',err)
-            return ({'ok':false})
-        }
+    async requestSignup(email,displayName,username,password){
+        const respond = await fetchFunction(API.SIGN_UP_API,{
+            method: "POST", 
+            headers:{"Content-Type":"application/json"}, 
+            body: JSON.stringify({
+            email:email,
+            displayName:displayName,
+            username:username,
+            password:password 
+            })
+        })
+        return respond
     }   
     async requestVerifycation (email, code){
         // console.log("called")
-        try{
-            const respond = await fetch(API.REQUEST_VERIFICATION_API,{
-                method:"POST",
-                headers:{"Content-Type":"application/json"},
-                body: JSON.stringify({
-                    email: email,
-                    code : code,
-                })
-            })
-            const data = respond.json()
-            return {'ok':true,"status":respond.status,"message":data.message}
-    
-        }
-        catch(err){
-            console.error('Failed at request Verification: ',err)
-            return({'ok':false})
-        }
+        const respond = await fetchFunction(API.REQUEST_VERIFICATION_API,{
+            method:'POST',
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({
+                email: email,
+                code : code,
+            })             
+        })
+        return respond
     }
     async requestLogout(){
         
 
     }
-    async authenticateToken(type,etag=null){
-        try{
-            console.assert(type === "access_token"&& type ==="refresh_token","Wrong token type")
-            const token = await TokenService.getToken(type)
-            console.assert(token == null,"token is null")
-            const headers={"Content-Type":"application/json",
-                    "Authorization": `Bearer ${token}`,
-                } 
-            if (etag){
-                headers['If-None-Match'] = etag
-            }
-            const respond = await fetch(API.LOGIN_TOKEN_API,{
-                method : "POST",
-                headers
-                
-            });
-            const data = await respond.json();
-            return({'ok':true,"message":data.message,"status": respond.status,"data":data})
-        }
-        catch(err){
-            console.error('Failed at token auth: ',err)
-            return({'ok':false,"message":data.message,"status": respond.status,"data":data})
-        }    
-    }
+    
     }
 
     const AuthService = new Auth
