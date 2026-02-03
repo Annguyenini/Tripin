@@ -5,6 +5,7 @@ container: {
     top: 110,        // distance from top
     right: 5,      // distance from right
     alignItems: "center",
+    
 
   },
   zoomContainer: {

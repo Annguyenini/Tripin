@@ -40,6 +40,7 @@ export default function App() {
     useEffect(() => {
       const checkToken = async () => {
         const status = await AppFlow.tokenAuthorization();
+        console.log(status)
         authentication.current = status
         setLoaded(true)
       };

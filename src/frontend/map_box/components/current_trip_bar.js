@@ -1,14 +1,12 @@
 import { TouchableOpacity, View,Image,Text,StyleSheet,AppState } from "react-native"
-
-import {curent_trip_styles} from '../../../styles/function/current_trip_header'
 import { use, useEffect, useMemo, useState } from "react";
 // import TripDataService from "../../../backend/storage/trip";
 import CurrentTripDataService from '../../../backend/storage/current_trip'
 // import TripData from "../../../app-core/local_data/local_trip_data";
 import TripHandler from "../../../app-core/flow/trip_handler";
-import { navigate } from "../../custom_function/navigationService";
 import LocationDataService from "../../../backend/storage/current_location_data_service";
 import { DATA_KEYS } from "../../../backend/storage/keys/storage_keys";
+import TripDisplayObserver from "../functions/trip_display_observer";
 export const CurrentTripBar=()=>{
 
   const[onFullMode, setOnFullMode]=useState(false)
@@ -22,9 +20,12 @@ export const CurrentTripBar=()=>{
   
   const end_trip =async()=>{
     const status =await TripHandler.endTripHandler();
-    if (status){
-      CurrentTripDataService.setTripStatusToLocal('false')
+    if (!status){
+      
     }
+    await CurrentTripDataService.setTripStatusToLocal('false')
+    await CurrentTripDataService.resetCurrentTripData()
+  
   }
 
   useEffect(()=>{

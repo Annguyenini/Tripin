@@ -13,6 +13,7 @@ import {TripCard } from "./custom_components/trip_label.js";
 import { tripCardsStyle } from "../styles/function/tripcards.js";
 import AppFlow from "../app-core/flow/app_flow.js";
 import { TestScreen } from "../test_screen.js";
+import TripDisplayObserver from "./map_box/functions/trip_display_observer.js";
 const default_user_image = require('../../assets/image/profile_icon.png')
 export const UserDataBottomSheet = ({ 
   set_show_profile_picker,
@@ -60,16 +61,22 @@ export const UserDataBottomSheet = ({
           setTrips(trips)
         }
       }
+      // const update_snapPoint={
+      //   update(data){
+      //     bottomSheetRef.current === 0 
+      //   }
+      // }
 
       CurrentTripDataService.attach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
       TripDataService.attach(update_trips,DATA_KEYS.TRIP.ALL_TRIP_LIST)
       UserDataService.attach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
-
+      // TripDisplayObserver.attach(update_snapPoint,TripDisplayObserver.EVENTS)
       callbackRenderSuccessfully()
       return ()=>{
         CurrentTripDataService.detach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
         TripDataService.detach(update_trips,DATA_KEYS.TRIP.ALL_TRIP_LIST)
         UserDataService.detach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
+        // TripDisplayObserver.detach(update_snapPoint,TripDisplayObserver.EVENTS)
 
       }
 

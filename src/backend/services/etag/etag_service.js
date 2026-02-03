@@ -1,5 +1,5 @@
 import LocalStorage from "../../storage/base/localStorage";
-// import { ETAG_KEY } from "./etag_keys";
+import { ETAG_KEY } from "./etag_keys";
 class EtagService extends LocalStorage{
     constructor(){
         super()

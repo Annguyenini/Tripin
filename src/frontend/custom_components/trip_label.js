@@ -4,14 +4,17 @@ import { tripCardsStyle } from "../../styles/function/tripcards";
 import trip_contents_handler from "../../app-core/flow/trip_contents_handler";
 import TripDisplayObserver from "../map_box/functions/trip_display_observer";
 import CurrentTripDataService from '../../backend/storage/current_trip'
+import CurrentDisplayTripMediaObserver from "../map_box/functions/current_display_media_observer";
+import Albumdb from "../../backend/album/albumdb";
 const default_image = require('../../../assets/icon.png')
 
 export const TripCard = ({ trip }) => {
   const pressHandler = async (trip)=>{
     if(trip.id === CurrentTripDataService.getCurrentTripId()) return 
+    await trip_contents_handler.requestTripCoordinatesHandler(trip.id)
     TripDisplayObserver.setTripSelected(trip)
     console.log(trip)
-    await trip_contents_handler.requestTripCoordinatesHandler(trip.id)
+    return
   }
   return (
     <TouchableOpacity

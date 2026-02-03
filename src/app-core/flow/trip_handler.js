@@ -150,9 +150,8 @@ class TripHandler{
     // currently depend on server
     async endTripHandler(){
         const respond = await Trip.end_trip()
-        if(!respond || respond.status!==200)return
+        if(!respond.ok || respond.status!==200)return false
         await CurrentTripDataService.resetCurrentTripData()
-        console.assert(stop_task,'Task not stop')
         return true
     }   
     

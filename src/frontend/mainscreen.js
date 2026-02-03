@@ -59,6 +59,7 @@ export const MainScreen = () =>{
     }
     backgroundGPSTask()
   },[CurrentTripStatus])
+  
   useEffect(()=>{
 
     const initGps= async()=>{
@@ -66,7 +67,7 @@ export const MainScreen = () =>{
     }
     initGps()
     const getState = AppState.addEventListener('change' ,nextState=>{
-      if(state ===nextState) return
+      // if(state ===nextState) return
         setState(nextState)
         if(nextState ==='active'){
           if(!gpsTask.current){

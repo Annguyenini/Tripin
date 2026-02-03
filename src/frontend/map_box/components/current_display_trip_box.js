@@ -9,7 +9,7 @@ const default_image = require('../../../../assets/icon.png')
 export const DisplayTripBox =({isFullDisplay,onHide})=>{
     const[tripData,setTripData] = useState(TripDisplayObserver.getTripNeedRender())
     const[tripDuration,setTripDuration] = useState({hours:0,minutes:0,seconds:0})
-    const[coordinates,setCoordinates] =useState(CurrentDisplayCoordinateObserver.CoordsArray[tripData.trip_id])
+    const[coordinates,setCoordinates] =useState(CurrentDisplayCoordinateObserver.CoordsArray[tripData.trip_id] ?CurrentDisplayCoordinateObserver.CoordsArray[tripData.trip_id] :[] )
     const[distance,setDistance] =useState({km:0,m:0})
     const currentTripStatus = CurrentTripDataService.getCurrentTripStatus()
     useEffect(()=>{
@@ -21,7 +21,7 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
         }
         const update_trip_coords_array ={
             update(newArray){
-                setCoordinates(newArray)
+                setCoordinates(newArray ? newArray : [])
             }
         }
         CurrentDisplayCoordinateObserver.attach(update_trip_coords_array,CurrentDisplayCoordinateObserver.GENERATE_KEY(tripData.trip_id))
@@ -34,7 +34,6 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
             
         }
     },[])
-    if(!coordinates) return null
     useEffect(()=>{
         const calDuration =()=>{
             let dur 
@@ -54,6 +53,7 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
         calDuration()
 
     },[tripData])
+
     const totalDistanceTravel = useMemo(()=>{
         // const filtedArray = [...coordinates.map((coord)=>{
         //     return[coord.latitude,coord.longitude]
@@ -67,13 +67,13 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
         setDistance({km:km_floor,m:m})
     },[coordinates,tripData])
     console.log(distance)
+    if(!coordinates) return null
+    if(!tripData) return null
 
     const onClose=()=>{
         TripDisplayObserver.deleteTripSelected()
 
     }
-    if(!tripData) return null
-        // console.log(tripDuration)
 
     return (
         <View style={currentTripDisplayBoxStyle.wrapper}>
