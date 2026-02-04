@@ -7,6 +7,7 @@ import UserDataService from '../../backend/storage/user'
 import EtagService from '../../backend/services/etag/etag_service'
 import { ETAG_KEY ,GENERATE_TRIP_ETAG_KEY} from '../../backend/services/etag/etag_keys'
 import TripDatabaseService from '../../backend/database/TripDatabaseService'
+import OfflineSyncManager from './sync/offline_sync_manager'
 class TripHandler{
     /**
      * 
@@ -150,7 +151,16 @@ class TripHandler{
     // currently depend on server
     async endTripHandler(){
         const respond = await Trip.end_trip()
-        if(!respond.ok || respond.status!==200)return false
+        if(!respond.ok || respond.status!==200){
+            OfflineSyncManager.pushEventToQueue(
+                OfflineSyncManager.getSyncObjectReady(
+                    OfflineSyncManager.EVENTS.END_TRIP,
+                    {
+                        trip_id:CurrentTripDataService.getCurrentTripId()
+                    },
+                    Date.now()
+                ))
+        }
         await CurrentTripDataService.resetCurrentTripData()
         return true
     }   

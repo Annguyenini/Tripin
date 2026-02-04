@@ -6,13 +6,11 @@ class TripAlbumSubject {
         this.observers =[]
     }
     attach(observer){
-        console.log('attach111')
         if (!this.observers) this.observers =[];
         if(this.observers.find(obs => obs ===observer)) return 
         this.observers.push(observer)
     }
     detach(observer){
-        console.log('detach111')
         this.observers = this.observers.filter(obs =>obs !==observer)
     }
     notify(){
@@ -24,16 +22,11 @@ class TripAlbumSubject {
         this.watchArray = array
     }
     addAssetIntoArray(data_object){
-        console.log('add',data_object)
         this.watchArray.push(data_object)
         this.notify()
     }
 
-    initAlbumObject(array){
-        for (const item of array){
-            const gridX = item
-        }
-    }
+    
     
 }
 export default new TripAlbumSubject()

@@ -8,7 +8,15 @@ class OfflineSyncManager {
             END_TRIP : 'end_trip',
         }
         NetworkObserver.attach(NetworkObserver.EVENTS.IS_SERVER_REACHABLE)
+        this.syncing = false
     }
+    /**
+     * get object ready to push to queue
+     * @param {*} event 
+     * @param {*} data_object 
+     * @param {*} create_time 
+     * @returns 
+     */
     getSyncObjectReady(event,data_object,create_time){
         return {
             event :event,
@@ -16,6 +24,10 @@ class OfflineSyncManager {
             create_time
         }
     }
+    /**
+     * push to the sync queue
+     * @param {*} data_object 
+     */
     pushEventToQueue(data_object){
         this.push(data_object)
         
@@ -27,7 +39,10 @@ class OfflineSyncManager {
         }
         return
     }
+    // process offlinep sync
     async processSync(){
+        if(this.syncing) return
+        this.syncing =true
         for(const event of this.requestQueue){
             let respond
             switch (event.event){
@@ -47,6 +62,7 @@ class OfflineSyncManager {
             }
             this.requestQueue.unshift()
         }   
+        this.syncing =false
         return
             
     }

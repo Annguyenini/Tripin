@@ -1,7 +1,8 @@
 import  MapboxGL from '@rnmapbox/maps'
 import { useEffect, useState,useMemo,useCallback } from 'react';
 import {View,Image, TouchableOpacity,Text} from'react-native'
-import TripAlbumSubject from '../../../backend/trip_album/trip_album_subject';
+// import TripAlbumSubject from '../../../backend/trip_album/trip_album_subject';
+import CurrentDisplayTripMediaObserver from '../functions/current_display_media_observer';
 import Albumdb from '../../../backend/album/albumdb';
 import MediaViewCard from '../../albums/viewer_card';
 import { computeCluster } from '../../../backend/addition_functions/compute_cluster';
@@ -11,6 +12,7 @@ import TripContentHandler from '../../../app-core/flow/trip_contents_handler';
 const videoPauseIcon = require('../../../../assets/image/video_pause_icon.png')
 const image_icon = require('../../../../assets/image/gallery_icon.png')
 const RenderImageLable =({clusters,mapKey, onClick})=>{
+  console.log(clusters)
   if(! clusters) return null
 
   return (
@@ -25,7 +27,7 @@ const RenderImageLable =({clusters,mapKey, onClick})=>{
           <TouchableOpacity onPress={()=>onClick(cluster.members[0],cluster.cluster_id)}>
             <View style={{ width: 50, height: 50 }}>
               <Image
-                source={{ uri: cluster.members[0].library_media_path }}
+                source={ cluster.members[0].library_media_path ?{uri: cluster.members[0].library_media_path} : {uri:cluster.members[0].key} }
                 style={{ width: 50, height: 50, borderRadius: 15 }}
                 resizeMode="cover"
               />
@@ -60,16 +62,25 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
 
   useEffect(() => {
     const initArray = async () => {
-      let albumArray 
-      const respond = await TripContentHandler.requestTripMediasHandler(trip_id)
-      if(respond.ok && respond.status === 304){
-        albumArray = await Albumdb.getAssestsFromTripId(trip_id)
+      try{
+        let albumArray 
+        const respond = await TripContentHandler.requestTripMediasHandler(trip_id)
+        if(respond.ok && respond.status === 304){
+          albumArray = await Albumdb.getAssestsFromTripId(trip_id)
+        }
+        else{
+          const tempalbumArray = respond.data.medias
+          albumArray =[...tempalbumArray.map((item)=>{
+            return{uri:item.key,...item}
+          })]
+        }
+        console.log(albumArray)
+        CurrentDisplayTripMediaObserver.setDefaultArray(trip_id,albumArray)      // TripAlbumSubject.initAlbumArray(albumArray)
+        setCurrentAssetsArray([...albumArray])
       }
-      else{
-        albumArray = respond.data.medias
+      catch(err){
+        console.error(err)
       }
-      TripAlbumSubject.initAlbumArray(albumArray)
-      setCurrentAssetsArray([...albumArray])
     }
     
     const updateAssetsArray = {
@@ -78,10 +89,9 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
         setMapKey(prev => prev + 1) 
       }
     }
-    
-    TripAlbumSubject.attach(updateAssetsArray)
+    CurrentDisplayTripMediaObserver.attach(updateAssetsArray,CurrentDisplayTripMediaObserver.GENERATE_KEY(trip_id))    
     initArray()
-    return () => TripAlbumSubject.detach(updateAssetsArray)
+    return () => CurrentDisplayTripMediaObserver.detach(updateAssetsArray,CurrentDisplayTripMediaObserver.GENERATE_KEY(trip_id))    
   }, [trip_id])
   const clusters = useMemo(()=>{
     return new Map([
@@ -104,7 +114,7 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
     setVisible(true)
     setCurrentDisplayCluster(currentCluster[cluster_id].members)
   }
-
+  console.log('cluster',currentDisplayCluster)
   return (
     <View key={mapKey}> 
       <RenderImageLable clusters={currentCluster} mapKey={mapKey} onClick={labelDisplayHandler}></RenderImageLable>
