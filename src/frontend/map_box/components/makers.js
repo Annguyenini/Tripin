@@ -4,9 +4,10 @@ import {useState,useEffect, useCallback} from'react'
 import CoordinatesPointsLayout from '../components/points';
 import ImageLabel from '../components/image_label';
 import TripDisplayObserver from "../functions/trip_display_observer";
+import MarkerManager from './marker_manager'
 const image_icon = require('../../../../assets/image/gallery_icon.png')
 
-export const Marker =({zoomLevel})=>{
+export const Marker =({zoomLevel, isDisplayImageMaker, isCoordsMarkerDisplay})=>{
     const[currentDisplayTripData,setCurrentDisplayTripData]= useState(TripDisplayObserver.getTripNeedRender())
     const currentTripId = useRef()
     useEffect(()=>{
@@ -29,14 +30,13 @@ export const Marker =({zoomLevel})=>{
     // },[currentDisplayTripId])
 
     return (
-        <View style={{flex:1}}>
+        <View>
            
 
-            {currentDisplayTripData && <CoordinatesPointsLayout trip_id={currentDisplayTripData.trip_id ? currentDisplayTripData.trip_id : currentDisplayTripData.id}></CoordinatesPointsLayout>}
-            {currentDisplayTripData && <ImageLabel trip_id={currentDisplayTripData.trip_id ? currentDisplayTripData.trip_id : currentDisplayTripData.id} zoomLevel={zoomLevel}></ImageLabel>}
-         <Image source ={{uri:image_icon}}>
-
-            </Image>
+            {currentDisplayTripData && isCoordsMarkerDisplay&&<CoordinatesPointsLayout trip_id={currentDisplayTripData.trip_id ? currentDisplayTripData.trip_id : currentDisplayTripData.id}></CoordinatesPointsLayout>}
+            {currentDisplayTripData && isDisplayImageMaker&& <ImageLabel trip_id={currentDisplayTripData.trip_id ? currentDisplayTripData.trip_id : currentDisplayTripData.id} zoomLevel={zoomLevel}></ImageLabel>}
+         {/* <Image source ={{uri:image_icon}}>
+            </Image> */}
         </View>
     )
 }

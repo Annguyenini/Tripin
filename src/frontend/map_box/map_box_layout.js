@@ -1,4 +1,4 @@
-import React, { use, useEffect, useMemo, useState,useRef } from 'react'
+import React, { use, useEffect, useMemo, useState,useRef, useCallback } from 'react'
 import MapboxGL from '@rnmapbox/maps'
 import {View} from 'react-native'
 import { HelpBarMap } from './help_bar_map';
@@ -7,9 +7,12 @@ import AppFlow from '../../app-core/flow/app_flow';
 import ImageLabel from './components/image_label';
 import mapData from './map_data';
 import {Marker} from './components/makers'
+import MarkerManager from './components/marker_manager';
 MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN)
 export const MapBoxLayout =({})=>{
     console.log( 'render')
+    const [isImageMarkerDisplay,setIsImageMarkerDisplay] = useState(true)
+    const [isCoordsMarkerDisplay,setIsCoordsMarkerDisplay] = useState(true)
     const zoomRef = useRef(0)
     const renderRef = useRef(false)
     const mapRef = useRef(null);
@@ -86,10 +89,11 @@ export const MapBoxLayout =({})=>{
             
             {/* { (isDisplay||tripSelected)&&<CoordinatesPointsLayout trip_id={currentDisplayTripId}></CoordinatesPointsLayout>}
             { (isDisplay||tripSelected)&&<ImageLabel trip_id={currentDisplayTripId} zoomLevel={zoomLevel}></ImageLabel>} */}
-            <Marker zoomLevel={zoomLevel}></Marker>
+            <Marker zoomLevel={zoomLevel} isDisplayImageMaker={isImageMarkerDisplay} isCoordsMarkerDisplay={isCoordsMarkerDisplay}></Marker>
             
             </MapboxGL.MapView>
-            
+            <MarkerManager imageMarkerDisplay={isImageMarkerDisplay} setIsImageMarkerDisplay={setIsImageMarkerDisplay} isCoordsMarkerDisplay ={isCoordsMarkerDisplay} setIsCoordsMarkerDisplay={setIsCoordsMarkerDisplay}></MarkerManager>
+
             <HelpBarMap isFollowingUser={isFollowingUser} setIsFollowingUser={()=>setIsFollowingUser(true)}></HelpBarMap>
             
         </View>

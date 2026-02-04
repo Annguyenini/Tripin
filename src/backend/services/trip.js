@@ -4,8 +4,7 @@ import * as API from '../../config/config_api'
 import CurrentTripDataService from '../../backend/storage/current_trip'
 import EtagService from '../services/etag/etag_service';
 import { ETAG_KEY, GENERATE_TRIP_ETAG_KEY } from '../services/etag/etag_keys';
-import OfflineSyncManager from '../../app-core/flow/sync/offline_sync_manager';
-import NetworkObserver from '../../app-core/flow/sync/network_observer';
+// mport NetworkObserver from '../../app-core/flow/sync/network_observer';
 import fetchFunction from './fetch_function';
 class Trip{
 
@@ -67,7 +66,7 @@ class Trip{
         if (etag){
             headers['If-None-Match'] = etag
         }
-        const respond = await fetch(API.REQUEST_TRIP_DATA,{
+        const respond = await fetchFunction(API.REQUEST_TRIP_DATA,{
             method :'POST',
             headers:headers,
             body:JSON.stringify({
@@ -82,12 +81,11 @@ class Trip{
         const etag =  await EtagService.getEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST)
         const headers = {
             'Content-Type':'application/json',
-            'Authorization':`Bearer ${token}`
         }
         if (etag){
             headers['If-None-Match']=etag
         }
-        const respond = fetchFunction(API.REQUEST_TRIPS_DATA,{
+        const respond = await fetchFunction(API.REQUEST_TRIPS_DATA,{
             method :'GET',
             headers:headers
         })

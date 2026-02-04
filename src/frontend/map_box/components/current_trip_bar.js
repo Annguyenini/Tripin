@@ -7,6 +7,7 @@ import TripHandler from "../../../app-core/flow/trip_handler";
 import LocationDataService from "../../../backend/storage/current_location_data_service";
 import { DATA_KEYS } from "../../../backend/storage/keys/storage_keys";
 import TripDisplayObserver from "../functions/trip_display_observer";
+import OfflineSyncManager from "../../../app-core/flow/sync/offline_sync_manager";
 export const CurrentTripBar=()=>{
 
   const[onFullMode, setOnFullMode]=useState(false)
@@ -20,9 +21,6 @@ export const CurrentTripBar=()=>{
   
   const end_trip =async()=>{
     const status =await TripHandler.endTripHandler();
-    if (!status){
-      
-    }
     await CurrentTripDataService.setTripStatusToLocal('false')
     await CurrentTripDataService.resetCurrentTripData()
   

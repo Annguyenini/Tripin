@@ -10,6 +10,7 @@ import CurrentTripDataService from '../../backend/storage/current_trip.js'
 import {DisplayTripBox} from './components/current_display_trip_box'
 import TripDisplayObserver from './functions/trip_display_observer'
 import { DATA_KEYS } from '../../backend/storage/keys/storage_keys'
+import MarkerManager from './components/marker_manager'
 export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
     const navigation_icon = require('../../../assets/image/navigation_notoutline_icon.png')
     const navigation_outline_icon = require('../../../assets/image/navigation_outline_icon.png')
@@ -65,12 +66,6 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
                 isTripSelected&&
                 <DisplayTripBox onHide={()=>setIsTripBoxDisplay(prev => prev === true ? false:true)} isFullDisplay={isTripBoxDisplay}/>
             }
-            <TouchableOpacity style ={helpBarMapStyle.recenterButton} onPress={()=>{
-                setIsFollowingUser(true)
-                }}
-            >
-                <Image style ={helpBarMapStyle.icon} source={isFollowingUser? navigation_icon :navigation_outline_icon}/>
-            </TouchableOpacity>
             <TouchableOpacity style ={helpBarMapStyle.recenterButton} onPress={()=>{
                 setIsFollowingUser(true)
                 }}

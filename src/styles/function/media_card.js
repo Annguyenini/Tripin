@@ -104,12 +104,12 @@ export const mediaCardStyle=StyleSheet.create
     marginBottom: 20,
     textAlign: 'center',
   },
-  image:{
-
-    width:'100%',
-    height: '100%', 
-    borderRadius: 10
-  },
+image: {
+  width: '100%',
+  height:'100%',
+  // aspectRatio: 1,   // 👈 magic
+  borderRadius: 10,
+},
   video :{
        width:'100%',
     height: '100%',

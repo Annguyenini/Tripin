@@ -6,8 +6,9 @@ import TripContentHandler from '../../app-core/flow/trip_contents_handler';
 import TripDataStorage from '../trip_coordinates/current_trip_coordinate_service'
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import Albumdb from '../album/albumdb';
-import trip_album_subject from '../trip_album/trip_album_subject';
-import TripDatabaseService from '../database/TripDatabaseService';
+// import trip_album_subject from '../trip_album/trip_album_subject';
+// import TripDatabaseService from '../database/TripDatabaseService';
+import CurrentDisplayTripMediaObserver from '../../frontend/map_box/functions/current_display_media_observer';
 class CameraService{
     constructor(){
         this.album_name = "Tripin_album";
@@ -66,12 +67,14 @@ class CameraService{
     async saveImagehandler(photoUri){
         let asset
         let version
+        let asset_object
         try{
             asset = await this.saveMediaToLocalAlbum(photoUri)
             version = await Albumdb.addMediaIntoDB(asset.mediaType,photoUri,asset.uri,asset.creationTime)
-            const asset_object = await Albumdb.getAlbumAssetObjectReady(asset)
+            asset_object = await Albumdb.getAlbumAssetObjectReady(asset)
             Albumdb.addToAlbumArray(asset_object)
-            trip_album_subject.addAssetIntoArray(asset_object)
+            // trip_album_subject.addAssetIntoArray(asset_object)
+
         }
         catch(err){
             console.error('Failed to save iamge to local db')
@@ -81,6 +84,7 @@ class CameraService{
             try{
                 TripContentHandler.uploadTripImageHandler(version,trip_id,photoUri)
                 TripDataStorage.push()
+                CurrentDisplayTripMediaObserver.addAssetIntoArray(trip_id,asset_object)
             }
             catch(err){
                 console.error(err)
@@ -91,12 +95,13 @@ class CameraService{
     async sendVideoHandler(videoUri){        
         let video_asset
         let video_version
+        let asset_object
         try{
             video_asset = await this.saveMediaToLocalAlbum(videoUri)
             video_version = await Albumdb.addMediaIntoDB(video_asset.mediaType,videoUri,video_asset.uri,video_asset.creationTime)
-            const asset_object = await Albumdb.getAlbumAssetObjectReady(video_asset)
+            asset_object = await Albumdb.getAlbumAssetObjectReady(video_asset)
             Albumdb.addToAlbumArray(asset_object)
-            trip_album_subject.addAssetIntoArray(asset_object)
+            // trip_album_subject.addAssetIntoArray(asset_object)
         }
         catch(err){
             console.error('Failed to save video to local db',err)
@@ -107,6 +112,7 @@ class CameraService{
                 const trip_id = CurrentTripDataService.getCurrentTripId()
                 TripContentHandler.uploadTripVideoHandler(video_version,trip_id,videoUri)
                 TripDataStorage.push()
+                CurrentDisplayTripMediaObserver.addAssetIntoArray(trip_id,asset_object)
             }
             catch(err){
                 console.log('Failed to send video',err)

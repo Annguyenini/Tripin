@@ -66,6 +66,7 @@ class TripContentHandler{
         const version = await TripDatabaseService.getTripMediaVersion(trip_id)
         const respond = await TripContents.requestTripMedias(trip_id,version)
         if(!respond.ok) return false
+        console.log(respond)
         return respond
 
     }

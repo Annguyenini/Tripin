@@ -11,8 +11,7 @@ const videoPauseIcon = require('../../../assets/image/video_pause_icon.png')
 
 export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray,isBottomList}) {
   if(!AssetArray || AssetArray.length <=0) return null
-
-  const [currentAssetsArray, setCurrentAssetsArray] = useState([...AssetArray])
+const currentAssetsArray = AssetArray;
   const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(asset => asset.uri ? asset.uri : asset.library_media_path === uri),0))
   const [dataVisible, setDataVisible] = useState(false)
   const observerRef = useRef(null)
@@ -32,7 +31,11 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
   const ImageDataDisplayHandler =()=> setDataVisible(true)
   const fullScreenHanlder =()=>{ 
     setFullScreen(prev => prev === false ? true : false) 
-    console.log(isFullScreen)}
+  }
+  // const source = ()=>{
+    
+  //   if(!currentAssetsArray[currentIndex].uri)
+  // }
   return (
     <Modal
       animationType="fade"
@@ -53,18 +56,19 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
               <Text style={mediaCardStyle.exitText}>⛶</Text>
             </TouchableOpacity>
             {/* Media Display */}
-            {currentAssetsArray[currentIndex].media_type === "photo" ? (
-              <Image 
-                style={isFullScreen? mediaCardStyle.fullImage : mediaCardStyle.image} 
-                source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path }}
-              />
-            ) : (
+            {currentAssetsArray[currentIndex].media_type === "video" ? (
               <Video
                 style={isFullScreen ? mediaCardStyle.fullVideo:  mediaCardStyle.video}
                 source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path}}
                 controls
                 resizeMode="cover"
                 paused={false}
+              />
+            ) : (
+              
+              <Image 
+                style={isFullScreen? mediaCardStyle.fullImage : mediaCardStyle.image} 
+                source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path }}
               />
             )}
           </View>
@@ -93,7 +97,7 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
                 renderItem={({ item,index }) => (
                   <View style={mediaCardStyle.clusterCard}>
                     <TouchableOpacity onPress={()=>setCurrentIndex(index)}>
-                    <Image source={{ uri: item.library_media_path }} style={mediaCardStyle.imageList} />
+                    <Image source={{ uri: item.uri? item.uri :item.library_media_path }} style={mediaCardStyle.imageList} />
                     {
                       item.media_type === 'video' && 
                       <View style ={mediaCardStyle.ImageListOverlay}>

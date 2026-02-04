@@ -17,7 +17,10 @@ class TripSync {
             'data':data
         })
     }
-
+    /**
+     * process syncing for trip contents including coords and medias
+     * @returns 
+     */
     async process(){
          if (this.syncing) return
         this.syncing = true
@@ -28,10 +31,14 @@ class TripSync {
             switch(item.itemType){
                 case 'coordinate':
                     await TripContentsService.send_coordinates(item.data,item.version)
+                    break;
                 case 'photo':
                     await TripContentsService.sendTripImage(item.version,CurrentTripDataService.getCurrentTripId(),item.data.media_path,item.data.longitude,item.data.latitude)
+                    break;
                 case 'video':
                     await TripContentsService.sendTripVideo(CurrentTripDataService.getCurrentTripId(),item.version,item.data.media_path,item.data.longitude,item.data.latitude)
+                    break;
+
                 }
             this.pennding.shift()
             
