@@ -7,14 +7,17 @@ import CurrentTripDataService from '../../src/backend/storage/current_trip.js'
 import UserDataService from '../backend/storage/user.js'
 import TripService from '../backend/gps_logic/gps_logic.js';
 import TokenService from '../backend/services/token_service.js';
+import LocalStorage from '../backend/storage/base/localStorage.js';
+const Localstorage =new LocalStorage()
 export const SettingScreen =()=>{
     const callLogout = async ()=>{
-        await AuthService.requestLogout();
+        // await AuthService.requestLogout();
         await TokenService.deleteToken("access_token")
         await TokenService.deleteToken("refresh_token")
         await UserDataService.deleteAllUserData();
         await CurrentTripDataService.resetCurrentTripData()
         await TripService.endGPSLogic()
+        await Localstorage.clearAllStorage()
         navigate("auth")
     }  
     const returnToMainScreen =()=>{

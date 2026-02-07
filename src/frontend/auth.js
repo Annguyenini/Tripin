@@ -13,7 +13,7 @@ import { OverlayCard } from './custom_function/overlay_card.js';
 import AppFlow from '../app-core/flow/app_flow.js';
 const { width } = Dimensions.get('window');
 import { useLoading } from './custom_components/loading.js';
-export const AuthScreen= ({setAuthentication} ) => {
+export const AuthScreen= ( ) => {
   // const navigation = useNavigation();
   
   const [showLogin, setShowLogin] = useState(false);
@@ -38,9 +38,7 @@ export const AuthScreen= ({setAuthentication} ) => {
         const checkToken = async () => {
           show()
           const status = await AppFlow.tokenAuthorization();
-          if(status){
-            setAuthentication(true)
-          }
+
           hide()
         };
         checkToken();
@@ -80,7 +78,6 @@ export const AuthScreen= ({setAuthentication} ) => {
       }
       else if(respond.status ===200){
         await AppFlow.onAuthSuccess()
-        setAuthentication(true)
       }
       hide()
       // console.log("pass")

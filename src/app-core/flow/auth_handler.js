@@ -54,6 +54,7 @@ class AuthHandler{
         if(res.status ===429){
             return false
         }
+        console.log(data.user_data)
         await UserDataService.setUserAuthToLocal(data.user_data)
 
         return true;

@@ -13,6 +13,7 @@ class AppFlow{
     }
     async tokenAuthorization(){
         const loginViaToken  = await AuthHandler.loginWithTokenHandler()
+        console.log('rere',loginViaToken)
         if(!loginViaToken){
             return false
         }
@@ -23,6 +24,7 @@ class AppFlow{
     async onAuthSuccess(){
         const requestUserData = await UserDataHandler.GetUserDataHandler()
         if (!requestUserData){ return false}
+        console.log('main')
         navigate('Main')
         await this.initDBs()
         

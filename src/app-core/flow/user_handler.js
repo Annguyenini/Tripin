@@ -6,34 +6,40 @@ import EtagService from '../../backend/services/etag/etag_service'
 import { ETAG_KEY } from '../../backend/services/etag/etag_keys'
 class UserDataHandler{
     async GetUserDataHandler(){
-        const user_id= UserDataService.getUserId()
-        if (!user_id){
-            const user_auth = await UserDataService.getUserAuthFromLocal()
-            user_id = user_auth.user_id
-            if(!user_id) return false
+        try{
+            const user_id= UserDataService.getUserId()
+            if (!user_id){
+                const user_auth = await UserDataService.getUserAuthFromLocal()
+                user_id = user_auth.user_id
+                if(!user_id) return false
+            }
+            const respond = await UserService.getUserData(user_id)
+            if(!respond.ok) return false
+            if (respond.status ===304){
+                await UserDataService.usingStoredUserData()
+                return true
+            }
+            if (respond.status != 200){
+                return false
+            }
+            const data = respond.data
+            const userdata = data.user_data
+            if (userdata.avatar){
+                userdata.avatar = await UserDataService.setProfileImageUriToLocal(userdata.avatar,'aws')
+            }
+            await UserDataService.setUserDataToLocal(userdata)
+
+            const etag = data.etag
+            if (etag){
+                
+                await EtagService.saveEtagToLocal(ETAG_KEY.USERDATA,etag)
+            }
+        return true
         }
-        const respond = await UserService.getUserData(user_id)
-        if(!respond.ok) return false
-        if (respond.status ===304){
-            await UserDataService.usingStoredUserData()
-            return true
-        }
-        if (respond.status != 200){
+        catch(err){
+            console.error(err)
             return false
         }
-        const data = respond.data
-        const userdata = data.user_data
-        if (userdata.avatar){
-            userdata.avatar = await UserDataService.setProfileImageUriToLocal(userdata.avatar,'aws')
-        }
-        await UserDataService.setUserDataToLocal(userdata)
-
-        const etag = data.etag
-        if (etag){
-            
-            await EtagService.saveEtagToLocal(ETAG_KEY.USERDATA,etag)
-        }
-       return true
     }
 
 }

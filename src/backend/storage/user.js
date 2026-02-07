@@ -109,7 +109,7 @@ class UserDataService extends LocalStorage{
     }
 
     async deleteAllUserData(){
-        await this.deleteUserData()
+        await this.deleteUserDataFromLocal()
         await this.deleteProfileImage()
     }
 }
