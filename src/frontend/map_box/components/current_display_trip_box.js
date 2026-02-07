@@ -72,7 +72,6 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
 
     const onClose=()=>{
         TripDisplayObserver.deleteTripSelected()
-
     }
 
     return (

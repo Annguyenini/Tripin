@@ -17,30 +17,20 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
     const [isOnATrip,setIsOnATrip] = useState(null)
     const [isTripSelected,setIsTripSelected] =useState(false)
     const [isTripBoxDisplay,setIsTripBoxDisplay]=useState(false)
-    let current_trip_id = CurrentTripDataService.getCurrentTripId()
+    const [current_trip_id,setCurrentTripId]=useState(null)
+    const [currentDisplayTripData,setCurrentDisplayTripData]=useState(null)
     useEffect(()=>{
+        
         const updateNewDisplayTrip ={
             update(newTripdata){
-                // when there are no trip need to render
-                if(!newTripdata){
-                    setIsOnATrip(false)
-                    setIsTripBoxDisplay(false)
-                    setIsTripBoxDisplay(false)
-                }
-                //when the current trip need to render
-                if(newTripdata.trip_id === current_trip_id){
-                    setIsOnATrip(true)
-                    setIsTripBoxDisplay(false)
-                    setIsTripSelected(false)
-                    return
-                }
-                setIsTripSelected(true)
-                setIsTripBoxDisplay(true)
+                setCurrentDisplayTripData(newTripdata)
+
             }
         }
         const updateCurrentTripId={
             update(newTripid){
-                current_trip_id = newTripid
+                console.log('new-trip_id',newTripid)
+                setCurrentTripId (newTripid)
             }
         }
         CurrentTripDataService.attach(updateCurrentTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
@@ -53,6 +43,27 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
         }
 
     },[])
+    useEffect(()=>{
+        console.log('notief',currentDisplayTripData,current_trip_id )
+                // when there are no trip need to render
+        if(!currentDisplayTripData){
+            setIsOnATrip(false)
+            setIsTripBoxDisplay(false)
+            setIsTripSelected(false)
+            
+        }
+        //when the current trip need to render
+        else if(currentDisplayTripData && currentDisplayTripData.trip_id === current_trip_id){
+            console.log('rreere',current_trip_id)
+            setIsOnATrip(true)
+            setIsTripBoxDisplay(false)
+            setIsTripSelected(false)
+        }
+        else if(currentDisplayTripData && currentDisplayTripData.trip_id !== current_trip_id){
+            setIsTripSelected(true)
+            setIsTripBoxDisplay(true)
+        }
+    },[currentDisplayTripData,current_trip_id])
     return(
         <View style ={helpBarMapStyle.container}>
             {isOnATrip&&

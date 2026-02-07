@@ -8,6 +8,7 @@ import EtagService from '../../backend/services/etag/etag_service'
 import { ETAG_KEY ,GENERATE_TRIP_ETAG_KEY} from '../../backend/services/etag/etag_keys'
 import TripDatabaseService from '../../backend/database/TripDatabaseService'
 import OfflineSyncManager from './sync/offline_sync_manager'
+import TripDisplayObserver from '../../frontend/map_box/functions/trip_display_observer'
 class TripHandler{
     /**
      * 
@@ -41,7 +42,6 @@ class TripHandler{
         const trip_object = TripDatabaseService.getObjectReady(UserDataService.getUserId(),trip_id,trip_name,imageUri)
         console.log('re',trip_object)
         await TripDatabaseService.addTripToDatabase(trip_object)
-        
         return true
     }
     /**
