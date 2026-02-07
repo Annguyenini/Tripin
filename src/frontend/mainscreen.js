@@ -23,7 +23,7 @@ const galleryIcon = require('../../assets/image/gallery_icon.png')
 const settingIcon = require('../../assets/image/setting_icon.png')
 import { MapBoxLayout } from './map_box/map_box_layout.js';
 import { DATA_KEYS } from '../backend/storage/keys/storage_keys.js';
-
+import { Loading } from './custom_components/loading.js';
 
 export const MainScreen = () =>{
   console.log('render main')
@@ -103,15 +103,20 @@ export const MainScreen = () =>{
   const RenderMap = useCallback(()=>{
     return(<MapBoxLayout></MapBoxLayout>)
   },[])
+  const loading =(state)=>{
+    if(state){
+      return(<Loading></Loading>)
+    }
+  }
     return(
       
       <View style={styles.container}> 
       <LocationPermission></LocationPermission>
       
-      {RenderMap()
-      }
+      {RenderMap()}
+      {loading()}
       {
-      <UserDataBottomSheet  userId={user_id} userDisplayName = {display_name} set_show_profile_picker={set_show_profile_picker}/>
+      <UserDataBottomSheet  loading ={loading} userId={user_id} userDisplayName = {display_name} set_show_profile_picker={set_show_profile_picker}/>
       }
       <View style={footer.footerContainer}>
         <View style={footer.fotterrow}>

@@ -39,7 +39,7 @@ const Zoom_mode_gesture = Gesture.Pan()
             <View style ={camera_zoom.zoom_mode_zone}>
             {zoom_mode_list.map((mode, index) =>{
                 return(
-                <View style={index === curIndex.value? camera_zoom.curent_zoom_mode_overlay : camera_zoom.zoom_mode_overlay}>
+                <View key={index} style={index === curIndex.value? camera_zoom.curent_zoom_mode_overlay : camera_zoom.zoom_mode_overlay}>
                 <Text key={index} style={index === curIndex.value? camera_zoom.current_zoom_text_mode : camera_zoom.zoom_text} >
                     {mode}
                 </Text>

@@ -28,11 +28,12 @@ export const cameraStyle = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: 30,
+    fontSize: 35,
     fontWeight: 'bold',
   },
   topControls: {
-    
+    flexDirection:'row',
+    gap:'150',
     position: 'absolute',
     top: 50,
     left: 20

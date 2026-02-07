@@ -22,7 +22,7 @@ import {styles} from './src/styles/style.js'
 import{mainScreenStyle} from './src/styles/main_screen_styles.js'
 import {CameraApp} from './src/frontend/camera/camera_main.js'
 import { SettingScreen } from './src/frontend/setting_screen.js';
-import { Loading } from './src/frontend/custom_components/loading.js';
+import { Loading,useLoading,LoadingProvider } from './src/frontend/custom_components/loading.js';
 import AppFlow from './src/app-core/flow/app_flow.js'
 import AlbumScreen from './src/frontend/albums/album.js';
 
@@ -32,26 +32,16 @@ const { width, height } = Dimensions.get('window');
 const Stack = createStackNavigator();
 
 export default function App() {
-  const [loaded,setLoaded] = useState(false)
-  const authentication =useRef(false)
+  const [authentication,setAuthentication] =useState(false)
   const [font]=useFonts({
     mainfont: require('./assets/fonts/font2.otf'),
   });
-    useEffect(() => {
-      const checkToken = async () => {
-        const status = await AppFlow.tokenAuthorization();
-        console.log(status)
-        authentication.current = status
-        setLoaded(true)
-      };
-      checkToken();
-      
-
-  }, []);
+  
   if (!font) return null;
  
 
   return (
+    <LoadingProvider>
     <View style={{flex:2}}>
     {/* <SafeAreaProvider> */}
       {/* <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -63,12 +53,11 @@ export default function App() {
             <Stack.Screen name="Auth" component={AuthScreen} />
           </Stack.Navigator>
         </NavigationContainer> */}
-
-        {!loaded &&<Loading></Loading>}
-      <NavigationContainer  ref={navigationRef}>
+      {!authentication&&<AuthLayout setAuthentication ={setAuthentication}></AuthLayout>}
+      {authentication && <NavigationContainer  ref={navigationRef}>
           <Stack.Navigator>
-            <Stack.Screen name="auth" component={AuthLayout}   options={{ headerShown: false }} // ← hides the "Auth" text
-/>
+            {/* <Stack.Screen name="auth" component={AuthLayout}   options={{ headerShown: false }} // ← hides the "Auth" text
+/> */}
             <Stack.Screen name="Main" component={MainLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" tet
 />  
             <Stack.Screen name="Setting" component={SettingLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" text
@@ -76,7 +65,7 @@ export default function App() {
             <Stack.Screen name ="Camera" component={CameraLayout} options={{headerShown: false}}/>
             <Stack.Screen name ='Album' component={AlbumLayout} options={{headerShown: false}}/>
           </Stack.Navigator>
-        </NavigationContainer>
+        </NavigationContainer>}
           
 
     {/* <AuthScreen/> */}
@@ -84,14 +73,15 @@ export default function App() {
       </ScrollView> */}
     {/* </SafeAreaProvider> */}
     </View>
+    </LoadingProvider>
   );
 }
 
-function AuthLayout() {
+function AuthLayout({setAuthentication}) {
   return (
       <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
         <Image source={logo} style={styles.logo} />
-        <AuthScreen />
+        <AuthScreen setAuthentication ={setAuthentication}/>
       </ImageBackground>
   );
 }

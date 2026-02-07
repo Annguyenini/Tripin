@@ -14,11 +14,13 @@ import { tripCardsStyle } from "../styles/function/tripcards.js";
 import AppFlow from "../app-core/flow/app_flow.js";
 import { TestScreen } from "../test_screen.js";
 import TripDisplayObserver from "./map_box/functions/trip_display_observer.js";
+import { Loading } from "./custom_components/loading.js";
 const default_user_image = require('../../assets/image/profile_icon.png')
 export const UserDataBottomSheet = ({ 
   set_show_profile_picker,
   userId, 
-  userDisplayName 
+  userDisplayName,
+  loading
 }) => {  const bottomSheetRef = useRef(null);
 
     const snapPoints = useMemo (()=>['20%','95%'],[])
@@ -98,19 +100,23 @@ export const UserDataBottomSheet = ({
       await TripHandler.refreshAllTripsData()
     }
     const request_new_trip = async()=>{
+      loading(true)
       const res = await TripHandler.requestNewTripHandler(trip_name,imageUri? imageUri:null)
       if (res){
         set_show_create_trip_filler(false)
-        await TripDataService.setTripStatus('true')
-        await TripDataService.setTripImageCover(imageUri)
+        // await TripDataService.setTripStatus('true')
+        // await TripDataService.setTripImageCover(imageUri)
         setImageUri(null)
       }
+      loading(false)
+
       return
       // navigate('Main')
     }
     return (
 
         <BottomSheet
+
         ref={bottomSheetRef}
         index={0}  
         snapPoints={snapPoints}
@@ -119,6 +125,7 @@ export const UserDataBottomSheet = ({
         
       >
         <BottomSheetFlatList
+        
               data={trips}
               keyExtractor={(item) => 
                 item.id.toString()}
@@ -174,7 +181,7 @@ export const UserDataBottomSheet = ({
         <NewTripFiller set_show_create_trip_filler ={set_show_create_trip_filler} set_trip_name={set_trip_name} request_new_trip={request_new_trip} setImageUri={setImageUri} imageUri={imageUri}/>}
         {testScreen && <TestScreen testScreenHandler={testScreenHandler}></TestScreen>}
       </BottomSheet>
-     
+
     )
 }
 const styles = StyleSheet.create({container: {
@@ -230,8 +237,8 @@ addBtn: {
 },
 
 addText: {
-  fontSize: 30,
-  color: '#fff',
+  fontSize: 20,
+  color: '#000000',
 },
 
 /* List */

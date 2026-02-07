@@ -21,6 +21,7 @@ class Auth{
             if (etag){
                 headers['If-None-Match'] = etag
             }
+            console.log(API.LOGIN_TOKEN_API)
             const respond = await fetch(API.LOGIN_TOKEN_API,{
                 method : "POST",
                 headers

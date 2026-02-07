@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { View, TouchableOpacity, Text, TextInput,Alert, StyleSheet, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,9 +12,9 @@ import { navigate } from './custom_function/navigationService.js';
 import { OverlayCard } from './custom_function/overlay_card.js';
 import AppFlow from '../app-core/flow/app_flow.js';
 const { width } = Dimensions.get('window');
-
-export const AuthScreen= ( ) => {
-  const navigation = useNavigation();
+import { useLoading } from './custom_components/loading.js';
+export const AuthScreen= ({setAuthentication} ) => {
+  // const navigation = useNavigation();
   
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
@@ -32,6 +32,23 @@ export const AuthScreen= ( ) => {
   const [showPasswordMissingList,setShowPML] = useState(false);
   const specialRegex = /[^A-Za-z0-9]/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const {show,hide} = useLoading()
+      useEffect(() => {
+        const checkToken = async () => {
+          show()
+          const status = await AppFlow.tokenAuthorization();
+          if(status){
+            setAuthentication(true)
+          }
+          hide()
+        };
+        checkToken();
+        
+  
+    }, []);
+
+
   const submitRequest = async ({action})=>{
     
     setShowAleart(false);
@@ -45,6 +62,7 @@ export const AuthScreen= ( ) => {
     }
 
     if(action ==='Login'){
+      show()
       const respond =await AuthHandler.loginHandler(username,password);
       if(!respond.ok){
         setAlertType('There are an error occur with the server! Please try again shortly')
@@ -62,7 +80,9 @@ export const AuthScreen= ( ) => {
       }
       else if(respond.status ===200){
         await AppFlow.onAuthSuccess()
+        setAuthentication(true)
       }
+      hide()
       // console.log("pass")
       // navigation.navigate('Main');
     }

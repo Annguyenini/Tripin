@@ -22,6 +22,7 @@ class UserService {
             method:'POST',
             body: formdata
         })
+        console.log(respond)
         return respond   
     }
     async getUserData(user_id){

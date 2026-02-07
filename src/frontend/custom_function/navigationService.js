@@ -7,6 +7,7 @@ export function navigate(name, params) {
   if (navigationRef.isReady()) {
     navigationRef.navigate(name, params);
   } else {
+    console.log('not ready')
     // if not ready, delay slightly
     setTimeout(() => {
       if (navigationRef.isReady()) navigationRef.navigate(name, params);
