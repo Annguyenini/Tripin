@@ -12,7 +12,7 @@ TaskManager.defineTask(TASK_NAME,async ({data,error})=>{
         }
       
     
-        const trip_id = CurrentTripDataService.getCurrentTripId()
+        const trip_id = CurrentTripDataService.getCurrentTripDataFromLocal()
         if(!trip_id){
             console.warn('No trip id')
         }

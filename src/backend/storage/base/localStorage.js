@@ -25,9 +25,10 @@ class LocalStorage {
     }
 
     async saveDataObjectToLocal(key,data_object){
-        if(!data_object||typeof(data_object)!=='object'){
-            console.log('data must be object')
-        }
+        // if(!data_object||typeof(data_object)!=='object'){
+        //     console.log('data must be object')
+        //     return false
+        // }
         try{
             // await SecureStore.setItemAsync(STORAGE_KEYS.TRIPDATA,JSON.stringify(tripdata))
             await AsyncStorage.setItem(key,JSON.stringify(data_object))
@@ -164,6 +165,14 @@ class LocalStorage {
         catch(err){
             console.error(err)
             return null
+        }
+    }
+    async clearAllStorage (){
+        try {
+            await AsyncStorage.clear();
+            console.log('AsyncStorage cleared!');
+        } catch (e) {
+            console.error('Failed to clear AsyncStorage:', e);
         }
     }
 
