@@ -22,10 +22,9 @@ import {styles} from './src/styles/style.js'
 import{mainScreenStyle} from './src/styles/main_screen_styles.js'
 import {CameraApp} from './src/frontend/camera/camera_main.js'
 import { SettingScreen } from './src/frontend/setting_screen.js';
-import { Loading,useLoading,LoadingProvider } from './src/frontend/custom_components/loading.js';
 import AppFlow from './src/app-core/flow/app_flow.js'
 import AlbumScreen from './src/frontend/albums/album.js';
-
+import { OverLayProvider } from './src/frontend/overlay/overlay_main.js';
 const backgroundImage = require('./assets/image/main_background.png');
 const logo = require('./assets/image/main_logo.png');
 const { width, height } = Dimensions.get('window');
@@ -41,7 +40,7 @@ export default function App() {
  
 
   return (
-    <LoadingProvider>
+    <OverLayProvider>
     <View style={{flex:2}}>
     {/* <SafeAreaProvider> */}
       {/* <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -72,7 +71,7 @@ export default function App() {
       </ScrollView> */}
     {/* </SafeAreaProvider> */}
     </View>
-    </LoadingProvider>
+    </OverLayProvider>
   );
 }
 

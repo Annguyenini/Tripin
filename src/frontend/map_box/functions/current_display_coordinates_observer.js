@@ -13,6 +13,9 @@ class CurrentDisplayCoordinateObserver extends(LocalStorage){
         }
         this.notify(this.GENERATE_KEY(trip_id),coords_array)
     }
+    getCoordArray(trip_id){
+        return this.CoordsArray[trip_id]
+    }
     addCoorddinateToArray(trip_id,coords_object){
         if(!this.CoordsArray[trip_id]){
             this.CoordsArray[trip_id] = []

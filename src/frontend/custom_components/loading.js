@@ -1,4 +1,7 @@
 
+import React, { createContext, useContext, useState } from "react";
+import { ActivityIndicator, View, StyleSheet, Text } from "react-native";
+
 export const Loading = ()=>{
     return(
         
@@ -11,8 +14,7 @@ export const Loading = ()=>{
 }
 
 
-import React, { createContext, useContext, useState } from "react";
-import { ActivityIndicator, View, StyleSheet, Text } from "react-native";
+
 
 const LoadingContext = createContext(null);
 

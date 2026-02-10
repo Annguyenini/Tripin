@@ -2,7 +2,6 @@ import React, { use, useEffect, useMemo, useState,useRef, useCallback } from 're
 import MapboxGL from '@rnmapbox/maps'
 import {View} from 'react-native'
 import { HelpBarMap } from './help_bar_map';
-import CoordinatesPointsLayout from './components/points';
 import AppFlow from '../../app-core/flow/app_flow';
 import ImageLabel from './components/image_label';
 import mapData from './map_data';
@@ -20,14 +19,14 @@ export const MapBoxLayout =({})=>{
     const [isFollowingUser, setIsFollowingUser] = useState(true)
     // const isFollowingUser = useRef(true)
     const [zoomLevel,setZoomLevel] = useState(13)
-    // const {centerCoords} = undefined
+    const {centerCoords} = mapData()
     const sendMapRenderSignal= async()=>{
         if(renderRef.current)return
         renderRef.current = true
         await AppFlow.onRenderMapSuccess()
        
     }
-
+    console.log(centerCoords)
     const allowedZooms = [13, 15, 20, 21, 22];
 
     const zoomHandler = (e) => {
@@ -79,8 +78,8 @@ export const MapBoxLayout =({})=>{
             followUserLocation={isFollowingUser}  
             followUserMode="normal"
             followZoomLevel={13}
-            // centerCoordinate={centerCoords? centerCoords :undefined} // lat 20 just looks nice
-            // zoomLevel={centerCoords? 16:13}
+            centerCoordinate={centerCoords[0]? centerCoords :undefined} // lat 20 just looks nice
+            zoomLevel={centerCoords? 16:13}
             // followZoomLevel={zoomLevel}
             // animationMode="easeTo"
             // animationDuration={1}
