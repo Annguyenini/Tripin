@@ -24,12 +24,12 @@ export const CurrentTripBox = ({isMinimize})=>{
     },[])
     return (
         <View style={currentTripBoxStyle.wrapper}>
-    <View style={[currentTripBoxStyle.card,isMinimize&&currentTripBoxStyle.minimizedCard]}>
+    <View style={[currentTripBoxStyle.card]}>
       {/* Background layer */}
       <View style={currentTripBoxStyle.background} />
 
       {/* Image */}
-      <Image source={ tripImageCover ? {uri:tripImageCover} :default_image} style={[currentTripBoxStyle.image,isMinimize&&currentTripBoxStyle.minimizeImage]} />
+      <Image source={ tripImageCover ? {uri:tripImageCover} :default_image} style={[currentTripBoxStyle.image]} />
 
       {/* LIVE badge */}
         <View style={currentTripBoxStyle.liveBadge}>

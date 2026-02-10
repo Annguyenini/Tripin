@@ -2,9 +2,15 @@ import  MapboxGL from '@rnmapbox/maps'
 import { useEffect, useState } from 'react';
 import TripDataStorage from '../../../backend/trip_coordinates/current_trip_coordinate_service'
 import CurrentDisplayCoordinateObserver from '../functions/current_display_coordinates_observer';
-const CoordinatesPointsLayout =({trip_id})=> {
+import { computeCluster } from '../../../backend/addition_functions/compute_cluster';
+const CoordinatesPointsLayout =({trip_id,radius_for_grouping = null})=> {
   const [coordinates,setCoordinates] = useState([])
   const modifyIntoGeoJson =(object)=>{
+    
+    // let cluster =[]
+    // if(radius_for_grouping){
+    //   cluster = computeCluster()
+    // }
     const modified = [...object.map((obj)=>{
       return [obj.longitude,obj.latitude]
     })]
@@ -19,6 +25,7 @@ const CoordinatesPointsLayout =({trip_id})=> {
     }
     const updateWatchList ={
       update(newCoords){
+        
         modifyIntoGeoJson(newCoords)
       }
     }

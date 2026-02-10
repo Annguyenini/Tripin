@@ -1,6 +1,7 @@
 import * as coordinateCal from '../coordinates/coordinates_cal'
-export const computeCluster =(assetArray,radius)=>{
+export const computeCluster =(assetArray,radius,closeCluster= false)=>{
     let clusters =[] 
+    // let lastCluster ={}
   for (const item of assetArray){
     let assign = false
     if(clusters.length ===0){
@@ -20,9 +21,13 @@ export const computeCluster =(assetArray,radius)=>{
           
     }
     if (! assign){
+        if(closeCluster){
+            clusters[clusters.length - 1].closed = true
+        }
         const newCluster = createNewCluster(item.latitude,item.longitude,clusters.length )
         clusters.push(newCluster)
         newCluster.members.push(item)
+        
     }
   }
   return clusters
@@ -31,6 +36,7 @@ const createNewCluster=(lat,lng,cluster_id)=>{
     return ({
         cluster_id : cluster_id,
         center:{lat,lng},
+        closed:false,
         members :[]
     })
 }

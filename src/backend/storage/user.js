@@ -22,7 +22,7 @@ class UserDataService extends LocalStorage{
             }
         }
     }
-
+    // ========================Get Value==============================
     getUserId(){
         return this.items.get(DATA_KEYS.USER.USER_ID)
     }
@@ -34,6 +34,39 @@ class UserDataService extends LocalStorage{
     
     getDisplayName(){
         return this.items.get(DATA_KEYS.USER.USER_DISPLAY_NAME)
+    }
+    /** getUserData
+     * @returns an object of userdata or null if it empty */ 
+    async getUserDataFromLocal(){
+        const user_data = await this.getDataObjectFromLocal(DATA_KEYS.USER.USER_DATA)
+        return user_data
+    }
+
+    async getUserAuthFromLocal(){
+        const user_data = await this.getDataObjectFromLocal(DATA_KEYS.USER.USER_AUTH)
+        return user_data
+    }
+    getProfileImageUri(){
+        return this.items.get(DATA_KEYS.USER.USER_AVATAR)
+    }
+    // ==========================Set Value===========================
+    setDisplayName(new_display_name){
+        const user_data =this.items.get(DATA_KEYS.USER.USER_DATA)
+        user_data.display_name = new_display_name
+        this.setUserDataToLocal(user_data)
+    }
+    async setProfileImageUriToLocal(uri,location='local'){
+        if (!uri) return
+        let destination
+        if (location === 'local'){
+            destination = await this.saveImageToLocal(uri,USER_PROFILE_IMAGE_PATH)
+        }
+        else{
+            destination = await this.downloadImageToLocal(uri,USER_PROFILE_IMAGE_PATH)
+        }
+        this.items.set(DATA_KEYS.USER.USER_AVATAR,destination)
+        this.notify(DATA_KEYS.USER.USER_AVATAR,destination)
+        return destination
     }
     /** Set user data 
      * @param {object}userdata - must be an object 
@@ -58,22 +91,15 @@ class UserDataService extends LocalStorage{
         this.items.set(DATA_KEYS.USER.USER_ROLE,userdata.role)
 
     }
+    /**
+     * using stored value when it match version or stored
+     * @returns 
+     */
     async usingStoredUserData(){
         const stored_userdata = await this.getDataObjectFromLocal(DATA_KEYS.USER.USER_DATA)
         await this.setUserDataToLocal(stored_userdata)
         return
     }   
-    /** getUserData
-     * @returns an object of userdata or null if it empty */ 
-    async getUserDataFromLocal(){
-        const user_data = await this.getDataObjectFromLocal(DATA_KEYS.USER.USER_DATA)
-        return user_data
-    }
-
-    async getUserAuthFromLocal(){
-        const user_data = await this.getDataObjectFromLocal(DATA_KEYS.USER.USER_AUTH)
-        return user_data
-    }
     /**
      *
      */
@@ -82,26 +108,7 @@ class UserDataService extends LocalStorage{
         this.items.set(DATA_KEYS.USER.USER_DATA,null)
         this.notify(DATA_KEYS.USER.USER_DATA,null)
     }
-
-
-    async setProfileImageUriToLocal(uri,location='local'){
-        if (!uri) return
-        let destination
-        if (location === 'local'){
-            destination = await this.saveImageToLocal(uri,USER_PROFILE_IMAGE_PATH)
-        }
-        else{
-            destination = await this.downloadImageToLocal(uri,USER_PROFILE_IMAGE_PATH)
-        }
-        this.items.set(DATA_KEYS.USER.USER_AVATAR,destination)
-        this.notify(DATA_KEYS.USER.USER_AVATAR,destination)
-        return destination
-    }
-
     
-    getProfileImageUri(){
-        return this.items.get(DATA_KEYS.USER.USER_AVATAR)
-    }
 
     async deleteProfileImage(){
         await this.deleteImageFromLocal(USER_PROFILE_IMAGE_PATH)

@@ -5,8 +5,10 @@ import { imagePicker,takePicture } from "../functions/image_picker"
 import {  useState } from "react"
 import UserDataService from '../../backend/storage/user'
 import UserService from '../../backend/services/user'
+import { UseOverlay } from "../overlay/overlay_main"
 export const ProfileImagePicker =({set_show_profile_picker})=>{
-    const[imageUri,setImageUri] =useState(UserDataService.getProfileImageUri())
+  const {showLoading,hideLoading,showErrorBox}=UseOverlay()  
+  const[imageUri,setImageUri] =useState(UserDataService.getProfileImageUri())
     const callImagePicker = async()=>{
         const pic = await imagePicker()
         setImageUri(pic.assets[0].uri)
@@ -16,11 +18,17 @@ export const ProfileImagePicker =({set_show_profile_picker})=>{
         setImageUri(pic.assets[0].uri)
     }
     const updateUserProfileImage =async()=>{
+      showLoading()
       const respond = await UserService.updateUserProfileImage(imageUri)
-      if(respond.ok){
-        await UserDataService.setProfileImageUriToLocal(imageUri);
-        set_show_profile_picker(false)
+      hideLoading()
+      if(!respond.ok) {
+        showErrorBox('Error','Error with update avartar, please try again shortly',6000)
       }
+      else {
+        await UserDataService.setProfileImageUriToLocal(imageUri);
+      }
+      set_show_profile_picker(false)
+      
     }
     return (
         <OverlayCard title={'Choose you profile'} onClose={()=>set_show_profile_picker(false)}>

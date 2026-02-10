@@ -1,18 +1,31 @@
 {
   "cli": {
-    "version": ">= 3.16.0"
+    "version": ">= 3.16.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_MAPBOX_DOWNLOAD_TOKEN": "sk.eyJ1IjoiYW5uZ3V5ZW4xMTIzNCIsImEiOiJjbWphdm0xczIwYXgwM2NweTNpMm10YnpsIn0.bQb8y2CW337ckHnpdJiCjA",
+        "EXPO_MAPBOX_PUBLIC_TOKEN": "pk.eyJ1IjoiYW5uZ3V5ZW4xMTIzNCIsImEiOiJjbWhoOWt5dDkwcG5hMmlwc3NxYTc0aTFoIn0.NTpO0P5aW7PIBo8bzJzx2Q"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_MAPBOX_DOWNLOAD_TOKEN": "sk.eyJ1IjoiYW5uZ3V5ZW4xMTIzNCIsImEiOiJjbWphdm0xczIwYXgwM2NweTNpMm10YnpsIn0.bQb8y2CW337ckHnpdJiCjA",
+        "EXPO_MAPBOX_PUBLIC_TOKEN": "pk.eyJ1IjoiYW5uZ3V5ZW4xMTIzNCIsImEiOiJjbWhoOWt5dDkwcG5hMmlwc3NxYTc0aTFoIn0.NTpO0P5aW7PIBo8bzJzx2Q"
+      }
     },
     "production": {
       "distribution": "store",
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_MAPBOX_DOWNLOAD_TOKEN": "sk.eyJ1IjoiYW5uZ3V5ZW4xMTIzNCIsImEiOiJjbWphdm0xczIwYXgwM2NweTNpMm10YnpsIn0.bQb8y2CW337ckHnpdJiCjA",
+        "EXPO_MAPBOX_PUBLIC_TOKEN": "pk.eyJ1IjoiYW5uZ3V5ZW4xMTIzNCIsImEiOiJjbWhoOWt5dDkwcG5hMmlwc3NxYTc0aTFoIn0.NTpO0P5aW7PIBo8bzJzx2Q"
+      }
     }
   },
   "submit": {

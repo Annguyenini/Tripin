@@ -8,7 +8,7 @@ import LocationDataService from "../../../backend/storage/current_location_data_
 import { DATA_KEYS } from "../../../backend/storage/keys/storage_keys";
 import TripDisplayObserver from "../functions/trip_display_observer";
 import OfflineSyncManager from "../../../app-core/flow/sync/offline_sync_manager";
-import { useLoading } from "../../custom_components/loading";
+import { UseOverlay } from "../../overlay/overlay_main";
 export const CurrentTripBar=()=>{
 
   const[onFullMode, setOnFullMode]=useState(false)
@@ -19,13 +19,13 @@ export const CurrentTripBar=()=>{
   const[city,setCity] = useState(null)
   const[currentState,setCurrentState] =useState(AppState.currentState);
   const[createdTime,setCreatedTime] = useState(null)
-  const {show,hide} =useLoading()
+  const {showLoading,hideLoading} =UseOverlay()
   const end_trip =async()=>{
-    show()
+    showLoading()
     const status =await TripHandler.endTripHandler();
     await CurrentTripDataService.setTripStatusToLocal('false')
     await CurrentTripDataService.resetCurrentTripData()
-    hide()
+    hideLoading ()
   }
 
   useEffect(()=>{

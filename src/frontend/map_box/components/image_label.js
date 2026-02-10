@@ -65,7 +65,7 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
       try{
         let albumArray 
         const respond = await TripContentHandler.requestTripMediasHandler(trip_id)
-        if(respond.ok && respond.status === 304){
+        if(!respond.ok || respond.status === 304){
           albumArray = await Albumdb.getAssestsFromTripId(trip_id)
         }
         else{

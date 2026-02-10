@@ -13,8 +13,8 @@ import {TripCard } from "./custom_components/trip_label.js";
 import { tripCardsStyle } from "../styles/function/tripcards.js";
 import AppFlow from "../app-core/flow/app_flow.js";
 import { TestScreen } from "../test_screen.js";
+import { UseOverlay } from "./overlay/overlay_main.js";
 import TripDisplayObserver from "./map_box/functions/trip_display_observer.js";
-import { Loading } from "./custom_components/loading.js";
 const default_user_image = require('../../assets/image/profile_icon.png')
 export const UserDataBottomSheet = ({ 
   set_show_profile_picker,
@@ -24,24 +24,18 @@ export const UserDataBottomSheet = ({
 }) => {  const bottomSheetRef = useRef(null);
 
     const snapPoints = useMemo (()=>['20%','95%'],[])
+    const [currentSnapPointIndex, setCurrentSnapPointIndex]= useState(0)
     const [trip_name, set_trip_name] = useState(null)
     const [imageUri,setImageUri] =useState(null)
     const [show_create_trip_filler, set_show_create_trip_filler] = useState(false)
     const[isOnATrip,setIsOnATrip] =useState(null)
     const[trips,setTrips] = useState(null)
-    const [userProfileImage, setUserProfileImage] = useState()
+    const [userProfileImage, setUserProfileImage] = useState(UserDataService.getProfileImageUri())
     const [testScreen,setTestScreen] = useState(false)
+    const [loadingText,setLoadingText]=useState(null)
+    const [dataKey,setDataKey]=useState(0)
+    const {showLoading,hideLoading,showErrorBox}=UseOverlay()
     useEffect(()=>{
-      const fetch_avatar = async ()=>{
-        const avatar =  UserDataService.getProfileImageUri()
-        setUserProfileImage(avatar)
-      }
-      fetch_avatar()
-      // const fetch_trips = async()=>{
-      //   const tripss = TripDataService.getAllTripsList()
-      //   setTrips(tripss)
-      // }
-      // fetch_trips()
       const callbackRenderSuccessfully = async()=>{
         await AppFlow.onRenderUserData()
 
@@ -55,6 +49,7 @@ export const UserDataBottomSheet = ({
       const update_user_image={
         update(uri){
           setUserProfileImage(uri)
+          setDataKey(prev=> prev +1)
         }
       }
 
@@ -63,22 +58,24 @@ export const UserDataBottomSheet = ({
           setTrips(trips)
         }
       }
-      // const update_snapPoint={
-      //   update(data){
-      //     bottomSheetRef.current === 0 
-      //   }
-      // }
+      const update_snapPoint={
+        update(data){
+          setCurrentSnapPointIndex(0) 
+          setDataKey(prev=> prev +1)
+
+        }
+      }
 
       CurrentTripDataService.attach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
       TripDataService.attach(update_trips,DATA_KEYS.TRIP.ALL_TRIP_LIST)
       UserDataService.attach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
-      // TripDisplayObserver.attach(update_snapPoint,TripDisplayObserver.EVENTS)
+      TripDisplayObserver.attach(update_snapPoint,TripDisplayObserver.EVENTS)
       callbackRenderSuccessfully()
       return ()=>{
         CurrentTripDataService.detach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
         TripDataService.detach(update_trips,DATA_KEYS.TRIP.ALL_TRIP_LIST)
         UserDataService.detach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
-        // TripDisplayObserver.detach(update_snapPoint,TripDisplayObserver.EVENTS)
+        TripDisplayObserver.detach(update_snapPoint,TripDisplayObserver.EVENTS)
 
       }
 
@@ -97,28 +94,29 @@ export const UserDataBottomSheet = ({
       console.log(testScreen)
     }
     const refresh_user_trips=async()=>{
-      await TripHandler.refreshAllTripsData()
+      setLoadingText("We're pulling it out...")
+      const all_trips = await TripHandler.refreshAllTripsData()
+      setLoadingText(null)
     }
     const request_new_trip = async()=>{
-      loading(true)
+      showLoading()
       const res = await TripHandler.requestNewTripHandler(trip_name,imageUri? imageUri:null)
-      if (res){
-        set_show_create_trip_filler(false)
+      
+      if (!res)showErrorBox('Error Create New Trip','Please try again shortly!',6000)
+      set_show_create_trip_filler(false)
         // await TripDataService.setTripStatus('true')
         // await TripDataService.setTripImageCover(imageUri)
-        setImageUri(null)
-      }
-      loading(false)
-
+      setImageUri(null)
+      hideLoading()
       return
       // navigate('Main')
     }
     return (
 
         <BottomSheet
-
+        key={dataKey}
         ref={bottomSheetRef}
-        index={0}  
+        index={currentSnapPointIndex}  
         snapPoints={snapPoints}
         backgroundStyle={{ backgroundColor: '#2b2a2aff' }}
         handleIndicatorStyle={{ backgroundColor: '#0e0c0cff' }}
@@ -142,7 +140,7 @@ export const UserDataBottomSheet = ({
               {/*userdata*/}
               <View style={styles.userCard}>
           <TouchableOpacity onPress={profile_picker}>
-            <Image
+            <Image key={dataKey}
               source={userProfileImage ? { uri: userProfileImage } : default_user_image}
               style={styles.avatar}
             />
@@ -169,6 +167,9 @@ export const UserDataBottomSheet = ({
               <Text style={styles.addText}>+</Text>
             </TouchableOpacity>
           )}
+        </View >
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>{loadingText? loadingText :''}</Text>
         </View>
               </>
                }

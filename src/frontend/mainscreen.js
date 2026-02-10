@@ -23,7 +23,6 @@ const galleryIcon = require('../../assets/image/gallery_icon.png')
 const settingIcon = require('../../assets/image/setting_icon.png')
 import { MapBoxLayout } from './map_box/map_box_layout.js';
 import { DATA_KEYS } from '../backend/storage/keys/storage_keys.js';
-import { Loading } from './custom_components/loading.js';
 
 export const MainScreen = () =>{
   console.log('render main')

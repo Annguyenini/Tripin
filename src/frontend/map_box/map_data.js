@@ -7,44 +7,38 @@ import CurrentTripDataService from '../../backend/storage/current_trip'
 const mapData = ()=>{
     const [currentTripDisplayData,setCurrentTripDisplayData]= useState(TripDisplayObserver.getTripNeedRender())
     const [tripSelectedCoordsArray,setTripSelectedCoordsArray] = useState([])
-    if (!currentTripDisplayData) return {centerCoords:undefined}
-    // useEffect(()=>{
-    //     const updateTripData={
-    //         update(newTripData){
-    //             setCurrentTripDisplayData(newTripData)
-    //         }
-    //     }
+    // if (!currentTripDisplayData) return {centerCoords:undefined}
+    useEffect(()=>{
+        const updateTripData={
+            update(newTripData){
+                setCurrentTripDisplayData(newTripData)
+            }
+        }
 
-    //     TripDisplayObserver.attach(updateTripData,TripDisplayObserver.EVENTS)
-    //     return()=>{
-    //         TripDisplayObserver.detach(updateTripData,TripDisplayObserver.EVENTS)
-    //     }
+        TripDisplayObserver.attach(updateTripData,TripDisplayObserver.EVENTS)
+        return()=>{
+            TripDisplayObserver.detach(updateTripData,TripDisplayObserver.EVENTS)
+        }
         
-    // },[])
-    // useEffect(()=>{
-    //     // setTripSelectedCoordsArray(CurrentDisplayCoordinateObserver.CoordsArray[currentTripDisplayData.trip_id])
-    //     const updateTripSelectedCoordsArray={
-    //         update(newArray){
-    //             console.log('update',1121)
-    //             setTripSelectedCoordsArray(newArray)
-    //         }
-    //     }
-    //     CurrentDisplayCoordinateObserver.attach(updateTripSelectedCoordsArray,CurrentDisplayCoordinateObserver.GENERATE_KEY(currentTripDisplayData.trip_id))
-    //     return()=>{
-    //         CurrentDisplayCoordinateObserver.detach(updateTripSelectedCoordsArray,CurrentDisplayCoordinateObserver.GENERATE_KEY(currentTripDisplayData.trip_id))
-    //     }
-    // },[currentTripDisplayData])
-    // // if(currentTripDisplayData && currentTripDisplayData.trip_id === CurrentTripDataService.getCurrentTripId()){
-    // //     return{centerCoords:undefined}
-    // // }
+    },[])
+    useEffect(()=>{
+        if (currentTripDisplayData){
+            const coords_array = CurrentDisplayCoordinateObserver.getCoordArray(currentTripDisplayData.trip_id)
+            console.log([coords_array])
+            setTripSelectedCoordsArray(coords_array ? [...coords_array]:[])
+        }
+    },[currentTripDisplayData])
+    // if(currentTripDisplayData && currentTripDisplayData.trip_id === CurrentTripDataService.getCurrentTripId()){
+    //     return{centerCoords:undefined}
+    // }
     const centerCoords = useMemo(()=>{
-        if(!tripSelectedCoordsArray[0]) return null
+        if(!tripSelectedCoordsArray[0]) return {centerCoords:undefined}
         const {latitude,longitude} = tripSelectedCoordsArray[0]
-        if(!latitude||!longitude) return null
-        const {latitude:new_lat,longitude:new_lon} = CoordinateCal.CoorFromDistance(latitude,longitude,130,270) 
-        return  [new_lon,new_lat]
+        // if(!latitude||!longitude) return null
+        // const {latitude:new_lat,longitude:new_lon} = CoordinateCal.CoorFromDistance(latitude,longitude,130,270) 
+        return  [longitude,latitude]
     },[currentTripDisplayData,tripSelectedCoordsArray])
-    
+    console.log('coor',tripSelectedCoordsArray)
     return ({centerCoords})  
 }
 export default mapData

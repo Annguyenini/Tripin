@@ -9,9 +9,18 @@ const default_image = require('../../../../assets/icon.png')
 export const DisplayTripBox =({isFullDisplay,onHide})=>{
     const[tripData,setTripData] = useState(TripDisplayObserver.getTripNeedRender())
     const[tripDuration,setTripDuration] = useState({hours:0,minutes:0,seconds:0})
-    const[coordinates,setCoordinates] =useState(CurrentDisplayCoordinateObserver.CoordsArray[tripData.trip_id] ?CurrentDisplayCoordinateObserver.CoordsArray[tripData.trip_id] :[] )
+    const[coordinates,setCoordinates] =useState([])
     const[distance,setDistance] =useState({km:0,m:0})
     const currentTripStatus = CurrentTripDataService.getCurrentTripStatus()
+    useEffect(()=>{
+
+        console.log(tripData,)
+        let trip_coordinates = []
+        if (tripData){
+            trip_coordinates =CurrentDisplayCoordinateObserver.CoordsArray[tripData.trip_id] ?CurrentDisplayCoordinateObserver.CoordsArray[tripData.trip_id] :[]
+        }    
+        setCoordinates(trip_coordinates)
+    },[])
     useEffect(()=>{
         const update_tripdata={
             update(newTripData){
@@ -35,6 +44,7 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
         }
     },[])
     useEffect(()=>{
+        if(!tripData) return 
         const calDuration =()=>{
             let dur 
             if(tripData.ended_time){
@@ -76,36 +86,62 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
 
     return (
         <View style={currentTripDisplayBoxStyle.wrapper}>
-            {isFullDisplay&&<View style={currentTripDisplayBoxStyle.card}>
-              {/* Background layer */}
-              <View style={currentTripDisplayBoxStyle.background} />
-
-              {/* Arrow button */}
-              <TouchableOpacity style={currentTripDisplayBoxStyle.arrowButton} onPress={onHide}>
-                <Text style={currentTripDisplayBoxStyle.arrowText}>→</Text>
-              </TouchableOpacity>
-                <TouchableOpacity onPress={onClose} style={currentTripDisplayBoxStyle.closeButton}>
-                    <Text>X</Text>
-                </TouchableOpacity>
-                {/* Trip Name  */}
-                <Text style ={currentTripDisplayBoxStyle.tripName}>{tripData.trip_name}</Text>
-                {/* trip image */}
-                <Image style ={currentTripDisplayBoxStyle.image}source={tripData.image ? {uri:tripData.image} :default_image}/>
-                {/* trip duration */}
-                <Text style={currentTripDisplayBoxStyle.infoText}>Duration: {tripDuration.hours !== 0 ? tripDuration.hours +'h':''} 
-                    {tripDuration.minutes !== 0 ? tripDuration.minutes +'m':''} {tripDuration.seconds !== 0? tripDuration.seconds +'s':''}</Text>
-                {/* trip Distance */}
-                {/* distance */}
-                <Text style={currentTripDisplayBoxStyle.infoText}>Total Distance: {distance.km !== 0 ? distance.km +'km':''} {distance.m !==0 ? distance.m +'m': ''}</Text>
-            </View>}
-            {
-                !isFullDisplay && 
-                <View style={currentTripDisplayBoxStyle.minimizecard}>
-                    <TouchableOpacity style={currentTripDisplayBoxStyle.minimizearrowButton} onPress={onHide}>
-                    <Text style={currentTripDisplayBoxStyle.arrowText}>←</Text>
-                </TouchableOpacity>
-                </View>
-            }
-            </View>
+  {isFullDisplay && (
+    <View style={currentTripDisplayBoxStyle.card}>
+      {/* Top section: Arrow (left), Trip Name (center), Close (right) */}
+      <View style={currentTripDisplayBoxStyle.topSection}>
+        <TouchableOpacity style={currentTripDisplayBoxStyle.arrowButton} onPress={onHide}>
+          <Text style={currentTripDisplayBoxStyle.arrowText}>→</Text>
+        </TouchableOpacity>
+        
+        <Text style={currentTripDisplayBoxStyle.tripName}>{tripData.trip_name}</Text>
+        
+        <TouchableOpacity onPress={onClose} style={currentTripDisplayBoxStyle.closeButton}>
+          <Text style={currentTripDisplayBoxStyle.closeText}>×</Text>
+        </TouchableOpacity>
+      </View>
+      
+      {/* Bottom section: Image (left), Info (right) */}
+      <View style={currentTripDisplayBoxStyle.bottomSection}>
+        {/* Image on left center */}
+        <View style={currentTripDisplayBoxStyle.imageContainer}>
+          <Image 
+            style={currentTripDisplayBoxStyle.image}
+            source={tripData.image ? {uri: tripData.image} : default_image}
+          />
+        </View>
+        
+        {/* Distance and Duration on right */}
+        <View style={currentTripDisplayBoxStyle.infoContainer}>
+          {/* Distance on top */}
+          <View style={currentTripDisplayBoxStyle.infoRow}>
+            <Text style={currentTripDisplayBoxStyle.infoLabel}>Total Distance</Text>
+            <Text style={currentTripDisplayBoxStyle.infoValue}>
+              {distance.km !== 0 ? distance.km + ' km ' : ''}{distance.m !== 0 ? distance.m + ' m' : ''}
+            </Text>
+          </View>
+          
+          {/* Duration on bottom */}
+          <View style={currentTripDisplayBoxStyle.infoRow}>
+            <Text style={currentTripDisplayBoxStyle.infoLabel}>Total Duration</Text>
+            <Text style={currentTripDisplayBoxStyle.infoValue}>
+              {tripDuration.hours !== 0 ? tripDuration.hours + 'h ' : ''}
+              {tripDuration.minutes !== 0 ? tripDuration.minutes + 'm ' : ''}
+              {tripDuration.seconds !== 0 ? tripDuration.seconds + 's' : ''}
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  )}
+  
+  {!isFullDisplay && (
+    <View style={currentTripDisplayBoxStyle.minimizecard}>
+      <TouchableOpacity style={currentTripDisplayBoxStyle.minimizearrowButton} onPress={onHide}>
+        <Text style={currentTripDisplayBoxStyle.arrowText}>←</Text>
+      </TouchableOpacity>
+    </View>
+  )}
+</View>
     )
 }

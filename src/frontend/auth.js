@@ -12,7 +12,7 @@ import { navigate } from './custom_function/navigationService.js';
 import { OverlayCard } from './custom_function/overlay_card.js';
 import AppFlow from '../app-core/flow/app_flow.js';
 const { width } = Dimensions.get('window');
-import { useLoading } from './custom_components/loading.js';
+import { UseOverlay } from './overlay/overlay_main.js';
 export const AuthScreen= ( ) => {
   // const navigation = useNavigation();
   
@@ -33,13 +33,12 @@ export const AuthScreen= ( ) => {
   const specialRegex = /[^A-Za-z0-9]/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const {show,hide} = useLoading()
+  const {showLoading,hideLoading} = UseOverlay()
       useEffect(() => {
         const checkToken = async () => {
-          show()
+          showLoading()
           const status = await AppFlow.tokenAuthorization();
-
-          hide()
+          hideLoading()
         };
         checkToken();
         
@@ -60,7 +59,7 @@ export const AuthScreen= ( ) => {
     }
 
     if(action ==='Login'){
-      show()
+      showLoading()
       const respond =await AuthHandler.loginHandler(username,password);
       if(!respond.ok){
         setAlertType('There are an error occur with the server! Please try again shortly')
@@ -79,7 +78,7 @@ export const AuthScreen= ( ) => {
       else if(respond.status ===200){
         await AppFlow.onAuthSuccess()
       }
-      hide()
+      hideLoading()
       // console.log("pass")
       // navigation.navigate('Main');
     }
