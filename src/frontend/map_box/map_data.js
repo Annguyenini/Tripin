@@ -24,7 +24,6 @@ const mapData = ()=>{
     useEffect(()=>{
         if (currentTripDisplayData){
             const coords_array = CurrentDisplayCoordinateObserver.getCoordArray(currentTripDisplayData.trip_id)
-            console.log([coords_array])
             setTripSelectedCoordsArray(coords_array ? [...coords_array]:[])
         }
     },[currentTripDisplayData])
@@ -38,7 +37,6 @@ const mapData = ()=>{
         // const {latitude:new_lat,longitude:new_lon} = CoordinateCal.CoorFromDistance(latitude,longitude,130,270) 
         return  [longitude,latitude]
     },[currentTripDisplayData,tripSelectedCoordsArray])
-    console.log('coor',tripSelectedCoordsArray)
     return ({centerCoords})  
 }
 export default mapData
