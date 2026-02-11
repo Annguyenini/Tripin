@@ -4,11 +4,22 @@ import { useEffect, useState } from "react";
 import { OverlayCard } from "../../custom_function/overlay_card";
 // import trip_album_subject from "../../../backend/trip_album/trip_album_subject";
 import TripSelectedObserver from "../functions/trip_display_observer";
+import RadiusSelector from "./coordinates_radius_slider";
+import event_bus from "../../../backend/services/UI_event_bus";
 const image =require('../../../../assets/image/gallery_icon.png')
 
 export default function MarkerManager({imageMarkerDisplay,setIsImageMarkerDisplay,isCoordsMarkerDisplay,setIsCoordsMarkerDisplay}){
     const [isMarkerManagerDisplay,setIsMarkerManagerDisplay] = useState(false)
-    
+    const [radiusVal,setRadiusVal]=useState(event_bus.getValueFromKey('RadiusChange'))
+    useEffect(()=>{
+        const updateRadius =(val)=>{
+            setRadiusVal(val)
+        }
+        event_bus.on('RadiusChange',updateRadius)
+        return()=>{
+            event_bus.off('RadiusChange',updateRadius)
+        }
+    },[])  
     return(
         <View style={markerManagerStyle.container}>
             <TouchableOpacity style ={markerManagerStyle.button} onPress={()=>setIsMarkerManagerDisplay(true)}>
@@ -22,6 +33,9 @@ export default function MarkerManager({imageMarkerDisplay,setIsImageMarkerDispla
             }
             { !imageMarkerDisplay &&
                 <Text style ={markerManagerStyle.text}>Image Labels Marker: off</Text>
+            }
+            {radiusVal !== 0 &&
+                <Text style ={markerManagerStyle.text}>Current Coords Grouping Radius: {radiusVal}m</Text>
             }
             </View>
             {
@@ -53,7 +67,10 @@ export default function MarkerManager({imageMarkerDisplay,setIsImageMarkerDispla
                         }}>
                             <Text style={markerManagerStyle.buttonText}>Turn: {isCoordsMarkerDisplay ? 'Off':'On'}</Text>
                         </TouchableOpacity>
+                        
                         </View>
+                        <RadiusSelector></RadiusSelector>
+                        
                     </OverlayCard>
                 </Modal>
             }

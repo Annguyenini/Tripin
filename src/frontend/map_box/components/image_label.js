@@ -12,7 +12,6 @@ import TripContentHandler from '../../../app-core/flow/trip_contents_handler';
 const videoPauseIcon = require('../../../../assets/image/video_pause_icon.png')
 const image_icon = require('../../../../assets/image/gallery_icon.png')
 const RenderImageLable =({clusters,mapKey, onClick})=>{
-  console.log(clusters)
   if(! clusters) return null
 
   return (
@@ -74,7 +73,6 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
             return{uri:item.key,...item}
           })]
         }
-        console.log(albumArray)
         CurrentDisplayTripMediaObserver.setDefaultArray(trip_id,albumArray)      // TripAlbumSubject.initAlbumArray(albumArray)
         setCurrentAssetsArray([...albumArray])
       }
@@ -114,7 +112,6 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
     setVisible(true)
     setCurrentDisplayCluster(currentCluster[cluster_id].members)
   }
-  console.log('cluster',currentDisplayCluster)
   return (
     <View key={mapKey}> 
       <RenderImageLable clusters={currentCluster} mapKey={mapKey} onClick={labelDisplayHandler}></RenderImageLable>
