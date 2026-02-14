@@ -13,8 +13,6 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
     const[distance,setDistance] =useState({km:0,m:0})
     const currentTripStatus = CurrentTripDataService.getCurrentTripStatus()
     useEffect(()=>{
-
-        console.log(tripData,)
         let trip_coordinates = []
         if (tripData){
             trip_coordinates =CurrentDisplayCoordinateObserver.CoordsArray[tripData.trip_id] ?CurrentDisplayCoordinateObserver.CoordsArray[tripData.trip_id] :[]
@@ -24,7 +22,6 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
     useEffect(()=>{
         const update_tripdata={
             update(newTripData){
-                console.log(newTripData)
                 setTripData(newTripData)
             }
         }
@@ -76,7 +73,6 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
         const m = Math.floor((km - km_floor)*1000)
         setDistance({km:km_floor,m:m})
     },[coordinates,tripData])
-    console.log(distance)
     if(!coordinates) return null
     if(!tripData) return null
 

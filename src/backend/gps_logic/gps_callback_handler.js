@@ -45,6 +45,7 @@ class GPSCallbackHandler{
             this.currentMode = 'auto'
             this.notify('auto')
         }
+        payload['type'] = this.currentMode
         CurrentTripCoordinateService.push(payload)
         this.lastPayload = payload
         // process new coords

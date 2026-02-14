@@ -16,14 +16,14 @@ export const TestScreen = ({testScreenHandler}) => {
   const [sqlText, setSqlText] = useState('No SQL data fetched');
 
   const onGetSQLPress = async() => {
-    const data =await TripDataStorage.getAllCoordinatesFromTripId(CurrentTripDataService.getCurrentTripId())
+    const data =await TripDataStorage.getAllCoordinatesFromTripId(170)
     console.log(data)
   };
   const onGetAlbumPress = async ()=>{
     console.log(await Albumn.getAllMediasFromDb())
   }
   const onGetUserDb = async()=>{
-    console.log(await TripDatabaseService.getAllDataFromdb())
+    await TripDatabaseService.getAllTrip()
   }
   const startGPSTask = async ()=>{
     if (gpsTask.current) {

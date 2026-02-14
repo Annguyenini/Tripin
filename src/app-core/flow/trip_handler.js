@@ -58,14 +58,13 @@ class TripHandler{
             await EtagService.deleteEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST)
             return await this.requestAllTripHandler()
         }
-
+        // if the backend 
         if(respond.status!==200)return false
         const data = respond.data
-        if(data.all_trip_data){
-            // TripDataService.setTripsData(data.all_trip_data)
-            await TripDataService.handleAllTripsList(data.all_trip_data.trip_data_list)
-        }
-        if(data.etag){
+        if(!data.all_trip_data) return true
+        const save_status = await TripDataService.handleAllTripsList(data.all_trip_data.trip_data_list)
+        if(data.etag && save_status){
+            console.log('etag',data.etag)
             await EtagService.saveEtagToLocal(ETAG_KEY.ALL_TRIPS_LIST,data.etag)
         }
         return true
@@ -89,6 +88,7 @@ class TripHandler{
         const data = respond.data
         const trip_id = data.current_trip_id
         if (trip_id){
+            console.log(trip_id)
             const current_trip_respond = await Trip.requestTripData(trip_id)
             const status = current_trip_respond.status
             if (status===304){

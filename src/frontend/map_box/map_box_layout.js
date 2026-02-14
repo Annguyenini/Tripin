@@ -5,11 +5,10 @@ import { HelpBarMap } from './help_bar_map';
 import AppFlow from '../../app-core/flow/app_flow';
 import ImageLabel from './components/image_label';
 import mapData from './map_data';
-import {Marker} from './components/makers'
+import {Marker} from './components/markers'
 import MarkerManager from './components/marker_manager';
 MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN)
 export const MapBoxLayout =({})=>{
-    console.log( 'render')
     const [isImageMarkerDisplay,setIsImageMarkerDisplay] = useState(true)
     const [isCoordsMarkerDisplay,setIsCoordsMarkerDisplay] = useState(true)
     const zoomRef = useRef(0)
@@ -26,7 +25,6 @@ export const MapBoxLayout =({})=>{
         await AppFlow.onRenderMapSuccess()
        
     }
-    console.log(centerCoords)
     const allowedZooms = [13, 15, 20, 21, 22];
 
     const zoomHandler = (e) => {

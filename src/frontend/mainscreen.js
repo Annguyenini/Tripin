@@ -25,7 +25,6 @@ import { MapBoxLayout } from './map_box/map_box_layout.js';
 import { DATA_KEYS } from '../backend/storage/keys/storage_keys.js';
 
 export const MainScreen = () =>{
-  console.log('render main')
   const [user_id, setUserId] = useState(UserDataService.getUserId())
   const [user_name, setUsername ] = useState(UserDataService.getUserName())
   const [display_name,setDisplayName] = useState(UserDataService.getDisplayName())
@@ -84,7 +83,6 @@ export const MainScreen = () =>{
         endForegroundGPSTracker()
       }
   },[])
-  console.log(state)
  
   // useEffect(async()=>{
   //   console.log(state)

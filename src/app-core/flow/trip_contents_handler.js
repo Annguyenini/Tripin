@@ -4,6 +4,8 @@ import locationDataService from '../../backend/storage/current_location_data_ser
 import TripSync from './sync/trip_contents_sync'
 import TripDatabaseService from '../../backend/database/TripDatabaseService'
 import TripCoordinateDatabase from '../../backend/database/trip_coordinate_database'
+import UserDataService from '../../backend/storage/user'
+import CurrentDisplayCoordinateObserver from '../../frontend/map_box/functions/current_display_coordinates_observer'
 class TripContentHandler{
     constructor(){
         this.TripCoordinateDatabaseService = new TripCoordinateDatabase()
@@ -47,20 +49,40 @@ class TripContentHandler{
     
     }
 
-    async requestTripCoordinatesHandler(trip_id){
+    async getTripCoordinatesHandler(trip_id){
+        let coordinates 
+        // step 1 get the version and asking the backend
         const version = await TripDatabaseService.getTripCoordinateVersion(trip_id)
         const respond = await TripContents.requestTripCoordinates(trip_id,version)
         if(!respond.ok) return false
-        if (respond.status!==200) return false
-        if(respond.status ===304) return true
-        const data = respond.data
-        if (data.coordinates){
-            if (await this.TripCoordinateDatabaseService.handlerCoordinateFromServer(data.coordinates,trip_id))
-            {
-                await TripDatabaseService.updateTripCorrdinateVersion(trip_id,data.newest_version)
-            }
+        
+        // if the backend have the same data as the local db have
+        // we get it from local db and return
+        if(respond.status ===304){
+            coordinates = await this.TripCoordinateDatabaseService.getAllCoordinatesFromTripId(trip_id)     
+            console.log(coordinates)
+            return coordinates
         }
-        return true
+        // if the backend failed return None
+        if (respond.status!==200) return null
+        
+        // if server have new or diff data
+        const data = respond.data
+        coordinates = data.coordinates
+        // console.log(data)
+        // if there are no data
+        if(!data.coordinates) return null
+        // if the data belong to the user
+        // we stored, else we just return the data
+        if(data.user_id === UserDataService.getUserId()){
+            console.log('match')
+            // if we stored the data correctly 
+            if (await this.TripCoordinateDatabaseService.handlerCoordinateFromServer(coordinates,trip_id)){
+                // we updated the version of data
+                TripDatabaseService.updateTripCorrdinateVersion(trip_id,data.newest_version)
+                }
+        }
+        return coordinates
     }
     async requestTripMediasHandler(trip_id){
         const version = await TripDatabaseService.getTripMediaVersion(trip_id)
@@ -70,18 +92,23 @@ class TripContentHandler{
     }
     async uploadTripImageHandler(version,trip_id,imageUri){
         if (!imageUri)return
-        const coor = await LocationService.getCurrentCoor()
-        const longitude = coor.coords.longitude
-        const latitude = coor.coords.latitude
-        const respond = await TripContents.sendTripImage(version,trip_id,imageUri,longitude,latitude)
-        console.log(respond)
-        const data = respond.data
-        if (respond.status === 409){
-            await TripSync.processTripMediaSync(data.missing_versions)
-        }
-        if(!respond.ok || respond.status !==200) return 
+        try{
+            const coor = await LocationService.getCurrentCoor()
+            const longitude = coor.coords.longitude
+            const latitude = coor.coords.latitude
+            const respond = await TripContents.sendTripImage(version,trip_id,imageUri,longitude,latitude)
+            console.log(respond)
+            const data = respond.data
+            if (respond.status === 409){
+                await TripSync.processTripMediaSync(data.missing_versions)
+            }
+            if(!respond.ok || respond.status !==200) return 
 
-        return respond   
+            return respond
+        }
+        catch(err){
+            console.error(err)
+        }   
     }
     async uploadTripVideoHandler(video_version,trip_id,videoUri){
         if (!videoUri)return

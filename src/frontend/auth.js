@@ -61,6 +61,7 @@ export const AuthScreen= ( ) => {
     if(action ==='Login'){
       showLoading()
       const respond =await AuthHandler.loginHandler(username,password);
+      hideLoading()
       if(!respond.ok){
         setAlertType('There are an error occur with the server! Please try again shortly')
         setShowAleart(true);
@@ -78,7 +79,7 @@ export const AuthScreen= ( ) => {
       else if(respond.status ===200){
         await AppFlow.onAuthSuccess()
       }
-      hideLoading()
+      
       // console.log("pass")
       // navigation.navigate('Main');
     }

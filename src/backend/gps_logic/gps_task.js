@@ -16,6 +16,7 @@ TaskManager.defineTask(TASK_NAME,async ({data,error})=>{
         if(!trip_id){
             console.warn('No trip id')
         }
+        console.log(data)
         const {locations} = data
         const location = locations[0]
         const payload = {
@@ -102,8 +103,8 @@ class GPSTask {
             await Location.startLocationUpdatesAsync(TASK_NAME, this.GpsTaskOption);
             return true;
         } catch (e) {
-            console.error('Error starting GPS task:', e);
-            throw new ERROR ('Failed to start GPS task')
+        console.error('Error starting GPS task:', e);
+            throw new e ('Failed to start GPS task')
         }
     }
     async endTask(){

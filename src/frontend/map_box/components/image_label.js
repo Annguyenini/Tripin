@@ -13,7 +13,6 @@ const videoPauseIcon = require('../../../../assets/image/video_pause_icon.png')
 const image_icon = require('../../../../assets/image/gallery_icon.png')
 const RenderImageLable =({clusters,mapKey, onClick})=>{
   if(! clusters) return null
-
   return (
       clusters.map((cluster) => (
         <View key={cluster.cluster_id}>
@@ -23,7 +22,7 @@ const RenderImageLable =({clusters,mapKey, onClick})=>{
           id={`marker-${cluster.cluster_id}`}
           coordinate={[cluster.center.lng, cluster.center.lat]}
         >
-          <TouchableOpacity onPress={()=>onClick(cluster.members[0],cluster.cluster_id)}>
+          <TouchableOpacity onPress={()=>onClick(cluster.members[cluster.members.length],cluster.cluster_id)}>
             <View style={{ width: 50, height: 50 }}>
               <Image
                 source={ cluster.members[0].library_media_path ?{uri: cluster.members[0].library_media_path} : {uri:cluster.members[0].key} }

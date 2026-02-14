@@ -1,8 +1,8 @@
 import { TouchableOpacity, View,Image } from "react-native"
 import React, { useRef } from "react"
 import {useState,useEffect, useCallback} from'react'
-import CoordinatesPointsLayout from '../components/points';
-import ImageLabel from '../components/image_label';
+import CoordinatesPointsLayout from './points';
+import ImageLabel from './image_label';
 import TripDisplayObserver from "../functions/trip_display_observer";
 import MarkerManager from './marker_manager'
 const image_icon = require('../../../../assets/image/gallery_icon.png')
@@ -11,10 +11,8 @@ export const Marker =({zoomLevel, isDisplayImageMaker, isCoordsMarkerDisplay})=>
     const[currentDisplayTripData,setCurrentDisplayTripData]= useState(TripDisplayObserver.getTripNeedRender())
     const currentTripId = useRef()
     useEffect(()=>{
-            console.log('marker')
             const update_current_display_trip={
                 update(new_data){
-                    console.log('update',new_data)
                     setCurrentDisplayTripData(new_data)
                 }
             }

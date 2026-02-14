@@ -52,7 +52,6 @@ class TripDisplayObserver extends(LocalStorage){
      * call back for any change in the current trip
      */
     update(newTripData){
-        console.log('update new trip')
         this.CurrentActiveTripData =newTripData
         this.notify(this.EVENTS,this.getTripNeedRender())
     }

@@ -11,9 +11,8 @@ const default_image = require('../../../assets/icon.png')
 export const TripCard = ({ trip }) => {
   const pressHandler = async (trip)=>{
     if(trip.id === CurrentTripDataService.getCurrentTripId()) return 
-    await trip_contents_handler.requestTripCoordinatesHandler(trip.id)
+    // await trip_contents_handler.requestTripCoordinatesHandler(trip.id)
     TripDisplayObserver.setTripSelected(trip)
-    console.log(trip)
     return
   }
   return (

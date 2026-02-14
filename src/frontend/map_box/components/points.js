@@ -4,6 +4,7 @@ import TripDataStorage from '../../../backend/trip_coordinates/current_trip_coor
 import CurrentDisplayCoordinateObserver from '../functions/current_display_coordinates_observer';
 import { computeCluster } from '../../../backend/addition_functions/compute_cluster';
 import eventBus from '../../../backend/services/UI_event_bus';
+import TripContentHandler from '../../../app-core/flow/trip_contents_handler';
 const CoordinatesPointsLayout =({trip_id})=> {
   const [assestsObjectsArray,setAssestsObjectsArray]= useState([])
   const [radiusForGrouping,setRadiusForGrouping]=useState(0)
@@ -11,18 +12,18 @@ const CoordinatesPointsLayout =({trip_id})=> {
  
   useEffect (()=>{
     const setUpWatchList =async()=>{
-      const newCoords = await TripDataStorage.getAllCoordinatesFromTripId(trip_id)
+      const newCoords = await TripContentHandler.getTripCoordinatesHandler(trip_id)
+      console.log(newCoords)
       CurrentDisplayCoordinateObserver.setDefaultCoordsArray(trip_id,newCoords)
-      setAssestsObjectsArray(newCoords)
-    }
+      setAssestsObjectsArray(newCoords? newCoords:[])
+
+  }
     const updateWatchList ={
       update(newCoords){
-        
-        setAssestsObjectsArray(newCoords)
+        setAssestsObjectsArray(newCoords? newCoords :[])
       }
     }
     const radiusListener=(val)=>{
-      console.log('update radius',val)
       setRadiusForGrouping(val)
     }
     setUpWatchList()
@@ -34,6 +35,7 @@ const CoordinatesPointsLayout =({trip_id})=> {
 
     }
   },[trip_id])
+  
 
   const coordinatesMap = useMemo(()=>{
     return new Map([
@@ -60,7 +62,7 @@ const CoordinatesPointsLayout =({trip_id})=> {
   const currentCluster = useMemo(()=>{
     return (coordinatesMap.get(radiusForGrouping ))
   },[assestsObjectsArray,radiusForGrouping])
-
+  console.log(currentCluster)
 
     const geoJson ={
          type: 'FeatureCollection',
@@ -86,7 +88,7 @@ const CoordinatesPointsLayout =({trip_id})=> {
 
     ],
   };
-  console.log(geoJson)
+  if (currentCluster.length === 0) return null;
     return(
         <MapboxGL.ShapeSource id ='route' shape={geoJson}>
           <MapboxGL.LineLayer
