@@ -29,7 +29,6 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
         }
         const updateCurrentTripId={
             update(newTripid){
-                console.log('new-trip_id',newTripid)
                 setCurrentTripId (newTripid)
             }
         }
@@ -44,7 +43,6 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
 
     },[])
     useEffect(()=>{
-        console.log('notief',currentDisplayTripData,current_trip_id )
                 // when there are no trip need to render
         if(!currentDisplayTripData){
             setIsOnATrip(false)
@@ -54,7 +52,6 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
         }
         //when the current trip need to render
         else if(currentDisplayTripData && currentDisplayTripData.trip_id === current_trip_id){
-            console.log('rreere',current_trip_id)
             setIsOnATrip(true)
             setIsTripBoxDisplay(false)
             setIsTripSelected(false)

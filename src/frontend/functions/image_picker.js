@@ -8,7 +8,6 @@ export const imagePicker = async ()=>{
         });
 
     if (!result.canceled) {
-        console.log(result);
         return result;
     } 
     else {
@@ -24,6 +23,7 @@ export const takePicture = async () => {
 
   const result = await ImagePicker.launchCameraAsync({
     quality: 1,
+  
   })
 
   if (!result.canceled) {

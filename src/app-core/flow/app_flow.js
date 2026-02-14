@@ -53,8 +53,8 @@ class AppFlow{
     // }
     async fetchCurrentTripContents(){
         if(!CurrentTripDataService.getCurrentTripStatus()) return
-        const currentTripCoors = await TripContentsHandler.requestCurrentTripCoordinatesHandler()
-        const currentTripImage = await TripContentsHandler.requestCurrentTripMedias()
+        // const currentTripCoors = await TripContentsHandler.requestTripCoordinatesHandler()
+        // const currentTripImage = await TripContentsHandler.requestTripMediasHandler()
         const currentlocationCon = await TripContentsHandler.requestLocationConditionsHandler()
         return
     }

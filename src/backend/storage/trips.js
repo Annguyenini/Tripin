@@ -1,9 +1,8 @@
 import { Alert } from 'react-native'
 import {STORAGE_KEYS,DATA_KEYS} from './keys/storage_keys'
-import * as SecureStore from 'expo-secure-store'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { copyAsync, deleteAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
+import TripDatabaseService from '../database/TripDatabaseService'
 import TripLocalDataStorage from './base/trip_base'
+import UserDataService from '../../backend/storage/user'
 class TripDataService extends TripLocalDataStorage{
     /**
      * trip data service, use to store trip_name...
@@ -31,52 +30,57 @@ class TripDataService extends TripLocalDataStorage{
      * @returns 
      */
     async handleAllTripsList (trips_list){
-        // save detail data for each trip \
-        console.log('rere')
+        let status =true
+        // save detail data for each trip 
+        // we use batch so we can update to ui by 10
         let batches = []
+
         for(const trip of trips_list){
-            const key = this.getTripKeyReady(trip.user_id,trip.id)
-            // const exists_data = await this.getDataObjectFromLocal(key)
-            // if(exists_data.trip_informations_version === trip.trip_informations_version){
-            //     continue
-            // }
+            // generate key for each trip 
+            // const key = this.getTripKeyReady(trip.user_id,trip.id)
+            // store image if exist
             if(trip.image){
                 trip.image = await this.saveTripImageToLocal(trip.image,`${trip.id}_cover.jpg`,'aws')
             }
-            await this.saveDataObjectToLocal(key,trip)
+            // save to async storage
+            // status = await this.saveDataObjectToLocal(key,trip)
+            // add to bd
+            status = await TripDatabaseService.addTripToDatabase(trip)
             batches.push(trip)
             if(batches.length  % 10 ===0){
                 this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST,batches)
             }
         }
         // save array to local 
-        const trip_list_to_local = await this.saveArrayToLocal(DATA_KEYS.TRIP.ALL_TRIP_LIST,trips_list)
+        // status = await this.saveArrayToLocal(DATA_KEYS.TRIP.ALL_TRIP_LIST,trips_list)
+        this.item.set(DATA_KEYS.TRIP.ALL_TRIP_LIST,batches)
         this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST,batches)
 
-        if(!trip_list_to_local){
-            return false
-        }
-        return true
+        return status
     }
 
 
     async getTripDataFromLocal(user_id,trip_id){
-        const key = this.getTripKeyReady(user_id,trip_id) 
-        return await this.getDataObjectFromLocal(key)
+        const trip_data = await TripDatabaseService.getTripDataFromTripId(trip_id)
+        if (trip_data.user_id !== user_id) return null
+        return trip_data
     }
     async saveTripDataToLocal(user_id,trip_id,data){
-        const key = this.getTripKeyReady(user_id,trip_id) 
-        return await this.saveDataObjectToLocal(key,data)
+        const status = await TripDatabaseService.addTripToDatabase(data)
+        return status
 
     }
     async loadAllTripsListFromLocal(){
-        const trips_list = await this.getArrayFromLocal(DATA_KEYS.TRIP.ALL_TRIP_LIST)
+        const user_id = UserDataService.getUserId()
+        const trips_list = await TripDatabaseService.getAllUserTripDataFromDB(user_id) 
+        // const trips_list = await this.getArrayFromLocal(DATA_KEYS.TRIP.ALL_TRIP_LIST)
+        console.log('trip list ', trips_list)
         if(trips_list){
             this.item.set(DATA_KEYS.TRIP.ALL_TRIP_LIST,trips_list)
             this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST,trips_list)
         }
 
-        return true
+        // return true
     }
     getAllTripsList(){
         return this.item.get(DATA_KEYS.TRIP.ALL_TRIP_LIST)

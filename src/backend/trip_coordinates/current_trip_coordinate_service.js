@@ -41,17 +41,16 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
         return current_version
     }
  
-
-    async getAllCoordinatesFromTripId(trip_id){
-        const DB = await SqliteService.connectDB()
-        try{
-            const allRows = await DB.getAllAsync(`SELECT * FROM trip_${trip_id};`)
-            return allRows
-        }
-        catch(err){
-            console.error (err)
-        }
-    }
+    // async printAllCoordinatesFromTripId(trip_id){
+    //     const DB = await SqliteService.connectDB()
+    //     try{
+    //         const allRows = await DB.getAllAsync(`SELECT * FROM trip_${trip_id};`)
+            
+    //     }
+    //     catch(err){
+    //         console.error (err)
+    //     }
+    // }
     startTimer(){
         if(this.isTimerStart) return
         this.isTimerStart =true

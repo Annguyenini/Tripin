@@ -21,9 +21,14 @@ class TripContentService{
 
     async requestTripCoordinates(trip_id,version){
         if(!trip_id) return
+        const headers={}
+        // if(version){
+        //     headers['Version'] =version
+        // }
+        console.log(headers)
         const respond = await fetchFunction(API.REQUEST_TRIP_COORDINATES+`/${trip_id}/coordinates`,{
             method:'GET',
-            headers:{'Version':version},
+            headers:headers
         })
         
         return respond
@@ -83,9 +88,13 @@ class TripContentService{
         return respond
     }
     async requestTripMedias(trip_id,version){
+        const headers ={}
+        if(version){
+            headers['Version']= version
+        }
         const respond = await fetchFunction(API.REQUEST_TRIP_MEDIAS+`/${trip_id}/medias`,{
                 method :'GET',
-                headers:{'Version':version}
+                headers:headers
             })
         return respond
     }

@@ -6,23 +6,23 @@ class TripDataBaseService{
  * init trip table
  */
     async initTripTable(){
-        
+        console.log('reset')
         try{
             const DB = await SqliteService.connectDB()
             await DB.execAsync(`CREATE TABLE IF NOT EXISTS trips
             (user_id INTEGER NOT NULL,
-            trip_id INTEGER,
+            trip_id INTEGER PRIMARY KEY,
             trip_name TEXT NOT NULL,
-            image_path TEXT DEFAULT NULL,
+            image TEXT DEFAULT NULL,
             created_time TEXT NOT NULL,
             end_time TEXT DEFAULT NULL,
             infomation_version INTEGER DEFAULT 0,
             coordinate_version INTEGER DEFAULT 0,
             media_version INTEGER DEFAULT 0)`)
             }
-            catch(err){
-                console.error('Failed to create trips database',err)
-            }
+        catch(err){
+            console.error('Failed to create trips database',err)
+        }
         }
         /**
          * 
@@ -38,18 +38,30 @@ class TripDataBaseService{
             trip_id:trip_id,
             trip_name:trip_name,
             created_time:Date.now(),
-            image_path:image_path
+            image:image_path
         })
 
     }
-
-    async getAllDataFromdb (){
+    async getAllTrip (){
         try{
             const DB = await SqliteService.connectDB()
-            return await DB.getAllAsync(`SELECT * FROM trips`)
+            const data =await DB.getAllAsync(`SELECT * FROM trips`)
+            console.log( data)  
         }
         catch(err){
             console.error(err)
+            return null
+        }
+    }
+    async getAllUserTripDataFromDB (user_id){
+        try{
+            const DB = await SqliteService.connectDB()
+            const data =await DB.getAllAsync(`SELECT * FROM trips WHERE user_id = ? `,(user_id))
+            return data  
+        }
+        catch(err){
+            console.error(err)
+            return null
         }
     }
     /**
@@ -58,17 +70,18 @@ class TripDataBaseService{
      * @returns status
      */
     async addTripToDatabase(data_object){
-        console.log('INSERT VALUES:', {
-        user_id: data_object.user_id,
-        trip_id: data_object.trip_id,
-        trip_name: data_object.trip_name,
-        image_path: data_object.image_path,
-        created_time: data_object.created_time
-        });        try{
+        // console.log('INSERT VALUES:', {
+        // user_id: data_object.user_id,
+        // trip_id: data_object.trip_id,
+        // trip_name: data_object.trip_name,
+        // image: data_object.image,
+        // created_time: data_object.created_time
+        // });        
+        try{
             const DB = await SqliteService.connectDB()
-            await DB.runAsync(`INSERT INTO trips (user_id,trip_id,trip_name,
-                image_path,created_time) VALUES (?,?,?,?,?)`,[data_object.user_id,data_object.trip_id,
-                    data_object.trip_name, data_object.image_path,data_object.created_time])
+            await DB.runAsync(`INSERT OR IGNORE INTO trips (user_id,trip_id,trip_name,
+                image,created_time) VALUES (?,?,?,?,?)`,[data_object.user_id,data_object.trip_id,
+                data_object.trip_name, data_object.image,data_object.created_time])
                 return true
             }
 
@@ -95,6 +108,22 @@ class TripDataBaseService{
             console.error('Failed to update value in trip database: ',err)
             return false
         }
+    }
+    /**
+     * get the trip data object base on the provieded trip id
+     * @param {*} trip_id 
+     * @returns 
+     */
+    async getTripDataFromTripId(trip_id){
+        try{
+            const DB = await SqliteService.connectDB()
+            const result = await DB.getFirstAsync(`SELECT *  FROM trips WHERE trip_id = ?`,(trip_id))
+            return result
+        }
+        catch(err){
+            console.error(`Failed at getting trip: ${trip_id}: `,err)
+            return null
+        } 
     }
     /**
      * get version base on version type

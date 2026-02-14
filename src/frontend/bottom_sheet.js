@@ -91,7 +91,6 @@ export const UserDataBottomSheet = ({
 
     const testScreenHandler=()=>{
       setTestScreen(prev => prev ===true ? false:true)
-      console.log(testScreen)
     }
     const refresh_user_trips=async()=>{
       setLoadingText("We're pulling it out...")
@@ -124,9 +123,8 @@ export const UserDataBottomSheet = ({
       >
         <BottomSheetFlatList
         
-              data={trips}
-              keyExtractor={(item) => 
-                item.id.toString()}
+              data={trips ?? []}       // if trips is null/undefined, use empty array
+              keyExtractor={(item, index) => (item?.id ?? index).toString()}
               numColumns={2}
               columnWrapperStyle={tripCardsStyle.row}
               renderItem={({ item }) => (

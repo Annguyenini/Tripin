@@ -34,7 +34,7 @@ export default function MarkerManager({imageMarkerDisplay,setIsImageMarkerDispla
             { !imageMarkerDisplay &&
                 <Text style ={markerManagerStyle.text}>Image Labels Marker: off</Text>
             }
-            {radiusVal !== 0 &&
+            {radiusVal >0 &&
                 <Text style ={markerManagerStyle.text}>Current Coords Grouping Radius: {radiusVal}m</Text>
             }
             </View>

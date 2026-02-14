@@ -59,7 +59,6 @@ export const CameraApp = () => {
     }
     const updateImages={
       update(newArray){
-        console.log('update')
         setImage_icon(newArray[0].uri)
         setImageIconType(newArray[0].mediaType)
       }
@@ -82,7 +81,6 @@ export const CameraApp = () => {
     currentMode ==="picture"? takePicture() : (!recording? recordVideo(): stopRecording())
   }
   const onCameraReady = useCallback(() => {
-    console.log("Camera is ready");
     setCameraReady(true);
   }, []);
   // Take picture
@@ -99,7 +97,6 @@ export const CameraApp = () => {
     }
   }
   const recordVideo = async () => {
-    console.log("record");
     
     // Check if camera is ready
     if (!isCameraReady) {
@@ -109,7 +106,6 @@ export const CameraApp = () => {
     
     if (!recording && cameraRef.current) {
       try {
-        console.log("Starting recording...");
         setRecording(true); // Set recording BEFORE starting
         const video = await CameraService.recordVideo(cameraRef);
       } catch (err) {
@@ -119,7 +115,6 @@ export const CameraApp = () => {
     }
 };
   const stopRecording = async()=>{
-    console.log("stop record")
     
     let asset
     try{
@@ -170,7 +165,6 @@ export const CameraApp = () => {
   }
   const onZoom = useCallback((event)=>{
     'worklet'
-    console.log(event)
     const scaleOffset = (event.scale -  1) * 0.3;
     const newZoom = Math.max(0,Math.min(lastZoom.current+scaleOffset,1))
     scheduleOnRN(setZoom,newZoom)

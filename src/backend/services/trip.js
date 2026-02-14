@@ -63,9 +63,9 @@ class Trip{
         const headers ={
             'Content-Type':'application/json',
         }
-        if (etag){
-            headers['If-None-Match'] = etag
-        }
+        // if (etag){
+        //     headers['If-None-Match'] = etag
+        // }
         const respond = await fetchFunction(API.REQUEST_TRIP_DATA,{
             method :'POST',
             headers:headers,
@@ -79,6 +79,7 @@ class Trip{
 
     async requestTripsData(){
         const etag =  await EtagService.getEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST)
+        console.log(etag)
         const headers = {
             'Content-Type':'application/json',
         }
