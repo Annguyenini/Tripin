@@ -22,9 +22,9 @@ class TripContentService{
     async requestTripCoordinates(trip_id,version){
         if(!trip_id) return
         const headers={}
-        // if(version){
-        //     headers['Version'] =version
-        // }
+        if(version){
+            headers['Version'] =version
+        }
         console.log(headers)
         const respond = await fetchFunction(API.REQUEST_TRIP_COORDINATES+`/${trip_id}/coordinates`,{
             method:'GET',

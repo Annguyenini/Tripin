@@ -10,6 +10,7 @@ const videoPauseIcon = require('../../../assets/image/video_pause_icon.png')
 
 
 export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray,isBottomList}) {
+  console.log(AssetArray)
   if(!AssetArray || AssetArray.length <=0) return null
 const currentAssetsArray = AssetArray;
   const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(asset => asset.uri ? asset.uri : asset.library_media_path === uri),0))

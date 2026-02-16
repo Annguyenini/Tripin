@@ -22,10 +22,10 @@ const RenderImageLable =({clusters,mapKey, onClick})=>{
           id={`marker-${cluster.cluster_id}`}
           coordinate={[cluster.center.lng, cluster.center.lat]}
         >
-          <TouchableOpacity onPress={()=>onClick(cluster.members[cluster.members.length],cluster.cluster_id)}>
+          <TouchableOpacity onPress={()=>onClick(cluster.members[0],cluster.cluster_id)}>
             <View style={{ width: 50, height: 50 }}>
               <Image
-                source={ cluster.members[0].library_media_path ?{uri: cluster.members[0].library_media_path} : {uri:cluster.members[0].key} }
+                source={ cluster.members[0]?.library_media_path ?{uri: cluster.members[0].library_media_path} : {uri:cluster.members[0].uri} }
                 style={{ width: 50, height: 50, borderRadius: 15 }}
                 resizeMode="cover"
               />
@@ -56,23 +56,18 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
   const [visible, setVisible] = useState(false)
   const [currentAsset, setCurrentAsset] = useState(null)
   const [currentDisplayCluster,setCurrentDisplayCluster] = useState([])
+  const [displayImage,setDisplayImage]=useState(null)
   // const clusters = new Map()
 
   useEffect(() => {
     const initArray = async () => {
       try{
-        let albumArray 
         const respond = await TripContentHandler.requestTripMediasHandler(trip_id)
-        if(!respond.ok || respond.status === 304){
-          albumArray = await Albumdb.getAssestsFromTripId(trip_id)
-        }
-        else{
-          const tempalbumArray = respond.data.medias
-          albumArray =[...tempalbumArray.map((item)=>{
-            return{uri:item.key,...item}
+        const albumArray =[...respond.map((item)=>{
+            return{uri:item.media_path,...item}
           })]
-        }
         CurrentDisplayTripMediaObserver.setDefaultArray(trip_id,albumArray)      // TripAlbumSubject.initAlbumArray(albumArray)
+        console.log(albumArray)
         setCurrentAssetsArray([...albumArray])
       }
       catch(err){
@@ -108,13 +103,14 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
 
   const labelDisplayHandler = (media, cluster_id)=>{
     setCurrentAsset(media)
+    console.log('assest',currentAsset)
     setVisible(true)
     setCurrentDisplayCluster(currentCluster[cluster_id].members)
   }
   return (
     <View key={mapKey}> 
       <RenderImageLable clusters={currentCluster} mapKey={mapKey} onClick={labelDisplayHandler}></RenderImageLable>
-    {visible && <MediaViewCard title={'test'} uri={currentAsset.library_media_path} type={currentAsset.media_type} visible={visible} onClose={()=>setVisible(false)} AssetArray={currentDisplayCluster} isBottomList={true}/>}
+    {visible && <MediaViewCard title={'test'} uri={currentAsset.library_media_path?currentAsset.library_media_path:currentAsset.media_path} type={currentAsset.media_type} visible={visible} onClose={()=>setVisible(false)} AssetArray={currentDisplayCluster} isBottomList={true}/>}
     </View>
   )
 }

@@ -13,13 +13,14 @@ const CoordinatesPointsLayout =({trip_id})=> {
   useEffect (()=>{
     const setUpWatchList =async()=>{
       const newCoords = await TripContentHandler.getTripCoordinatesHandler(trip_id)
-      console.log(newCoords)
+      console.log('new',newCoords)
       CurrentDisplayCoordinateObserver.setDefaultCoordsArray(trip_id,newCoords)
       setAssestsObjectsArray(newCoords? newCoords:[])
 
   }
     const updateWatchList ={
       update(newCoords){
+        console.log('new coords ',newCoords)
         setAssestsObjectsArray(newCoords? newCoords :[])
       }
     }
@@ -94,7 +95,7 @@ const CoordinatesPointsLayout =({trip_id})=> {
           <MapboxGL.LineLayer
                 id="line-layer"
                 style={{
-                  lineWidth: 3,
+                  lineWidth: 1,
                   lineColor: 'blue',
                 }}
               />
@@ -102,7 +103,7 @@ const CoordinatesPointsLayout =({trip_id})=> {
             <MapboxGL.CircleLayer
             id="points-layer"
             style={{
-          circleRadius: 6,
+          circleRadius: 4,
           circleColor: 'red',
         }}
       />

@@ -66,7 +66,7 @@ class Album {
         try{
             await DB.execAsync(`CREATE TABLE IF NOT EXISTS "user_${UserDataService.getUserId()}_album"( id INTEGER PRIMARY KEY AUTOINCREMENT, media_type TEXT NOT NULL,
                  media_path TEXT NOT NULL, 
-                 library_media_path TEXT NOT NULL,
+                 library_media_path TEXT,
                  latitude REAL DEFAULT NULL, 
                  longitude REAL DEFAULT NULL, 
                  trip_id INTEGER DEFAULT NULL,
@@ -81,7 +81,7 @@ class Album {
         this.AlbumsArray = [...mergedData] 
         console.log('is array frozen ',Object.isFrozen(this.AlbumsArray))
     }
-    async addMediaIntoDB(media_type,media_path,library_media_path,time){
+    async addMediaIntoDB(media_type,media_path,library_media_path=null,time){
         const location = await LocationData.getCurrentCoor()
         const longitude = location ? location.coords.longitude : null
         const latitude = location ? location.coords.latitude : null
