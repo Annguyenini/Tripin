@@ -25,6 +25,7 @@ import { SettingScreen } from './src/frontend/setting_screen.js';
 import AppFlow from './src/app-core/flow/app_flow.js'
 import AlbumScreen from './src/frontend/albums/album.js';
 import { OverLayProvider } from './src/frontend/overlay/overlay_main.js';
+import PermissionsScreen from './src/frontend/permissions.js';
 const backgroundImage = require('./assets/image/main_background.png');
 const logo = require('./assets/image/main_logo.png');
 const { width, height } = Dimensions.get('window');
@@ -56,6 +57,8 @@ export default function App() {
        <NavigationContainer  ref={navigationRef}>
           <Stack.Navigator>
             <Stack.Screen name="auth" component={AuthLayout}   options={{ headerShown: false }} />
+            <Stack.Screen name="Permission" component={PermissionLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} /// ← hides the "Auth" tet
+/>
             <Stack.Screen name="Main" component={MainLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" tet
 />  
             <Stack.Screen name="Setting" component={SettingLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" text
@@ -80,6 +83,14 @@ function AuthLayout() {
       <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
         <Image source={logo} style={styles.logo} />
         <AuthScreen />
+      </ImageBackground>
+  );
+}
+function PermissionLayout() {
+  return (
+      <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
+        <Image source={logo} style={styles.logo} />
+        <PermissionsScreen />
       </ImageBackground>
   );
 }

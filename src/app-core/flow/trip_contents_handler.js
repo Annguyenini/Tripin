@@ -6,6 +6,7 @@ import TripDatabaseService from '../../backend/database/TripDatabaseService'
 import TripCoordinateDatabase from '../../backend/database/trip_coordinate_database'
 import UserDataService from '../../backend/storage/user'
 import CurrentDisplayCoordinateObserver from '../../frontend/map_box/functions/current_display_coordinates_observer'
+import Albumdb from '../../backend/album/albumdb'
 class TripContentHandler{
     constructor(){
         this.TripCoordinateDatabaseService = new TripCoordinateDatabase()
@@ -42,7 +43,6 @@ class TripContentHandler{
         const data = respond.data
         if (data.geo_data){
             await locationDataService.setCurrentLocationConditionToLocal(data.geo_data)
-            await locationDataService.setCurrentCityToLocal(data.city)
             return true
         }
         return false
@@ -75,7 +75,6 @@ class TripContentHandler{
         // if the data belong to the user
         // we stored, else we just return the data
         if(data.user_id === UserDataService.getUserId()){
-            console.log('match')
             // if we stored the data correctly 
             if (await this.TripCoordinateDatabaseService.handlerCoordinateFromServer(coordinates,trip_id)){
                 // we updated the version of data
@@ -87,7 +86,13 @@ class TripContentHandler{
     async requestTripMediasHandler(trip_id){
         const version = await TripDatabaseService.getTripMediaVersion(trip_id)
         const respond = await TripContents.requestTripMedias(trip_id,version)
-        return respond
+        let assests =[]
+        if(respond.status ===304){
+            assests = await Albumdb.getAssestsFromTripId(trip_id)
+            return assests
+        }
+        else if (respond.status !==200) return []
+        else return respond.data.medias
 
     }
     async uploadTripImageHandler(version,trip_id,imageUri){

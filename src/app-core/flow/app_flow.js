@@ -25,14 +25,23 @@ class AppFlow{
         const requestUserData = await UserDataHandler.GetUserDataHandler()
         if (!requestUserData){ return false}
         console.log('main')
-        navigate('Main')
-        await this.initDBs()
+        navigate('Permission')
         
         return true
     }
+    async onPermissionReady (){
+        this.initDBs()
+        navigate('Main')
+
+    }
     async initDBs(){
-        await Albumdb.initUserAlbum()
-        await TripDatabaseService.initTripTable()
+        try{
+            await Albumdb.initUserAlbum()
+            await TripDatabaseService.initTripTable()
+        }
+        catch(err){
+            console.error(err)
+        }
     }
     // request current trip-id
     async onRenderMapSuccess(){

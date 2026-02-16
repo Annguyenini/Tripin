@@ -11,7 +11,7 @@ import OfflineSyncManager from "../../../app-core/flow/sync/offline_sync_manager
 import { UseOverlay } from "../../overlay/overlay_main";
 export const CurrentTripBar=()=>{
 
-  const[onFullMode, setOnFullMode]=useState(false)
+  const[onFullMode, setOnFullMode]=useState(true)
 
   const[duration,setDuration] = useState({hours:0,minutes:0})
   const [temp,setTemp] = useState(null)
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFFFFF",
     borderRadius: 28,
-    top:100,
+    top:50,
     paddingVertical: 10,
     paddingHorizontal: 6,
     alignItems: "center",

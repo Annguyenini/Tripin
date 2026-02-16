@@ -63,7 +63,7 @@ class TripHandler{
         const data = respond.data
         if(!data.all_trip_data) return true
         const save_status = await TripDataService.handleAllTripsList(data.all_trip_data.trip_data_list)
-        if(data.etag && save_status){
+        if(data.etag){
             console.log('etag',data.etag)
             await EtagService.saveEtagToLocal(ETAG_KEY.ALL_TRIPS_LIST,data.etag)
         }
