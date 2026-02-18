@@ -84,5 +84,18 @@ class TripSync {
         await this.process()
         this.coordinatesSyncing = false
     }
+    async currentTripContentsSync(){
+        const current_trip_id  = CurrentTripDataService.getCurrentTripId()
+        const versions= await TripContentsService.requestTripDataVersions(current_trip_id)
+        const current_information_version = await TripDatabaseService.getTripInfomationVersion(current_trip_id)
+        const current_coordinates_version = await TripDatabaseService.getTripCoordinateVersion(current_trip_id)
+        const current_medias_version = await TripDatabaseService.getTripMediaVersion(current_trip_id)
+        if(versions.data.coordinates_version != current_coordinates_version){
+            await this.processTripCoordinatesSync(versions.data.coordinates_version)
+        }
+        if(versions.data.medias_version!= current_medias_version){
+            await this.processTripMediaSync(versions.data.medias_version)
+        }
+    }
 }
 export default TripSync = new TripSync()

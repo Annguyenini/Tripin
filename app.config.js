@@ -19,6 +19,7 @@ export default {
         NSLocationWhenInUseUsageDescription: "This app needs your location to track your trips while you're using the app.",
         NSLocationAlwaysAndWhenInUseUsageDescription: "This app needs your location to track your trips even when the app is in the background.",
         NSLocationAlwaysUsageDescription: "This app needs your location to track your trips.",
+        ITSAppUsesNonExemptEncryption: false
       },
       bundleIdentifier: "com.anonymous.tripin"
     },

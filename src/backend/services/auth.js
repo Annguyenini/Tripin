@@ -14,6 +14,7 @@ class Auth{
         try{
             console.assert(type === "access_token"&& type ==="refresh_token","Wrong token type")
             const token = await TokenService.getToken(type)
+            console.log('token for auth ',token)
             console.assert(token == null,"token is null")
             const headers={"Content-Type":"application/json",
                     "Authorization": `Bearer ${token}`,
@@ -21,10 +22,9 @@ class Auth{
             if (etag){
                 headers['If-None-Match'] = etag
             }
-            console.log(API.LOGIN_TOKEN_API)
             const respond = await fetch(API.LOGIN_TOKEN_API,{
                 method : "POST",
-                headers
+                headers: headers
                 
             });
             const data = await respond.json();
@@ -47,6 +47,7 @@ class Auth{
             })
             console.assert(respond.status===200,"Error calling requestNewAccessToken!")
             const data  = await respond.json()
+            console.log('new acess token',data)
             console.assert(data!= undefined,"Data at request new access token is undefined")
             if (Platform.OS=='web'){
                 TokenService.deleteToken("access_token");
@@ -75,6 +76,7 @@ class Auth{
     } 
 
     async requestSignup(email,displayName,username,password){
+        console.log(email,username)
         const respond = await fetchFunction(API.SIGN_UP_API,{
             method: "POST", 
             headers:{"Content-Type":"application/json"}, 
@@ -85,6 +87,7 @@ class Auth{
             password:password 
             })
         })
+        
         return respond
     }   
     async requestVerifycation (email, code){

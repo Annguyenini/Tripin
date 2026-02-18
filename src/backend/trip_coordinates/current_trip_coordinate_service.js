@@ -58,7 +58,7 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
             console.log('start timer')
             this.coordinatesStorageHandler()
             this.isTimerStart = false
-        },30000)
+        },1000)
     }
     async coordinatesStorageHandler(){
         const temp_storage = [...this.storage] 
