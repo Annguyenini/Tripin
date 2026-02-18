@@ -98,5 +98,15 @@ class TripContentService{
             })
         return respond
     }
+    async requestTripDataVersions(trip_id){
+                console.log('trip sync2')
+
+        const respond = await fetchFunction(API.TRIP_DATA_VERSION,{
+            method :'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({'trip_id':trip_id})  
+        })
+        return respond
+    }
 }
 export default new TripContentService()

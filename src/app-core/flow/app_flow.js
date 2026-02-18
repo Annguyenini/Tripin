@@ -6,15 +6,17 @@ import UserDataHandler from './user_handler'
 import Albumdb from "../../backend/album/albumdb"
 import CurrentTripDataService from '../../backend/storage/current_trip'
 import TripDatabaseService from "../../backend/database/TripDatabaseService"
-
+import TripContentsSync from "./sync/trip_contents_sync"
+import LocalStorage from "../../backend/storage/base/localStorage"
 class AppFlow{
     constructor(){
-        
+        this.LocalStorage = new LocalStorage()
     }
     async tokenAuthorization(){
         const loginViaToken  = await AuthHandler.loginWithTokenHandler()
         console.log('rere',loginViaToken)
         if(!loginViaToken){
+            await this.LocalStorage.clearAllStorage()
             return false
         }
         if (!await this.onAuthSuccess()) return false
@@ -30,7 +32,7 @@ class AppFlow{
         return true
     }
     async onPermissionReady (){
-        this.initDBs()
+        await this.initDBs()
         navigate('Main')
 
     }
@@ -46,7 +48,7 @@ class AppFlow{
     // request current trip-id
     async onRenderMapSuccess(){
         const currentTripIdAndVersion = await TripHandler.requestCurrentTripHandler()        
-        await this.fetchCurrentTripContents()
+        await this.syncCurrentTripContents()
         return
     }
     async onRenderUserData(){
@@ -60,11 +62,8 @@ class AppFlow{
     //     const currentlocationCon = await TripContentsHandler.requestLocationConditionsHandler()
     //     return
     // }
-    async fetchCurrentTripContents(){
-        if(!CurrentTripDataService.getCurrentTripStatus()) return
-        // const currentTripCoors = await TripContentsHandler.requestTripCoordinatesHandler()
-        // const currentTripImage = await TripContentsHandler.requestTripMediasHandler()
-        const currentlocationCon = await TripContentsHandler.requestLocationConditionsHandler()
+    async syncCurrentTripContents(){
+        await TripContentsSync.currentTripContentsSync(CurrentTripDataService.getCurrentTripId())
         return
     }
     

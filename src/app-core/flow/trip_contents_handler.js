@@ -53,12 +53,10 @@ class TripContentHandler{
         let coordinates 
         // step 1 get the version and asking the backend
         const version = await TripDatabaseService.getTripCoordinateVersion(trip_id)
-        const respond = await TripContents.requestTripCoordinates(trip_id,version)
-        if(!respond.ok) return false
-        
+        const respond = await TripContents.requestTripCoordinates(trip_id,version)        
         // if the backend have the same data as the local db have
         // we get it from local db and return
-        if(respond.status ===304){
+        if(!respond.ok ||respond.status ===304){
             coordinates = await this.TripCoordinateDatabaseService.getAllCoordinatesFromTripId(trip_id)     
             console.log(coordinates)
             return coordinates
@@ -87,7 +85,7 @@ class TripContentHandler{
         const version = await TripDatabaseService.getTripMediaVersion(trip_id)
         const respond = await TripContents.requestTripMedias(trip_id,version)
         let assests =[]
-        if(respond.status ===304){
+        if(!respond.ok || respond.status ===304){
             assests = await Albumdb.getAssestsFromTripId(trip_id)
             return assests
         }

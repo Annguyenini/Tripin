@@ -11,12 +11,11 @@ class AuthHandler{
         if(!respond.ok || respond.status !=200) return respond;
         const data = respond.data
         const token = data.tokens
+        console.log('new tokesn',token)
         await TokenService.deleteToken("access_token");
         await TokenService.deleteToken("refresh_token");
         await TokenService.setToken("refresh_token", token.refresh_token);
         await TokenService.setToken("access_token", token.access_token);
-
-
         await UserDataService.setUserAuthToLocal(data.user_data)
        
         return respond;
@@ -28,6 +27,7 @@ class AuthHandler{
         const res = await Auth.authenticateToken("access_token",userdata_etag);
         if(!res.ok )return false
         const data =await res.data
+        console.log('via token', data)
         if (res.status===401){
             if (data.code === "token_expired") {
                 const tokendata = await Auth.authenticateToken("refresh_token");
@@ -61,7 +61,7 @@ class AuthHandler{
     
     };
 
-    async signUpHandler(){
+    async signUpHandler(email,displayName,username,password){
         const respond = await Auth.requestSignup(email,displayName,username,password);
         return(respond)
     }

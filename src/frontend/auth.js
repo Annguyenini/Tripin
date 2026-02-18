@@ -106,6 +106,7 @@ export const AuthScreen= ( ) => {
       setShowPML(true);
       return;
     }
+    console.log(email,displayName,username,password)
     const response = await AuthHandler.signUpHandler(email,displayName,username,password);
     if(!response.ok || response.status===401){
       setAlertType(response.message);

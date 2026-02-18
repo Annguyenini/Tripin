@@ -51,14 +51,14 @@ class TripHandler{
     async requestAllTripHandler (){
         const respond = await Trip.requestTripsData()
         // if match 
-        if(respond.status ===304){
+        if(!respond.ok ||respond.status ===304){
             if (await TripDataService.loadAllTripsListFromLocal()){
                 return true
             }
             await EtagService.deleteEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST)
-            return await this.requestAllTripHandler()
+            // return await this.requestAllTripHandler()
         }
-        // if the backend 
+        // if the backend fail
         if(respond.status!==200)return false
         const data = respond.data
         if(!data.all_trip_data) return true

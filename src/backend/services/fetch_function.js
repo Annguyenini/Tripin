@@ -22,6 +22,7 @@ export default async function fetchFunction(url,options ={},retry =true){
         const data = await respond.json()
 
         if (respond.status ==401 && data.code ==='token_expired' && retry){
+            console.log(respond,token)
             await AuthService.requestNewAccessToken() 
             return fetchFunction(url,options,false)        
         }

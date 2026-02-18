@@ -56,7 +56,7 @@ class TripDataBaseService{
     async getAllUserTripDataFromDB (user_id){
         try{
             const DB = await SqliteService.connectDB()
-            const data =await DB.getAllAsync(`SELECT * FROM trips WHERE user_id = ? `,(user_id))
+            const data =await DB.getAllAsync(`SELECT * FROM trips WHERE user_id = ? ORDER BY DESC`,(user_id))
             return data  
         }
         catch(err){

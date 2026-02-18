@@ -14,26 +14,29 @@ import MarkerManager from './components/marker_manager'
 export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
     const navigation_icon = require('../../../assets/image/navigation_notoutline_icon.png')
     const navigation_outline_icon = require('../../../assets/image/navigation_outline_icon.png')
-    const [isOnATrip,setIsOnATrip] = useState(null)
+    const [isOnATrip,setIsOnATrip] = useState(CurrentTripDataService.getCurrentTripStatus())
     const [isTripSelected,setIsTripSelected] =useState(false)
     const [isTripBoxDisplay,setIsTripBoxDisplay]=useState(false)
-    const [current_trip_id,setCurrentTripId]=useState(null)
-    const [currentDisplayTripData,setCurrentDisplayTripData]=useState(null)
+    const [current_trip_id,setCurrentTripId]=useState(CurrentTripDataService.getCurrentTripId())
+    const [currentDisplayTripData,setCurrentDisplayTripData]=useState(TripDisplayObserver.getTripNeedRender())
     useEffect(()=>{
         
         const updateNewDisplayTrip ={
             update(newTripdata){
+                console.log('new 1')
                 setCurrentDisplayTripData(newTripdata)
 
             }
         }
         const updateCurrentTripId={
             update(newTripid){
+                                console.log('new 2')
                 setCurrentTripId (newTripid)
             }
         }
         const updateCurrentTripStatus={
             update (newState){
+                console.log('new state',newState)
                 setIsOnATrip(newState)
             }
         }
@@ -54,19 +57,24 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
             setIsOnATrip(false)
             setIsTripBoxDisplay(false)
             setIsTripSelected(false)
-            
+            console.log('set 1')
         }
         //when the current trip need to render
         else if(currentDisplayTripData && currentDisplayTripData.trip_id === current_trip_id){
             setIsOnATrip(true)
             setIsTripBoxDisplay(false)
             setIsTripSelected(false)
+            console.log('set 2')
+
         }
         else if(currentDisplayTripData && currentDisplayTripData.trip_id !== current_trip_id){
             setIsTripSelected(true)
             setIsTripBoxDisplay(true)
+            console.log('set 3')
+
         }
     },[currentDisplayTripData,current_trip_id])
+    console.log('current', isOnATrip)
     return(
         <View style ={helpBarMapStyle.container}>
             {isOnATrip&&
