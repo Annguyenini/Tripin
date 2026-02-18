@@ -80,8 +80,8 @@ yarn-error.*
 /src/asset/.env
 
 
-App.js
-app.json
+# App.js
+# app.json
 # typescript
 *.tsbuildinfo
 
@@ -109,3 +109,7 @@ test_output/
 test.py
 test2.py/ios
 /android
+/ios
+/android
+/android
+/ios
