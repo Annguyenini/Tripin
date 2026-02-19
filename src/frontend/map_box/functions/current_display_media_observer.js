@@ -21,7 +21,7 @@ class CurrentDisplayTripMediaObserver extends(LocalStorage) {
             this.watchArray[trip_id] = []
         }
         this.watchArray[trip_id].push(data_object)
-        this.notify(this.GENERATE_KEY(trip_id),data_object)
+        this.notify(this.GENERATE_KEY(trip_id),this.watchArray[trip_id])
     }
 
    

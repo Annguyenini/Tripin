@@ -16,7 +16,7 @@ class TripDataBaseService{
             image TEXT DEFAULT NULL,
             created_time TEXT NOT NULL,
             end_time TEXT DEFAULT NULL,
-            infomation_version INTEGER DEFAULT 0,
+            information_version INTEGER DEFAULT 0,
             coordinate_version INTEGER DEFAULT 0,
             media_version INTEGER DEFAULT 0)`)
             }
@@ -55,8 +55,10 @@ class TripDataBaseService{
     }
     async getAllUserTripDataFromDB (user_id){
         try{
+            console.log('user_id',user_id)
             const DB = await SqliteService.connectDB()
-            const data =await DB.getAllAsync(`SELECT * FROM trips WHERE user_id = ? ORDER BY DESC`,(user_id))
+            const data =await DB.getAllAsync(`SELECT * FROM trips WHERE user_id = ? ORDER BY created_time DESC`,(user_id))
+            console.log('data',data)
             return data  
         }
         catch(err){

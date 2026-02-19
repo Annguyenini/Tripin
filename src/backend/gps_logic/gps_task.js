@@ -104,7 +104,7 @@ class GPSTask {
             return true;
         } catch (e) {
         console.error('Error starting GPS task:', e);
-            throw new e ('Failed to start GPS task')
+            throw new Error ('Failed to start GPS task')
         }
     }
     async endTask(){
@@ -112,12 +112,17 @@ class GPSTask {
         try{
             const hasStarted = await Location.hasStartedLocationUpdatesAsync(TASK_NAME)
             if(hasStarted){
-                const end = await Location.stopLocationUpdatesAsync(TASK_NAME)
+                try{
+                    const end = await Location.stopLocationUpdatesAsync(TASK_NAME)
+                    }    
+                catch(stopError){
+                    console.warn('task already stop in native')
+                }
             }
         }
         catch(error){
             console.error('Faild to end test: ',error)
-            throw new error ('FAILED TO END TASK')
+            throw new Error ('FAILED TO END TASK')
         }
     }
 }

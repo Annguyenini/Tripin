@@ -57,7 +57,8 @@ const currentAssetsArray = AssetArray;
               <Text style={mediaCardStyle.exitText}>⛶</Text>
             </TouchableOpacity>
             {/* Media Display */}
-            {currentAssetsArray[currentIndex].media_type === "video" ? (
+            {currentAssetsArray[currentIndex].media_type === 'video' || 
+currentAssetsArray[currentIndex].mediaType === 'video'? (
               <Video
                 style={isFullScreen ? mediaCardStyle.fullVideo:  mediaCardStyle.video}
                 source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path}}
@@ -100,7 +101,7 @@ const currentAssetsArray = AssetArray;
                     <TouchableOpacity onPress={()=>setCurrentIndex(index)}>
                     <Image source={{ uri: item.uri? item.uri :item.library_media_path }} style={mediaCardStyle.imageList} />
                     {
-                      item.media_type === 'video' && 
+                      item.media_type === 'video' || item.mediaType==='video' && 
                       <View style ={mediaCardStyle.ImageListOverlay}>
                         <Image
                         source={videoPauseIcon} 

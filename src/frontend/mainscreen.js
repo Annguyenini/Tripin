@@ -53,6 +53,7 @@ export const MainScreen = () =>{
         await GPSLogic.endGPSLogic()
         return
       }
+      console.log('starting gps logic')
       await GPSLogic.startGPSLogic()
     }
     backgroundGPSTask()

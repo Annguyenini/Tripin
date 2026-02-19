@@ -31,12 +31,6 @@ export const CurrentTripBar=()=>{
   useEffect(()=>{
     const fetch = async()=>{
       setCreatedTime(CurrentTripDataService.getCurrentCreatedTime())
-      const city = await LocationDataService.getCurrentCity()
-      const condition = await LocationDataService.getCurrentLocationCodition()
-      const jsoncon = JSON.parse(condition)
-      setCity(city)
-      setAqi(jsoncon.aqi)
-      setTemp(jsoncon.tempature)
     }
     fetch()
 

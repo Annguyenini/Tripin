@@ -72,7 +72,8 @@ class Album {
                  trip_id INTEGER DEFAULT NULL,
                  trip_name TEXT DEFAULT NULL, 
                  time_stamp TEXT NOT NULL,
-                 version INTEGER DEFAULT 0);`)
+                 version INTEGER DEFAULT 0,
+                 );`)
         }
         catch(err){
             console.error(err)
