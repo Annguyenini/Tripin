@@ -11,6 +11,6 @@ export const GPSSTATE ={
     },
     'stationary':{
         accuracy:Location.Accuracy.Lowest,
-        distanceInterval: 5,
+        distanceInterval: 1,
     }
 }  

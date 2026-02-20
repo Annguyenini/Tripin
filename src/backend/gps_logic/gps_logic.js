@@ -8,8 +8,6 @@ class GPSLogic {
         GPSCallbackHandler.attach(this)
     }
     async update(new_mode){
-        console.log('got it', new_mode)
-
         await this.startGPSLogic(new_mode)
         return
     }

@@ -37,7 +37,11 @@ class GPSCallbackHandler{
         const {speed} = payload.coordinates
         console.log('call back speed', speed)
         if(speed < 0) return 
-        else if(speed <= 3){
+        else if (speed < 1){
+            this.currentMode = 'stationary'
+            this.notify('stationary')
+        }
+        else if(1<= speed && speed <= 3){
             this.currentMode = 'walk'
             this.notify('walk')
         }

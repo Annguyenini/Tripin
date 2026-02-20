@@ -56,6 +56,7 @@ class CurrentTripDataService extends TripLocalDataStorage{
         // if(!trip_data||typeof(trip_data)!=='object'){
         //     console.log('trip_data must be object')
         // }
+        console.log('tripidata',trip_data)
         const key = this.getTripKeyReady(user_id,trip_id)
         await this.saveTripDataObjectToLocal(key,trip_data)
         this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
@@ -64,6 +65,8 @@ class CurrentTripDataService extends TripLocalDataStorage{
         this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_CREATED_TIME,trip_data.created_time)
         this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,true)
         this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STORAGE_KEY,key)
+        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image)
+        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image) 
         await this.setTripStatusToLocal('true')
         this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
         this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID,trip_id)
@@ -105,7 +108,7 @@ class CurrentTripDataService extends TripLocalDataStorage{
      * @returns trip status 
      */
     async getTripStatusFromLocal(){
-        const status = this.getTripDataFromLocal(STORAGE_KEYS.SETTINGS.TRIP_STATUS)
+        const status = await this.getTripDataFromLocal(STORAGE_KEYS.SETTINGS.TRIP_STATUS)
         return status
 
     }

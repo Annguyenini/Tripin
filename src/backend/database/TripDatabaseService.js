@@ -7,9 +7,11 @@ class TripDataBaseService{
  */
     async initTripTable(){
         console.log('reset')
+        const DB = await SqliteService.connectDB()
+
         try{
-            const DB = await SqliteService.connectDB()
-            await DB.execAsync(`CREATE TABLE IF NOT EXISTS trips
+            await DB.execAsync(
+            `CREATE TABLE IF NOT EXISTS trips
             (user_id INTEGER NOT NULL,
             trip_id INTEGER PRIMARY KEY,
             trip_name TEXT NOT NULL,
@@ -22,6 +24,9 @@ class TripDataBaseService{
             }
         catch(err){
             console.error('Failed to create trips database',err)
+        }
+        finally{
+           await DB.closeAsync()
         }
         }
         /**
