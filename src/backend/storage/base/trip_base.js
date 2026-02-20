@@ -34,6 +34,7 @@ class TripLocalDataStorage extends LocalStorage{
         }
         catch(err){
             console.error('Failed to save image to local: ', err)
+            throw new Error ('Failed to save image')
         }
     }
     // async getTripImageFromLocal(imageUri){

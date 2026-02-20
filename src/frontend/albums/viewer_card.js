@@ -6,13 +6,19 @@ import { useEffect, useState,useRef } from "react"
 import AlbumService from "../../backend/album/albumdb"
 import { scheduleOnRN } from "react-native-worklets"
 import MediaViewDataCard from "./viewer_data_card"
+import GenerateThumbnail from "../../backend/album/generate_thumbnail"
 const videoPauseIcon = require('../../../assets/image/video_pause_icon.png')
 
 
 export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray,isBottomList}) {
   console.log(AssetArray)
   if(!AssetArray || AssetArray.length <=0) return null
-const currentAssetsArray = AssetArray;
+  const modifiedAssetArray =[... AssetArray.map(async(item)=>{
+    if(item.media_type ==='video' || item.mediaType==='video'){
+      item.thumbnail =await GenerateThumbnail(item.uri ? item.uri : item.library_media_path)
+    }
+  })]
+  const currentAssetsArray = AssetArray;
   const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(asset => asset.uri ? asset.uri : asset.library_media_path === uri),0))
   const [dataVisible, setDataVisible] = useState(false)
   const observerRef = useRef(null)
@@ -57,7 +63,8 @@ const currentAssetsArray = AssetArray;
               <Text style={mediaCardStyle.exitText}>⛶</Text>
             </TouchableOpacity>
             {/* Media Display */}
-            {currentAssetsArray[currentIndex].media_type === "video" ? (
+            {currentAssetsArray[currentIndex].media_type === 'video' || 
+currentAssetsArray[currentIndex].mediaType === 'video'? (
               <Video
                 style={isFullScreen ? mediaCardStyle.fullVideo:  mediaCardStyle.video}
                 source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path}}
@@ -100,7 +107,7 @@ const currentAssetsArray = AssetArray;
                     <TouchableOpacity onPress={()=>setCurrentIndex(index)}>
                     <Image source={{ uri: item.uri? item.uri :item.library_media_path }} style={mediaCardStyle.imageList} />
                     {
-                      item.media_type === 'video' && 
+                      item.media_type === 'video' || item.mediaType==='video' && 
                       <View style ={mediaCardStyle.ImageListOverlay}>
                         <Image
                         source={videoPauseIcon} 

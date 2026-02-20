@@ -11,6 +11,7 @@ export const CurrentTripBox = ({isMinimize})=>{
 
       const get_trip_image=async()=>{
         const imageUri = CurrentTripDataService.getCurrentTripImageUri()
+        console.log('image1',imageUri)
         setTripImageCover(imageUri)
       }
       const updateImage ={

@@ -1,5 +1,5 @@
 import  MapboxGL from '@rnmapbox/maps'
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import TripDataStorage from '../../../backend/trip_coordinates/current_trip_coordinate_service'
 import CurrentDisplayCoordinateObserver from '../functions/current_display_coordinates_observer';
 import { computeCluster } from '../../../backend/addition_functions/compute_cluster';
@@ -8,20 +8,20 @@ import TripContentHandler from '../../../app-core/flow/trip_contents_handler';
 const CoordinatesPointsLayout =({trip_id})=> {
   const [assestsObjectsArray,setAssestsObjectsArray]= useState([])
   const [radiusForGrouping,setRadiusForGrouping]=useState(0)
+  const previousClusterKey = useRef('empty')
   // const [coordinatesObject,setCoordinatesObject]=useState({})
  
   useEffect (()=>{
     const setUpWatchList =async()=>{
       const newCoords = await TripContentHandler.getTripCoordinatesHandler(trip_id)
-      console.log('new',newCoords)
       CurrentDisplayCoordinateObserver.setDefaultCoordsArray(trip_id,newCoords)
-      setAssestsObjectsArray(newCoords? newCoords:[])
+      setAssestsObjectsArray(newCoords? [...newCoords]:[])
 
   }
     const updateWatchList ={
       update(newCoords){
-        console.log('new coords ',newCoords)
-        setAssestsObjectsArray(newCoords? newCoords :[])
+        console.log('update new coords',newCoords)
+        setAssestsObjectsArray(newCoords? [...newCoords]:[])
       }
     }
     const radiusListener=(val)=>{
@@ -61,12 +61,23 @@ const CoordinatesPointsLayout =({trip_id})=> {
   },[assestsObjectsArray])    
 
   const currentCluster = useMemo(()=>{
-    return (coordinatesMap.get(radiusForGrouping ))
-  },[assestsObjectsArray,radiusForGrouping])
-  console.log(currentCluster)
+    return (coordinatesMap.get(radiusForGrouping))
+  },[coordinatesMap,radiusForGrouping,assestsObjectsArray])
+  
+  
+  const clusterKey = useMemo(() => {
+    if (!currentCluster || currentCluster.length === 0) {
+      return previousClusterKey.current
+    }
+    const key = `${currentCluster.length}-${currentCluster[0]}-${currentCluster[currentCluster.length-1]}`
+    previousClusterKey.current = key
+    return key
+  }, [currentCluster])
 
-    const geoJson ={
-         type: 'FeatureCollection',
+if (!currentCluster || currentCluster.length === 0) {
+  return null}
+  const geoJson ={
+        type: 'FeatureCollection',
     features: [
       // POINTS
       ...currentCluster.map((coors) => ({
@@ -89,9 +100,9 @@ const CoordinatesPointsLayout =({trip_id})=> {
 
     ],
   };
-  if (currentCluster.length === 0) return null;
     return(
-        <MapboxGL.ShapeSource id ='route' shape={geoJson}>
+        <MapboxGL.ShapeSource id ='route' key = {clusterKey} shape={geoJson}>
+          
           <MapboxGL.LineLayer
                 id="line-layer"
                 style={{

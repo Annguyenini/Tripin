@@ -32,16 +32,20 @@ class GPSCallbackHandler{
             const distance = CoordinateCal.haversineDistance(lat1,lng1,lat2,lng2)
             console.log('call back distance',distance)
             this.lastPayload = payload
-            if (distance <= 10)return
+            if (distance <= 5)return
         }
         const {speed} = payload.coordinates
         console.log('call back speed', speed)
         if(speed < 0) return 
-        else if(speed < 2){
+        else if (speed < 1){
+            this.currentMode = 'stationary'
+            this.notify('stationary')
+        }
+        else if(1<= speed && speed <= 3){
             this.currentMode = 'walk'
             this.notify('walk')
         }
-        else if (speed >2){
+        else if (speed >3){
             this.currentMode = 'auto'
             this.notify('auto')
         }

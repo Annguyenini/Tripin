@@ -18,7 +18,7 @@ const RenderImageLable =({clusters,mapKey, onClick})=>{
         <View key={cluster.cluster_id}>
 
         <MapboxGL.MarkerView
-          key={`marker-${cluster.cluster_id}`}
+          key={`marker-${mapKey}`}
           id={`marker-${cluster.cluster_id}`}
           coordinate={[cluster.center.lng, cluster.center.lat]}
         >
@@ -77,8 +77,10 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
     
     const updateAssetsArray = {
       update(newArray) {
+        console.log('new images')
         setCurrentAssetsArray([...newArray])
         setMapKey(prev => prev + 1) 
+        console.log(mapKey)
       }
     }
     CurrentDisplayTripMediaObserver.attach(updateAssetsArray,CurrentDisplayTripMediaObserver.GENERATE_KEY(trip_id))    

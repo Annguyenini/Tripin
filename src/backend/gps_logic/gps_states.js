@@ -2,7 +2,7 @@ import * as Location from 'expo-location'
 export const GPSSTATE ={
     'walk':{
         accuracy:Location.Accuracy.Balanced,
-        distanceInterval: 10, // meters    
+        distanceInterval: 5, // meters    
         ActivityType:Location.ActivityType.Fitness
     },
     'auto':{
@@ -11,6 +11,6 @@ export const GPSSTATE ={
     },
     'stationary':{
         accuracy:Location.Accuracy.Lowest,
-        distanceInterval: 5,
+        distanceInterval: 1,
     }
 }  

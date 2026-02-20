@@ -102,11 +102,11 @@ class TripHandler{
 
             const current_trip_data = current_trip_respond.data
             const trip_data = current_trip_data.trip_data 
-            if(trip_data!==null){
+            if(trip_data){
                 // const trip_data = TripDataService.getObjectReady(data.trip_data.trip_name,data.trip_data.trip_id,data.trip_data.created_time)
                 let trip_image_uri = null
-                if(trip_data.trip_image){
-                    trip_image_uri = await CurrentTripDataService.setCurrentTripImageCoverToLocal(trip_data.trip_image,data.current_trip_id,'aws')
+                if(trip_data.image){
+                    trip_image_uri = await CurrentTripDataService.setCurrentTripImageCoverToLocal(trip_data.image,data.current_trip_id,'aws')
                 }
                 const trip_data_object = CurrentTripDataService.getObjectReady(trip_data.trip_name, trip_data.trip_id, 
                 trip_data.created_time,trip_image_uri)

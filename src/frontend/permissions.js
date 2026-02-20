@@ -67,7 +67,21 @@ export default function PermissionsFlowScreen({ navigation }) {
       <View style={styles.container}>
         <Text style={styles.title}>Permission Required</Text>
         <Text style={styles.msg}>{message}</Text>
-        <Button title="Open Settings" onPress={openSettings} />
+
+        <Button
+          title="Retry"
+          onPress={() => {
+            setMessage('');
+            requestNextPermission();
+          }}
+        />
+
+        <View style={{ height: 10 }} />
+
+        <Button
+          title="Open Settings"
+          onPress={openSettings}
+        />
       </View>
     );
   }

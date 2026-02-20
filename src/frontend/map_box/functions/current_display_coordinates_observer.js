@@ -8,6 +8,7 @@ class CurrentDisplayCoordinateObserver extends(LocalStorage){
         return `coords_array:${trip_id}`
     }
     setDefaultCoordsArray(trip_id, coords_array){
+        console.log('set default',coords_array)
         if(!this.CoordsArray[trip_id]){
             this.CoordsArray[trip_id]=coords_array
         }
@@ -17,6 +18,7 @@ class CurrentDisplayCoordinateObserver extends(LocalStorage){
         return this.CoordsArray[trip_id]
     }
     addCoorddinateToArray(trip_id,coords_object){
+        console.log('before',this.CoordsArray[trip_id])
         if(!this.CoordsArray[trip_id]){
             this.CoordsArray[trip_id] = []
         }
@@ -27,7 +29,8 @@ class CurrentDisplayCoordinateObserver extends(LocalStorage){
             speed:coords_object.coordinates.speed,
             time_stamp:coords_object.time_stamp
         }
-        this.CoordsArray[trip_id].push(coords_object)
+        this.CoordsArray[trip_id].push(new_object)
+        console.log('after',this.CoordsArray[trip_id])
         this.notify(this.GENERATE_KEY(trip_id),this.CoordsArray[trip_id])
     }
 }

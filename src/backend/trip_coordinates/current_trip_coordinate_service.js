@@ -89,6 +89,7 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
                 speed: temp.coords.speed,
                 heading: temp.coords.heading,
                 },
+                type: null
             };
             trip_data_object = payload
         }

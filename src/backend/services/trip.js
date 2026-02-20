@@ -63,9 +63,9 @@ class Trip{
         const headers ={
             'Content-Type':'application/json',
         }
-        // if (etag){
-        //     headers['If-None-Match'] = etag
-        // }
+        if (etag){
+            headers['If-None-Match'] = etag
+        }
         const respond = await fetchFunction(API.REQUEST_TRIP_DATA,{
             method :'POST',
             headers:headers,

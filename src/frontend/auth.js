@@ -13,6 +13,7 @@ import { OverlayCard } from './custom_function/overlay_card.js';
 import AppFlow from '../app-core/flow/app_flow.js';
 const { width } = Dimensions.get('window');
 import { UseOverlay } from './overlay/overlay_main.js';
+import { useLoading } from './custom_components/loading.js';
 export const AuthScreen= ( ) => {
   // const navigation = useNavigation();
   
@@ -32,6 +33,7 @@ export const AuthScreen= ( ) => {
   const [showPasswordMissingList,setShowPML] = useState(false);
   const specialRegex = /[^A-Za-z0-9]/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // const{show:showLoading,hide:hideLoading}=useLoading()
 
   const {showLoading,hideLoading} = UseOverlay()
       useEffect(() => {
@@ -61,13 +63,14 @@ export const AuthScreen= ( ) => {
     if(action ==='Login'){
       showLoading()
       const respond =await AuthHandler.loginHandler(username,password);
+      const data = respond.data
       hideLoading()
       if(!respond.ok){
         setAlertType('There are an error occur with the server! Please try again shortly')
         setShowAleart(true);
       }
       if(respond.status===401){
-        setAlertType('Account not found!')
+        setAlertType(data.message)
         setShowAleart(true);
         return;
       }
@@ -77,7 +80,10 @@ export const AuthScreen= ( ) => {
         return;
       }
       else if(respond.status ===200){
+        showLoading()
         await AppFlow.onAuthSuccess()
+        hideLoading()
+
       }
       
       // console.log("pass")
@@ -86,6 +92,7 @@ export const AuthScreen= ( ) => {
 
 
     else if(action ==="Signup"){
+      showLoading()
       setShowPML(false);
       if(displayName.trim()===''||confirmPassword===''||email===''){
          Alert.alert('Error', 'Please Fill out all the requirement!');
@@ -93,29 +100,32 @@ export const AuthScreen= ( ) => {
         setShowAleart(true);
       return;
       };
-    let res=[];
-    if(!emailRegex.test(email)) res.push('Invalid Email');
-    if(!/\d/.test(password)) res.push('Missing Number!');
-    if(password.length<8) res.push('Password have to be longer than 8!');
-    if(!specialRegex.test(password)) res.push("Missing special character!");
-    if(specialRegex.test(username)) res.push("Username should not contain special characters!")
-    if(!/[A-Z]/.test(password)) res.push('Missing upper letter!');
-    if(confirmPassword!=password) res.push("Confirm password doesnt match!")
-    if(res.length>0){
-      setPassWordMissingList (res);
-      setShowPML(true);
-      return;
-    }
-    console.log(email,displayName,username,password)
-    const response = await AuthHandler.signUpHandler(email,displayName,username,password);
-    if(!response.ok || response.status===401){
-      setAlertType(response.message);
-      setShowAleart(true);
-      return;
-    }
-    setShowSignup(false);
-    setShowVerification(true);
-      
+      let res=[];
+      if(!emailRegex.test(email)) res.push('Invalid Email');
+      if(!/\d/.test(password)) res.push('Missing Number!');
+      if(password.length<8) res.push('Password have to be longer than 8!');
+      if(!specialRegex.test(password)) res.push("Missing special character!");
+      if(specialRegex.test(username)) res.push("Username should not contain special characters!")
+      if(!/[A-Z]/.test(password)) res.push('Missing upper letter!');
+      if(confirmPassword!=password) res.push("Confirm password doesnt match!")
+      if(res.length>0){
+        setPassWordMissingList (res);
+        setShowPML(true);
+        hideLoading()
+        return;
+      }
+      console.log(email,displayName,username,password)
+      const response = await AuthHandler.signUpHandler(email,displayName,username,password);
+      const data = response.data
+      if(!response.ok || response.status===401){
+        setAlertType(data.message);
+        setShowAleart(true);
+        hideLoading()
+        return;
+      }
+      setShowSignup(false);
+      setShowVerification(true);
+      hideLoading()
     }
 
 
@@ -183,7 +193,15 @@ export const AuthScreen= ( ) => {
       {showSignup && (
         <OverlayCard title="SIGNUP" onClose={() => setShowSignup(false)}>
           {showAlert&&(<Text style={{textAlign:'center',marginTop: 10, color:alertColor}}>{alert}</Text>)}
-
+          {showPasswordMissingList&&(
+            <View>
+              {passwordMissingList.map((item, index)=>(
+                <Text key = {index} style={{ textAlign:'center',marginTop: 10, color:'#FF0000'}}>
+                  {item}
+                </Text>
+              ))}
+            </View>
+          )}
           <TextInput style={authStyle.input} placeholder="Email" value ={email} onChangeText={text=> setEmail(text)}/>
 
           <TextInput style={authStyle.input} placeholder="DisplayName" value ={displayName} onChangeText={text=> setDisplayName(text)}/>
@@ -198,15 +216,7 @@ export const AuthScreen= ( ) => {
           <TouchableOpacity onPress={() => { setShowLogin(true); setShowSignup(false),setShowAleart(false); }}>
             <Text style={{ textAlign: 'center', marginTop: 10 }}>Have an account?</Text>
           </TouchableOpacity>
-          {showPasswordMissingList&&(
-            <View>
-              {passwordMissingList.map((item, index)=>(
-                <Text key = {index} style={{ textAlign:'center',marginTop: 10, color:'#FF0000'}}>
-                  {item}
-                </Text>
-              ))}
-            </View>
-          )}
+          
         </OverlayCard>
       )}
 

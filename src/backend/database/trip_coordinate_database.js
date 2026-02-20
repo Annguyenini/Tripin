@@ -18,7 +18,8 @@ class TripCoordinateDatabase {
                     heading REAL NOT NULL,
                     speed REAL NOT NULL,
                     time_stamp INTEGER PRIMARY KEY,
-                    version INTEGER DEFAULT 0
+                    version INTEGER DEFAULT 0,
+                    type TEXT DEFAULT NULL
                     );
                 `);
             } catch (err) {
