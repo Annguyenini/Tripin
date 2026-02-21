@@ -34,12 +34,13 @@ class TripDataService extends TripLocalDataStorage{
         // save detail data for each trip 
         // we use batch so we can update to ui by 10
         let batches = []
-
+        console.log('triplist',trips_list)
         for(const trip of trips_list){
             // generate key for each trip 
             // const key = this.getTripKeyReady(trip.user_id,trip.id)
             // store image if exist
             if(trip.image && !local){
+                // console.log(trip.image)
                 trip.image = await this.saveTripImageToLocal(trip.image,`${trip.id}_cover.jpg`,'aws')
             }
             // save to async storage

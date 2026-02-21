@@ -71,33 +71,32 @@ class CurrentTripDataService extends TripLocalDataStorage{
         if(!trip_data||typeof(trip_data)!=='object'||Array.isArray(trip_data)){
             console.log('trip_data must be object')
         }
-
+        console.log('trip data',trip_data)
         try{        
             await this.saveTripDataObjectToLocal(STORAGE_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
+        
+            this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
+            this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID, trip_data.trip_id)
+            this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_NAME,trip_data.trip_name)
+            this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_CREATED_TIME,trip_data.created_time)
+            this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,true)
+            this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image)
+            this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image) 
+            this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
+            this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID,trip_data.trip_id)
+            return true
         }
         catch(err){
             console.error('Failed at save current trip data tp local',err)
             throw new Error ('Failed at save current trip data tp local',err)
             return false
         }
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID, trip_data.trip_id)
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_NAME,trip_data.trip_name)
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_CREATED_TIME,trip_data.created_time)
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,true)
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image)
-        await this.setTripStatusToLocal('true')
-        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image) 
-        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
-        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID,trip_data.trip_id)
-        return true
     }
 
 
     async loadCurrentTripDataFromLocal(){
         try{
             const trip_data = await this.getCurrentTripDataFromLocal()
-            console.log('tripin data',trip_data)
             if(!trip_data) return false
             if(!await this.saveCurrentTripDataToLocal(trip_data))return false
             return true

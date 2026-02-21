@@ -35,7 +35,7 @@ class TripHandler{
             await CurrentTripDataService.saveCurrentTripDataToLocal(trip_data)
 
             // set current trip app state to true
-            await CurrentTripDataService.setTripStatusToLocal('true')
+            // await CurrentTripDataService.setTripStatusToLocal('true')
 
             //create db sqlite
             await TripDataStorage.init_new_trip(trip_id)
@@ -62,11 +62,12 @@ class TripHandler{
                 return true
             }
             await EtagService.deleteEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST)
-            // return await this.requestAllTripHandler()
+            return await this.requestAllTripHandler()
         }
         // if the backend fail
         if(respond.status!==200)return false
         const data = respond.data
+        console.log('data1111',data)
         if(!data.all_trip_data) return true
         const save_status = await TripDataService.handleAllTripsList(data.all_trip_data.trip_data_list)
         if(data.etag){
@@ -95,7 +96,7 @@ class TripHandler{
         const trip_id = data.current_trip_id
         console.log('current trip id', trip_id)
         if (trip_id){
-            await CurrentTripDataService.setTripStatusToLocal('true')
+            // await CurrentTripDataService.setTripStatusToLocal('true')
             console.log(trip_id)
             const current_trip_respond = await Trip.requestTripData(trip_id)
             const status = current_trip_respond.status
