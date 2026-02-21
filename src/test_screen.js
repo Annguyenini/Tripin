@@ -9,6 +9,8 @@ import Albumn from './backend/album/albumdb';
 import TripDatabaseService from './backend/database/TripDatabaseService';
 import * as Location from 'expo-location'
 import GPSLocgic from './backend/gps_logic/gps_logic';
+import LocalStorage from './backend/storage/base/localStorage';
+const localStorage = new LocalStorage()
 export const TestScreen = ({testScreenHandler}) => {
   const gpsTask = useRef(null)
 
@@ -25,6 +27,9 @@ export const TestScreen = ({testScreenHandler}) => {
   const onGetUserDb = async()=>{
     await TripDatabaseService.getAllTrip()
   }
+  const getKeys =async()=>{
+    console.log(await localStorage.getAllKeys())
+  }
   const startGPSTask = async ()=>{
     if (gpsTask.current) {
       gpsTask.current = null
@@ -32,7 +37,7 @@ export const TestScreen = ({testScreenHandler}) => {
       return
     }
     console.log('test')
-     gpsTask.current = await GpsLocgic.startGPSLogic()
+     gpsTask.current = await GPSLocgic.startGPSLogic()
   }
   
   useEffect(()=>{
@@ -95,6 +100,18 @@ export const TestScreen = ({testScreenHandler}) => {
                 }}
             >
           <Text>print data from user to console</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+                onPress={getKeys}
+                style={{
+                  marginTop: 12,
+                  padding: 10,
+                  backgroundColor: '#e0e0e0',
+                  borderRadius: 6,
+                  alignItems: 'center',
+                }}
+            >
+          <Text>print all keys</Text>
         </TouchableOpacity>
         <TouchableOpacity
                 onPress={startGPSTask}

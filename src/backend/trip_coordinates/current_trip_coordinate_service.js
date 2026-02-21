@@ -18,8 +18,9 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
         this.isTimerStart = false
     }
 
-    async init_new_trip(){
-        return await this.create_trip(CurrentTripDataService.getCurrentTripId())
+    async init_new_trip(trip_id){
+        
+        return await this.create_trip(trip_id)
     }
     async insert_into_DB(temp_storage){
         const DB = await SqliteService.connectDB()

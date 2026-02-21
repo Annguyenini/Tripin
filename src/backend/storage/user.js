@@ -37,13 +37,13 @@ class UserDataService extends LocalStorage{
     }
     /** getUserData
      * @returns an object of userdata or null if it empty */ 
-    async getUserDataFromLocal(){
-        const user_data = await this.getDataObjectFromLocal(DATA_KEYS.USER.USER_DATA)
+    getUserDataFromLocal(){
+        const user_data = this.getDataObjectFromLocal(STORAGE_KEYS.USER.USER_DATA)
         return user_data
     }
 
-    async getUserAuthFromLocal(){
-        const user_data = await this.getDataObjectFromLocal(DATA_KEYS.USER.USER_AUTH)
+    getUserAuthFromLocal(){
+        const user_data = this.getDataObjectFromLocal(STORAGE_KEYS.USER.USER_ROLE)
         return user_data
     }
     getProfileImageUri(){
@@ -64,6 +64,11 @@ class UserDataService extends LocalStorage{
         else{
             destination = await this.downloadImageToLocal(uri,USER_PROFILE_IMAGE_PATH)
         }
+        const user_data = await this.getUserDataFromLocal()
+        if(user_data){
+            user_data.avatar = destination
+            await this.setUserDataToLocal(user_data)
+        }
         this.items.set(DATA_KEYS.USER.USER_AVATAR,destination)
         this.notify(DATA_KEYS.USER.USER_AVATAR,destination)
         return destination
@@ -72,7 +77,7 @@ class UserDataService extends LocalStorage{
      * @param {object}userdata - must be an object 
     */
     async setUserDataToLocal (userdata){
-        await this.saveDataObjectToLocal(DATA_KEYS.USER.USER_DATA,userdata)
+        await this.saveDataObjectToLocal(STORAGE_KEYS.USER.USER_DATA,userdata)
         
         this.items.set(DATA_KEYS.USER.USER_NAME,userdata.user_name)
         
@@ -86,7 +91,7 @@ class UserDataService extends LocalStorage{
     }
 
     async setUserAuthToLocal(userdata){
-        await this.saveDataObjectToLocal(DATA_KEYS.USER.USER_AUTH,userdata)
+        await this.saveDataObjectToLocal(STORAGE_KEYS.USER.USER_ROLE,userdata)
         this.items.set(DATA_KEYS.USER.USER_ID,userdata.user_id)
         this.items.set(DATA_KEYS.USER.USER_ROLE,userdata.role)
 
@@ -96,7 +101,7 @@ class UserDataService extends LocalStorage{
      * @returns 
      */
     async usingStoredUserData(){
-        const stored_userdata = await this.getDataObjectFromLocal(DATA_KEYS.USER.USER_DATA)
+        const stored_userdata = await this.getDataObjectFromLocal(STORAGE_KEYS.USER.USER_DATA)
         await this.setUserDataToLocal(stored_userdata)
         return
     }   
@@ -104,7 +109,11 @@ class UserDataService extends LocalStorage{
      *
      */
     async deleteUserDataFromLocal(){
-        this.deleteDataFromLocal(DATA_KEYS.USER.USER_DATA)
+        const keys_array = await this.getAllKeys()
+        keys_array = keys_array.filter(key => key.includes('user.'))
+        for (const key of keys_array){
+            this.deleteDataFromLocal(key)
+        }
         this.items.set(DATA_KEYS.USER.USER_DATA,null)
         this.notify(DATA_KEYS.USER.USER_DATA,null)
     }

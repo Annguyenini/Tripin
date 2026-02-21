@@ -26,13 +26,13 @@ class GPSCallbackHandler{
     }
     
     callBack(payload){
+        let distance 
         if(this.lastPayload){
             const {latitude:lat1,longitude:lng1} = this.lastPayload.coordinates
             const {latitude:lat2,longitude:lng2} = payload.coordinates
-            const distance = CoordinateCal.haversineDistance(lat1,lng1,lat2,lng2)
+            distance = CoordinateCal.haversineDistance(lat1,lng1,lat2,lng2)
             console.log('call back distance',distance)
             this.lastPayload = payload
-            if (distance <= 5)return
         }
         const {speed} = payload.coordinates
         console.log('call back speed', speed)
@@ -50,6 +50,8 @@ class GPSCallbackHandler{
             this.notify('auto')
         }
         payload['type'] = this.currentMode
+        if (distance <= 5)return
+
         CurrentTripCoordinateService.push(payload)
         this.lastPayload = payload
         // process new coords

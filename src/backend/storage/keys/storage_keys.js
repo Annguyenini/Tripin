@@ -1,15 +1,24 @@
     
 export const STORAGE_KEYS={
-    USER:'user',
-    TRIPDATA:'trip_data',
-    TRIP_IMAGE:'trip_image', 
-    LOCATION_COND_DATA:'location_cond_data',
-    CURRENT_CITY:'current_city',
+    USER:{
+        USER_DATA:'user.user_data',
+        USER_ROLE:'user.user_role'
+    },
+    CURRENT_TRIP:{
+        CURRENT_TRIP_DATA:'trip.trip_data',
+        CURRNET_TRIP_IMAGE:'trip.trip_image',
+        CURRENT_TRIP_STATUS:'trip.trip_status', 
+    },
+    LOCATION:{
+        LOCATION_COND_DATA:'location.location_cond_data',
+        CURRENT_CITY:'location.current_city',
+    },
     SETTINGS:{
         TRIP_STATUS:'settings.trip_status',
         FOREGROUNDPERMISSION :"settings.foreground_permission",
         BACKGROUNDPERMISSION :"settings.background_permission",
     },
+    
 
 }
 

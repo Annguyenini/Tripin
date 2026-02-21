@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store'
 import { Platform } from 'react-native';
-
+import * as jose from 'jose'
+import {PUBLIC_KEY} from '../../config/public_keys'
 const ALLOW_TYPE =['access_token','refresh_token']
 class TokenService{
     constructor(){
@@ -116,6 +117,23 @@ class TokenService{
         }
         return token
     }
+    async verifyTokenOffine(token){
+        try {
+            const publicKey = await jose.importSPKI(config.publicKey, 'RS256')
+            
+            const { payload } = await jose.jwtVerify(token, publicKey, {
+                algorithms: ['RS256']
+            })
+
+            return { status: true, message: 'Successfully!', code: 'successfully' }
+
+        } catch (err) {
+            if (err.code === 'ERR_JWT_EXPIRED') {
+                return { status: false, message: 'Token Expired!', code: 'token_expired' }
+            }
+            return { status: false, message: 'Token Invalid!', code: 'token_invalid' }
+        }
+        }
 }
 
 const tokenService = new TokenService()

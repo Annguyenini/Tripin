@@ -11,10 +11,7 @@ export default async function fetchFunction(url, options = {}, retry = true) {
     }
     
     activeFetch[url] =  _doFetch(url, options, retry).finally(() => {
-        console.log(activeFetch)
-        console.log('delete')
         delete activeFetch[url]
-        console.log(activeFetch)
     })
 
     console.log('fetch data',activeFetch[url])
@@ -36,16 +33,18 @@ async function _doFetch(url, options, retry) {
 
         if (respond.status === 401 && data.code === 'token_expired' && retry) {
             await AuthService.requestNewAccessToken()
+            delete activeFetch[url]
             return fetchFunction(url, options, false)
         }
 
         NetworkObserver.setServerStatus(true)
-        return { ok: true, status: respond.status, data }
+        return { ok: true, status: respond.status, data:data }
 
     } catch (err) {
         console.error('Failed to fetch', err)
         if (err instanceof TypeError && err.message === 'Network request failed') {
             NetworkObserver.setServerStatus(false)
+            return { ok: false, code:'network_error'}
         }
         return { ok: false }
     }

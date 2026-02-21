@@ -38,53 +38,14 @@ class CurrentTripDataService extends TripLocalDataStorage{
             }
         }
     }
-
+    
+// =====================GET==============
     getCurrentTripId (){ return this.item.get(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID) }
     getCurrentTripImageUri(){ return this.item.get(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE) }
     getCurrentCreatedTime(){ return this.item.get(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_CREATED_TIME) }
     getCurrentTripStatus(){ return this.item.get(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS) }
     getCurrentTripName(){ return this.item.get(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_NAME) }
 
-
-     /** Set user data 
-     * @param user_id
-     * @paran trip_id
-     * @param {object}trip_data - must be an object 
-     */
-    
-    async saveCurrentTripDataToLocal (user_id, trip_id,trip_data){
-        // if(!trip_data||typeof(trip_data)!=='object'){
-        //     console.log('trip_data must be object')
-        // }
-        console.log('tripidata',trip_data)
-        const key = this.getTripKeyReady(user_id,trip_id)
-        await this.saveTripDataObjectToLocal(key,trip_data)
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID, trip_id)
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_NAME,trip_data.trip_name)
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_CREATED_TIME,trip_data.created_time)
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,true)
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STORAGE_KEY,key)
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image)
-        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image) 
-        await this.setTripStatusToLocal('true')
-        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
-        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID,trip_id)
-        return true
-    }
-
-
-    async loadCurrentTripDataFromLocal(user_id,trip_id){
-        const trip_data = await this.getCurrentTripDataFromLocal(user_id,trip_id)
-        if(!trip_data) return false
-        if(!await this.saveCurrentTripDataToLocal(user_id,trip_id,trip_data))return false
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image)
-        await this.setTripStatusToLocal('true')
-        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image) 
-        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
-        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID,trip_id)
-        return true
-    }
     /** getTripData
      * trip_data={
      *  "trip_name":trip_name,
@@ -93,24 +54,58 @@ class CurrentTripDataService extends TripLocalDataStorage{
      * }
      * @returns an object of trip data or null if it empty */ 
     
-    getCurrentTripData(){        
-        return this.getTripDataObjectFromLocal(this.item.get(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STORAGE_KEY))
+
+    async getCurrentTripDataFromLocal(){
+        return await this.getTripDataObjectFromLocal(STORAGE_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA)
     }
 
-    async getCurrentTripDataFromLocal(user_id,trip_id){
-        const key = this.getTripKeyReady(user_id,trip_id)
-        return await this.getTripDataObjectFromLocal(key)
-    }
+    // ==========================================================
 
-
-    /**
-     * 
-     * @returns trip status 
+     /** Set user data 
+     * @paran trip_id
+     * @param {object}trip_data - must be an object 
      */
-    async getTripStatusFromLocal(){
-        const status = await this.getTripDataFromLocal(STORAGE_KEYS.SETTINGS.TRIP_STATUS)
-        return status
+    
+    async saveCurrentTripDataToLocal (trip_data){
 
+        if(!trip_data||typeof(trip_data)!=='object'||Array.isArray(trip_data)){
+            console.log('trip_data must be object')
+        }
+
+        try{        
+            await this.saveTripDataObjectToLocal(STORAGE_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
+        }
+        catch(err){
+            console.error('Failed at save current trip data tp local',err)
+            throw new Error ('Failed at save current trip data tp local',err)
+            return false
+        }
+        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
+        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID, trip_data.trip_id)
+        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_NAME,trip_data.trip_name)
+        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_CREATED_TIME,trip_data.created_time)
+        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,true)
+        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image)
+        await this.setTripStatusToLocal('true')
+        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image) 
+        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
+        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID,trip_data.trip_id)
+        return true
+    }
+
+
+    async loadCurrentTripDataFromLocal(){
+        try{
+            const trip_data = await this.getCurrentTripDataFromLocal()
+            console.log('tripin data',trip_data)
+            if(!trip_data) return false
+            if(!await this.saveCurrentTripDataToLocal(trip_data))return false
+            return true
+    
+        }
+        catch(err){
+            console.error('Failed at loading stored current trip data')
+        }
     }
     /**
      * 
@@ -118,60 +113,79 @@ class CurrentTripDataService extends TripLocalDataStorage{
      * @returns final image path inside documentDir
      */
     async setCurrentTripImageCoverToLocal(imageUri,trip_id,source='local'){
-        const filename = `${trip_id}_cover.jpg`;
-        const local_trip_imageuri = await this.saveTripImageToLocal(imageUri,filename,source)
-        if (local_trip_imageuri){
-            await this.saveTripDataToLocal(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,local_trip_imageuri)
+        try{        
+            const filename = `${trip_id}_cover.jpg`;
+            const local_trip_imageuri = await this.saveTripImageToLocal(imageUri,filename,source)
+            // if (local_trip_imageuri){
+            //     await this.saveTripDataToLocal(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,local_trip_imageuri)
 
+            // }
+            const current_trip_data = await this.getCurrentTripDataFromLocal()
+            if(current_trip_data){
+                current_trip_data.image = local_trip_imageuri
+                await this.saveCurrentTripDataToLocal(current_trip_data)
+            }
+            return local_trip_imageuri
         }
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,local_trip_imageuri)
-        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,local_trip_imageuri) 
-        return local_trip_imageuri       
+        catch(err){
+            console.error('Failed to set trip image',err)
+            throw new Error ('Failed to set trip image',err)
+        }       
     }
-    /**
-     * 
-     * @returns trip Image uri
-     */
-    async getCurrentTripImageCoverUriFromLocal(){
-        const image = await this.getTripDataFromLocal(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE)
-        console.log('image',image)
-        return image
-    }
-
-    async deleteTripImageCoverFromLocal(){
-        const file_path = this.item.get(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE)
-        await this.deleteDataFromLocal(file_path)
-        await this.deleteImageFromLocal(file_path)
-    }
+   
 
     async setTripStatusToLocal(status){
         /**
          * status must be string
          */
-        await this.saveTripDataToLocal(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,status)
-        const value = (status ==="true"?true:false);
-        this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,value)
-        this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,value)
+        try{
+            await this.saveTripDataToLocal(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,status)
+            const value = (status ==="true"?true:false);
+            this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,value)
+            this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,value)
+        }
+        catch(err){
+            throw new Error('Failed to set current trip status')
+        }
     }
 
 
+    async deleteTripImageCoverFromLocal(){
+        try{
+            const file_path = this.item.get(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE)
+            await this.deleteDataFromLocal(file_path)
+            await this.deleteImageFromLocal(file_path)
 
+        }
+        catch(err){
+            console.error('Failed at delete trip image',err)
+        }
+    }
 
     /**
      * delete the trip data object
      */
     async deleteCurrentTripDataFromLocal(){
-        await this.deleteDataFromLocal(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA)
-       
+        try{
+            await this.deleteDataFromLocal(STORAGE_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA)
+        }
+        catch(err){
+            console.error('Failed at delete current trip data',err)
+        }
     }
 
     /**
      * This function will delete trip data, trip image, and set the trip status back to false
      */
     async resetCurrentTripData(){
-        await this.deleteTripImageCoverFromLocal()
-        await this.deleteCurrentTripDataFromLocal()
-        await this.setTripStatusToLocal('false')
+        try{
+            await this.deleteTripImageCoverFromLocal()
+            await this.deleteCurrentTripDataFromLocal()
+            await this.setTripStatusToLocal('false')
+        }
+        catch(err){
+            console.error('Failed at reset current trip data', err)
+        }
         this._init_values()
         this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,null)
     }
@@ -186,10 +200,8 @@ class CurrentTripDataService extends TripLocalDataStorage{
         }
         return tripdata
     }
-
-
-    async initCurrentCoordinatesArray (){
-
+    generateCurrentTripIdKey(user_id){
+        return `user_${user_id}:current_trip_id`
     }
 
 

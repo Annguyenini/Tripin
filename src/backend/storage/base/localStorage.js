@@ -176,5 +176,12 @@ class LocalStorage {
         }
     }
 
+    getAllKeys() {
+        return AsyncStorage.getAllKeys().catch(err => {
+            console.error('Failed to get all keys', err)
+            return null
+        })
+    }
+
 }
 export default LocalStorage

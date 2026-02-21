@@ -54,7 +54,7 @@ export const MainScreen = () =>{
         return
       }
       console.log('starting gps logic')
-      await GPSLogic.startGPSLogic()
+      await GPSLogic.startGPSLogic('walk')
     }
     backgroundGPSTask()
   },[CurrentTripStatus])

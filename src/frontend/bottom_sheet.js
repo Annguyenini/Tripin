@@ -25,8 +25,8 @@ export const UserDataBottomSheet = ({
 
     const snapPoints = useMemo (()=>['20%','95%'],[])
     const [currentSnapPointIndex, setCurrentSnapPointIndex]= useState(0)
-    const [trip_name, set_trip_name] = useState(null)
-    const [imageUri,setImageUri] =useState(null)
+    // const [trip_name, set_trip_name] = useState(null)
+    // const [imageUri,setImageUri] =useState(null)
     const [show_create_trip_filler, set_show_create_trip_filler] = useState(false)
     const[isOnATrip,setIsOnATrip] =useState(null)
     const[trips,setTrips] = useState(null)
@@ -97,16 +97,18 @@ export const UserDataBottomSheet = ({
       const all_trips = await TripHandler.refreshAllTripsData()
       setLoadingText(null)
     }
-    const request_new_trip = async()=>{
+    const request_new_trip = async(trip_name,imageUri)=>{
       showLoading()
+      console.log('trip_name 1 ',trip_name)
       const res = await TripHandler.requestNewTripHandler(trip_name,imageUri? imageUri:null)
-      
-      if (!res)showErrorBox('Error Create New Trip','Please try again shortly!',6000)
+      hideLoading()
+      if (!res||res.status !== 200){
+        
+        showErrorBox('Error Create New Trip','Please try again shortly!',6000)
+      }
       set_show_create_trip_filler(false)
         // await TripDataService.setTripStatus('true')
         // await TripDataService.setTripImageCover(imageUri)
-      setImageUri(null)
-      hideLoading()
       return
       // navigate('Main')
     }
@@ -177,7 +179,7 @@ export const UserDataBottomSheet = ({
             />
                
         {show_create_trip_filler&&
-        <NewTripFiller set_show_create_trip_filler ={set_show_create_trip_filler} set_trip_name={set_trip_name} request_new_trip={request_new_trip} setImageUri={setImageUri} imageUri={imageUri}/>}
+        <NewTripFiller set_show_create_trip_filler ={set_show_create_trip_filler} request_new_trip={request_new_trip} />}
         {testScreen && <TestScreen testScreenHandler={testScreenHandler}></TestScreen>}
       </BottomSheet>
 
