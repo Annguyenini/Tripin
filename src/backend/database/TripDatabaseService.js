@@ -94,6 +94,7 @@ class TripDataBaseService{
 
             catch(err){
                 console.error('Failed at insert new trip to database: ',err)
+                throw new Error ('Failed at insert new trip to database: ',err)
                 return false
             }
     }

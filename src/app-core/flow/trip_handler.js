@@ -19,30 +19,36 @@ class TripHandler{
      */
     // current depend on the server
     async requestNewTripHandler(trip_name,imageUri =null){
-        const respond = await Trip.requestNewTrip(trip_name,imageUri)
-        if(respond.status!==200)return false
-        // if success fully send to server, process to store in the local 
-        
-        // data from server
-        const data = respond.data
-        const trip_id = data.trip_id
-        // generate image path nad save to local
-        const trip_image_uri = await CurrentTripDataService.setCurrentTripImageCoverToLocal(imageUri,trip_id)
-        // tripdata object
-        const trip_data = CurrentTripDataService.getObjectReady(trip_name,trip_id,Date.now(),trip_image_uri)
-        // save tripdata
-        await CurrentTripDataService.saveCurrentTripDataToLocal(UserDataService.getUserId(),trip_id,trip_data)
+        try{
+            const respond = await Trip.requestNewTrip(trip_name,imageUri)
+            if(respond.status!==200)return respond
+            // if success fully send to server, process to store in the local 
+            
+            // data from server
+            const data = respond.data
+            const trip_id = data.trip_id
+            // generate image path nad save to local
+            const trip_image_uri = await CurrentTripDataService.setCurrentTripImageCoverToLocal(imageUri,trip_id)
+            // tripdata object
+            const trip_data = CurrentTripDataService.getObjectReady(trip_name,trip_id,Date.now(),trip_image_uri)
+            // save tripdata
+            await CurrentTripDataService.saveCurrentTripDataToLocal(trip_data)
 
-        // set current trip app state to true
-        await CurrentTripDataService.setTripStatusToLocal('true')
+            // set current trip app state to true
+            // await CurrentTripDataService.setTripStatusToLocal('true')
 
-        //create db sqlite
-        await TripDataStorage.init_new_trip()
+            //create db sqlite
+            await TripDataStorage.init_new_trip(trip_id)
 
-        const trip_object = TripDatabaseService.getObjectReady(UserDataService.getUserId(),trip_id,trip_name,imageUri)
-        console.log('re',trip_object)
-        await TripDatabaseService.addTripToDatabase(trip_object)
-        return true
+            const trip_object = TripDatabaseService.getObjectReady(UserDataService.getUserId(),trip_id,trip_name,imageUri)
+            console.log('re',trip_object)
+            await TripDatabaseService.addTripToDatabase(trip_object)
+            return respond
+        }
+        catch(err){
+            console.error('Failed at request new trips',err)
+            return null
+        }
     }
     /**
      * request information of all trips and pass it to a handle class
@@ -56,11 +62,12 @@ class TripHandler{
                 return true
             }
             await EtagService.deleteEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST)
-            // return await this.requestAllTripHandler()
+            return await this.requestAllTripHandler()
         }
         // if the backend fail
         if(respond.status!==200)return false
         const data = respond.data
+        console.log('data1111',data)
         if(!data.all_trip_data) return true
         const save_status = await TripDataService.handleAllTripsList(data.all_trip_data.trip_data_list)
         if(data.etag){
@@ -87,7 +94,9 @@ class TripHandler{
         if (respond.status!==200) return false
         const data = respond.data
         const trip_id = data.current_trip_id
+        console.log('current trip id', trip_id)
         if (trip_id){
+            // await CurrentTripDataService.setTripStatusToLocal('true')
             console.log(trip_id)
             const current_trip_respond = await Trip.requestTripData(trip_id)
             const status = current_trip_respond.status
@@ -110,7 +119,7 @@ class TripHandler{
                 }
                 const trip_data_object = CurrentTripDataService.getObjectReady(trip_data.trip_name, trip_data.trip_id, 
                 trip_data.created_time,trip_image_uri)
-                await CurrentTripDataService.saveCurrentTripDataToLocal(UserDataService.getUserId(),trip_id,trip_data_object)
+                await CurrentTripDataService.saveCurrentTripDataToLocal(trip_data_object)
                 
             }
 

@@ -24,6 +24,7 @@ class TripCoordinateDatabase {
                 `);
             } catch (err) {
                 console.error('Create table failed:', err);
+                throw new Error('Failed to created new trip table')
             }
         }
     

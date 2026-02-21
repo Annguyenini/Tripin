@@ -29,17 +29,18 @@ class TripDataService extends TripLocalDataStorage{
      * @param {*} trips_list 
      * @returns 
      */
-    async handleAllTripsList (trips_list){
+    async handleAllTripsList (trips_list,local=false){
         let status =true
         // save detail data for each trip 
         // we use batch so we can update to ui by 10
         let batches = []
-
+        console.log('triplist',trips_list)
         for(const trip of trips_list){
             // generate key for each trip 
             // const key = this.getTripKeyReady(trip.user_id,trip.id)
             // store image if exist
-            if(trip.image){
+            if(trip.image && !local){
+                // console.log(trip.image)
                 trip.image = await this.saveTripImageToLocal(trip.image,`${trip.id}_cover.jpg`,'aws')
             }
             // save to async storage
@@ -65,7 +66,7 @@ class TripDataService extends TripLocalDataStorage{
         if (trip_data.user_id !== user_id) return null
         return trip_data
     }
-    async saveTripDataToLocal(user_id,trip_id,data){
+    async saveTripDataToLocal(data){
         const status = await TripDatabaseService.addTripToDatabase(data)
         return status
 

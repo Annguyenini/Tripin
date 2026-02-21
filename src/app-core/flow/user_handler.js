@@ -14,8 +14,7 @@ class UserDataHandler{
                 if(!user_id) return false
             }
             const respond = await UserService.getUserData(user_id)
-            if(!respond.ok) return false
-            if (respond.status ===304){
+            if (!respond.ok || respond.status ===304){
                 await UserDataService.usingStoredUserData()
                 return true
             }
@@ -23,10 +22,14 @@ class UserDataHandler{
                 return false
             }
             const data = respond.data
-            const userdata = data.user_data
+            let userdata = data.user_data
+            console.log(userdata)
             if (userdata.avatar){
+                console.log('pass')
                 userdata.avatar = await UserDataService.setProfileImageUriToLocal(userdata.avatar,'aws')
             }
+                            console.log('pass1')
+
             await UserDataService.setUserDataToLocal(userdata)
 
             const etag = data.etag

@@ -43,6 +43,11 @@ class AuthHandler{
                     await Auth.requestNewAccessToken();
                     return await this.loginWithTokenHandler();
                 }
+                else if(!tokendata.ok&& tokendata.code ==='network_error'){
+                    const{status}=await TokenService.verifyTokenOffine(await TokenService.getToken('refresh_token'))
+                    if(status) return true
+                    else return false
+                }
             }
             
             else if (data.code === "token_invalid") {

@@ -128,14 +128,15 @@ class LocalStorage {
     async downloadImageToLocal (imageuri,filename){
         if (!imageuri) {
             console.error("imageuri is nil or invalid")
-        return null
-        }        const destination = documentDirectory+filename
+            return null
+        }        
+        const destination = documentDirectory+filename
         try{
             await downloadAsync(imageuri,destination)
             return destination
         }
         catch(err){
-            console.error(err)
+            console.error('fail',err)
             return null
         }
     }
@@ -174,6 +175,13 @@ class LocalStorage {
         } catch (e) {
             console.error('Failed to clear AsyncStorage:', e);
         }
+    }
+
+    getAllKeys() {
+        return AsyncStorage.getAllKeys().catch(err => {
+            console.error('Failed to get all keys', err)
+            return null
+        })
     }
 
 }
