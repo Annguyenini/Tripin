@@ -133,22 +133,26 @@ class CurrentTripDataService extends TripLocalDataStorage{
     }
    
 
-    async setTripStatusToLocal(status){
-        /**
-         * status must be string
-         */
-        try{
-            await this.saveTripDataToLocal(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,status)
-            const value = (status ==="true"?true:false);
-            this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,value)
-            this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,value)
-        }
-        catch(err){
-            throw new Error('Failed to set current trip status')
-        }
-    }
+    // async setTripStatusToLocal(status){
+    //     /**
+    //      * status must be string
+    //      */
+    //     try{
+    //         await this.saveTripDataToLocal(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,status)
+    //         const value = (status ==="true"?true:false);
+    //         this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,value)
+    //         this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,value)
+    //     }
+    //     catch(err){
+    //         throw new Error('Failed to set current trip status')
+    //     }
+    // }
 
-
+    // async getTripStatusFromLocal(){
+    //     try{
+    //         return this.getTripDataFromLocal()
+    //     }
+    // }
     async deleteTripImageCoverFromLocal(){
         try{
             const file_path = this.item.get(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE)
@@ -180,7 +184,7 @@ class CurrentTripDataService extends TripLocalDataStorage{
         try{
             await this.deleteTripImageCoverFromLocal()
             await this.deleteCurrentTripDataFromLocal()
-            await this.setTripStatusToLocal('false')
+            // await this.setTripStatusToLocal('false')
         }
         catch(err){
             console.error('Failed at reset current trip data', err)

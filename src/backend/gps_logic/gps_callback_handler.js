@@ -8,15 +8,15 @@ class GPSCallbackHandler{
         this.currentMode =null
     }
     attach(observer){
-        console.log('Instance ID check:', this)
-        console.log('Observers before:', this.observers.length)
+        // console.log('Instance ID check:', this)
+        // console.log('Observers before:', this.observers.length)
         this.observers.push(observer)
-        console.log('Observers after:', this.observers.length)
+        // console.log('Observers after:', this.observers.length)
     }
 
     notify(newMode){
-        console.log('Instance ID check:', this)
-        console.log('Observers count:', this.observers.length)
+        // console.log('Instance ID check:', this)
+        // console.log('Observers count:', this.observers.length)
         for(const obs of this.observers){
             obs.update(newMode)
         }

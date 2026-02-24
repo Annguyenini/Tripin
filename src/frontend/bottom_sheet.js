@@ -40,11 +40,11 @@ export const UserDataBottomSheet = ({
         await AppFlow.onRenderUserData()
 
       }
-      const update_state ={
-        update(newState){
-        setIsOnATrip(newState)
-      }
-      }
+      // const update_state ={
+      //   update(newState){
+      //   setIsOnATrip(newState)
+      // }
+      // }
       
       const update_user_image={
         update(uri){
@@ -66,13 +66,13 @@ export const UserDataBottomSheet = ({
         }
       }
 
-      CurrentTripDataService.attach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
+      // CurrentTripDataService.attach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
       TripDataService.attach(update_trips,DATA_KEYS.TRIP.ALL_TRIP_LIST)
       UserDataService.attach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
       TripDisplayObserver.attach(update_snapPoint,TripDisplayObserver.EVENTS)
       callbackRenderSuccessfully()
       return ()=>{
-        CurrentTripDataService.detach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
+        // CurrentTripDataService.detach(update_state,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
         TripDataService.detach(update_trips,DATA_KEYS.TRIP.ALL_TRIP_LIST)
         UserDataService.detach(update_user_image,DATA_KEYS.USER.USER_AVATAR)
         TripDisplayObserver.detach(update_snapPoint,TripDisplayObserver.EVENTS)

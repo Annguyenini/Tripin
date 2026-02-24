@@ -11,7 +11,6 @@ class AuthHandler{
         if(!respond.ok || respond.status !=200) return respond;
         const data = respond.data
         const token = data.tokens
-        console.log('new tokesn',token)
         await TokenService.deleteToken("access_token");
         await TokenService.deleteToken("refresh_token");
         await TokenService.setToken("refresh_token", token.refresh_token);
