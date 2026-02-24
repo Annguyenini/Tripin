@@ -34,19 +34,19 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
                 setCurrentTripId (newTripid)
             }
         }
-        const updateCurrentTripStatus={
-            update (newState){
-                console.log('new state',newState)
-                setIsOnATrip(newState)
-            }
-        }
+        // const updateCurrentTripStatus={
+        //     update (newState){
+        //         console.log('new state',newState)
+        //         setIsOnATrip(newState)
+        //     }
+        // }
         CurrentTripDataService.attach(updateCurrentTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
         TripDisplayObserver.attach(updateNewDisplayTrip,TripDisplayObserver.EVENTS)
-        CurrentTripDataService.attach(updateCurrentTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
+        // CurrentTripDataService.attach(updateCurrentTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
         return ()=>{
             TripDisplayObserver.detach(updateNewDisplayTrip,TripDisplayObserver.EVENTS)
             CurrentTripDataService.detach(updateCurrentTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
-            CurrentTripDataService.detach(updateCurrentTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
+            // CurrentTripDataService.detach(updateCurrentTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
 
         }
 

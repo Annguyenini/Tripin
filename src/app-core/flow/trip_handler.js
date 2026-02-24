@@ -9,6 +9,7 @@ import { ETAG_KEY ,GENERATE_TRIP_ETAG_KEY} from '../../backend/services/etag/eta
 import TripDatabaseService from '../../backend/database/TripDatabaseService'
 import OfflineSyncManager from './sync/offline_sync_manager'
 import TripDisplayObserver from '../../frontend/map_box/functions/trip_display_observer'
+import GPSLogic from '../../backend/gps_logic/gps_logic'
 class TripHandler{
     /**
      * 
@@ -43,6 +44,7 @@ class TripHandler{
             const trip_object = TripDatabaseService.getObjectReady(UserDataService.getUserId(),trip_id,trip_name,imageUri)
             console.log('re',trip_object)
             await TripDatabaseService.addTripToDatabase(trip_object)
+            GPSLogic.startGPSLogic()
             return respond
         }
         catch(err){
@@ -159,19 +161,27 @@ class TripHandler{
      */
     // currently depend on server
     async endTripHandler(){
-        const respond = await Trip.end_trip()
-        if(!respond.ok || respond.status!==200){
-            OfflineSyncManager.pushEventToQueue(
-                OfflineSyncManager.getSyncObjectReady(
-                    OfflineSyncManager.EVENTS.END_TRIP,
-                    {
-                        trip_id:CurrentTripDataService.getCurrentTripId()
-                    },
-                    Date.now()
-                ))
+        try{
+            const respond = await Trip.end_trip()
+            if(!respond.ok || respond.status!==200){
+                OfflineSyncManager.pushEventToQueue(
+                    OfflineSyncManager.getSyncObjectReady(
+                        OfflineSyncManager.EVENTS.END_TRIP,
+                        {
+                            trip_id:CurrentTripDataService.getCurrentTripId()
+                        },
+                        Date.now()
+                    ))
+            }
+
+            await CurrentTripDataService.resetCurrentTripData()
+            GPSLogic.endGPSLogic()
+            return true
         }
-        await CurrentTripDataService.resetCurrentTripData()
-        return true
+        catch(err){
+            console.error('Failed to end trip',err)
+            return false
+        }
     }   
     
 }

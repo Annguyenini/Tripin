@@ -23,8 +23,6 @@ export const CurrentTripBar=()=>{
   const end_trip =async()=>{
     showLoading()
     const status =await TripHandler.endTripHandler();
-    await CurrentTripDataService.resetCurrentTripData()
-    console.log('end22')
     hideLoading ()
   }
 

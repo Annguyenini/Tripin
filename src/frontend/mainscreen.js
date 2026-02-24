@@ -34,30 +34,11 @@ export const MainScreen = () =>{
   // const display_name =useRef(null)
   const[show_profile_picker,set_show_profile_picker] =useState(false)
   const [state, setState] = useState(AppState.currentState)
-  const [CurrentTripStatus,setCurrentTripStatus]=useState(CurrenTripDataService.getCurrentTripStatus())
   const gpsTask = useRef(null)
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-      const update_status={
-        update(newStatus){
-          setCurrentTripStatus(newStatus)
-        }
-      }
-      CurrenTripDataService.attach(update_status,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
-      return ()=> CurrenTripDataService.detach(update_status,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
     }, []);
 // app state tracker
-  useEffect(()=>{
-    const backgroundGPSTask =async()=>{
-      if(!CurrentTripStatus) {
-        await GPSLogic.endGPSLogic()
-        return
-      }
-      console.log('starting gps logic')
-      await GPSLogic.startGPSLogic('walk')
-    }
-    backgroundGPSTask()
-  },[CurrentTripStatus])
   
   useEffect(()=>{
 
@@ -77,6 +58,7 @@ export const MainScreen = () =>{
           endForegroundGPSTracker()
           gpsTask.current =(null)
         }
+        GPSLogic.syncGPSTask()
       });
       return ()=>{
         getState.remove()

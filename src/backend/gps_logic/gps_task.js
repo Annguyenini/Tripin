@@ -2,8 +2,11 @@ import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
 import CurrentTripDataService from '../storage/current_trip'
 import permission from '../storage/settings/permissions';
-import GPSCallBack from './gps_callback_handler'
 const TASK_NAME = "background-location-task";
+let _onLocationUpdate = null
+export const _registerLocationCallback =(callback)=>{
+    _onLocationUpdate = callback
+}
 TaskManager.defineTask(TASK_NAME,async ({data,error})=>{
     
     try{
@@ -32,7 +35,13 @@ TaskManager.defineTask(TASK_NAME,async ({data,error})=>{
         };
         // 
         console.log('location: ',location)
-        GPSCallBack.callBack(payload)
+        if(_onLocationUpdate){
+            _onLocationUpdate(payload)
+        }
+        else{
+            console.warn('there are no location callback register')
+        }
+        // GPSCallBack.callBack(payload)
 
     }
     catch(error){
@@ -80,16 +89,6 @@ class GPSTask {
                 console.error('Failed  to get the back ground permission! ')
                 return
             }
-            // if (!CurrentTripDataService.getCurrentTripStatus()) {
-            //     console.warn('Background task only allow to run while user on a trip!')
-            //     return
-            // }
-    
-            // const trip_id = CurrentTripDataService.getCurrentTripId()
-            // if(!trip_id){
-            //     console.warn('No trip id')
-            //     return
-            // }
             if (hasStarted) {
             // console.log('Stopping existing task...');
             await Location.stopLocationUpdatesAsync(TASK_NAME);
@@ -124,6 +123,9 @@ class GPSTask {
             console.error('Faild to end test: ',error)
             throw new Error ('FAILED TO END TASK')
         }
+    }
+    isTaskRunning(){
+        return Location.hasStartedLocationUpdatesAsync(TASK_NAME);
     }
 }
 

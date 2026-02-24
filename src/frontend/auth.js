@@ -114,7 +114,6 @@ export const AuthScreen= ( ) => {
         hideLoading()
         return;
       }
-      console.log(email,displayName,username,password)
       const response = await AuthHandler.signUpHandler(email,displayName,username,password);
       const data = response.data
       if(!response.ok || response.status===401){

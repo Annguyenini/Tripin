@@ -29,7 +29,7 @@ class OfflineSyncManager {
      * @param {*} data_object 
      */
     pushEventToQueue(data_object){
-        this.push(data_object)
+        this.requestQueue.push(data_object)
         
     }
     // update for server reachable status
