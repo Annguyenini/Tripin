@@ -42,8 +42,8 @@ class UserDataService extends LocalStorage{
         return user_data
     }
 
-    getUserAuthFromLocal(){
-        const user_data = this.getDataObjectFromLocal(STORAGE_KEYS.USER.USER_ROLE)
+    async getUserAuthFromLocal(){
+        const user_data = await this.getDataObjectFromLocal(STORAGE_KEYS.USER.USER_ROLE)
         return user_data
     }
     getProfileImageUri(){
@@ -91,6 +91,7 @@ class UserDataService extends LocalStorage{
     }
 
     async setUserAuthToLocal(userdata){
+        console.log('trips1',userdata)
         await this.saveDataObjectToLocal(STORAGE_KEYS.USER.USER_ROLE,userdata)
         this.items.set(DATA_KEYS.USER.USER_ID,userdata.user_id)
         this.items.set(DATA_KEYS.USER.USER_ROLE,userdata.role)
@@ -105,6 +106,11 @@ class UserDataService extends LocalStorage{
         await this.setUserDataToLocal(stored_userdata)
         return
     }   
+    async usingStoredUserAuth(){
+        const stored_userauth = await this.getUserAuthFromLocal()
+        await this.setUserAuthToLocal(stored_userauth)
+        return
+    }
     /**
      *
      */

@@ -75,13 +75,13 @@ class TripDataService extends TripLocalDataStorage{
         const user_id = UserDataService.getUserId()
         const trips_list = await TripDatabaseService.getAllUserTripDataFromDB(user_id) 
         // const trips_list = await this.getArrayFromLocal(DATA_KEYS.TRIP.ALL_TRIP_LIST)
-        console.log('trip list ', trips_list)
+        console.log('trip list ', trips_list,user_id)
         if(trips_list){
             this.item.set(DATA_KEYS.TRIP.ALL_TRIP_LIST,trips_list)
             this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST,trips_list)
         }
 
-        // return true
+        return true
     }
     getAllTripsList(){
         return this.item.get(DATA_KEYS.TRIP.ALL_TRIP_LIST)
