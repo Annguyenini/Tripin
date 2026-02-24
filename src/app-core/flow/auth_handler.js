@@ -25,9 +25,12 @@ class AuthHandler{
         const userdata_etag = await Etag_Service.getEtagFromLocal(ETAG_KEY.USERDATA) 
         
         const res = await Auth.authenticateToken("access_token",userdata_etag);
-        if(!res.ok )return false
+        // if(!res.ok )return false
         const data =await res.data
         console.log('via token', data)
+        if(!res.ok){
+            return await this._offlineAuthHandler()
+        }
         if (res.status===401){
             if (data.code === "token_expired") {
                 const tokendata = await Auth.authenticateToken("refresh_token");
@@ -43,11 +46,10 @@ class AuthHandler{
                     await Auth.requestNewAccessToken();
                     return await this.loginWithTokenHandler();
                 }
-                else if(!tokendata.ok&& tokendata.code ==='network_error'){
-                    const{status}=await TokenService.verifyTokenOffine(await TokenService.getToken('refresh_token'))
-                    if(status) return true
-                    else return false
+                else if(!tokendata.ok || tokendata.code ==='network_error'){
+                    return await this._offlineAuthHandler()
                 }
+                
             }
             
             else if (data.code === "token_invalid") {
@@ -74,6 +76,12 @@ class AuthHandler{
         const respond = await Auth.requestVerifycation(email,code)
         return respond
     }
+    async _offlineAuthHandler(){
+        const{status}=await TokenService.verifyTokenOffine(await TokenService.getToken('refresh_token'))
+        if(!status) return false
+        await UserDataService.usingStoredUserAuth()    
+        return true
+    }   
     
 }
 

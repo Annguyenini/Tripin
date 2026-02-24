@@ -7,7 +7,7 @@ import { ETAG_KEY } from '../../backend/services/etag/etag_keys'
 class UserDataHandler{
     async GetUserDataHandler(){
         try{
-            const user_id= UserDataService.getUserId()
+            let user_id= UserDataService.getUserId()
             if (!user_id){
                 const user_auth = await UserDataService.getUserAuthFromLocal()
                 user_id = user_auth.user_id
@@ -25,11 +25,8 @@ class UserDataHandler{
             let userdata = data.user_data
             console.log(userdata)
             if (userdata.avatar){
-                console.log('pass')
                 userdata.avatar = await UserDataService.setProfileImageUriToLocal(userdata.avatar,'aws')
             }
-                            console.log('pass1')
-
             await UserDataService.setUserDataToLocal(userdata)
 
             const etag = data.etag

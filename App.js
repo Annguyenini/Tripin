@@ -17,6 +17,7 @@ import {
   Dimensions,
   ScrollView
 } from 'react-native';
+
 import { useFonts } from 'expo-font';
 import {styles} from './src/styles/style.js'
 import{mainScreenStyle} from './src/styles/main_screen_styles.js'

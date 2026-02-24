@@ -25,8 +25,8 @@ class AppFlow{
     }
     async onAuthSuccess(){
         const requestUserData = await UserDataHandler.GetUserDataHandler()
-        if (!requestUserData){ return false}
-        console.log('main')
+        // if (!requestUserData){ return false}
+        // console.log('main')
         navigate('Permission')
         
         return true
