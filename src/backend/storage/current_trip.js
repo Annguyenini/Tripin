@@ -55,8 +55,8 @@ class CurrentTripDataService extends TripLocalDataStorage{
      * @returns an object of trip data or null if it empty */ 
     
 
-    async getCurrentTripDataFromLocal(){
-        return await this.getTripDataObjectFromLocal(STORAGE_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA)
+    getCurrentTripDataFromLocal(){
+        return this.getTripDataObjectFromLocal(STORAGE_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA)
     }
 
     // ==========================================================

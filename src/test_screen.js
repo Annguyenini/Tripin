@@ -18,7 +18,7 @@ export const TestScreen = ({testScreenHandler}) => {
   const [sqlText, setSqlText] = useState('No SQL data fetched');
 
   const onGetSQLPress = async() => {
-    const data =await TripDataStorage.getAllCoordinatesFromTripId(170)
+    const data =await TripDataStorage.getAllCoordinatesFromTripId(194)
     console.log(data)
   };
   const onGetAlbumPress = async ()=>{

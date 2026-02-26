@@ -32,7 +32,7 @@ class TripCoordinateDatabase {
         console.log('handler',data_objects,trip_id)
 
         const DB = await SqliteService.connectDB()
-        await DB.execAsync(`DROP TABLE IF EXISTS trip_${trip_id}`)
+        // await DB.execAsync(`DROP TABLE IF EXISTS trip_${trip_id}`)
         await this.create_trip(trip_id)
         await DB.withTransactionAsync(async()=>{
             for(const coord of data_objects){
@@ -57,11 +57,12 @@ class TripCoordinateDatabase {
         const DB = await SqliteService.connectDB()
         try{
 
-            const allRows = await DB.getAllAsync(`SELECT * FROM trip_${trip_id};`)
+            const allRows = await DB.getAllAsync(`SELECT * FROM trip_${trip_id}`)
             return allRows
         }
         catch(err){
             console.error (err)
+            return null
         }
     }
 }

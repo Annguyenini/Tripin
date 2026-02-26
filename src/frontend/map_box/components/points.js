@@ -12,8 +12,10 @@ const CoordinatesPointsLayout =({trip_id})=> {
   // const [coordinatesObject,setCoordinatesObject]=useState({})
  
   useEffect (()=>{
+    let _cancelled = false
     const setUpWatchList =async()=>{
       const newCoords = await TripContentHandler.getTripCoordinatesHandler(trip_id)
+      if(_cancelled)return
       CurrentDisplayCoordinateObserver.setDefaultCoordsArray(trip_id,newCoords)
       setAssestsObjectsArray(newCoords? [...newCoords]:[])
 
@@ -27,10 +29,11 @@ const CoordinatesPointsLayout =({trip_id})=> {
     const radiusListener=(val)=>{
       setRadiusForGrouping(val)
     }
-    setUpWatchList()
     eventBus.on('RadiusChange',radiusListener)
     CurrentDisplayCoordinateObserver.attach(updateWatchList,CurrentDisplayCoordinateObserver.GENERATE_KEY(trip_id))
+    setUpWatchList()
     return()=>{
+      _cancelled  = true
       CurrentDisplayCoordinateObserver.detach(updateWatchList,CurrentDisplayCoordinateObserver.GENERATE_KEY(trip_id))
       eventBus.off('RadiusChange',radiusListener)
 
@@ -62,7 +65,7 @@ const CoordinatesPointsLayout =({trip_id})=> {
 
   const currentCluster = useMemo(()=>{
     return (coordinatesMap.get(radiusForGrouping))
-  },[coordinatesMap,radiusForGrouping,assestsObjectsArray])
+  },[coordinatesMap,radiusForGrouping])
   
   
   const clusterKey = useMemo(() => {
