@@ -15,7 +15,8 @@ TaskManager.defineTask(TASK_NAME,async ({data,error})=>{
         }
       
     
-        const trip_id = CurrentTripDataService.getCurrentTripDataFromLocal()
+        const {trip_id} = await CurrentTripDataService.getCurrentTripDataFromLocal()
+        console.log('lala',trip_id)
         if(!trip_id){
             console.warn('No trip id')
         }

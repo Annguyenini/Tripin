@@ -37,7 +37,9 @@ export const MainScreen = () =>{
   const gpsTask = useRef(null)
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-    }, []);
+    GPSLogic.syncGPSTask()
+ 
+  }, []);
 // app state tracker
   
   useEffect(()=>{

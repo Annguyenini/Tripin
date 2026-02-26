@@ -34,7 +34,7 @@ export const CurrentTripBox = ({isMinimize})=>{
 
       {/* LIVE badge */}
         <View style={currentTripBoxStyle.liveBadge}>
-          <Text style={currentTripBoxStyle.liveText}>• LIVE</Text>
+          <Text style={currentTripBoxStyle.liveText}>• Current Trip</Text>
         </View>
 
       {/* Arrow button */}

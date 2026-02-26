@@ -51,9 +51,13 @@ class TripContentHandler{
 
     async getTripCoordinatesHandler(trip_id){
         let coordinates 
-        // step 1 get the version and asking the backend
-        const version = await TripDatabaseService.getTripCoordinateVersion(trip_id)
-        const respond = await TripContents.requestTripCoordinates(trip_id,version)        
+        let version
+        // step 1 get the version and asking the backend 
+        if (this.TripCoordinateDatabaseService.getAllCoordinatesFromTripId(trip_id)){
+            version = await TripDatabaseService.getTripCoordinateVersion(trip_id)
+        }
+        const respond = await TripContents.requestTripCoordinates(trip_id,version) 
+        // check if the trip coordinate table exist        
         // if the backend have the same data as the local db have
         // we get it from local db and return
         if(!respond.ok ||respond.status ===304){
@@ -126,6 +130,7 @@ class TripContentHandler{
         if(!respond.ok || respond.status !==200) return 
         return respond   
     }
+    
     // async requestSTripMedias (){
     //     console.log(CurrentTripDataService.getCurrentTripId())
     //     const respond = await TripContents.requestTripMedias(CurrentTripDataService.getCurrentTripId())

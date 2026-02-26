@@ -98,17 +98,17 @@ export const CurrentTripBar=()=>{
 
         </Pill>
 
-        <Pill>
+        {/* <Pill>
           <Text style={styles.text}>{temp} C</Text>
-        </Pill>
+        </Pill> */}
 
         <Pill>
           <Text style={styles.text}>{city}</Text>
         </Pill>
 
-        <Pill>
+        {/* <Pill>
           <Text style={styles.text}>AQI: {aqi}</Text>
-        </Pill>
+        </Pill> */}
         <RedPill>
           <TouchableOpacity onPress={end_trip}>
           <Text style={styles.end_trip}>End trip</Text>
