@@ -25,7 +25,7 @@ export const MapBoxLayout =({})=>{
         await AppFlow.onRenderMapSuccess()
        
     }
-    const allowedZooms = [13, 15, 20, 21, 22];
+    const allowedZooms = [10,13, 15, 20, 21, 22];
 
     const zoomHandler = (e) => {
         const zoom = Math.floor(e.properties.zoom);

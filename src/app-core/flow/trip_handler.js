@@ -10,6 +10,7 @@ import TripDatabaseService from '../../backend/database/TripDatabaseService'
 import OfflineSyncManager from './sync/offline_sync_manager'
 import TripDisplayObserver from '../../frontend/map_box/functions/trip_display_observer'
 import GPSLogic from '../../backend/gps_logic/gps_logic'
+import safeRun from '../helpers/safe_run'
 class TripHandler{
     /**
      * 
@@ -29,21 +30,21 @@ class TripHandler{
             const data = respond.data
             const trip_id = data.trip_id
             // generate image path nad save to local
-            const trip_image_uri = await CurrentTripDataService.setCurrentTripImageCoverToLocal(imageUri,trip_id)
+            
+            const trip_image_uri = await safeRun(()=>CurrentTripDataService.setCurrentTripImageCoverToLocal(imageUri,trip_id) , 'trip_image_save_failed')
             // tripdata object
             const trip_data = CurrentTripDataService.getObjectReady(trip_name,trip_id,Date.now(),trip_image_uri)
             // save tripdata
-            await CurrentTripDataService.saveCurrentTripDataToLocal(trip_data)
+            await safeRun(()=> CurrentTripDataService.saveCurrentTripDataToLocal(trip_data),'current_trip_save_failed')
 
             // set current trip app state to true
             // await CurrentTripDataService.setTripStatusToLocal('true')
 
-            //create db sqlite
-            await TripDataStorage.init_new_trip(trip_id)
+            //create db sqlite for coordinates
+            await safeRun (()=>TripDataStorage.init_new_trip(trip_id),'created_trip_coordinate_table_failed')
 
             const trip_object = TripDatabaseService.getObjectReady(UserDataService.getUserId(),trip_id,trip_name,imageUri)
-            console.log('re',trip_object)
-            await TripDatabaseService.addTripToDatabase(trip_object)
+            await safeRun (()=>TripDatabaseService.addTripToDatabase(trip_object),'add_trip_to_table_failed')
             GPSLogic.startGPSLogic()
             return respond
         }
@@ -56,26 +57,43 @@ class TripHandler{
      * request information of all trips and pass it to a handle class
      * @returns boolean of status
      */
-    async requestAllTripHandler (){
-        const respond = await Trip.requestTripsData()
-        // if match 
-        if(!respond.ok ||respond.status ===304){
-            if (await TripDataService.loadAllTripsListFromLocal()){
-                return true
-            }
-            await EtagService.deleteEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST)
+    async requestAllTripHandler() {
+        const respond = await safeRun(
+            () => Trip.requestTripsData(),
+            'fetch_trips_failed'
+        )
+
+        if (!respond.ok || respond.status === 304) {
+            if (await safeRun(
+                () => TripDataService.loadAllTripsListFromLocal(),
+                'load_local_failed'
+            )) return true
+
+            await safeRun(
+                () => EtagService.deleteEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST),
+                'delete_etag_failed'
+            )
             return await this.requestAllTripHandler()
         }
-        // if the backend fail
-        if(respond.status!==200)return false
+
+        if (respond.status !== 200) return false
+
         const data = respond.data
-        console.log('data1111',data)
-        if(!data.all_trip_data) return true
-        const save_status = await TripDataService.handleAllTripsList(data.all_trip_data.trip_data_list)
-        if(data.etag){
-            console.log('etag',data.etag)
-            await EtagService.saveEtagToLocal(ETAG_KEY.ALL_TRIPS_LIST,data.etag)
+        if (!data.all_trip_data) return true
+
+        await safeRun(
+            () => TripDataService.handleAllTripsList(data.all_trip_data.trip_data_list),
+            'save_trips_failed'
+        )
+
+        if (data.etag) {
+            console.log('etag', data.etag)
+            await safeRun(
+                () => EtagService.saveEtagToLocal(ETAG_KEY.ALL_TRIPS_LIST, data.etag),
+                'save_etag_failed'
+            )
         }
+
         return true
     }
     /**
@@ -91,45 +109,69 @@ class TripHandler{
      * request current trip handler, fetch trip_id, current trip_data then save it to local
      * @returns 
      */
-    async requestCurrentTripHandler(){
-        const respond = await Trip.requestCurrentTripId()
-        if (respond.status!==200) return false
+    async requestCurrentTripHandler() {
+        const respond = await safeRun(
+            () => Trip.requestCurrentTripId(),
+            'fetch_current_trip_id_failed'
+        )
+
+        if (respond.status !== 200) return false
+
         const data = respond.data
         const trip_id = data.current_trip_id
-        console.log('current trip id', trip_id)
-        if (trip_id){
-            // await CurrentTripDataService.setTripStatusToLocal('true')
+
+        if (trip_id) {
             console.log(trip_id)
-            const current_trip_respond = await Trip.requestTripData(trip_id)
+            const current_trip_respond = await safeRun(
+                () => Trip.requestTripData(trip_id),
+                'fetch_trip_data_failed'
+            )
+
             const status = current_trip_respond.status
-            if (status===304){
-                if (!await CurrentTripDataService.loadCurrentTripDataFromLocal(UserDataService.getUserId(),trip_id)){
-                    await EtagService.deleteEtagFromLocal(GENERATE_TRIP_ETAG_KEY(trip_id))
+
+            if (status === 304) {
+                if (!await safeRun(
+                    () => CurrentTripDataService.loadCurrentTripDataFromLocal(UserDataService.getUserId(), trip_id),
+                    'load_local_trip_failed'
+                )) {
+                    await safeRun(
+                        () => EtagService.deleteEtagFromLocal(GENERATE_TRIP_ETAG_KEY(trip_id)),
+                        'delete_etag_failed'
+                    )
                     return await this.requestCurrentTripHandler()
                 }
                 return true
             }
-            
 
             const current_trip_data = current_trip_respond.data
-            const trip_data = current_trip_data.trip_data 
-            if(trip_data){
-                // const trip_data = TripDataService.getObjectReady(data.trip_data.trip_name,data.trip_data.trip_id,data.trip_data.created_time)
+            const trip_data = current_trip_data.trip_data
+
+            if (trip_data) {
                 let trip_image_uri = null
-                if(trip_data.image){
-                    trip_image_uri = await CurrentTripDataService.setCurrentTripImageCoverToLocal(trip_data.image,data.current_trip_id,'aws')
+                if (trip_data.image) {
+                    trip_image_uri = await safeRun(
+                        () => CurrentTripDataService.setCurrentTripImageCoverToLocal(trip_data.image, data.current_trip_id, 'aws'),
+                        'save_image_failed'
+                    )
                 }
-                const trip_data_object = CurrentTripDataService.getObjectReady(trip_data.trip_name, trip_data.trip_id, 
-                trip_data.created_time,trip_image_uri)
-                await CurrentTripDataService.saveCurrentTripDataToLocal(trip_data_object)
-                
+
+                const trip_data_object = CurrentTripDataService.getObjectReady(
+                    trip_data.trip_name, trip_data.trip_id,
+                    trip_data.created_time, trip_image_uri
+                )
+
+                await safeRun(
+                    () => CurrentTripDataService.saveCurrentTripDataToLocal(trip_data_object),
+                    'save_trip_data_failed'
+                )
             }
 
-            const trip_etag = current_trip_data.etag
-
-            await EtagService.saveEtagToLocal(GENERATE_TRIP_ETAG_KEY(trip_id),trip_etag)
-
+            await safeRun(
+                () => EtagService.saveEtagToLocal(GENERATE_TRIP_ETAG_KEY(trip_id), current_trip_data.etag),
+                'save_etag_failed'
+            )
         }
+
         return true
     } 
     /**
@@ -150,7 +192,7 @@ class TripHandler{
         const trip_data = data.trip_data
         const etag = data.etag
         if (await TripDataService.saveTripDataToLocal(user_id,trip_id,trip_data)){
-            const etag_key = EtagService.GENERATE_TRIP_ETAG_KEY(trip_id)
+            const etag_key = GENERATE_TRIP_ETAG_KEY(trip_id)
             await EtagService.saveEtagToLocal(etag_key,etag)
         }
         return trip_data

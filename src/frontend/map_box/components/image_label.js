@@ -89,7 +89,8 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
   }, [trip_id])
   const clusters = useMemo(()=>{
     return new Map([
-      [13, computeCluster(currentAssetsArray,950)],
+      [10, computeCluster(currentAssetsArray,1000)],
+      [13, computeCluster(currentAssetsArray,550)],
       [15, computeCluster(currentAssetsArray,250)],
       [20, computeCluster(currentAssetsArray,3)],
       [21, computeCluster(currentAssetsArray,2)],

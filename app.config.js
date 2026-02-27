@@ -60,7 +60,13 @@ export default {
           isAndroidBackgroundLocationEnabled: true
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+      "react-native-vision-camera",
+      {
+        "cameraPermissionText": "Allow access to camera"
+      }
+    ]
     ],
     extra: {
       eas: {
