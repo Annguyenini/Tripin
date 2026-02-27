@@ -6,7 +6,7 @@ import TripContentHandler from '../../app-core/flow/trip_contents_handler';
 import TripDataStorage from '../trip_coordinates/current_trip_coordinate_service'
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import Albumdb from '../album/albumdb';
-// import trip_album_subject from '../trip_album/trip_album_subject';
+import trip_album_subject from '../trip_album/trip_album_subject';
 // import TripDatabaseService from '../database/TripDatabaseService';
 import CurrentDisplayTripMediaObserver from '../../frontend/map_box/functions/current_display_media_observer';
 class CameraService{
@@ -15,12 +15,12 @@ class CameraService{
         this.video = null;
     }
 
-    async takePicture (cameraRef){
+    async takePicture (cameraRef,options){
         if (cameraRef.current){
         try{
-            const options = {quality: 1, base64 :true}; // control option for picture
-            const photo =await cameraRef.current.takePictureAsync(options) // return a photo
-            await this.saveImagehandler(photo.uri)
+            // const options = {quality: 1, base64 :true}; // control option for picture
+            const photo =await cameraRef.current.takePhoto(options) // return a photo
+            await this.saveImagehandler(photo.path)
             return photo;
         }    
         catch(err){
@@ -36,7 +36,7 @@ class CameraService{
     if(cameraRef.current){
         let video;
         try{
-            video =await cameraRef.current.recordAsync({mute:false, maxDuration:30})
+            video =await cameraRef.current.startRecording({mute:false, maxDuration:30})
         }
         catch(err){
             console.error("Failed to record Video",err);
@@ -70,6 +70,7 @@ class CameraService{
         let asset_object
         try{
             asset = await this.saveMediaToLocalAlbum(photoUri)
+            console.log('asset',asset)
             version = await Albumdb.addMediaIntoDB(asset.mediaType,photoUri,asset.uri,asset.creationTime)
             asset_object = await Albumdb.getAlbumAssetObjectReady(asset)
             Albumdb.addToAlbumArray(asset_object)

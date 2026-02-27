@@ -36,7 +36,8 @@ class Album {
         //     return
         // }
         try{
-            console.log('is array frozen at add ',Object.isFrozen(this.AlbumsArray))
+            
+            // console.log('is array frozen at add ',Object.isFrozen(this.AlbumsArray), object)
             this.AlbumsArray.unshift(object)
         }
         catch(err){
