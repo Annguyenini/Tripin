@@ -7,6 +7,7 @@ import TripCoordinateDatabase from '../../backend/database/trip_coordinate_datab
 import UserDataService from '../../backend/storage/user'
 import CurrentDisplayCoordinateObserver from '../../frontend/map_box/functions/current_display_coordinates_observer'
 import Albumdb from '../../backend/album/albumdb'
+import safeRun from '../helpers/safe_run'
 class TripContentHandler{
     constructor(){
         this.TripCoordinateDatabaseService = new TripCoordinateDatabase()
@@ -49,40 +50,53 @@ class TripContentHandler{
     
     }
 
-    async getTripCoordinatesHandler(trip_id){
-        let coordinates 
+    async getTripCoordinatesHandler(trip_id) {
+        let coordinates
         let version
-        // step 1 get the version and asking the backend 
-        if (this.TripCoordinateDatabaseService.getAllCoordinatesFromTripId(trip_id)){
-            version = await TripDatabaseService.getTripCoordinateVersion(trip_id)
+
+        if (await safeRun(
+            () => this.TripCoordinateDatabaseService.getAllCoordinatesFromTripId(trip_id),
+            'get_coordinates_failed'
+        )) {
+            version = await safeRun(
+                () => TripDatabaseService.getTripCoordinateVersion(trip_id),
+                'get_version_failed'
+            )
         }
-        const respond = await TripContents.requestTripCoordinates(trip_id,version) 
-        // check if the trip coordinate table exist        
-        // if the backend have the same data as the local db have
-        // we get it from local db and return
-        if(!respond.ok ||respond.status ===304){
-            coordinates = await this.TripCoordinateDatabaseService.getAllCoordinatesFromTripId(trip_id)     
+
+        const respond = await safeRun(
+            () => TripContents.requestTripCoordinates(trip_id, version),
+            'fetch_coordinates_failed'
+        )
+
+        if (!respond.ok || respond.status === 304) {
+            coordinates = await safeRun(
+                () => this.TripCoordinateDatabaseService.getAllCoordinatesFromTripId(trip_id),
+                'load_local_coordinates_failed'
+            )
             console.log(coordinates)
             return coordinates
         }
-        // if the backend failed return None
-        if (respond.status!==200) return null
-        
-        // if server have new or diff data
+
+        if (respond.status !== 200) return null
+
         const data = respond.data
+        if (!data.coordinates) return null
+
         coordinates = data.coordinates
-        // console.log(data)
-        // if there are no data
-        if(!data.coordinates) return null
-        // if the data belong to the user
-        // we stored, else we just return the data
-        if(data.user_id === UserDataService.getUserId()){
-            // if we stored the data correctly 
-            if (await this.TripCoordinateDatabaseService.handlerCoordinateFromServer(coordinates,trip_id)){
-                // we updated the version of data
-                TripDatabaseService.updateTripCorrdinateVersion(trip_id,data.newest_version)
-                }
+
+        if (data.user_id === UserDataService.getUserId()) {
+            if (await safeRun(
+                () => this.TripCoordinateDatabaseService.handlerCoordinateFromServer(coordinates, trip_id),
+                'save_coordinates_failed'
+            )) {
+                await safeRun(
+                    () => TripDatabaseService.updateTripCorrdinateVersion(trip_id, data.newest_version),
+                    'update_version_failed'
+                )
+            }
         }
+
         return coordinates
     }
     async requestTripMediasHandler(trip_id){

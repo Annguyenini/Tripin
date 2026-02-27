@@ -38,7 +38,7 @@ export const CameraApp = () => {
   const [currentMode, setCurrentMode] = useState("picture")
   const [recording, setRecording] = useState(false);
   const [facing, setFacing] = useState('back');
-  const [zoom, setZoom] = useState(0.17); // Back to useState
+  const [zoom, setZoom] = useState(0); // Back to useState
   const lastZoom = useRef(0)
   // const [lastZoom, setLastZoom] = useState(null);
   const [flash, setFlash] = useState('off');
@@ -196,7 +196,7 @@ export const CameraApp = () => {
 
             ref={cameraRef}
             style={{ width, height }}
-            zoom={zoom} // Use state value directly
+            zoom={0.01} // Use state value directly
             facing={facing}
             flash={flash}     
             mode={currentMode}

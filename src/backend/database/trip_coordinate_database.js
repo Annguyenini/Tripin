@@ -8,6 +8,7 @@ import TripDatabaseService from './TripDatabaseService';
 class TripCoordinateDatabase {
 
     async create_trip(trip_id){
+        console.log('created trip table for',trip_id)
             const DB = await SqliteService.connectDB()
             try {
                 await DB.execAsync(`
