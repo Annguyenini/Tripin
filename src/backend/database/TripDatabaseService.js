@@ -141,6 +141,7 @@ class TripDataBaseService{
      */
     async getVersion(version_type,trip_id){
         try{
+            if (!trip_id) return null
             console.log('version',version_type,trip_id)
             const DB = await SqliteService.connectDB()
             const version = await DB.getFirstAsync(`SELECT ${version_type} FROM trips WHERE trip_id =?`,[trip_id])

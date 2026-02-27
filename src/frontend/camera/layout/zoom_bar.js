@@ -9,7 +9,7 @@ configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
   strict: false, // Reanimated runs in strict mode by default
 });
-const CameraZoomLayout=({startZooming,callZooming,stopZooming,zoom})=>{
+const CameraZoomLayout=({callZooming})=>{
   const zoom_mode_list = [0,1,1.6,2,3,5];
   let curIndex = useSharedValue(2)
 const Zoom_mode_gesture = Gesture.Pan()
