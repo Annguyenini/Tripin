@@ -37,8 +37,8 @@ class Album {
         // }
         try{
             
-            // console.log('is array frozen at add ',Object.isFrozen(this.AlbumsArray), object)
-            this.AlbumsArray.unshift(object)
+            console.log('is array frozen at add ',Object.isFrozen(this.AlbumsArray), object)
+            this.AlbumsArray = [object, ...this.AlbumsArray]
         }
         catch(err){
             console.error('Failed to add into Album array ',err)
@@ -160,9 +160,12 @@ class Album {
         }
         for(const object of db_array){
             if(hash_map[object.library_media_path]){
-                hash_map[object.library_media_path]['latitude'] = object.latitude
-                hash_map[object.library_media_path]['longitude'] = object.longitude
-                hash_map[object.library_media_path]['trip_name']=object.trip_name
+                hash_map[object.library_media_path] = {
+                ...hash_map[object.library_media_path], 
+                latitude: object.latitude,
+                longitude: object.longitude,
+                trip_name: object.trip_name
+            }
             }
         }
         // console.log(hash_map)

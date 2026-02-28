@@ -2,13 +2,32 @@
 import { View, Text, TouchableOpacity,Image } from 'react-native';
 import { cameraStyle,camera_zoom } from '../../../styles/camera_style.js';
 import MediaViewCard from '../../albums/viewer_card.js';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import AlbumService from '../../../backend/album/albumdb.js'
 const cameraSetting_icon = require('../../../../assets/image/camera_setting.png');
 
-const BotBarControl = ({currentMode,recording,image_icon,type,shutterButtonAction})=>{
+const BotBarControl = ({toggleCameraMode,recording,image_icon,type,shutterButtonAction})=>{
   const [visible,setVisible]=useState(false)
+  const [currentMode,setCurrentMode]=useState('photo')
+  const isRecording = useRef(false)
+  const LongClick =()=>{
+    isRecording.current = true
+    setCurrentMode('video')
+    shutterButtonAction('video')
+  }
+  const stopLongClick =()=>{
+    if(! isRecording.current) return
+    shutterButtonAction('video')
+    isRecording.current = false
+    setCurrentMode('photo')
 
+
+  }
+  const click=()=>{
+    
+    shutterButtonAction('photo')
+  }
+  // const 
     return(<View style={cameraStyle.botControls}>
             <TouchableOpacity style={cameraStyle.flipButton}>
               <Image source={cameraSetting_icon} style={[cameraStyle.icon, { width: 50, height: 50 }]} />
@@ -18,10 +37,9 @@ const BotBarControl = ({currentMode,recording,image_icon,type,shutterButtonActio
            
     
     
-            <TouchableOpacity style={cameraStyle.outerCircle} onPress={shutterButtonAction} >
-              <Text style={[cameraStyle.innerCircle, {backgroundColor: currentMode === "picture"? "white": "red"},
-                {width: recording && currentMode==='video'? 30:60},
-                {height: recording && currentMode==='video'? 30:60}]} > </Text>
+            <TouchableOpacity style={cameraStyle.outerCircle} onPress={click} onLongPress={LongClick} onPressOut={stopLongClick}     activeOpacity={0.7} delayLongPress={300}
+>
+              <Text style={[cameraStyle.innerCircle, {backgroundColor: currentMode === "photo"? "white": "red"}]} > </Text>
             </TouchableOpacity>
             <TouchableOpacity >
             </TouchableOpacity>

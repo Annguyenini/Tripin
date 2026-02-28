@@ -11,13 +11,13 @@ const videoPauseIcon = require('../../../assets/image/video_pause_icon.png')
 
 
 export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray,isBottomList}) {
-  console.log(AssetArray)
+  // console.log(AssetArray)
   if(!AssetArray || AssetArray.length <=0) return null
-  const modifiedAssetArray =[... AssetArray.map(async(item)=>{
-    if(item.media_type ==='video' || item.mediaType==='video'){
-      item.thumbnail =await GenerateThumbnail(item.uri ? item.uri : item.library_media_path)
-    }
-  })]
+  // const modifiedAssetArray =[... AssetArray.map(async(item)=>{
+  //   if(item.media_type ==='video' || item.mediaType==='video'){
+  //     item.thumbnail =await GenerateThumbnail(item.uri ? item.uri : item.library_media_path)
+  //   }
+  // })]
   const currentAssetsArray = AssetArray;
   const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(asset => asset.uri ? asset.uri : asset.library_media_path === uri),0))
   const [dataVisible, setDataVisible] = useState(false)
