@@ -66,7 +66,7 @@ export default {
       {
         "cameraPermissionText": "Allow access to camera"
       }
-      ]
+      ],
       [
         "expo-audio",
         {

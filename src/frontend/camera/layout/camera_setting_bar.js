@@ -22,7 +22,7 @@ const CameraSetting = ({ flash, setFlash, facing, setFacing }) => {
                     <Text style={styles.icon}>⚡︎</Text>
                     {/* <Text style={styles.label}>{flash === 'auto' ? 'Auto' : 'Off'}</Text> */}
                 </TouchableOpacity>
-
+                
                 {/* Add more buttons here in future */}
 
             </View>
@@ -69,12 +69,15 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color:'white'
     },
+    fps:{
+        fontSize: 15,
+    },
     label: {
         fontSize: 15,
         fontWeight: '600',
         opacity: 0.7,
         marginTop: 2,
-        
+
     },
 })
 

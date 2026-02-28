@@ -3,23 +3,22 @@ import { cameraStyle,camera_zoom } from '../../../styles/camera_style';
 
 
 const PermissionLayout = ({ cameraPermission, albumPermission, requestAlbumPermission, requestcameraPermission, microphonePermission, requestMicrophonePermission }) => {
-    console.log(cameraPermission,albumPermission,microphonePermission)
     const allGranted = cameraPermission?.granted && albumPermission?.granted && microphonePermission?.granted
     if (allGranted) return null
 
     return (
         <View style={styles.wrapper}>
-            {cameraPermission && !cameraPermission.granted && (
+            {!cameraPermission || !cameraPermission.granted && (
                 <TouchableOpacity style={styles.button} onPress={requestcameraPermission}>
                     <Text style={styles.buttonText}>Allow Camera</Text>
                 </TouchableOpacity>
             )}
-            {albumPermission && !albumPermission.granted && (
+            {!albumPermission || !albumPermission.granted && (
                 <TouchableOpacity style={styles.button} onPress={requestAlbumPermission}>
                     <Text style={styles.buttonText}>Allow Album</Text>
                 </TouchableOpacity>
             )}
-            {!microphonePermission && !microphonePermission.granted && (
+            {!microphonePermission || !microphonePermission.granted && (
                 <TouchableOpacity style={styles.button} onPress={requestMicrophonePermission}>
                     <Text style={styles.buttonText}>Allow Microphone</Text>
                 </TouchableOpacity>
