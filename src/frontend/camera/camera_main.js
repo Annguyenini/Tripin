@@ -1,8 +1,9 @@
 import React, { useState, useRef, useCallback, useEffect,useMemo } from 'react';
 import { View, Dimensions } from 'react-native';
-import { Camera, useCameraDevice } from 'react-native-vision-camera'
+import { Camera, useCameraDevice,useMicrophonePermission } from 'react-native-vision-camera'
 import Animated, { useSharedValue, clamp,useDerivedValue } from "react-native-reanimated"
 import { useCameraPermissions } from 'expo-camera';
+
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as MediaLibrary from 'expo-media-library';
 
@@ -22,6 +23,8 @@ import CatureOption from './layout/capture_option.js';
 import { scheduleOnRN } from 'react-native-worklets';
 import useCameraCapture from './camera_setting/use_camera_capture.js';
 import useCameraZoom from './camera_setting/use_camera_zoom.js';
+import CameraSetting from './layout/camera_setting_bar.js';
+import {microphonePermission} from 'expo-audio'
 const { width, height } = Dimensions.get('window');
 
 const exitCamera = () => navigate('Main');
@@ -32,7 +35,7 @@ export const CameraApp = () => {
     // permissions
     const [cameraPermission, requestcameraPermission] = useCameraPermissions();
     const [albumPermission, requestAlbumPermission] = MediaLibrary.usePermissions();
-
+    const [microphonePermission, requestMicrophonePermission] = Audio.usePermissions()
     // camera device
     const [facing, setFacing] = useState('back');
     const device = useCameraDevice(facing, {
@@ -81,6 +84,8 @@ export const CameraApp = () => {
                 requestcameraPermission={requestcameraPermission}
                 albumPermission={albumPermission}
                 requestAlbumPermission={requestAlbumPermission}
+                microphonePermission={microphonePermission}
+                requestMicrophonePermisson={requestMicrophonePermission}
             />
 
 
@@ -94,18 +99,21 @@ export const CameraApp = () => {
                         zoom={zoom}
                         onInitialized={onCameraReady}
                         photo={true}
+                        video={true}
+                        audio={true}
                     />
                 </View>
             </GestureDetector>
 
             <TopBarCamera
-                flash={flash}
-                setFlash={setFlash}
-                facing={facing}
-                setFacing={setFacing}
+               
                 exitCamera={exitCamera}
             />
-
+            <CameraSetting 
+                 flash={flash}
+                setFlash={setFlash}
+                facing={facing}
+                setFacing={setFacing}/>
             <View style={cameraStyle.middleBar}>
                 <CatureOption toggleCameraMode={toggleCameraMode} currentMode={currentMode} />
                 <ZoomText zoom={zoomText/10} />

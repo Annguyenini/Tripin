@@ -42,9 +42,9 @@ const useCameraCapture = (cameraRef, isCameraReady,flash) => {
         }
     }
 
-    const shutterButtonAction = () => {
+    const shutterButtonAction = (action) => {
         if (!isCameraReady) return
-        currentMode === 'picture' ? takePicture() : (!recording ? recordVideo() : stopRecording())
+        action === 'photo' ? takePicture() : (!recording ? recordVideo() : stopRecording())
     }
 
     return {

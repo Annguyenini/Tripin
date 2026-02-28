@@ -66,7 +66,15 @@ export default {
       {
         "cameraPermissionText": "Allow access to camera"
       }
-    ]
+      ]
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone.",
+          "enableBackgroundPlayback": true,
+          "enableBackgroundRecording": false
+        }
+      ]
     ],
     extra: {
       eas: {

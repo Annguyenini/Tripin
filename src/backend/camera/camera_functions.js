@@ -34,16 +34,15 @@ class CameraService{
 
   async recordVideo(cameraRef){
     if(cameraRef.current){
-        let video;
         try{
-            video =await cameraRef.current.startRecording({mute:false, maxDuration:30})
+            await cameraRef.current.startRecording({
+                onRecordingFinished: (video) => this.video = video,
+                onRecordingError: (error) => console.error(error)})
         }
         catch(err){
             console.error("Failed to record Video",err);
             return null;
         }
-        this.video = video;
-        return video;
     }
   }
   async stopRecording(cameraRef){
@@ -51,14 +50,14 @@ class CameraService{
         cameraRef.current.stopRecording();
     }
     await new Promise(resolve => setTimeout(resolve, 1000));
-
-    if (this.video?.uri) {
+    console.log(this.video)
+    if (this.video?.path) {
         try{
-            await this.sendVideoHandler(this.video.uri)}
+            await this.sendVideoHandler(this.video.path)}
             catch(err){
                 console.error("failed to save video!",err)
             }
-        return asset
+        return this.video
     } else {
         console.warn("No video URI found yet!");
     }
