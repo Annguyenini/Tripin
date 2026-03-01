@@ -24,6 +24,7 @@ import CameraSetting from './layout/camera_setting_bar.js';
 // import {microphonePermission} from 'expo-audio'
 import { Audio } from 'expo-av'
 import HorizontalSlider from './layout/vertical_slider.js'
+import useFrameFilter from './fillter/use_frame_filter.js';
 const { width, height } = Dimensions.get('window');
 
 const exitCamera = () => navigate('Main');
@@ -56,7 +57,13 @@ export const CameraApp = () => {
     const format = useCameraFormat(device,[
         {fps:60}
     ])
+    // active filter
+    const [filter,setFilter]= useState(null)
 
+    // filter intensity 
+    const[filterIntensity,setFilterIntensity] =useState(1) 
+    // frame filter
+    const frameProcessor = useFrameFilter(filter,filterIntensity)
     useEffect(() => {
         const fetchImages = async () => {
             setImage_icon(AlbumService.AlbumsArray[0].uri)
@@ -109,6 +116,7 @@ export const CameraApp = () => {
                         video={true}
                         audio={true}
                         exposure={exposure}
+                        frameProcessor={frameProcessor}
                     />
                 </View>
             </GestureDetector>
@@ -118,7 +126,7 @@ export const CameraApp = () => {
                 exitCamera={exitCamera}
             />
             <CameraSetting 
-                 flash={flash}
+                flash={flash}
                 setFlash={setFlash}
                 facing={facing}
                 setFacing={setFacing}/>

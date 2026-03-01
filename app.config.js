@@ -74,7 +74,11 @@ export default {
           "enableBackgroundPlayback": true,
           "enableBackgroundRecording": false
         }
-      ]
+      ],
+      "@shopify/react-native-skia",
+      "expo-av",
+      "expo-media-library"
+
     ],
     extra: {
       eas: {
