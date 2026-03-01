@@ -5,12 +5,11 @@ import { FILTERS, applyIntensity } from './filters.js'
 const useFrameFilter = (activeFilter, intensity = 1) => {
     const frameProcessor = useSkiaFrameProcessor((frame) => {
         'worklet'
-        if (!activeFilter || activeFilter === 'none' ||!FILTERS[activeFilter]) {
-            frame.render()
+        if (!activeFilter || activeFilter === 'none' || !FILTERS[activeFilter]) {
             return
         }
 
-        const matrix = applyIntensity(FILTERS[activeFilter], intensity)
+        const matrix = applyIntensity(FILTERS.neon_night, intensity)
         const paint = Skia.Paint()
         paint.setColorFilter(Skia.ColorFilter.MakeMatrix(matrix))
         frame.render(paint)
