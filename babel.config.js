@@ -6,7 +6,9 @@ module.exports = function(api) {
       ['module:react-native-dotenv', {
         moduleName: '@env',
         path: '.env',
-      }]
+      }],
+      'react-native-worklets-core/plugin', 
+      'react-native-reanimated/plugin',  
     ]
   };
 };

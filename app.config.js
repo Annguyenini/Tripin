@@ -74,7 +74,11 @@ export default {
           "enableBackgroundPlayback": true,
           "enableBackgroundRecording": false
         }
-      ]
+      ],
+      "expo-av",
+      "expo-media-library",
+      "expo-asset"
+
     ],
     extra: {
       eas: {
