@@ -85,6 +85,7 @@ class TripSync {
         this.coordinatesSyncing = false
     }
     async currentTripContentsSync(){
+        console.log('trip sync1')
         const current_trip_id  = CurrentTripDataService.getCurrentTripId()
         const versions= await TripContentsService.requestTripDataVersions(current_trip_id)
         const current_information_version = await TripDatabaseService.getTripInfomationVersion(current_trip_id)

@@ -63,7 +63,7 @@ export const CameraApp = () => {
     // filter intensity 
     const[filterIntensity,setFilterIntensity] =useState(1) 
     // frame filter
-    const frameProcessor = useFrameFilter(filter,filterIntensity)
+    // const frameProcessor = useFrameFilter(filter,filterIntensity)
     useEffect(() => {
         const fetchImages = async () => {
             setImage_icon(AlbumService.AlbumsArray[0].uri)
@@ -116,7 +116,7 @@ export const CameraApp = () => {
                         video={true}
                         audio={true}
                         exposure={exposure}
-                        frameProcessor={frameProcessor}
+                        // frameProcessor={frameProcessor}
                     />
                 </View>
             </GestureDetector>
