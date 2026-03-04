@@ -76,7 +76,7 @@ class AuthHandler{
         return respond
     }
     async _offlineAuthHandler(){
-        const{status}=await TokenService.verifyTokenOffine(await TokenService.getToken('refresh_token'))
+        const{status}=await TokenService.verifyTokenOffline(await TokenService.getToken('refresh_token'))
         if(!status) return false
         await UserDataService.usingStoredUserAuth()    
         return true
