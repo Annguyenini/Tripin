@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react"
-import {View,Image,Text,TouchableOpacity} from 'react-native'
+import {View,Image,Text,TouchableOpacity,Share} from 'react-native'
 import {currentTripDisplayBoxStyle} from '../../../styles/function/trip_display_box_style'
 import CurrentTripDataService from '../../../backend/storage/current_trip'
 import CurrentDisplayCoordinateObserver from "../functions/current_display_coordinates_observer"
 import TripDisplayObserver from '../functions/trip_display_observer'
 import * as CoordinatesCal from '../../../backend/coordinates/coordinates_cal'
+import TripHandler from "../../../app-core/flow/trip_handler"
 const default_image = require('../../../../assets/icon.png')
 export const DisplayTripBox =({isFullDisplay,onHide})=>{
     const[tripData,setTripData] = useState(TripDisplayObserver.getTripNeedRender())
@@ -12,6 +13,7 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
     const[coordinates,setCoordinates] =useState([])
     const[distance,setDistance] =useState({km:0,m:0})
     const currentTripStatus = CurrentTripDataService.getCurrentTripStatus()
+    
     useEffect(()=>{
         let trip_coordinates = []
         if (tripData){
@@ -86,9 +88,9 @@ export const DisplayTripBox =({isFullDisplay,onHide})=>{
     <View style={currentTripDisplayBoxStyle.card}>
       {/* Top section: Arrow (left), Trip Name (center), Close (right) */}
       <View style={currentTripDisplayBoxStyle.topSection}>
-        <TouchableOpacity style={currentTripDisplayBoxStyle.arrowButton} onPress={onHide}>
-          <Text style={currentTripDisplayBoxStyle.arrowText}>→</Text>
-        </TouchableOpacity>
+        {/* <TouchableOpacity style={currentTripDisplayBoxStyle.arrowButton} onPress={onHide}>
+          <Text style={currentTripDisplayBoxStyle.arrowText}>📤</Text>
+        </TouchableOpacity> */}
         
         <Text style={currentTripDisplayBoxStyle.tripName}>{tripData.trip_name}</Text>
         

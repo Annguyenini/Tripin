@@ -25,6 +25,7 @@ const RenderImageLable =({clusters,mapKey, onClick})=>{
           <TouchableOpacity onPress={()=>onClick(cluster.members[0],cluster.cluster_id)}>
             <View style={{ width: 50, height: 50 }}>
               <Image
+                cachePolicy="memory-disk" 
                 source={ cluster.members[0]?.library_media_path ?{uri: cluster.members[0].library_media_path} : {uri:cluster.members[0].uri} }
                 style={{ width: 50, height: 50, borderRadius: 15 }}
                 resizeMode="cover"

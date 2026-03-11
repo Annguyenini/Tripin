@@ -92,6 +92,35 @@ class Trip{
         })
         return respond
     }
+    async requestTripDataChange(trip_id,trip_name,image_uri){
+        const data = new FormData()
+        if (image_uri){data.append('image',{
+            uri:image_uri,
+            name:`cover_${trip_id}`,
+            type:'image/jpeg'
+        })}
+        data.append('trip_id',trip_id ?? '')
+        data.append('trip_name',trip_name ?? '')
+        const respond = await fetchFunction(API.MODIFY_TRIP_DATA,{
+            method:'POST',
+            body:data
+        })
+        return respond
+    }
+    async requestSharedTripLink(trip_id){
+        const headers = {
+            'Content-Type':'application/json',
+        }
+        const respond = await fetchFunction(API.REQUEST_SHARED_TRIP_LINK,{
+            method:'POST',
+            headers:headers,
+            body:JSON.stringify({
+                trip_id:trip_id,
+                expired_days:30
+            })
+        })
+        return respond
+    }
 }
 
 const trip = new Trip()

@@ -4,6 +4,8 @@ import * as TrackingState from './gps_states'
 import * as CoordinateCal from '../coordinates/coordinates_cal'
 import CurrentTripCoordinateService from '../trip_coordinates/current_trip_coordinate_service' 
 import CurrentTripDataService from '../storage/current_trip'
+import Setting from "../../app-core/setting"
+import {TRACKING_MODE} from "../tracking/tracking_mode"
 class GPSLogic {
     constructor (){
         this.islogicRuning = false
@@ -87,8 +89,15 @@ class GPSLogic {
     }
 
     async syncGPSTask(){
+        const tracking_mode = Setting.getTrackingMode()
         const trip_status = await CurrentTripDataService.getCurrentTripDataFromLocal()
         const gpsTask = await GPSTask.isTaskRunning()
+        if (tracking_mode === TRACKING_MODE.MEDIAS_ONLY){
+            console.warn('turn off tracking')
+            await this.endGPSLogic()
+            return
+        } 
+
         if(trip_status && ! gpsTask){
             console.warn('Trip active but task not running, restarting...')
             await this.startGPSLogic()

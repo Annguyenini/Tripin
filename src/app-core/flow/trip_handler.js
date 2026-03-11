@@ -45,7 +45,7 @@ class TripHandler{
 
             const trip_object = TripDatabaseService.getObjectReady(UserDataService.getUserId(),trip_id,trip_name,imageUri)
             await safeRun (()=>TripDatabaseService.addTripToDatabase(trip_object),'add_trip_to_table_failed')
-            GPSLogic.startGPSLogic()
+            GPSLogic.syncGPSTask()
             return respond
         }
         catch(err){
@@ -196,6 +196,34 @@ class TripHandler{
             await EtagService.saveEtagToLocal(etag_key,etag)
         }
         return trip_data
+    }
+
+    async modifyTripDataHandler(trip_id,trip_name=null,image_uri=null){
+        console.log(trip_name,image_uri)
+        const respond = await Trip.requestTripDataChange(trip_id,trip_name,image_uri)
+        if(respond.status!==200)return {'status':false,'message':respond.message}
+        // modify trip_name and image 
+        const trip_image_uri = await safeRun(()=>CurrentTripDataService.setCurrentTripImageCoverToLocal(image_uri,trip_id) , 'trip_image_save_failed')
+        
+        // save to
+        if(trip_name && !await safeRun(()=>TripDataService.updateTripName(trip_name,trip_id))){
+            console.error('Failed to save to local storage')
+            return {'status':false,'message':'Failed to save to local storage'}
+        }
+
+        if(image_uri &&!await safeRun(()=>TripDataService.updateTripImage(image_uri,trip_id))){
+            console.error('Failed to save to local storage')
+            return {'status':false,'message':'Failed to save to local storage'}
+        }
+        return {'status':true,'message':'Success!'}
+
+    }
+
+    async requestSharedTripLink(trip_id){
+        const res = await Trip.requestSharedTripLink(trip_id)
+        if(res.status!==200)return {'status':false,'message':res.message}
+        console.log(res)
+        return {'status':true,'message':res.data.message,'url':res.data.url}
     }
     /**
      * handle end trip

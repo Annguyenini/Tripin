@@ -134,68 +134,101 @@ function Pill({ children }) {
   return <View style={styles.pill}>{children}</View>;
 }
 const styles = StyleSheet.create({
+
   wrapper: {
-    position: "absolute",
+    position: 'absolute',
     right: 0,
-    top: "25%"
-    },
+    top: '25%',
+  },
 
   container: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 28,
-    top:50,
+    backgroundColor: '#1a1917',
+    borderRadius: 16,
+    top: 50,
     paddingVertical: 10,
     paddingHorizontal: 6,
-    alignItems: "center",
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
+    shadowColor: '#000',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 0,
+    elevation: 6,
   },
-  red_pill:{
-    backgroundColor: "#ff0000ff",
-    borderRadius: 16,
+
+  red_pill: {
+    backgroundColor: '#c03030',
+    borderRadius: 10,
     paddingVertical: 8,
     paddingHorizontal: 14,
-    alignItems: "center",
-    marginVertical: 5,
+    alignItems: 'center',
+    marginVertical: 4,
     minWidth: 70,
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 0,
+    elevation: 3,
   },
+
   pill: {
-    backgroundColor: "#E5E5E5",
-    borderRadius: 16,
+    backgroundColor: '#242220',
+    borderRadius: 10,
     paddingVertical: 8,
     paddingHorizontal: 14,
-    alignItems: "center",
-    marginVertical: 5,
+    alignItems: 'center',
+    marginVertical: 4,
     minWidth: 70,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
   },
 
   time_hr: {
     fontSize: 22,
-    fontWeight: "700",
+    fontWeight: '700',
+    color: '#f0f0ec',
+    fontFamily: 'DMMono',
   },
+
   time_min: {
     fontSize: 15,
-    fontWeight: "700",
+    fontWeight: '700',
+    color: '#f0f0ec',
+    fontFamily: 'DMMono',
   },
 
   sub_hr: {
-    fontSize: 14,
-    fontWeight: "600",
-    opacity: 0.7,
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#5a5550',
+    fontFamily: 'DMMono',
     marginTop: -2,
+    letterSpacing: 0.08,
   },
+
   sub_min: {
-    fontSize: 10,
-    fontWeight: "600",
-    opacity: 0.7,
+    fontSize: 9,
+    fontWeight: '600',
+    color: '#5a5550',
+    fontFamily: 'DMMono',
     marginTop: -2,
+    letterSpacing: 0.08,
   },
-  end_trip:{
-    fontSize:10,
-    fontWeight: "700",
+
+  end_trip: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#f0f0ec',
+    fontFamily: 'DMMono',
+    letterSpacing: 0.08,
   },
 
   text: {
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#f0f0ec',
+    fontFamily: 'DMMono',
     letterSpacing: 0.6,
   },
 
@@ -203,9 +236,16 @@ const styles = StyleSheet.create({
     marginTop: 6,
     width: 36,
     height: 36,
-    borderRadius: 18,
-    backgroundColor: "#E5E5E5",
-    alignItems: "center",
-    justifyContent: "center",
+    borderRadius: 8,
+    backgroundColor: '#242220',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 0,
+    elevation: 3,
   },
-});
+})

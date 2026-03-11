@@ -4,6 +4,9 @@ import{tripStyle} from "../../styles/function/trip_style.js"
 import { OverlayCard } from "../custom_function/overlay_card.js"
 import { imagePicker,takePicture } from "./image_picker.js"
 import { useState } from "react"
+import { TrackingModePicker } from "./tracking_mode_picker.js"
+import { TRACKING_MODE } from "../../backend/tracking/tracking_mode.js"
+import Setting from "../../app-core/setting.js"
 export const NewTripFiller = ({set_show_create_trip_filler,request_new_trip})=>{
   const[tripName,setTripName]= useState(null)
   const[imageUri,setImageUri]=useState(null)
@@ -23,6 +26,14 @@ export const NewTripFiller = ({set_show_create_trip_filler,request_new_trip})=>{
     }
     request_new_trip(tripName,imageUri)
   }
+  const trackingModeHandler =async(mode)=>{
+    if (mode === 'media'){
+      await Setting.setTrackingMode(TRACKING_MODE.MEDIAS_ONLY)
+    }
+    else{
+      await Setting.setTrackingMode(TRACKING_MODE.NORMAL)
+    }
+  }
   return (
   <OverlayCard
     title="Create New Trip"
@@ -33,7 +44,7 @@ export const NewTripFiller = ({set_show_create_trip_filler,request_new_trip})=>{
       {imageUri ? (
         <Image source={{ uri: imageUri }} style={tripStyle.image} />
       ) : (
-        <Text style={tripStyle.placeholder}>No image</Text>
+        <Text style={tripStyle.placeholder}>No image (recomment rotate your phone) </Text>
       )}
     </View>
 
@@ -52,7 +63,7 @@ export const NewTripFiller = ({set_show_create_trip_filler,request_new_trip})=>{
       onChangeText={text => setTripName(text)}
       style={tripStyle.input}
     />
-
+    <TrackingModePicker value={'media_only'} onChange={trackingModeHandler}></TrackingModePicker>
     <TouchableOpacity style={tripStyle.submitButton} onPress={requestHandler}>
       <Text style={tripStyle.submitButtonText}>Submit</Text>
     </TouchableOpacity>

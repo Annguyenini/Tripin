@@ -17,6 +17,7 @@ export const STORAGE_KEYS={
         TRIP_STATUS:'settings.trip_status',
         FOREGROUNDPERMISSION :"settings.foreground_permission",
         BACKGROUNDPERMISSION :"settings.background_permission",
+        TRACKING_MODE:'settings.tracking_mode'
     },
     
 

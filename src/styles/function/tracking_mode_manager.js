@@ -1,10 +1,10 @@
 import { StyleSheet } from "react-native";
 
-export const markerManagerStyle = StyleSheet.create({
+export const trackingModeManagerStyle = StyleSheet.create({
 
   container: {
     position: 'absolute',
-    top: 110,
+    top: 200,
     left: 5,
   },
 
@@ -48,7 +48,8 @@ export const markerManagerStyle = StyleSheet.create({
 
   icon: {
     tintColor: '#f0f0ec',
-    fontSize: 28,
+    fontSize: 10,
+    color:'#f0f0ec'
   },
 
   controlbutton: {
@@ -88,4 +89,24 @@ export const markerManagerStyle = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.06)',
   },
+  submitButton:{
+    alignSelf: 'center',
+    backgroundColor: '#f0f0ec',
+    paddingVertical: 10,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    marginTop: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 0,
+    elevation: 4,
+  },
+  submitText:{
+    fontFamily: 'DMMono',
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    letterSpacing: 0.08,
+  }
 })
