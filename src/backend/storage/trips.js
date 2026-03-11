@@ -71,6 +71,14 @@ class TripDataService extends TripLocalDataStorage{
         return status
 
     }
+    async updateTripName(trip_name,trip_id){
+        const status = await TripDatabaseService.updateValueInDatabase('trip_name',trip_name,'trip_id',trip_id)
+        return status
+    }
+    async updateTripImage(image_uri,trip_id){
+        const status = await TripDatabaseService.updateValueInDatabase('image',image_uri,'trip_id',trip_id)
+        return status
+    }
     async loadAllTripsListFromLocal(){
         const user_id = UserDataService.getUserId()
         const trips_list = await TripDatabaseService.getAllUserTripDataFromDB(user_id) 

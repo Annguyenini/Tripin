@@ -7,6 +7,7 @@ import ImageLabel from './components/image_label';
 import mapData from './map_data';
 import {Marker} from './components/markers'
 import MarkerManager from './components/marker_manager';
+import TrackingModeManager from './components/tracking_mode_manager';
 MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN)
 export const MapBoxLayout =({})=>{
     const [isImageMarkerDisplay,setIsImageMarkerDisplay] = useState(true)
@@ -90,7 +91,7 @@ export const MapBoxLayout =({})=>{
             
             </MapboxGL.MapView>
             <MarkerManager imageMarkerDisplay={isImageMarkerDisplay} setIsImageMarkerDisplay={setIsImageMarkerDisplay} isCoordsMarkerDisplay ={isCoordsMarkerDisplay} setIsCoordsMarkerDisplay={setIsCoordsMarkerDisplay}></MarkerManager>
-
+            <TrackingModeManager></TrackingModeManager>
             <HelpBarMap isFollowingUser={isFollowingUser} setIsFollowingUser={()=>setIsFollowingUser(true)}></HelpBarMap>
             
         </View>

@@ -35,7 +35,7 @@ class LocalStorage {
             return true
         }
         catch(asyncError){
-            console.error`Error at save ${key} data to local: ${asyncError}`
+            console.error(`Error at save ${key} data to local: ${asyncError}`)
             return false
         }
     }
@@ -88,9 +88,10 @@ class LocalStorage {
         }
         try {
             await AsyncStorage.setItem(key,data)
+            return true
         }
         catch(asyncError){
-            console.error`Error at save ${key} data to local: ${asyncError}`
+            console.error(`Error at save ${key} data to local: ${asyncError}`)
             return false
         }
     }

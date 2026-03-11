@@ -15,7 +15,7 @@ export const overlayCardStyle=StyleSheet.create
   card: {
     width: width * 1,
     padding: 20,
-    backgroundColor: '#fff', // card white
+    backgroundColor: '#a9a9a9', // card white
     borderRadius: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

@@ -23,7 +23,7 @@ const galleryIcon = require('../../assets/image/gallery_icon.png')
 const settingIcon = require('../../assets/image/setting_icon.png')
 import { MapBoxLayout } from './map_box/map_box_layout.js';
 import { DATA_KEYS } from '../backend/storage/keys/storage_keys.js';
-
+import Setting from '../app-core/setting.js';
 export const MainScreen = () =>{
   const [user_id, setUserId] = useState(UserDataService.getUserId())
   const [user_name, setUsername ] = useState(UserDataService.getUserName())
@@ -37,8 +37,12 @@ export const MainScreen = () =>{
   const gpsTask = useRef(null)
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-    GPSLogic.syncGPSTask()
- 
+    const initSetting=async()=>{
+      await Setting.init()
+      GPSLogic.syncGPSTask()
+    }
+    initSetting()
+
   }, []);
 // app state tracker
   

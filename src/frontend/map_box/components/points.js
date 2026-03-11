@@ -107,20 +107,23 @@ if (!currentCluster || currentCluster.length === 0) {
         <MapboxGL.ShapeSource id ='route' key = {clusterKey} shape={geoJson}>
           
           <MapboxGL.LineLayer
-                id="line-layer"
-                style={{
-                  lineWidth: 1,
-                  lineColor: 'blue',
-                }}
-              />
+            id="line-layer"
+            style={{
+              lineWidth: 2,
+              lineColor: '#1a1a1a',
+              lineDasharray: [2, 2],
+            }}
+          />
 
-            <MapboxGL.CircleLayer
+          <MapboxGL.CircleLayer
             id="points-layer"
             style={{
-          circleRadius: 4,
-          circleColor: 'red',
-        }}
-      />
+              circleRadius: 8,
+              circleColor: '#1a1a1a',
+              circleStrokeWidth: 2,
+              circleStrokeColor: '#f0f0ec',
+            }}
+/>
         </MapboxGL.ShapeSource>
     )
 }
