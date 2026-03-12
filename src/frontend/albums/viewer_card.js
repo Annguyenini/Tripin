@@ -1,5 +1,5 @@
 import { mediaCardStyle } from "../../styles/function/media_card"
-import { View,TouchableOpacity,Text,Modal,Image,FlatList } from "react-native"
+import { View,TouchableOpacity,Text,Modal,Image,FlatList, Animated } from "react-native"
 import Video from 'react-native-video'
 import { Gesture,GestureDetector } from "react-native-gesture-handler"
 import { useEffect, useState,useRef } from "react"
@@ -23,6 +23,36 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
   const [dataVisible, setDataVisible] = useState(false)
   const observerRef = useRef(null)
   const [isFullScreen,setFullScreen] = useState(false)
+
+  // ── ANIMATION ──
+  const slideAnim = useRef(new Animated.Value(0)).current
+  const fadeAnim  = useRef(new Animated.Value(1)).current
+  const prevIndex = useRef(currentIndex)
+
+  useEffect(() => {
+    if (prevIndex.current === currentIndex) return
+    const dir = currentIndex > prevIndex.current ? 1 : -1
+    prevIndex.current = currentIndex
+
+    // reset to off-screen in the incoming direction
+    slideAnim.setValue(dir * 60)
+    fadeAnim.setValue(0)
+
+    Animated.parallel([
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 80,
+        friction: 12,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+    ]).start()
+  }, [currentIndex])
+
   const changeMedia = Gesture.Pan()
     .onEnd((e)=>{
       if(e.velocityX >=250){
@@ -62,23 +92,32 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
             <TouchableOpacity style={mediaCardStyle.fullscreenButton} onPress={fullScreenHanlder}>
               <Text style={mediaCardStyle.exitText}>⛶</Text>
             </TouchableOpacity>
-            {/* Media Display */}
-            {currentAssetsArray[currentIndex].media_type === 'video' || 
+
+            {/* ── Animated media wrapper ── */}
+            <Animated.View style={{
+              flex: 1,
+              transform: [{ translateX: slideAnim }],
+              opacity: fadeAnim,
+            }}>
+              {/* Media Display */}
+              {currentAssetsArray[currentIndex].media_type === 'video' || 
 currentAssetsArray[currentIndex].mediaType === 'video'? (
-              <Video
-                style={isFullScreen ? mediaCardStyle.fullVideo:  mediaCardStyle.video}
-                source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path}}
-                controls
-                resizeMode="cover"
-                paused={false}
-              />
-            ) : (
-              
-              <Image 
-                style={isFullScreen? mediaCardStyle.fullImage : mediaCardStyle.image} 
-                source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path }}
-              />
-            )}
+                <Video
+                  style={isFullScreen ? mediaCardStyle.fullVideo:  mediaCardStyle.video}
+                  source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path}}
+                  controls
+                  resizeMode="cover"
+                  paused={false}
+                />
+              ) : (
+                
+                <Image 
+                  style={isFullScreen? mediaCardStyle.fullImage : mediaCardStyle.image} 
+                  source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path }}
+                />
+              )}
+            </Animated.View>
+
           </View>
 
           {/* Data Card */}
