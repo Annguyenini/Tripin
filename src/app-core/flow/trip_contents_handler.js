@@ -8,6 +8,8 @@ import UserDataService from '../../backend/storage/user'
 import CurrentDisplayCoordinateObserver from '../../frontend/map_box/functions/current_display_coordinates_observer'
 import Albumdb from '../../backend/album/albumdb'
 import safeRun from '../helpers/safe_run'
+import Camera from '../../backend/camera/camera_functions'
+import CurrentDisplayTripMediaObserver from '../../frontend/map_box/functions/current_display_media_observer'
 class TripContentHandler{
     constructor(){
         this.TripCoordinateDatabaseService = new TripCoordinateDatabase()
@@ -144,7 +146,26 @@ class TripContentHandler{
         if(!respond.ok || respond.status !==200) return 
         return respond   
     }
-    
+    async deleteMediaHandler(trip_id,version,media_path,media_lib_path){
+        let respond
+        if (trip_id){
+
+            respond = await TripContents.deleteMedias(trip_id,version)
+        }
+        if (respond.status!=200) {
+            console.log(respond.data)
+            return
+        }
+        // delete in database
+        await safeRun(()=>Albumdb.deleteMediaFromDB(media_path,trip_id),'failed_delete_media_from_db')
+        // delete in album 
+
+        
+        await safeRun(()=>Camera.deleteMediaToLocalAlbum(media_lib_path),'failed at delete media from album')
+        CurrentDisplayTripMediaObserver.deleteAssestFromArrayByUri(trip_id,media_path)
+        return
+
+    }
     // async requestSTripMedias (){
     //     console.log(CurrentTripDataService.getCurrentTripId())
     //     const respond = await TripContents.requestTripMedias(CurrentTripDataService.getCurrentTripId())

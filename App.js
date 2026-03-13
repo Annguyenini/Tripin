@@ -64,8 +64,8 @@ export default function App() {
 />  
             <Stack.Screen name="Setting" component={SettingLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" text
 />  
-            <Stack.Screen name ="Camera" component={CameraLayout} options={{headerShown: false}}/>
-            <Stack.Screen name ='Album' component={AlbumLayout} options={{headerShown: false}}/>
+            <Stack.Screen name ="Camera" component={CameraLayout} options={{headerShown: false ,gestureEnabled:false, presentation:'card',animation:'none'}}/>
+            <Stack.Screen name ='Album' component={AlbumLayout} options={{headerShown: false }}/>
             </Stack.Navigator>
         </NavigationContainer>
           

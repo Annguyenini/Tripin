@@ -12,6 +12,7 @@ class CurrentDisplayTripMediaObserver extends(LocalStorage) {
         if(!this.watchArray[trip_id]){
             this.watchArray[trip_id] =[]
         }
+        console.log('media',data_array)
         this.watchArray[trip_id] = data_array
         this.notify(this.GENERATE_KEY(trip_id),data_array)
         return
@@ -23,7 +24,14 @@ class CurrentDisplayTripMediaObserver extends(LocalStorage) {
         this.watchArray[trip_id].push(data_object)
         this.notify(this.GENERATE_KEY(trip_id),this.watchArray[trip_id])
     }
-
+    deleteAssestFromArrayByUri(trip_id,uri){
+        if(!this.watchArray[trip_id]){
+            return
+        }
+        this.watchArray[trip_id] = this.watchArray[trip_id].filter(media=> media.uri != uri)
+        
+        this.notify(this.GENERATE_KEY(trip_id),this.watchArray[trip_id])
+    }
    
     
 }
