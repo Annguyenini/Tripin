@@ -108,5 +108,13 @@ class TripContentService{
         })
         return respond
     }
+    async deleteMedias(trip_id,version){
+        const respond = await fetchFunction(API.DELETE_TRIP_MEDIA,{
+            method:'DELETE',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({trip_id:trip_id,version:version})
+        })
+        return respond
+    }
 }
 export default new TripContentService()

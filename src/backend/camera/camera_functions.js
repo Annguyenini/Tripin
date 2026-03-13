@@ -66,18 +66,20 @@ class CameraService{
     async saveImagehandler(photoUri){
         let asset
         let version
+        let data
         let asset_object
         try{
             asset = await this.saveMediaToLocalAlbum(photoUri)
             console.log('asset',asset)
-            version = await Albumdb.addMediaIntoDB(asset.mediaType,photoUri,asset.uri,asset.creationTime)
-            asset_object = await Albumdb.getAlbumAssetObjectReady(asset)
+            data = await Albumdb.addMediaIntoDB(asset.mediaType,photoUri,asset.uri,asset.creationTime)
+            version=data['version']
+            asset_object = await Albumdb.getAlbumAssetObjectReady(asset,version,photoUri)
             Albumdb.addToAlbumArray(asset_object)
             // trip_album_subject.addAssetIntoArray(asset_object)
 
         }
         catch(err){
-            console.error('Failed to save iamge to local db')
+            console.error('Failed to save iamge to local db',err)
         }
         const trip_id = CurrentTripDataService.getCurrentTripId()
         if(trip_id){
@@ -95,11 +97,13 @@ class CameraService{
     async sendVideoHandler(videoUri){        
         let video_asset
         let video_version
+        let data
         let asset_object
         try{
             video_asset = await this.saveMediaToLocalAlbum(videoUri)
-            video_version = await Albumdb.addMediaIntoDB(video_asset.mediaType,videoUri,video_asset.uri,video_asset.creationTime)
-            asset_object = await Albumdb.getAlbumAssetObjectReady(video_asset)
+            data = await Albumdb.addMediaIntoDB(video_asset.mediaType,videoUri,video_asset.uri,video_asset.creationTime)
+            video_version = data['version']
+            asset_object = await Albumdb.getAlbumAssetObjectReady(video_asset,video_version,videoUri)
             Albumdb.addToAlbumArray(asset_object)
             // trip_album_subject.addAssetIntoArray(asset_object)
         }
@@ -138,6 +142,20 @@ class CameraService{
     }
     catch(error){
         console.error("Error at save media to album: ",error);
+    }
+    // console.log("save successfully")
+
+  }
+  async deleteMediaToLocalAlbum(path){
+    const id = path.replace(/^ph:\/\//, '');
+    if (id.lenght<10) return
+    // console.log (this.album_name)    
+    console.log(id)
+    try{
+       await MediaLibrary.deleteAssetsAsync([id])            
+    }
+    catch(error){
+        console.error("Error at delete from album: ",error);
     }
     // console.log("save successfully")
 

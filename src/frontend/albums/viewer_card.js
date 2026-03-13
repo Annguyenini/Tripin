@@ -9,6 +9,8 @@ import MediaViewDataCard from "./viewer_data_card"
 import GenerateThumbnail from "../../backend/album/generate_thumbnail"
 const videoPauseIcon = require('../../../assets/image/video_pause_icon.png')
 
+import { MaterialIcons } from '@expo/vector-icons';
+import TripContentHandler from "../../app-core/flow/trip_contents_handler"
 
 export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray,isBottomList}) {
   // console.log(AssetArray)
@@ -18,12 +20,14 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
   //     item.thumbnail =await GenerateThumbnail(item.uri ? item.uri : item.library_media_path)
   //   }
   // })]
+    
+
   const currentAssetsArray = AssetArray;
   const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(asset => asset.uri ? asset.uri : asset.library_media_path === uri),0))
   const [dataVisible, setDataVisible] = useState(false)
   const observerRef = useRef(null)
   const [isFullScreen,setFullScreen] = useState(false)
-
+  console.log('media',currentAssetsArray[currentIndex])
   // ── ANIMATION ──
   const slideAnim = useRef(new Animated.Value(0)).current
   const fadeAnim  = useRef(new Animated.Value(1)).current
@@ -69,6 +73,16 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
   const fullScreenHanlder =()=>{ 
     setFullScreen(prev => prev === false ? true : false) 
   }
+  const deleteImageHandler=async()=>{
+    const current_media = currentAssetsArray[currentIndex]
+    console.log('delete',current_media)
+    await TripContentHandler.deleteMediaHandler(
+      current_media.trip_id,
+      current_media.version,
+      current_media.media_path,
+      current_media.library_media_path)
+    onClose()
+  }
   // const source = ()=>{
     
   //   if(!currentAssetsArray[currentIndex].uri)
@@ -88,6 +102,10 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
             </TouchableOpacity>
             <TouchableOpacity style={mediaCardStyle.dataButton} onPress={ImageDataDisplayHandler}>
               <Text style={mediaCardStyle.exitText}>...</Text>
+            </TouchableOpacity> 
+            <TouchableOpacity style={mediaCardStyle.deleteButton} onPress={deleteImageHandler}>
+              <Text style={mediaCardStyle.exitText}><MaterialIcons name="delete" size={24} color="red" />
+</Text>
             </TouchableOpacity> 
             <TouchableOpacity style={mediaCardStyle.fullscreenButton} onPress={fullScreenHanlder}>
               <Text style={mediaCardStyle.exitText}>⛶</Text>
