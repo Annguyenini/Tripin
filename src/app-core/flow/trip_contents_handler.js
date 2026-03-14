@@ -152,9 +152,9 @@ class TripContentHandler{
 
             respond = await TripContents.deleteMedias(trip_id,version)
         }
-        if (respond.status!=200) {
-            console.log(respond.data)
-            return
+        if (!respond || respond.status!=200) {
+            console.warn('Server delete failed, may need to sync later')
+            TripSync.addIntoQueue('delete_media',version,{trip_id:trip_id})
         }
         // delete in database
         await safeRun(()=>Albumdb.deleteMediaFromDB(media_path,trip_id),'failed_delete_media_from_db')

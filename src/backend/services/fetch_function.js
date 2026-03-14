@@ -14,7 +14,7 @@ export default async function fetchFunction(url, options = {}, retry = true) {
         delete activeFetch[url]
     })
 
-    console.log('fetch data',activeFetch[url])
+    console.log('fetch data',url)
 
     return activeFetch[url]
 }
@@ -22,9 +22,10 @@ export default async function fetchFunction(url, options = {}, retry = true) {
 async function _doFetch(url, options, retry) {
     try {
         const token = await TokenService.getToken('access_token')
+        
         const headers = { ...(options.headers || {}) }
-        if (token) headers['Authorization'] = `Bearer ${token}`
-
+        if (!token)return { ok: false, code: 'no_token' } 
+        headers['Authorization'] = `Bearer ${token}`
         const respond = await fetch(url, { ...options, headers })
 
         if (respond.status === 304) return { ok: true, status: 304, data: null }

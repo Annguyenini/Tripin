@@ -1,7 +1,7 @@
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import TripHandler from "../app-core/flow/trip_handler.js";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
-import { TouchableOpacity, Text, StyleSheet, View, Image } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, View, Image, Modal } from "react-native";
 import { NewTripFiller } from "./functions/add_new_trip.js";
 import TripDataService from "../backend/storage/trips.js";
 import UserDataService from "../backend/storage/user.js";
@@ -11,7 +11,7 @@ import { tripCardsStyle } from "../styles/function/tripcards.js";
 import AppFlow from "../app-core/flow/app_flow.js";
 import { UseOverlay } from "./overlay/overlay_main.js";
 import TripDisplayObserver from "./map_box/functions/trip_display_observer.js";
-
+import { TestScreen } from "../test_screen.js";
 const default_user_image = require('../../assets/image/profile_icon.png')
 
 export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }) => {
@@ -24,7 +24,7 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
   const [userProfileImage,     setUserProfileImage]     = useState(UserDataService.getProfileImageUri())
   const [loadingText,          setLoadingText]          = useState(null)
   const [dataKey,              setDataKey]              = useState(0)
-
+  const [test,setTest]=useState(false)
   const { showLoading, hideLoading, showErrorBox } = UseOverlay()
 
   // ── observers ──
@@ -83,8 +83,11 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
           <Text style={s.displayName}>{userDisplayName}</Text>
           <Text style={s.displaySub}>your journeys</Text>
         </View>
-      </View>
-
+      </View> 
+      {/* <TouchableOpacity onPress={()=>setTest(true)}>
+        <Text>test</Text>
+      </TouchableOpacity> */}
+      
       {/* section header */}
       <View style={s.sectionHeader}>
         <Text style={s.sectionTitle}>All Trips</Text>
@@ -104,6 +107,9 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
           <Text style={s.loadingText}>{loadingText}</Text>
         </View>
       )}
+      {test&&<Modal>
+        <TestScreen testScreenHandler={()=>setTest(false)}></TestScreen>
+        </Modal>}
     </>
   )
 

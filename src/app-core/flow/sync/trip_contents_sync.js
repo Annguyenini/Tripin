@@ -3,12 +3,14 @@ import CurrentTripDataService from '../../../backend/storage/current_trip'
 import TripContentsService from '../../../backend/services/trip_contents'
 import TripDatabaseService from '../../../backend/database/TripDatabaseService'
 import UserDataService from '../../../backend/storage/user'
+import { _registerNetworkCallback } from './network_observer'
 class TripSync {
     constructor(){
         this.pennding = []
         this.syncing = false
         this.coordinatesSyncing = false
         this.mediasSyncing = false
+        _registerNetworkCallback(this.networkCallback.bind(this))
     }
     addIntoQueue(itemType,version=null,data){
         this.pennding.push({
@@ -16,6 +18,9 @@ class TripSync {
             'itemType':itemType,
             'data':data
         })
+    }
+    networkCallback(state){
+        if (state) this.process()
     }
     /**
      * process syncing for trip contents including coords and medias
@@ -38,8 +43,11 @@ class TripSync {
                 case 'video':
                     await TripContentsService.sendTripVideo(CurrentTripDataService.getCurrentTripId(),item.version,item.data.media_path,item.data.longitude,item.data.latitude)
                     break;
-
-                }
+                
+                case 'delete_media':
+                    await TripContentsService.deleteMedias(item.data.trip_id,item.version)
+                    break;
+            }
             this.pennding.shift()
             
         }

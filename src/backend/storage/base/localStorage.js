@@ -159,6 +159,7 @@ class LocalStorage {
         }
     }
     async deleteImageFromLocal(filename){
+        if (!filename) return
         const destination = documentDirectory+filename
         try{
             await deleteAsync(destination)
