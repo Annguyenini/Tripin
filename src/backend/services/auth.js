@@ -1,14 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import * as SecureStore from 'expo-secure-store'
 import {Platform } from 'react-native'
 import * as API from '../../config/config_api'
 // import { setSurfaceProps } from 'react-native/types_generated/Libraries/ReactNative/AppRegistryImpl';
-import UserDataService from '../storage/user'
 import TokenService from './token_service'
-import EtagService from './etag/etag_service';
-import { ETAG_KEY } from './etag/etag_keys';
-import fetchFunction from './fetch_function';
+
 class Auth{
     async authenticateToken(type,etag=null){
         try{
@@ -64,7 +60,7 @@ class Auth{
     }
     
     async requestLogin(username,password){
-        const respond = await fetchFunction(API.LOGIN_API,{
+        const respond = await fetch(API.LOGIN_API,{
             method :'POST',
             headers:{'Content-Type':'application/json'},
             body: JSON.stringify({
@@ -77,7 +73,7 @@ class Auth{
 
     async requestSignup(email,displayName,username,password){
         console.log(email,username)
-        const respond = await fetchFunction(API.SIGN_UP_API,{
+        const respond = await fetch(API.SIGN_UP_API,{
             method: "POST", 
             headers:{"Content-Type":"application/json"}, 
             body: JSON.stringify({
@@ -92,7 +88,7 @@ class Auth{
     }   
     async requestVerifycation (email, code){
         // console.log("called")
-        const respond = await fetchFunction(API.REQUEST_VERIFICATION_API,{
+        const respond = await fetch(API.REQUEST_VERIFICATION_API,{
             method:'POST',
             headers:{"Content-Type":"application/json"},
             body: JSON.stringify({

@@ -59,8 +59,8 @@ class GPSLogic {
             const {latitude:lat2,longitude:lng2} = payload.coordinates
             distance = CoordinateCal.haversineDistance(lat1,lng1,lat2,lng2)
             console.log('call back distance',distance)
-            this.lastPayload = payload
         }
+        this.lastPayload = payload
         const {speed} = payload.coordinates
         console.log('call back speed', speed)
         if(speed < 0) return 
@@ -78,7 +78,6 @@ class GPSLogic {
         if (distance <= 5)return
 
         CurrentTripCoordinateService.push(payload)
-        this.lastPayload = payload
         // process new coords
         return
     }
