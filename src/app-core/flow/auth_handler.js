@@ -72,7 +72,7 @@ class AuthHandler{
         return(respond)
     }
     async emailVerificationHandler(email,code){
-        const respond = await Auth.requestVerifycation(email,code)
+        const respond = await Auth.requestVerification(email,code)
         return respond
     }
     async _offlineAuthHandler(){

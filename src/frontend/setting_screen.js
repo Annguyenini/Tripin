@@ -8,16 +8,20 @@ import UserDataService from '../backend/storage/user.js'
 import TripService from '../backend/gps_logic/gps_logic.js';
 import TokenService from '../backend/services/token_service.js';
 import LocalStorage from '../backend/storage/base/localStorage.js';
+import safeRun from '../app-core/helpers/safe_run.js';
 const Localstorage =new LocalStorage()
 export const SettingScreen =()=>{
     const callLogout = async ()=>{
         // await AuthService.requestLogout();
-        await TokenService.deleteToken("access_token")
-        await TokenService.deleteToken("refresh_token")
-        await UserDataService.deleteAllUserData();
-        await CurrentTripDataService.resetCurrentTripData()
-        await TripService.endGPSLogic()
-        await Localstorage.clearAllStorage()
+        console.log('signout')
+        await safeRun(() => TokenService.deleteToken("access_token"), 'failed_at_delete_access_token')
+        await safeRun(() => TokenService.deleteToken("refresh_token"), 'failed_at_delete_refresh_token')
+        await safeRun(() => UserDataService.deleteAllUserData(), 'failed_at_delete_user_data')
+        await safeRun(() => CurrentTripDataService.resetCurrentTripData(), 'failed_at_reset_trip_data')
+        await safeRun(() => TripService.endGPSLogic(), 'failed_at_end_gps_logic')
+        await safeRun(() => Localstorage.clearAllStorage(), 'failed_at_clear_storage')
+        console.log('signout1')
+
         navigate("auth")
     }  
     const returnToMainScreen =()=>{

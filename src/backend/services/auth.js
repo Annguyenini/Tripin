@@ -4,7 +4,7 @@ import {Platform } from 'react-native'
 import * as API from '../../config/config_api'
 // import { setSurfaceProps } from 'react-native/types_generated/Libraries/ReactNative/AppRegistryImpl';
 import TokenService from './token_service'
-
+import NetworkObserver from '../../app-core/flow/sync/network_observer';
 class Auth{
     async authenticateToken(type,etag=null){
         try{
@@ -60,6 +60,7 @@ class Auth{
     }
     
     async requestLogin(username,password){
+        try{
         const respond = await fetch(API.LOGIN_API,{
             method :'POST',
             headers:{'Content-Type':'application/json'},
@@ -68,35 +69,65 @@ class Auth{
                 password:password
             })
         })
-        return respond
+        const data = await respond.json()
+
+        if(respond.status !==200){
+            return{ok: true, status: respond.status, data :null}
+        }
+        return{ok: true, status: respond.status, data :data}
+        }
+        catch(err){
+            console.error('Failed to fetch', err)
+            if (err instanceof TypeError && err.message === 'Network request failed') {
+                NetworkObserver.setServerStatus(false)
+                return { ok: false, code:'network_error'}
+            }
+            return { ok: false }
+        }
     } 
 
-    async requestSignup(email,displayName,username,password){
-        console.log(email,username)
-        const respond = await fetch(API.SIGN_UP_API,{
-            method: "POST", 
-            headers:{"Content-Type":"application/json"}, 
-            body: JSON.stringify({
-            email:email,
-            displayName:displayName,
-            username:username,
-            password:password 
+    async requestSignup(email, displayName, username, password) {
+        try {
+            const respond = await fetch(API.SIGN_UP_API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, displayName, username, password })
             })
-        })
-        
-        return respond
-    }   
-    async requestVerifycation (email, code){
-        // console.log("called")
-        const respond = await fetch(API.REQUEST_VERIFICATION_API,{
-            method:'POST',
-            headers:{"Content-Type":"application/json"},
-            body: JSON.stringify({
-                email: email,
-                code : code,
-            })             
-        })
-        return respond
+            const data = await respond.json()
+            if (respond.status !== 200) {
+                return { ok: false, status: respond.status, data: null }
+            }
+            return { ok: true, status: respond.status, data: data }
+        } catch (err) {
+            console.error('Failed to fetch', err)
+            if (err instanceof TypeError && err.message === 'Network request failed') {
+                NetworkObserver.setServerStatus(false)
+                return { ok: false, code: 'network_error' }
+            }
+            return { ok: false }
+        }
+    }
+
+    async requestVerification(email, code) {
+        try {
+            const respond = await fetch(API.REQUEST_VERIFICATION_API, {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, code })
+            })
+            const data = await respond.json()
+            if (respond.status !== 200) {
+                return { ok: false, status: respond.status, data: null }
+            }
+            return { ok: true, status: respond.status, data: data }
+        } catch (err) {
+            console.error('Failed to fetch', err)
+            if (err instanceof TypeError && err.message === 'Network request failed') {
+                NetworkObserver.setServerStatus(false)
+                return { ok: false, code: 'network_error' }
+            }
+            return { ok: false }
+        }
     }
     async requestLogout(){
         
