@@ -3,6 +3,7 @@ import {DATA_KEYS} from './keys/storage_keys'
 import {STORAGE_KEYS} from './keys/storage_keys'
 import { copyAsync, deleteAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
 import LocalStorage from './base/localStorage';
+import safeRun from '../../app-core/helpers/safe_run';
 const USER_PROFILE_IMAGE_PATH = 'user_profile.jpg'
 class UserDataService extends LocalStorage{
     constructor(){
@@ -115,7 +116,7 @@ class UserDataService extends LocalStorage{
      *
      */
     async deleteUserDataFromLocal(){
-        const keys_array = await this.getAllKeys()
+        let keys_array = await this.getAllKeys()
         keys_array = keys_array.filter(key => key.includes('user.'))
         for (const key of keys_array){
             this.deleteDataFromLocal(key)
@@ -131,8 +132,8 @@ class UserDataService extends LocalStorage{
     }
 
     async deleteAllUserData(){
-        await this.deleteUserDataFromLocal()
-        await this.deleteProfileImage()
+        await safeRun(() => this.deleteUserDataFromLocal(), 'failed_at_delete_user_data_local')
+        await safeRun(() => this.deleteProfileImage(), 'failed_at_delete_profile_image')
     }
 }
 
