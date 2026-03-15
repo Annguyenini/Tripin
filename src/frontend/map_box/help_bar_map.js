@@ -11,6 +11,11 @@ import {DisplayTripBox} from './components/current_display_trip_box'
 import TripDisplayObserver from './functions/trip_display_observer'
 import { DATA_KEYS } from '../../backend/storage/keys/storage_keys'
 import MarkerManager from './components/marker_manager'
+/**
+ * help decide waht trip to display 
+ * @param {*} param0 
+ * @returns 
+ */
 export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
     const navigation_icon = require('../../../assets/image/navigation_notoutline_icon.png')
     const navigation_outline_icon = require('../../../assets/image/navigation_outline_icon.png')
@@ -22,30 +27,29 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
     useEffect(()=>{
         
         const updateNewDisplayTrip ={
-            update(newTripdata){
-                console.log('new 1')
-                setCurrentDisplayTripData(newTripdata)
+            update(newDisplayTripId){
+                setCurrentDisplayTripData(newDisplayTripId)
 
             }
         }
-        const updateCurrentTripId={
-            update(newTripid){
-                                console.log('new 2')
-                setCurrentTripId (newTripid)
+
+        const updateCurrentTripData={
+            update(newTripData){
+                if(!newTripData){
+                    setCurrentTripId(null)
+                    return
+                }
+                const newTripId = newTripData.trip_id
+                setCurrentTripId (newTripId)
             }
         }
-        // const updateCurrentTripStatus={
-        //     update (newState){
-        //         console.log('new state',newState)
-        //         setIsOnATrip(newState)
-        //     }
-        // }
-        CurrentTripDataService.attach(updateCurrentTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
+    
+        CurrentTripDataService.attach(updateCurrentTripData,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA)
         TripDisplayObserver.attach(updateNewDisplayTrip,TripDisplayObserver.EVENTS)
         // CurrentTripDataService.attach(updateCurrentTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
         return ()=>{
             TripDisplayObserver.detach(updateNewDisplayTrip,TripDisplayObserver.EVENTS)
-            CurrentTripDataService.detach(updateCurrentTripId,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID)
+            CurrentTripDataService.detach(updateCurrentTripData,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA)
             // CurrentTripDataService.detach(updateCurrentTripStatus,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS)
 
         }
@@ -57,20 +61,20 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
             setIsOnATrip(false)
             setIsTripBoxDisplay(false)
             setIsTripSelected(false)
-            console.log('set 1')
+            console.log('Display trip empty')
         }
         //when the current trip need to render
         else if(currentDisplayTripData && currentDisplayTripData.trip_id === current_trip_id){
             setIsOnATrip(true)
             setIsTripBoxDisplay(false)
             setIsTripSelected(false)
-            console.log('set 2')
+            console.log('set current trip')
 
         }
         else if(currentDisplayTripData && currentDisplayTripData.trip_id !== current_trip_id){
             setIsTripSelected(true)
             setIsTripBoxDisplay(true)
-            console.log('set 3')
+            console.log('set selected trip')
 
         }
     },[currentDisplayTripData,current_trip_id])

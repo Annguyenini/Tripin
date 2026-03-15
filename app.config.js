@@ -1,6 +1,6 @@
 export default {
   expo: {
-    name: "tripin",
+    name: "tripping",
     slug: "tripin",
     version: "1.0.0",
     orientation: "portrait",
@@ -19,6 +19,8 @@ export default {
         NSLocationWhenInUseUsageDescription: "This app needs your location to track your trips while you're using the app.",
         NSLocationAlwaysAndWhenInUseUsageDescription: "This app needs your location to track your trips even when the app is in the background.",
         NSLocationAlwaysUsageDescription: "This app needs your location to track your trips.",
+        NSPhotoLibraryUsageDescription: "We need access to delete trip media from your library.",
+        NSPhotoLibraryAddUsageDescription: "We need access to save trip media to your library.",
         ITSAppUsesNonExemptEncryption: false
       },
       bundleIdentifier: "com.anonymous.tripin"
@@ -60,11 +62,19 @@ export default {
           isAndroidBackgroundLocationEnabled: true
         }
       ],
+      [
+        "expo-media-library",
+        {
+          photosPermission: "Allow $(PRODUCT_NAME) to access your photos.",
+          savePhotosPermission: "Allow $(PRODUCT_NAME) to save photos.",
+          isAccessMediaLocationEnabled: true
+        }
+      ],
       "expo-sqlite",
       [
       "react-native-vision-camera",
       {
-        "cameraPermissionText": "Allow access to camera"
+        "cameraPermissionText": "Allow $(PRODUCT_NAME) access to camera"
       }
       ],
       [
@@ -76,7 +86,6 @@ export default {
         }
       ],
       "expo-av",
-      "expo-media-library",
       "expo-asset"
 
     ],
