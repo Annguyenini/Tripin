@@ -3,7 +3,7 @@ import { DATA_KEYS } from '../../backend/storage/keys/storage_keys';
 import CurrentDisplayCoordinateObserver from './functions/current_display_coordinates_observer';
 import * as CoordinateCal from '../../backend/coordinates/coordinates_cal'
 import TripDisplayObserver from './functions/trip_display_observer';
-import CurrentTripDataService from '../../backend/storage/current_trip'
+
 const mapData = ()=>{
     const [currentTripDisplayData,setCurrentTripDisplayData]= useState(TripDisplayObserver.getTripNeedRender())
     const [tripSelectedCoordsArray,setTripSelectedCoordsArray] = useState([])

@@ -5,23 +5,21 @@ import { DATA_KEYS } from '../../../backend/storage/keys/storage_keys';
 import {currentTripBoxStyle} from '../../../styles/function/current_trip_box_style';
 const default_image = require('../../../../assets/icon.png')
 export const CurrentTripBox = ({isMinimize})=>{
-    const[tripImageCover,setTripImageCover] = useState(null)
+    const[tripImageCover,setTripImageCover] = useState(CurrentTripDataService.getCurrentTripImageUri())
+    const[tripName,setTripName]=useState(CurrentTripDataService.getCurrentTripName())
     useEffect(()=>{
-
-
-      const get_trip_image=async()=>{
-        const imageUri = CurrentTripDataService.getCurrentTripImageUri()
-        console.log('image1',imageUri)
-        setTripImageCover(imageUri)
-      }
-      const updateImage ={
-        update(uri){
-          setTripImageCover(uri)
+      const updateTripData={
+        update(newTripData){
+          if (!newTripData) return
+          const newName = newTripData.trip_name
+          const newImage = newTripData.image
+          setTripName(newName)
+          setTripImageCover(newImage)
         }
       }
-      CurrentTripDataService.attach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE);
-      get_trip_image()
-        return ()=>CurrentTripDataService.detach(updateImage,DATA_KEYS.TRIP.TRIP_IMAGE)
+      CurrentTripDataService.attach(updateTripData,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA);
+      return ()=>CurrentTripDataService.detach(updateTripData,DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA);
+
     },[])
     return (
         <View style={currentTripBoxStyle.wrapper}>
@@ -30,7 +28,7 @@ export const CurrentTripBox = ({isMinimize})=>{
       <View style={currentTripBoxStyle.background} />
 
       {/* Image */}
-      <Image source={ tripImageCover ? {uri:tripImageCover} :default_image} style={[currentTripBoxStyle.image]} />
+      <Image source={ tripImageCover ? {uri:tripImageCover} :{uri:default_image}} style={[currentTripBoxStyle.image]} />
 
       {/* LIVE badge */}
         <View style={currentTripBoxStyle.liveBadge}>
@@ -43,7 +41,7 @@ export const CurrentTripBox = ({isMinimize})=>{
       </TouchableOpacity> */}
 
       {/* City name */}
-      <Text style={currentTripBoxStyle.tripName}>{CurrentTripDataService.getCurrentTripName()}</Text>
+      <Text style={currentTripBoxStyle.tripName}>{tripName}</Text>
     </View>
     </View>
   );

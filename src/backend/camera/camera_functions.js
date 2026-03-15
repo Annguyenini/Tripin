@@ -148,7 +148,7 @@ class CameraService{
   }
   async deleteMediaToLocalAlbum(path){
     const id = path.replace(/^ph:\/\//, '');
-    if (id.lenght<10) return
+    if (id.length<10) return
     // console.log (this.album_name)    
     console.log(id)
     try{

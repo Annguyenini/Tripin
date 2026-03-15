@@ -81,9 +81,7 @@ class CurrentTripDataService extends TripLocalDataStorage{
             this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_CREATED_TIME,trip_data.created_time)
             this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_STATUS,true)
             this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image)
-            this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,trip_data.image) 
             this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
-            this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID,trip_data.trip_id)
             return true
         }
         catch(err){

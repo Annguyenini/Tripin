@@ -8,7 +8,6 @@ import EtagService from '../../backend/services/etag/etag_service'
 import { ETAG_KEY ,GENERATE_TRIP_ETAG_KEY} from '../../backend/services/etag/etag_keys'
 import TripDatabaseService from '../../backend/database/TripDatabaseService'
 import OfflineSyncManager from './sync/offline_sync_manager'
-import TripDisplayObserver from '../../frontend/map_box/functions/trip_display_observer'
 import GPSLogic from '../../backend/gps_logic/gps_logic'
 import safeRun from '../helpers/safe_run'
 class TripHandler{
@@ -201,7 +200,9 @@ class TripHandler{
     async modifyTripDataHandler(trip_id,trip_name=null,image_uri=null){
         console.log(trip_name,image_uri)
         const respond = await Trip.requestTripDataChange(trip_id,trip_name,image_uri)
-        if(respond.status!==200)return {'status':false,'message':respond.message}
+        if(respond.status!==200){
+            console.error('failed to save change in server',respond)
+            return {'status':false,'message':respond.message}}
         // modify trip_name and image 
         const trip_image_uri = await safeRun(()=>CurrentTripDataService.setCurrentTripImageCoverToLocal(image_uri,trip_id) , 'trip_image_save_failed')
         
