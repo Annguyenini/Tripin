@@ -42,7 +42,7 @@ class TripContentService{
     }
 
 
-    async sendTripImage(version,trip_id,imageUri,longitude,latitude){
+    async sendTripImage(media_id,trip_id,imageUri,longitude,latitude){
         const form =  new FormData()
         form.append('image',{
             uri:imageUri,
@@ -54,7 +54,7 @@ class TripContentService{
             longitude:String(longitude),
             latitude:String(latitude),
             time_stamp : getTimestamp(),
-            version :String(version)
+            media_id:media_id
         }))
 
     
@@ -64,7 +64,7 @@ class TripContentService{
         })
         return respond
     }
-    async sendTripVideo(trip_id,video_version,videoUri,longitude,latitude){
+    async sendTripVideo(trip_id,media_id,videoUri,longitude,latitude){
         
         const form = new FormData()
         const path = `trip${trip_id}_${getTimestamp()}`
@@ -77,7 +77,7 @@ class TripContentService{
             longitude:longitude,
             latitude:latitude,
             time_stamp:getTimestamp(),
-            video_version:video_version,
+            media_id:media_id,
         }))
     
         const respond = await fetchFunction(API.SEND_MEDIAS_BASE+`/${trip_id}/upload`,{

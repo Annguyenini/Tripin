@@ -10,6 +10,8 @@ import Albumdb from '../../backend/album/albumdb'
 import safeRun from '../helpers/safe_run'
 import Camera from '../../backend/camera/camera_functions'
 import CurrentDisplayTripMediaObserver from '../../frontend/map_box/functions/current_display_media_observer'
+import HashService from '../../backend/services/hash_service/hash_service'
+import TripContentSyncManager from './sync/trip_contents_sync_manager'
 class TripContentHandler{
     constructor(){
         this.TripCoordinateDatabaseService = new TripCoordinateDatabase()
@@ -113,36 +115,32 @@ class TripContentHandler{
         else return respond.data.medias
 
     }
-    async uploadTripImageHandler(version,trip_id,imageUri){
+    async uploadTripImageHandler(media_id,trip_id,imageUri,longitude,latitude){
         if (!imageUri)return
         try{
-            const coor = await LocationService.getCurrentCoor()
-            const longitude = coor.coords.longitude
-            const latitude = coor.coords.latitude
-            const respond = await TripContents.sendTripImage(version,trip_id,imageUri,longitude,latitude)
-            console.log(respond)
-            const data = respond.data
-            if (respond.status === 409){
-                await TripSync.processTripMediaSync(data.missing_versions)
-            }
+            const respond = await safeRun(()=>TripContents.sendTripImage(media_id,trip_id,imageUri,longitude,latitude),'failed_at_send_image_to_server')
             if(!respond.ok || respond.status !==200) return 
-
+            const data = respond.data
+            // sync leave for later
+            // const hash = data.hash
+            // if (hash){
+            //     TripContentSyncManager.checkTripMediaHash(hash,trip_id)
+            // }
             return respond
         }
         catch(err){
             console.error(err)
         }   
     }
-    async uploadTripVideoHandler(video_version,trip_id,videoUri){
+    async uploadTripVideoHandler(media_id,trip_id,videoUri,longitude,latitude){
         if (!videoUri)return
-        const coor = await LocationService.getCurrentCoor()
-        const longitude = coor.coords.longitude
-        const latitude = coor.coords.latitude
-        const respond = await TripContents.sendTripVideo(trip_id,video_version,videoUri,longitude,latitude)
+        const respond = await TripContents.sendTripVideo(trip_id,media_id,videoUri,longitude,latitude)
          const data = respond.data
-        if (respond.status === 409){
-            await TripSync.processTripMediaSync(data.missing_versions)
-        }
+        // sync leave for later
+
+        // if (respond.status === 409){
+        //     await TripSync.processTripMediaSync(data.missing_versions)
+        // }
         if(!respond.ok || respond.status !==200) return 
         return respond   
     }

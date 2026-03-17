@@ -47,22 +47,19 @@ class Album {
             this.notify()
     }
 
-    async getAlbumAssetObjectReady(media_asset_object,version,Uri){
+    async getAlbumAssetObjectReady(media_asset_object,Uri,media_id,latitude,longitude){
         if(typeof(media_asset_object) != 'object') {
             console.error('media_assest must be object')
             return null
         }
-        const location = await LocationData.getCurrentCoor()
-        const longitude = location ? location.coords.longitude : null
-        const latitude = location ? location.coords.latitude : null
         const trip_name = CurrentTripDataService.getCurrentTripName()
         const trip_id = CurrentTripDataService.getCurrentTripId()
         media_asset_object['longitude'] =longitude
         media_asset_object['latitude']=latitude
         media_asset_object['trip_name']=trip_name
         media_asset_object['trip_id']=trip_id
-        media_asset_object['version']=version
         media_asset_object['media_path']=Uri
+        media_asset_object['media_id']=media_id
         return media_asset_object
     }
 
@@ -80,7 +77,8 @@ class Album {
                 trip_id INTEGER DEFAULT NULL,
                 trip_name TEXT DEFAULT NULL, 
                 time_stamp TEXT NOT NULL,
-                version INTEGER DEFAULT 0
+                version INTEGER DEFAULT 0,
+                media_id TEXT NOT NULL              
                 );`)
         }
         catch(err){
@@ -93,29 +91,27 @@ class Album {
         this.AlbumsArray = [...mergedData] 
         console.log('is array frozen ',Object.isFrozen(this.AlbumsArray))
     }
-    async addMediaIntoDB(media_type,media_path,library_media_path=null,time){
-        const location = await LocationData.getCurrentCoor()
-        const longitude = location ? location.coords.longitude : null
-        const latitude = location ? location.coords.latitude : null
+    async addMediaIntoDB(media_type,media_path,library_media_path=null,time,media_id,longitude,latitude){
+      
         const trip_id = CurrentTripDataService.getCurrentTripId()
         const trip_name = CurrentTripDataService.getCurrentTripName()
-        const current_version = await TripDatabase.getTripMediaVersion(trip_id)
+        // const current_version = await TripDatabase.getTripMediaVersion(trip_id)
         const DB = await SqliteService.connectDB()
         try{
-            await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()}_album (media_type,media_path,library_media_path,latitude,longitude,trip_id,trip_name,time_stamp,version) VALUES (?,?,?,?,?,?,?,?,?)`
-                ,[media_type,media_path,library_media_path,latitude,longitude,trip_id,trip_name,time,current_version+1])        
+            await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()}_album (media_type,media_path,library_media_path,latitude,longitude,trip_id,trip_name,time_stamp,media_id) VALUES (?,?,?,?,?,?,?,?,?)`
+                ,[media_type,media_path,library_media_path,latitude,longitude,trip_id,trip_name,time,media_id])        
             
-            await TripDatabase.updateTripMediaVersion(trip_id,current_version+1)
+            // await TripDatabase.updateTripMediaVersion(trip_id)
             const data ={
                 'longitude':longitude,
                 'latitude':latitude,
                 'trip_id':trip_id,
                 'trip_name':trip_name,
-                'version':current_version+1,
                 'media_path':media_path,
                 'library_media_path':library_media_path,
                 'media_type':media_type,
-                'time_stamp':time
+                'time_stamp':time,
+                'media_id':media_id
 
             }
             return data
@@ -156,6 +152,7 @@ class Album {
             return null
         }
     }
+    
     async getAllMediasFromDb(){
         const DB = await SqliteService.connectDB()
         let result 

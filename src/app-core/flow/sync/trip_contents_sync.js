@@ -43,7 +43,6 @@ class TripSync {
                 case 'video':
                     await TripContentsService.sendTripVideo(CurrentTripDataService.getCurrentTripId(),item.version,item.data.media_path,item.data.longitude,item.data.latitude)
                     break;
-                
                 case 'delete_media':
                     await TripContentsService.deleteMedias(item.data.trip_id,item.version)
                     break;
