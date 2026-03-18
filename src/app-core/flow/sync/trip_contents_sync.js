@@ -37,12 +37,10 @@ class TripSync {
                 case 'coordinate':
                     await TripContentsService.send_coordinates(item.data,item.version)
                     break;
-                case 'photo':
-                    await TripContentsService.sendTripImage(item.version,CurrentTripDataService.getCurrentTripId(),item.data.media_path,item.data.longitude,item.data.latitude)
+                case 'media':
+                    await TripContentsService.sendTripMedia(item.data.media_id,CurrentTripDataService.getCurrentTripId(),item.data.media_path,item.data.longitude,item.data.latitude,item.data.media_type)
                     break;
-                case 'video':
-                    await TripContentsService.sendTripVideo(CurrentTripDataService.getCurrentTripId(),item.version,item.data.media_path,item.data.longitude,item.data.latitude)
-                    break;
+                
                 case 'delete_media':
                     await TripContentsService.deleteMedias(item.data.trip_id,item.version)
                     break;

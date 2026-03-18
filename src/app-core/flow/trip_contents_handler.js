@@ -118,14 +118,15 @@ class TripContentHandler{
     async uploadTripImageHandler(media_id,trip_id,imageUri,longitude,latitude){
         if (!imageUri)return
         try{
-            const respond = await safeRun(()=>TripContents.sendTripImage(media_id,trip_id,imageUri,longitude,latitude),'failed_at_send_image_to_server')
+            const respond = await safeRun(()=>TripContents.sendTripMedia(media_id,trip_id,imageUri,longitude,latitude,'image'),'failed_at_send_image_to_server')
             if(!respond.ok || respond.status !==200) return 
             const data = respond.data
+
             // sync leave for later
-            // const hash = data.hash
-            // if (hash){
-            //     TripContentSyncManager.checkTripMediaHash(hash,trip_id)
-            // }
+            const hash = data.hash
+            if (hash){
+                TripContentSyncManager.checkTripMediaHash(hash,trip_id)
+            }
             return respond
         }
         catch(err){
@@ -134,13 +135,17 @@ class TripContentHandler{
     }
     async uploadTripVideoHandler(media_id,trip_id,videoUri,longitude,latitude){
         if (!videoUri)return
-        const respond = await TripContents.sendTripVideo(trip_id,media_id,videoUri,longitude,latitude)
+        const respond = await TripContents.sendTripMedia(trip_id,media_id,videoUri,longitude,latitude,'video')
          const data = respond.data
         // sync leave for later
 
         // if (respond.status === 409){
         //     await TripSync.processTripMediaSync(data.missing_versions)
         // }
+        const hash = data.hash
+            if (hash){
+                TripContentSyncManager.checkTripMediaHash(hash,trip_id)
+            }
         if(!respond.ok || respond.status !==200) return 
         return respond   
     }

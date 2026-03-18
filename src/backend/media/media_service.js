@@ -18,7 +18,7 @@ class MediaService {
         let media_id
         const trip_id = CurrentTripDataService.getCurrentTripId()
         const location_data = (await LocationData.getCurrentCoor())?.coords
-        console.log(location_data)
+        console.log('trip_id',trip_id)
         if (!location_data) {
             return
         }
@@ -38,6 +38,7 @@ class MediaService {
             // insert into album 
 
             Albumdb.addToAlbumArray(asset_object)
+            console.log('assetObject',asset_object)
             // trip_album_subject.addAssetIntoArray(asset_object)
 
         }
@@ -70,20 +71,20 @@ class MediaService {
         let asset_object
         const trip_id = CurrentTripDataService.getCurrentTripId()
         const location_data = (await LocationData.getCurrentCoor())?.coords
-        console.log(location_data)
+        console.log('local',location_data)
         if (!location_data) {
             return
         }
         const longitude = location_data.longitude
         const latitude = location_data.latitude
         try{
-            asset = await this.saveMediaToLocalAlbum(videoUri)
+            asset = await safeRun(()=>this.saveMediaToLocalAlbum(videoUri),'failed_at_save_video_to_gallery')
             // generate media id
             media_id =  this.GENERATE_MEDIA_ID(trip_id,asset.mediaType,asset.creationTime)
             // insert into sqlite3
-            data = await Albumdb.addMediaIntoDB(asset.mediaType,videoUri,asset.uri,asset.creationTime,media_id,longitude,latitude)
+            data = await safeRun(()=>Albumdb.addMediaIntoDB(asset.mediaType,videoUri,asset.uri,asset.creationTime,media_id,longitude,latitude),'failed_at_save_video_to_sql')
             // get object for album
-            asset_object = await Albumdb.getAlbumAssetObjectReady(asset,videoUri,media_id,latitude,longitude)
+            asset_object = await safeRun(()=>Albumdb.getAlbumAssetObjectReady(asset,videoUri,media_id,latitude,longitude),'failed_at_get_object')
             // insert into album
             Albumdb.addToAlbumArray(asset_object)
             // trip_album_subject.addAssetIntoArray(asset_object)
@@ -94,7 +95,7 @@ class MediaService {
 
         if(trip_id){
             try{
-                TripContentHandler.uploadTripVideoHandler(media_id,trip_id,videoUri)
+                TripContentHandler.uploadTripVideoHandler(media_id,trip_id,videoUri,longitude,latitude)
                 // generate a location object
                 const coordinate_object = CurrentTripCoordinateService.generateCoordinatePayload(location_data)
                 // add the coordinate obejct to service 

@@ -4,42 +4,39 @@ import Albumdb from "../../../backend/album/albumdb";
 import safeRun from "../../helpers/safe_run";
 import TripContentsSync from "./trip_contents_sync";
 class TripContentSyncManager{
-
-
-    async checkTripMediaHash(hash,trip_id){
-        let local_hash = await safeRun(()=>HashService.getHashFromLocalStorage(trip_id,'trip_media'),'failed_at_get_local_trip_media_hash')
-        if(!local_hash){
-            const media_metadata = await safeRun(()=>Albumdb.getAssestsFromTripId(trip_id))
-            local_hash = await safeRun(()=>HashService._generateLocalTripMediaHash(media_metadata),'failed_at_generate_trip_media_hash')
-            if(local_hash){
-                await safeRun(()=>HashService.saveHashToLocalStorage(trip_id,'trip_media'),'failed_at_save_hash_to_local')
-            }
+    // 
+    /**
+     * get and save local hash to local storage
+     * @param {*} trip_id 
+     * @returns 
+     */
+    async _generateAndSaveTripMediaHash(trip_id){
+        const media_metadata = await safeRun(()=>Albumdb.getAssestsFromTripId(trip_id))
+        const local_hash = await safeRun(()=>HashService._generateLocalTripMediaHash(media_metadata),'failed_at_generate_trip_media_hash')
+        if(local_hash){
+            await safeRun(()=>HashService.saveHashToLocalStorage(trip_id,'trip_media'),'failed_at_save_hash_to_local')
         }
-        if (local_hash !== hash){
-            await this._getAndProcessTripMediasMetadata(trip_id)
-        }
-        return
+        console.log('new hash',local_hash)
+        return local_hash
     }
-    
-    async tripMediaSyncManager(trip_id){
-
-    }
-    
+    /**
+     * request server trip media hash and compare with the local
+     * @param {*} trip_id 
+     * @returns 
+     */
     async _getAndCompareTripMediasHash(trip_id){
         const response = await safeRun(()=>TripContentsSyncService.requestTripMediasHash(trip_id),'failed_at_get_trip_media_hash_from_server')
         if (!response.ok || response.status !== 200 || !response.data.hash) return false
         // localhash
-        let local_hash = await safeRun(()=>HashService.getHashFromLocalStorage(trip_id,'trip_media'),'failed_at_get_local_trip_media_hash')
-        if(!local_hash){
-            const media_metadata = await Albumdb.getAssestsFromTripId(trip_id)
-            local_hash = await HashService._generateLocalTripMediaHash(media_metadata)
-            if(local_hash){
-                await HashService.saveHashToLocalStorage(trip_id,'trip_media')
-            }
-        }
+        const local_hash = await this._generateAndSaveTripMediaHash(trip_id)
         return response.data.hash === local_hash
     }
 
+    /**
+     * request trip media metadata, compare and request sync if need
+     * @param {*} trip_id 
+     * @returns 
+     */
     async _getAndProcessTripMediasMetadata(trip_id){
         const response = await safeRun(()=>TripContentsSyncService.requestTripMediasMetadata(trip_id),'failed_at_get_trip_media_metadata_from_server')
         const server_metadata = response.data.metadata
@@ -55,26 +52,67 @@ class TripContentSyncManager{
         const upload_array = local_trip_media_assets.filter(local=>
             ! server_metadata.find(server=>server.image_id === local.image_id)
         ) 
+        if ( delete_array )await safeRun(()=>this._processRequestDeleteTripMedias(trip_id,delete_array),'failed_to_process_trip_media_delete_sync')
+        if ( upload_array )await safeRun(()=>this._processRequestUploadTripMedias(trip_id,upload_array),'failed_to_process_trip_upload_delete_sync')
+        return
+    }
+    /**
+     * sync fucntion for delete media
+     * @param {*} trip_id 
+     * @param {*} delete_array 
+     * @returns 
+     */
+    async _processRequestDeleteTripMedias(trip_id,delete_array){
+        delete_array.forEach(element => {
+            TripContentsSync.addIntoQueue('delete_media',null,element)
+        });
+        await safeRun (()=>TripContentsSync.process(),'failed_at_process_delete_media_sync')
+        return
+    }
 
+    /**
+     * sync function for upload media
+     * @param {*} trip_id 
+     * @param {*} upload_array 
+     * @returns 
+     */
+    async _processRequestUploadTripMedias(trip_id,upload_array){
+        upload_array.forEach(element => {
+            TripContentsSync.addIntoQueue('delete_media',null,element)
+        });
+        await safeRun (()=>TripContentsSync.process(),'failed_at_process_upload_media_sync')
+        return
     }
-    async _processRequestDeleteTripMedias(trip_id){
-        
+    /**
+     * handler trip media sync 
+     * @param {*} trip_id 
+     * @returns 
+     */
+    async tripMediaSyncHandler(trip_id){
+        const compare_hash = await this._getAndCompareTripMediasHash(trip_id)
+        if (!compare_hash){
+            await safeRun(()=>this._getAndProcessTripMediasMetadata(trip_id),'failed_at_trip_media_sync_manager')
+        }
+        return
     }
-    async _processRequestUploadTripMedias(trip_id,id_array){
-        
-    }
-    async syncTripMedia(trip_id){
-        // server hash 
-        //get local hash
-        // if not match
-        // request metadatas
-        // compare with current storage
-        // add to queue
-        const response = await TripContentsSyncService.requestTripMediasHash(trip_id)
-        
-        // localhash
-        const local_hash = await HashService.getHashFromLocalStorage(trip_id,'trip_media')
 
+    /**
+     * function use to check hash from server and local and request sync if need
+     * @param {*} hash 
+     * @param {*} trip_id 
+     * @returns 
+     */
+    async checkTripMediaHash(hash,trip_id){
+        let local_hash = await safeRun(()=>HashService.getHashFromLocalStorage(trip_id,'trip_media'),'failed_at_get_local_trip_media_hash')
+        if(!local_hash){
+            local_hash = await safeRun(()=>this._generateAndSaveTripMediaHash(trip_id),'faild_at_generate_and_save_trip_hash')
+        }
+        if (local_hash !== hash){
+            // await this._getAndProcessTripMediasMetadata(trip_id)
+            await safeRun(()=> this._getAndProcessTripMediasMetadata(trip_id),'failed_at_sync_trip_media')
+        }
+        return
     }
+    
 }
 export default new TripContentSyncManager

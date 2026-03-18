@@ -42,48 +42,28 @@ class TripContentService{
     }
 
 
-    async sendTripImage(media_id,trip_id,imageUri,longitude,latitude){
-        const form =  new FormData()
-        form.append('image',{
-            uri:imageUri,
-            type:'image/jpeg',
-            name:`trip${trip_id}_${getTimestamp()}.jpg`
-        })
-        form.append('data',JSON.stringify({
-            trip_id:String(trip_id),
-            longitude:String(longitude),
-            latitude:String(latitude),
-            time_stamp : getTimestamp(),
-            media_id:media_id
-        }))
-
-    
-        const respond = await fetchFunction(API.SEND_MEDIAS_BASE+`/${trip_id}/upload`,{
-            method:'POST',
-            body:form
-        })
-        return respond
-    }
-    async sendTripVideo(trip_id,media_id,videoUri,longitude,latitude){
-        
+    async sendTripMedia(media_id, trip_id, mediaUri, longitude, latitude, mediaType) {
         const form = new FormData()
         const path = `trip${trip_id}_${getTimestamp()}`
-        form.append('video',{
-            uri:videoUri,
-            name:`${path}.mp4`,
-            type:'video/mp4'
+        const isVideo = mediaType === 'video'
+
+        form.append(isVideo ? 'video' : 'image', {
+            uri: mediaUri,
+            name: `${path}.${isVideo ? 'mp4' : 'jpg'}`,
+            type: isVideo ? 'video/mp4' : 'image/jpeg'
         })
-        form.append('data',JSON.stringify({
-            longitude:longitude,
-            latitude:latitude,
-            time_stamp:getTimestamp(),
-            media_id:media_id,
+
+        form.append('data', JSON.stringify({
+            trip_id: String(trip_id),
+            longitude: String(longitude),
+            latitude: String(latitude),
+            time_stamp: getTimestamp(),
+            media_id: media_id
         }))
-    
-        const respond = await fetchFunction(API.SEND_MEDIAS_BASE+`/${trip_id}/upload`,{
-            method:'POST',
-            headers:{'Content-Type':'multipart/form-data'},
-            body:form
+
+        const respond = await fetchFunction(API.SEND_MEDIAS_BASE + `/${trip_id}/upload`, {
+            method: 'POST',
+            body: form
         })
         return respond
     }
