@@ -58,7 +58,7 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
     const res = await TripHandler.requestNewTripHandler(trip_name, imageUri ?? null)
     hideLoading()
     if (!res || res.status !== 200) {
-      showErrorBox('Error Creating Trip', 'Please try again shortly!', 6000)
+      showErrorBox('Error Creating Trip', res.data.message, 6000)
     }
     setShowCreateTrip(false)
   }, [])

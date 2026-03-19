@@ -78,7 +78,6 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
 
         }
     },[currentDisplayTripData,current_trip_id])
-    console.log('current', isOnATrip)
     return(
         <View style ={helpBarMapStyle.container}>
             {isOnATrip&&

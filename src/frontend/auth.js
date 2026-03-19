@@ -22,6 +22,33 @@ const randCoord = () => {
   return `${lat > 0 ? '+' : ''}${lat}° / ${lng > 0 ? '+' : ''}${lng}°`
 }
 
+const EMAIL_RE    = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const USERNAME_RE = /^(?=.*[A-Z])[a-zA-Z]\w+$/;
+const SPECIAL_RE  = /[!@#$%^&*]/;
+
+const MESSAGES = {
+  USERNAME:     'Username must be between 3-15 letters, must contain 1 uppercase and start with a letter',
+  PASSWORD:     'Password must contain at least 1 uppercase, 1 special character, 1 digit, and start with a letter. Between 8-15 characters',
+  DISPLAY_NAME: 'Display name must contain 1 uppercase, no special characters. Between 5-10 letters',
+  EMAIL:        'Email invalid',
+};
+
+const validate = { 
+  username: (v) =>
+    v && v.length >= 3 && v.length <= 15 && USERNAME_RE.test(v),
+
+  password: (v) =>
+    v && v.length >= 8 && v.length <= 15 &&
+    /[A-Z]/.test(v) && /\d/.test(v) && SPECIAL_RE.test(v) && /^[a-zA-Z]/.test(v),
+
+  displayName: (v) =>
+    v && v.length >= 5 && v.length <= 10 && USERNAME_RE.test(v),
+
+  email: (v) =>
+    v && EMAIL_RE.test(v),
+};
+
+
 // ── TOP-LEFT: "Snap your trip." slides in, loops ──
 function SnapLabel() {
   const opacity = useRef(new Animated.Value(0)).current
@@ -119,14 +146,13 @@ export const AuthScreen = () => {
     if (action === 'Login') {
       showLoading()
       const respond = await AuthHandler.loginHandler(username, password);
-      const data = respond.data
       hideLoading()
       if (!respond.ok) {
         setAlertType('There are an error occur with the server! Please try again shortly')
         setShowAleart(true);
       }
       if (respond.status === 401) {
-        setAlertType(data.message)
+        setAlertType(respond.message)
         setShowAleart(true);
         return;
       }
@@ -152,12 +178,10 @@ export const AuthScreen = () => {
         return;
       };
       let res = [];
-      if (!emailRegex.test(email))      res.push('Invalid Email');
-      if (!/\d/.test(password))         res.push('Missing Number!');
-      if (password.length < 8)          res.push('Password have to be longer than 8!');
-      if (!specialRegex.test(password)) res.push("Missing special character!");
-      if (specialRegex.test(username))  res.push("Username should not contain special characters!")
-      if (!/[A-Z]/.test(password))      res.push('Missing upper letter!');
+      if (!validate.email(email))       res.push(MESSAGES.EMAIL);
+      if (!validate.username(username)) res.push(MESSAGES.USERNAME);
+      if (!validate.password(password)) res.push(MESSAGES.PASSWORD);
+      if (!validate.displayName(displayName)) res.push(MESSAGES.DISPLAY_NAME);
       if (confirmPassword != password)  res.push("Confirm password doesnt match!")
       if (res.length > 0) {
         setPassWordMissingList(res);
@@ -166,9 +190,9 @@ export const AuthScreen = () => {
         return;
       }
       const response = await AuthHandler.signUpHandler(email, displayName, username, password);
-      const data = response.data
+      console.log(response)
       if (!response.ok || response.status === 401) {
-        setAlertType(data.message);
+        setAlertType(response.message);
         setShowAleart(true);
         hideLoading()
         return;

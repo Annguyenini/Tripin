@@ -5,12 +5,11 @@ import CurrentDisplayCoordinateObserver from '../functions/current_display_coord
 import { computeCluster } from '../../../backend/addition_functions/compute_cluster';
 import eventBus from '../../../backend/services/UI_event_bus';
 import TripContentHandler from '../../../app-core/flow/trip_contents_handler';
-const CoordinatesPointsLayout =({trip_id})=> {
+const CoordinatesPointsLayout =({trip_id,ready})=> {
   const [assestsObjectsArray,setAssestsObjectsArray]= useState([])
   const [radiusForGrouping,setRadiusForGrouping]=useState(0)
   const previousClusterKey = useRef('empty')
   // const [coordinatesObject,setCoordinatesObject]=useState({})
- 
   useEffect (()=>{
     let _cancelled = false
     const setUpWatchList =async()=>{
@@ -18,8 +17,9 @@ const CoordinatesPointsLayout =({trip_id})=> {
       if(_cancelled)return
       CurrentDisplayCoordinateObserver.setDefaultCoordsArray(trip_id,newCoords)
       setAssestsObjectsArray(newCoords? [...newCoords]:[])
+      ready()
 
-  }
+    }
     const updateWatchList ={
       update(newCoords){
         console.log('update new coords',newCoords)
@@ -38,6 +38,7 @@ const CoordinatesPointsLayout =({trip_id})=> {
       eventBus.off('RadiusChange',radiusListener)
 
     }
+
   },[trip_id])
   
 
@@ -76,7 +77,7 @@ const CoordinatesPointsLayout =({trip_id})=> {
     previousClusterKey.current = key
     return key
   }, [currentCluster])
-
+  
 if (!currentCluster || currentCluster.length === 0) {
   return null}
   const geoJson ={

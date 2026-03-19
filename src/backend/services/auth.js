@@ -72,7 +72,7 @@ class Auth{
         const data = await respond.json()
 
         if(respond.status !==200){
-            return{ok: true, status: respond.status, data :null}
+            return{ok: true, status: respond.status,message:data.message, data :null}
         }
         return{ok: true, status: respond.status, data :data}
         }
@@ -94,8 +94,10 @@ class Auth{
                 body: JSON.stringify({ email, displayName, username, password })
             })
             const data = await respond.json()
+            console.log(respond,data)
+
             if (respond.status !== 200) {
-                return { ok: false, status: respond.status, data: null }
+                return { ok: false, status: respond.status,message:data.message, data: null }
             }
             return { ok: true, status: respond.status, data: data }
         } catch (err) {
