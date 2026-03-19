@@ -1,5 +1,7 @@
 import { mediaCardStyle } from "../../styles/function/media_card"
-import { View,TouchableOpacity,Text,Modal,Image,FlatList, Animated } from "react-native"
+import { View,TouchableOpacity,Text,Modal,FlatList, Animated } from "react-native"
+import {Image} from 'expo-image'
+
 import Video from 'react-native-video'
 import { Gesture,GestureDetector } from "react-native-gesture-handler"
 import { useEffect, useState,useRef } from "react"
