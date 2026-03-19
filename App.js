@@ -35,7 +35,7 @@ const Stack = createStackNavigator();
 export default function App() {
   const [authentication,setAuthentication] =useState(false)
   const [font]=useFonts({
-    mainfont: require('./assets/fonts/font2.otf'),
+    mainfont: require('./assets/fonts/Permanent_Marker/PermanentMarker-Regular.ttf'),
   });
   
   if (!font) return null;
@@ -81,10 +81,10 @@ export default function App() {
 
 function AuthLayout() {
   return (
-      <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
+      <View  style={styles.backgroundImage}>
         <Image source={logo} style={styles.logo} />
         <AuthScreen />
-      </ImageBackground>
+      </View>
   );
 }
 function PermissionLayout() {

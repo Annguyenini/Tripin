@@ -74,7 +74,7 @@ class TripContentHandler{
             'fetch_coordinates_failed'
         )
 
-        if (!respond.ok || respond.status === 304) {
+        if (!respond.ok || respond.status !==200) {
             coordinates = await safeRun(
                 () => this.TripCoordinateDatabaseService.getAllCoordinatesFromTripId(trip_id),
                 'load_local_coordinates_failed'
@@ -82,8 +82,6 @@ class TripContentHandler{
             console.log(coordinates)
             return coordinates
         }
-
-        if (respond.status !== 200) return null
 
         const data = respond.data
         if (!data.coordinates) return null

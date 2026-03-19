@@ -28,8 +28,10 @@ export const CurrentTripBox = ({isMinimize})=>{
       <View style={currentTripBoxStyle.background} />
 
       {/* Image */}
-      <Image source={ tripImageCover ? {uri:tripImageCover} :{uri:default_image}} style={[currentTripBoxStyle.image]} />
-
+      <Image 
+      source={tripImageCover ? { uri: tripImageCover } : default_image} 
+      style={currentTripBoxStyle.image} 
+      />
       {/* LIVE badge */}
         <View style={currentTripBoxStyle.liveBadge}>
           <Text style={currentTripBoxStyle.liveText}>• Current Trip</Text>

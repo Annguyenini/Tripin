@@ -15,6 +15,7 @@ export const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor:'#1c1b1b67'
   },
   logo: {
     width: '80%',
