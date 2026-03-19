@@ -28,7 +28,7 @@ export const MapBoxLayout =({})=>{
 
         await AppFlow.onRenderMapSuccess()
     }
-    const allowedZooms = [10,13, 15, 20, 21, 22];
+    const allowedZooms = [7,8,9,10,11,12,13,14,15, 20, 21, 22];
 
     const zoomHandler = (e) => {
         const zoom = Math.floor(e.properties.zoom);
@@ -79,8 +79,8 @@ export const MapBoxLayout =({})=>{
             followUserLocation={isFollowingUser}  
             followUserMode="normal"
             followZoomLevel={13}
-            centerCoordinate={centerCoords[0]? centerCoords :undefined} // lat 20 just looks nice
-            zoomLevel={centerCoords? 16:13}
+            // centerCoordinate={centerCoords[0]? centerCoords :undefined} // lat 20 just looks nice
+            // zoomLevel={centerCoords? 16:13}
             // followZoomLevel={zoomLevel}
             // animationMode="easeTo"
             // animationDuration={1}
@@ -89,7 +89,7 @@ export const MapBoxLayout =({})=>{
             
             {/* { (isDisplay||tripSelected)&&<CoordinatesPointsLayout trip_id={currentDisplayTripId}></CoordinatesPointsLayout>}
             { (isDisplay||tripSelected)&&<ImageLabel trip_id={currentDisplayTripId} zoomLevel={zoomLevel}></ImageLabel>} */}
-            <Marker zoomLevel={zoomLevel} isDisplayImageMaker={isImageMarkerDisplay} isCoordsMarkerDisplay={isCoordsMarkerDisplay}></Marker>
+            {mapRendered && <Marker zoomLevel={zoomLevel} isDisplayImageMaker={isImageMarkerDisplay} isCoordsMarkerDisplay={isCoordsMarkerDisplay}></Marker>}
             
             </MapboxGL.MapView>
             

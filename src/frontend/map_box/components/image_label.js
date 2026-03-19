@@ -1,6 +1,7 @@
 import  MapboxGL from '@rnmapbox/maps'
 import { useEffect, useState,useMemo,useCallback } from 'react';
-import {View,Image, TouchableOpacity,Text} from'react-native'
+import {View, TouchableOpacity,Text} from'react-native'
+import {Image} from 'expo-image'
 // import TripAlbumSubject from '../../../backend/trip_album/trip_album_subject';
 import CurrentDisplayTripMediaObserver from '../functions/current_display_media_observer';
 import Albumdb from '../../../backend/album/albumdb';
@@ -52,7 +53,7 @@ const RenderImageLable =({clusters,mapKey, onClick})=>{
 }
 
 
-const ImageLabel = ({ trip_id,zoomLevel }) => {
+const ImageLabel = ({ trip_id,zoomLevel,ready }) => {
   const [currentAssetsArray, setCurrentAssetsArray] = useState([])
   const [mapKey, setMapKey] = useState(0)
   const [visible, setVisible] = useState(false)
@@ -71,9 +72,13 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
         CurrentDisplayTripMediaObserver.setDefaultArray(trip_id,albumArray)      // TripAlbumSubject.initAlbumArray(albumArray)
         console.log(albumArray)
         setCurrentAssetsArray([...albumArray])
+
       }
       catch(err){
         console.error(err)
+      }
+      finally{
+        ready()
       }
     }
     
@@ -91,9 +96,15 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
   }, [trip_id])
   const clusters = useMemo(()=>{
     return new Map([
-      [10, computeCluster(currentAssetsArray,1000)],
-      [13, computeCluster(currentAssetsArray,550)],
-      [15, computeCluster(currentAssetsArray,250)],
+      [7, computeCluster(currentAssetsArray,2500)],
+      [8, computeCluster(currentAssetsArray,2000)],
+      [9, computeCluster(currentAssetsArray,1500)],
+      [10, computeCluster(currentAssetsArray,700)],
+      [11, computeCluster(currentAssetsArray,400)],
+      [12, computeCluster(currentAssetsArray,200)],
+      [13, computeCluster(currentAssetsArray,150)],
+      [14, computeCluster(currentAssetsArray,50)],
+      [15, computeCluster(currentAssetsArray,10)],
       [20, computeCluster(currentAssetsArray,3)],
       [21, computeCluster(currentAssetsArray,2)],
       [22, computeCluster(currentAssetsArray,0.5)]
@@ -112,6 +123,7 @@ const ImageLabel = ({ trip_id,zoomLevel }) => {
     setVisible(true)
     setCurrentDisplayCluster(currentCluster[cluster_id].members)
   }
+ 
   return (
     <View key={mapKey}> 
       <RenderImageLable clusters={currentCluster} mapKey={mapKey} onClick={labelDisplayHandler}></RenderImageLable>

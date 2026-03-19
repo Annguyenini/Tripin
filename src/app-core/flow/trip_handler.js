@@ -10,6 +10,7 @@ import TripDatabaseService from '../../backend/database/TripDatabaseService'
 import OfflineSyncManager from './sync/offline_sync_manager'
 import GPSLogic from '../../backend/gps_logic/gps_logic'
 import safeRun from '../helpers/safe_run'
+import trips from '../../backend/storage/trips'
 class TripHandler{
     /**
      * 
@@ -233,19 +234,22 @@ class TripHandler{
     // currently depend on server
     async endTripHandler(){
         try{
+            const trip_id =CurrentTripDataService.getCurrentTripId()
+
             const respond = await Trip.end_trip()
             if(!respond.ok || respond.status!==200){
                 OfflineSyncManager.pushEventToQueue(
                     OfflineSyncManager.getSyncObjectReady(
                         OfflineSyncManager.EVENTS.END_TRIP,
                         {
-                            trip_id:CurrentTripDataService.getCurrentTripId()
+                            trip_id:trip_id
                         },
                         Date.now()
                     ))
             }
 
-            await CurrentTripDataService.resetCurrentTripData()
+            await safeRun(()=>CurrentTripDataService.resetCurrentTripData(),'failed_at_reset_current_trip_data')
+            await safeRun(()=>trips.updateTripEndTime(Date.now(),trip_id),'failed_at_update_end_time')
             GPSLogic.endGPSLogic()
             return true
         }
