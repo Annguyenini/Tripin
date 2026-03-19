@@ -33,9 +33,9 @@ const LAT_RINGS = [
 ]
 
 const LNG_STRIPS = [0, 1, 2, 3, 4, 5]
+const LETTERS    = 'TRIPPING'.split('')
 
-const LETTERS = 'TRIPPING'.split('')
-
+// ── same Globe component, unchanged ──
 function Globe() {
   return (
     <View style={gb.sphere}>
@@ -53,7 +53,6 @@ function Globe() {
           }]} />
         )
       })}
-
       {LNG_STRIPS.map(i => {
         const frac = i / LNG_STRIPS.length
         const rx   = Math.max(2, R * Math.abs(Math.sin(frac * Math.PI)))
@@ -66,7 +65,6 @@ function Globe() {
           }]} />
         )
       })}
-
       <View style={gb.glow} />
       <View style={gb.rim} />
       <View style={gb.pinOuter} />
@@ -147,45 +145,34 @@ export default function LoadingScreen({ onDone }) {
   const [stepIndex, setStepIndex] = useState(0)
   const [dotCount,  setDotCount]  = useState(0)
 
-  // globe
   const globeScale   = useRef(new Animated.Value(0)).current
   const globeOpacity = useRef(new Animated.Value(0)).current
   const globeRotate  = useRef(new Animated.Value(0)).current
   const globeTransY  = useRef(new Animated.Value(0)).current
   const globeShrink  = useRef(new Animated.Value(1)).current
 
-  // brand letters
   const letterAnims = LETTERS.map(() => ({
     opacity:    useRef(new Animated.Value(0)).current,
     translateY: useRef(new Animated.Value(28)).current,
   }))
-  const tagOpacity  = useRef(new Animated.Value(0)).current
+  const tagOpacity = useRef(new Animated.Value(0)).current
 
-  // drips
   const dripAnims = DRIP_CFG.map(() => useRef(new Animated.Value(0)).current)
-
-  // scan
-  const scanX = useRef(new Animated.Value(-width)).current
+  const scanX     = useRef(new Animated.Value(-width)).current
 
   useEffect(() => {
-
-    // ── globe entrance ──
     Animated.parallel([
       Animated.spring(globeScale,   { toValue: 1, tension: 55, friction: 9,  useNativeDriver: true }),
       Animated.timing(globeOpacity, { toValue: 1, duration: 600,             useNativeDriver: true }),
     ]).start()
 
-    // ── slow continuous spin — loop ──
     Animated.loop(
       Animated.timing(globeRotate, {
-        toValue:  1,
-        duration: 8000,           // slow — 8s per revolution
-        easing:   Easing.linear,
-        useNativeDriver: true,
+        toValue: 1, duration: 8000,
+        easing: Easing.linear, useNativeDriver: true,
       })
     ).start()
 
-    // ── globe exits upward after 2.2s, then brand reveals ──
     setTimeout(() => {
       Animated.parallel([
         Animated.timing(globeTransY, {
@@ -200,8 +187,6 @@ export default function LoadingScreen({ onDone }) {
           toValue: 0, duration: 500, useNativeDriver: true,
         }),
       ]).start(() => {
-
-        // ── brand reveal ──
         setPhase('brand')
 
         LETTERS.forEach((_, i) => {
@@ -218,7 +203,6 @@ export default function LoadingScreen({ onDone }) {
           Animated.timing(tagOpacity, { toValue: 1, duration: 600, useNativeDriver: true }).start()
         }, LETTERS.length * 70 + 200)
 
-        // drips — useNativeDriver: false (animating height)
         setTimeout(() => {
           dripAnims.forEach((a, i) => {
             const loop = () => {
@@ -233,7 +217,6 @@ export default function LoadingScreen({ onDone }) {
           })
         }, 300)
 
-        // scan line
         const runScan = () => {
           scanX.setValue(-width)
           Animated.timing(scanX, {
@@ -250,7 +233,6 @@ export default function LoadingScreen({ onDone }) {
     const stepTimer = setInterval(() => setStepIndex(i => (i + 1) % STEPS.length), 1800)
     const dotTimer  = setInterval(() => setDotCount(d => (d + 1) % 4),             450)
     return () => { clearInterval(stepTimer); clearInterval(dotTimer) }
-
   }, [])
 
   const spinDeg = globeRotate.interpolate({
@@ -280,7 +262,7 @@ export default function LoadingScreen({ onDone }) {
       {/* ══ BRAND ══ */}
       {phase === 'brand' && (
         <View style={s.brandWrap}>
-          {/* drips */}
+          {/* drips above */}
           <View style={s.dripRow} pointerEvents="none">
             {DRIP_CFG.map((cfg, i) => (
               <Animated.View key={i} style={[s.drip, {
@@ -337,15 +319,12 @@ export default function LoadingScreen({ onDone }) {
 const s = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-
     flex:            1,
-    backgroundColor: '#0d0c0a',
+    backgroundColor: '#f5f0e8',   // ← polaroid warm white, matches AuthScreen frame
     alignItems:      'center',
     justifyContent:  'center',
-    zIndex: 999,
-
+    zIndex:          999,
   },
- 
 
   // globe
   globeWrap: {
@@ -359,7 +338,7 @@ const s = StyleSheet.create({
     height:        R * 2 + 44,
     borderRadius: (R * 2 + 44) / 2,
     borderWidth:   1,
-    borderColor:  'rgba(200,184,152,0.13)',
+    borderColor:  'rgba(26,26,26,0.13)',   // ← dark on light
     borderStyle:  'dashed',
   },
 
@@ -377,7 +356,7 @@ const s = StyleSheet.create({
   drip: {
     position:               'absolute',
     top:                    0,
-    backgroundColor:        '#1a1917',
+    backgroundColor:        '#1a1a18',   // ← dark drip on light bg
     borderBottomLeftRadius:  50,
     borderBottomRightRadius: 50,
   },
@@ -386,20 +365,20 @@ const s = StyleSheet.create({
     alignItems:    'flex-end',
   },
   letter: {
-    fontFamily:      'PermanentMarker-Regular', // Expo: 'Permanent Marker'
+    fontFamily:      'mainfont',          // ← matches AuthScreen
     fontSize:         52,
-    color:            '#f0f0ec',
-    letterSpacing:    2,                        // matches 0.04em at this size
-    textShadowColor:  '#000',
+    color:           '#1a1a1a',           // ← dark on light bg
+    letterSpacing:    2,
+    textShadowColor:  'rgba(0,0,0,0.18)',
     textShadowOffset: { width: 4, height: 4 },
     textShadowRadius: 0,
     marginHorizontal: 0.5,
   },
   tagline: {
     marginTop:    10,
-    fontFamily:   'DMMono-Regular',
+    fontFamily:   'mainfont',             // ← matches AuthScreen
     fontSize:      11,
-    color:        'rgba(240,240,236,0.34)',
+    color:        'rgba(26,26,26,0.45)',
     letterSpacing: 2.8,
     textTransform: 'uppercase',
   },
@@ -413,15 +392,15 @@ const s = StyleSheet.create({
     gap:            4,
   },
   stepText: {
-    fontFamily:    'DMMono-Regular',
+    fontFamily:    'mainfont',
     fontSize:       12,
-    color:         'rgba(240,240,236,0.4)',
+    color:         'rgba(26,26,26,0.45)',
     letterSpacing:  0.8,
   },
   dots: {
-    fontFamily: 'DMMono-Regular',
+    fontFamily: 'mainfont',
     fontSize:    12,
-    color:      'rgba(240,240,236,0.26)',
+    color:      'rgba(26,26,26,0.28)',
     width:       18,
   },
 
@@ -438,16 +417,16 @@ const s = StyleSheet.create({
   scanLine: {
     width:           width * 0.45,
     height:          1,
-    backgroundColor: '#f0f0ec',
+    backgroundColor: '#1a1a1a',   // ← dark scan on light bg
   },
 
   // stamp
   stamp: {
     position:      'absolute',
     bottom:        24,
-    fontFamily:    'DMMono-Regular',
+    fontFamily:    'mainfont',
     fontSize:       8,
-    color:         'rgba(240,240,236,0.13)',
+    color:         'rgba(26,26,26,0.18)',
     letterSpacing:  2.5,
     textTransform: 'uppercase',
   },
