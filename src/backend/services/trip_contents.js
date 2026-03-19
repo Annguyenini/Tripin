@@ -42,55 +42,35 @@ class TripContentService{
     }
 
 
-    async sendTripImage(version,trip_id,imageUri,longitude,latitude){
-        const form =  new FormData()
-        form.append('image',{
-            uri:imageUri,
-            type:'image/jpeg',
-            name:`trip${trip_id}_${getTimestamp()}.jpg`
-        })
-        form.append('data',JSON.stringify({
-            trip_id:String(trip_id),
-            longitude:String(longitude),
-            latitude:String(latitude),
-            time_stamp : getTimestamp(),
-            version :String(version)
-        }))
-
-    
-        const respond = await fetchFunction(API.SEND_MEDIAS_BASE+`/${trip_id}/upload`,{
-            method:'POST',
-            body:form
-        })
-        return respond
-    }
-    async sendTripVideo(trip_id,video_version,videoUri,longitude,latitude){
-        
+    async sendTripMedia(media_id, trip_id, mediaUri, longitude, latitude, mediaType) {
         const form = new FormData()
         const path = `trip${trip_id}_${getTimestamp()}`
-        form.append('video',{
-            uri:videoUri,
-            name:`${path}.mp4`,
-            type:'video/mp4'
+        const isVideo = mediaType === 'video'
+
+        form.append(isVideo ? 'video' : 'image', {
+            uri: mediaUri,
+            name: `${path}.${isVideo ? 'mp4' : 'jpg'}`,
+            type: isVideo ? 'video/mp4' : 'image/jpeg'
         })
-        form.append('data',JSON.stringify({
-            longitude:longitude,
-            latitude:latitude,
-            time_stamp:getTimestamp(),
-            video_version:video_version,
+
+        form.append('data', JSON.stringify({
+            trip_id: String(trip_id),
+            longitude: String(longitude),
+            latitude: String(latitude),
+            time_stamp: getTimestamp(),
+            media_id: media_id
         }))
-    
-        const respond = await fetchFunction(API.SEND_MEDIAS_BASE+`/${trip_id}/upload`,{
-            method:'POST',
-            headers:{'Content-Type':'multipart/form-data'},
-            body:form
+
+        const respond = await fetchFunction(API.SEND_MEDIAS_BASE + `/${trip_id}/upload`, {
+            method: 'POST',
+            body: form
         })
         return respond
     }
-    async requestTripMedias(trip_id,version){
+    async requestTripMedias(trip_id,trip_media_hash){
         const headers ={}
-        if(version){
-            headers['Version']= version
+        if(trip_media_hash){
+            headers['If-None-Match']= trip_media_hash
         }
         const respond = await fetchFunction(API.REQUEST_TRIP_MEDIAS+`/${trip_id}/medias`,{
                 method :'GET',
@@ -108,11 +88,11 @@ class TripContentService{
         })
         return respond
     }
-    async deleteMedias(trip_id,version){
+    async deleteMedias(trip_id,media_id){
         const respond = await fetchFunction(API.DELETE_TRIP_MEDIA,{
             method:'DELETE',
             headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({trip_id:trip_id,version:version})
+            body:JSON.stringify({trip_id:trip_id,media_id:media_id})
         })
         return respond
     }

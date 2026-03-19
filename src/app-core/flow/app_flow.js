@@ -8,6 +8,8 @@ import CurrentTripDataService from '../../backend/storage/current_trip'
 import TripDatabaseService from "../../backend/database/TripDatabaseService"
 import TripContentsSync from "./sync/trip_contents_sync"
 import LocalStorage from "../../backend/storage/base/localStorage"
+import TripContentSyncManager from "./sync/trip_contents_sync_manager"
+import safeRun from "../helpers/safe_run"
 class AppFlow{
     constructor(){
         this.LocalStorage = new LocalStorage()
@@ -24,7 +26,7 @@ class AppFlow{
         return true
     }
     async onAuthSuccess(){
-        const requestUserData = await UserDataHandler.GetUserDataHandler()
+        await safeRun(()=>UserDataHandler.GetUserDataHandler(),'failed_at_get_user_data')
         // if (!requestUserData){ return false}
         // console.log('main')
         navigate('Permission')
@@ -45,11 +47,24 @@ class AppFlow{
             console.error(err)
         }
     }
+    async onAppReady(){
+        try{
+            const currentTripIdAndVersion = await TripHandler.requestCurrentTripHandler()      
+            await safeRun(()=>this.syncCurrentTripContents(),'failed_at_sync_trip_media')
+
+        }
+        catch(err){
+            console.error('Failed too get current trip data')
+        }
+        return true
+
+    }
     // request current trip-id
     async onRenderMapSuccess(){
-        const currentTripIdAndVersion = await TripHandler.requestCurrentTripHandler()        
-        await this.syncCurrentTripContents()
-        return
+        // const currentTripIdAndVersion = await TripHandler.requestCurrentTripHandler()      
+        // await safeRun(()=>this.syncCurrentTripContents(),'failed_at_sync_trip_media')
+  
+        // return
     }
     async onRenderUserData(){
         const trips = await TripHandler.requestAllTripHandler() 
@@ -63,8 +78,10 @@ class AppFlow{
     //     return
     // }
     async syncCurrentTripContents(){
-        await TripContentsSync.currentTripContentsSync(CurrentTripDataService.getCurrentTripId())
-        return
+        const trip_id = CurrentTripDataService.getCurrentTripId()
+        if (trip_id) await TripContentSyncManager.tripMediaSyncHandler(trip_id)
+        // await TripContentsSync.currentTripContentsSync(CurrentTripDataService.getCurrentTripId())
+        // return
     }
     
 }

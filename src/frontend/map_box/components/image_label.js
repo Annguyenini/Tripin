@@ -12,6 +12,7 @@ import TripContentHandler from '../../../app-core/flow/trip_contents_handler';
 const videoPauseIcon = require('../../../../assets/image/video_pause_icon.png')
 const image_icon = require('../../../../assets/image/gallery_icon.png')
 const RenderImageLable =({clusters,mapKey, onClick})=>{
+  console.log('render image',clusters)
   if(! clusters) return null
   return (
       clusters.map((cluster) => (

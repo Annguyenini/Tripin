@@ -106,7 +106,16 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
         }
 
     }
-
+    generateCoordinatePayload(coordinate_payload){
+        const payload = {
+                time_stamp: Date.now(),
+                coordinates: {
+                ...coordinate_payload
+                },
+                type: null
+            };
+            return payload
+    }
    
 
 }

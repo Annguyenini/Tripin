@@ -29,6 +29,7 @@ export default function AlbumScreen() {
         }
         const updateImages ={
           update(newImages){
+            console.log('new image',newImages)
             setImages(newImages)
           }
         }
@@ -46,7 +47,8 @@ export default function AlbumScreen() {
     const handleImageClick=(item)=>{
         setCurrentMedia(item.uri)
         setCurrentMediaType(item.mediaType)
-        setImageVisible( prev =>prev === true?  false :true)
+        setImageVisible(true)        
+        console.log('item',item,imageVisible)
     }
   return (
     
@@ -56,6 +58,7 @@ export default function AlbumScreen() {
         </TouchableOpacity>
       <FlatList
         data={Images}
+        extraData={Images}
         keyExtractor={(item) => item.id}
         numColumns={3}
         showsVerticalScrollIndicator={false}
@@ -78,7 +81,10 @@ export default function AlbumScreen() {
         )}
       />
       {imageVisible && 
-      <MediaViewCard title ={'test'} uri ={currentMedia} type={currentMediaType} visible ={imageVisible} onClose={()=>setImageVisible(false)} AssetArray={AlbumService.AlbumsArray}></MediaViewCard>
+      <MediaViewCard title ={'test'} uri ={currentMedia} type={currentMediaType} visible ={imageVisible} onClose={() => {
+  setImageVisible(false)
+  setCurrentMedia(null)
+}} AssetArray={Images}></MediaViewCard>
 
       }
     </View>

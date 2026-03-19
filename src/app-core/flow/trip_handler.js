@@ -78,8 +78,8 @@ class TripHandler{
         if (respond.status !== 200) return false
 
         const data = respond.data
-        if (!data.all_trip_data) return true
-
+        if (!data.all_trip_data.trip_data_list) return true
+        console.log(data)
         await safeRun(
             () => TripDataService.handleAllTripsList(data.all_trip_data.trip_data_list),
             'save_trips_failed'
@@ -124,7 +124,7 @@ class TripHandler{
             const current_trip_respond = await safeRun(
                 () => Trip.requestTripData(trip_id),
                 'fetch_trip_data_failed'
-            )
+            ) 
 
             const status = current_trip_respond.status
 
