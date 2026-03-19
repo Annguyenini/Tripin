@@ -12,6 +12,7 @@ import Camera from '../../backend/camera/camera_functions'
 import CurrentDisplayTripMediaObserver from '../../frontend/map_box/functions/current_display_media_observer'
 import HashService from '../../backend/services/hash_service/hash_service'
 import TripContentSyncManager from './sync/trip_contents_sync_manager'
+import MediaService from '../../backend/media/media_service'
 class TripContentHandler{
     constructor(){
         this.TripCoordinateDatabaseService = new TripCoordinateDatabase()
@@ -104,8 +105,8 @@ class TripContentHandler{
         return coordinates
     }
     async requestTripMediasHandler(trip_id){
-        const version = await TripDatabaseService.getTripMediaVersion(trip_id)
-        const respond = await TripContents.requestTripMedias(trip_id,version)
+        const trip_media_hash = await HashService.generateAndSaveTripMediaHash(trip_id)
+        const respond = await TripContents.requestTripMedias(trip_id,trip_media_hash)
         let assests =[]
         if(!respond.ok || respond.status ===304){
             assests = await Albumdb.getAssestsFromTripId(trip_id)
@@ -135,7 +136,7 @@ class TripContentHandler{
     }
     async uploadTripVideoHandler(media_id,trip_id,videoUri,longitude,latitude){
         if (!videoUri)return
-        const respond = await TripContents.sendTripMedia(trip_id,media_id,videoUri,longitude,latitude,'video')
+        const respond = await TripContents.sendTripMedia(media_id,trip_id,videoUri,longitude,latitude,'video')
          const data = respond.data
         // sync leave for later
 
@@ -143,29 +144,34 @@ class TripContentHandler{
         //     await TripSync.processTripMediaSync(data.missing_versions)
         // }
         const hash = data.hash
-            if (hash){
-                TripContentSyncManager.checkTripMediaHash(hash,trip_id)
-            }
+        if (hash){
+            TripContentSyncManager.checkTripMediaHash(hash,trip_id)
+        }
         if(!respond.ok || respond.status !==200) return 
         return respond   
     }
-    async deleteMediaHandler(trip_id,version,media_path,media_lib_path){
-        let respond
-        if (trip_id){
-
-            respond = await TripContents.deleteMedias(trip_id,version)
-        }
-        if (!respond || respond.status!=200) {
-            console.warn('Server delete failed, may need to sync later')
-            TripSync.addIntoQueue('delete_media',version,{trip_id:trip_id})
-        }
-        // delete in database
+    async deleteMediaHandler(trip_id,media_id,media_path,media_lib_path){
+         // delete in database
         await safeRun(()=>Albumdb.deleteMediaFromDB(media_path,trip_id),'failed_delete_media_from_db')
         // delete in album 
-
+        Albumdb.deleteFromAlbumArray(media_lib_path)
         
-        await safeRun(()=>Camera.deleteMediaToLocalAlbum(media_lib_path),'failed at delete media from album')
+        await safeRun(()=>MediaService.deleteMediaToLocalAlbum(media_lib_path),'failed at delete media from album')
         CurrentDisplayTripMediaObserver.deleteAssestFromArrayByUri(trip_id,media_path)
+
+        let respond = null
+        if (trip_id){
+
+            respond = await TripContents.deleteMedias(trip_id,media_id)
+        }
+        if(respond.status==200){   
+            const data = respond.data
+            const hash = data.hash
+            if (hash){
+                TripContentSyncManager.checkTripMediaHash(hash,trip_id)
+            }
+        }
+       
         return
 
     }

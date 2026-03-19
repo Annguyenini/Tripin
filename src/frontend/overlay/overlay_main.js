@@ -2,7 +2,7 @@ import { createContext,useContext, useRef, useState } from "react";
 import { Loading } from "../custom_components/loading";
 import { ErrorMessageBox } from "../custom_components/error";
 const OverLayContext = createContext()
-
+import LoadingScreen from "../map_box/components/fetching_loading_screen";
 export const OverLayProvider = ({ children })=>{
     const[visible,setVisible]=useState(false)
     const [type,setType] =useState(null)
@@ -36,7 +36,7 @@ export const OverLayProvider = ({ children })=>{
         <OverLayContext.Provider value={{showErrorBox,hideErrorBox,showLoading,hideLoading}}>
             { children }
             {visible&&type==='loading'&& 
-            <Loading></Loading>}
+            <LoadingScreen></LoadingScreen>}
             {visible&&type==='error'&& 
             <ErrorMessageBox tile={errorDataObject.tile} message={errorDataObject.message} duration={errorDataObject.duration}></ErrorMessageBox>}
 

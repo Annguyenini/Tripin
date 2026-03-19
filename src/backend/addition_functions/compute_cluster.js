@@ -1,6 +1,5 @@
 import * as coordinateCal from '../coordinates/coordinates_cal'
 export const computeCluster =(assetArray,radius,closeCluster= false)=>{
-    console.log(assetArray)
     let clusters =[] 
     // let lastCluster ={}
   for (const item of assetArray){

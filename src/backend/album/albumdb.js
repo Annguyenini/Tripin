@@ -30,7 +30,7 @@ class Album {
     }
 
     addToAlbumArray(object){
-        // console.log(this.AlbumsArray)
+        console.log('album',object)
         // if(typeof(object)!=='object'){
         //     console.error('Failed to add into Album array ')
         //     return
@@ -46,7 +46,21 @@ class Album {
         }
             this.notify()
     }
-
+    deleteFromAlbumArray(uri) {
+        try {
+            console.log('deleting', uri)
+            console.log('array sample', this.AlbumsArray[0]) // check actual field name
+            this.AlbumsArray = this.AlbumsArray.filter(item => {
+                console.log('comparing', item.uri, 'vs', uri)
+                return item.uri !== uri
+            })
+            console.log('after delete count', this.AlbumsArray.length)
+        } catch(err) {
+            console.error('Failed to delete from Album array ', err)
+            throw new Error('Error at delete from Album')
+        }
+        this.notify()
+    }
     async getAlbumAssetObjectReady(media_asset_object,Uri,media_id,latitude,longitude){
         if(typeof(media_asset_object) != 'object') {
             console.error('media_assest must be object')

@@ -13,7 +13,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import TripContentHandler from "../../app-core/flow/trip_contents_handler"
 
 export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray,isBottomList}) {
-  // console.log(AssetArray)
   if(!AssetArray || AssetArray.length <=0) return null
   // const modifiedAssetArray =[... AssetArray.map(async(item)=>{
   //   if(item.media_type ==='video' || item.mediaType==='video'){
@@ -23,11 +22,11 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
     
 
   const currentAssetsArray = AssetArray;
-  const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(asset => asset.uri ? asset.uri : asset.library_media_path === uri),0))
+  const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(asset => asset.uri === uri || asset.library_media_path === uri),0))
   const [dataVisible, setDataVisible] = useState(false)
   const observerRef = useRef(null)
   const [isFullScreen,setFullScreen] = useState(false)
-  console.log('media',currentAssetsArray[currentIndex])
+  console.log('media',currentAssetsArray[currentIndex],currentIndex)
   // ── ANIMATION ──
   const slideAnim = useRef(new Animated.Value(0)).current
   const fadeAnim  = useRef(new Animated.Value(1)).current
@@ -75,13 +74,13 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
   }
   const deleteImageHandler=async()=>{
     const current_media = currentAssetsArray[currentIndex]
-    console.log('delete',current_media)
+    onClose()
     await TripContentHandler.deleteMediaHandler(
       current_media.trip_id,
-      current_media.version,
+      current_media.media_id,
       current_media.media_path,
-      current_media.library_media_path)
-    onClose()
+      current_media.library_media_path || current_media.uri)
+
   }
   // const source = ()=>{
     

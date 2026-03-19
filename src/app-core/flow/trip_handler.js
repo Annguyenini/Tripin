@@ -124,7 +124,7 @@ class TripHandler{
             const current_trip_respond = await safeRun(
                 () => Trip.requestTripData(trip_id),
                 'fetch_trip_data_failed'
-            )
+            ) 
 
             const status = current_trip_respond.status
 

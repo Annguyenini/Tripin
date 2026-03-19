@@ -12,6 +12,7 @@ MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN)
 export const MapBoxLayout =({})=>{
     const [isImageMarkerDisplay,setIsImageMarkerDisplay] = useState(true)
     const [isCoordsMarkerDisplay,setIsCoordsMarkerDisplay] = useState(true)
+    const [mapRendered,setMapRendered] = useState(false)
     const zoomRef = useRef(0)
     const renderRef = useRef(false)
     const mapRef = useRef(null);
@@ -23,8 +24,9 @@ export const MapBoxLayout =({})=>{
     const sendMapRenderSignal= async()=>{
         if(renderRef.current)return
         renderRef.current = true
+        setMapRendered(true)
+
         await AppFlow.onRenderMapSuccess()
-       
     }
     const allowedZooms = [10,13, 15, 20, 21, 22];
 
@@ -90,9 +92,15 @@ export const MapBoxLayout =({})=>{
             <Marker zoomLevel={zoomLevel} isDisplayImageMaker={isImageMarkerDisplay} isCoordsMarkerDisplay={isCoordsMarkerDisplay}></Marker>
             
             </MapboxGL.MapView>
+            
+            {mapRendered
+            && 
+            <>
             <MarkerManager imageMarkerDisplay={isImageMarkerDisplay} setIsImageMarkerDisplay={setIsImageMarkerDisplay} isCoordsMarkerDisplay ={isCoordsMarkerDisplay} setIsCoordsMarkerDisplay={setIsCoordsMarkerDisplay}></MarkerManager>
             <TrackingModeManager></TrackingModeManager>
             <HelpBarMap isFollowingUser={isFollowingUser} setIsFollowingUser={()=>setIsFollowingUser(true)}></HelpBarMap>
+            </>            
+            }
             
         </View>
     )

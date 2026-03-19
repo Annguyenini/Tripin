@@ -24,10 +24,13 @@ const settingIcon = require('../../assets/image/setting_icon.png')
 import { MapBoxLayout } from './map_box/map_box_layout.js';
 import { DATA_KEYS } from '../backend/storage/keys/storage_keys.js';
 import Setting from '../app-core/setting.js';
+import AppFlow from '../app-core/flow/app_flow.js'
+import LoadingScreen from './map_box/components/fetching_loading_screen.js';
 export const MainScreen = () =>{
   const [user_id, setUserId] = useState(UserDataService.getUserId())
   const [user_name, setUsername ] = useState(UserDataService.getUserName())
   const [display_name,setDisplayName] = useState(UserDataService.getDisplayName())
+  const [tripDataSuccess,setTripDataSuccess] = useState(false)
   const isUserDataReady = useRef(false)
   // const user_id = useRef(null)
   // const user_name =useRef(null)
@@ -40,6 +43,8 @@ export const MainScreen = () =>{
     const initSetting=async()=>{
       await Setting.init()
       GPSLogic.syncGPSTask()
+      const isTripDataReady = await AppFlow.onAppReady()
+      setTripDataSuccess(isTripDataReady)
     }
     initSetting()
 
@@ -99,7 +104,8 @@ export const MainScreen = () =>{
       <View style={styles.container}> 
       <LocationPermission></LocationPermission>
       
-      {RenderMap()}
+      {tripDataSuccess&&RenderMap()}
+      {!tripDataSuccess&&<LoadingScreen></LoadingScreen>}
       {loading()}
       {
       <UserDataBottomSheet  loading ={loading} userId={user_id} userDisplayName = {display_name} set_show_profile_picker={set_show_profile_picker}/>

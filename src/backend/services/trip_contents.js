@@ -67,10 +67,10 @@ class TripContentService{
         })
         return respond
     }
-    async requestTripMedias(trip_id,version){
+    async requestTripMedias(trip_id,trip_media_hash){
         const headers ={}
-        if(version){
-            headers['Version']= version
+        if(trip_media_hash){
+            headers['If-None-Match']= trip_media_hash
         }
         const respond = await fetchFunction(API.REQUEST_TRIP_MEDIAS+`/${trip_id}/medias`,{
                 method :'GET',
@@ -88,11 +88,11 @@ class TripContentService{
         })
         return respond
     }
-    async deleteMedias(trip_id,version){
+    async deleteMedias(trip_id,media_id){
         const respond = await fetchFunction(API.DELETE_TRIP_MEDIA,{
             method:'DELETE',
             headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({trip_id:trip_id,version:version})
+            body:JSON.stringify({trip_id:trip_id,media_id:media_id})
         })
         return respond
     }
