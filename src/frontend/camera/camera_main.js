@@ -71,7 +71,6 @@ export const CameraApp = () => {
         }
         const updateImages = {
             update(newArray) {
-                            console.log('images',AlbumService.AlbumsArray[0])
 
                 setImage_icon(newArray[0].uri??library_media_path)
                 setImageIconType(newArray[0].mediaType)

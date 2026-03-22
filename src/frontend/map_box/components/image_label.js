@@ -9,7 +9,6 @@ import MediaViewCard from '../../albums/viewer_card';
 import { computeCluster } from '../../../backend/addition_functions/compute_cluster';
 import {imageLabelStyle} from '../../../styles/function/image_label'
 import TripContentHandler from '../../../app-core/flow/trip_contents_handler';
-// figure how to re render the shit!!!!!!!!!
 const videoPauseIcon = require('../../../../assets/image/video_pause_icon.png')
 const image_icon = require('../../../../assets/image/gallery_icon.png')
 const RenderImageLable =({clusters,mapKey, onClick})=>{

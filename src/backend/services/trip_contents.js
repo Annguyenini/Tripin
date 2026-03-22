@@ -60,8 +60,11 @@ class TripContentService{
             time_stamp: getTimestamp(),
             media_id: media_id
         }))
-
+        const headers={
+            'media-id':media_id
+        }
         const respond = await fetchFunction(API.SEND_MEDIAS_BASE + `/${trip_id}/upload`, {
+            headers:headers,
             method: 'POST',
             body: form
         })

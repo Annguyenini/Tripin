@@ -42,7 +42,7 @@ class TripSync {
                     break;
                 
                 case 'delete_media':
-                    await TripContentsService.deleteMedias(item.data.trip_id,item.version)
+                    await TripContentsService.deleteMedias(item.data.trip_id,item.data.media_id)
                     break;
             }
             this.pennding.shift()

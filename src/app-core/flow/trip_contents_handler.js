@@ -16,6 +16,7 @@ import MediaService from '../../backend/media/media_service'
 class TripContentHandler{
     constructor(){
         this.TripCoordinateDatabaseService = new TripCoordinateDatabase()
+        this._uploadPending = 0;
     }
 
     async sendCoordinatesHandler(coors_object,version=null){
@@ -114,47 +115,44 @@ class TripContentHandler{
         else return respond.data.medias
 
     }
-    async uploadTripImageHandler(media_id,trip_id,imageUri,longitude,latitude){
-        if (!imageUri)return
+    async uploadTripMediaHandler(media_id,trip_id,media_uri,longitude,latitude){
+        if (!media_uri)return
+        this._uploadPending =(this._uploadPending||0)+1
         try{
-            const respond = await safeRun(()=>TripContents.sendTripMedia(media_id,trip_id,imageUri,longitude,latitude,'image'),'failed_at_send_image_to_server')
+            // pending count to prevent spam lead to loop sync
+            // send to server
+            const respond = await safeRun(()=>TripContents.sendTripMedia(media_id,trip_id,media_uri,longitude,latitude,'image'),'failed_at_send_media_to_server')
+                       
             if(!respond.ok || respond.status !==200) return 
+           
             const data = respond.data
-
+           
             // sync leave for later
             const hash = data.hash
-            if (hash){
+            
+            // after process all request, check hash and sync
+            console.log('peding',this._uploadPending)
+            if (hash && this._uploadPending ===1){
                 TripContentSyncManager.checkTripMediaHash(hash,trip_id)
-            }
+            }       
             return respond
         }
         catch(err){
             console.error(err)
         }   
-    }
-    async uploadTripVideoHandler(media_id,trip_id,videoUri,longitude,latitude){
-        if (!videoUri)return
-        const respond = await TripContents.sendTripMedia(media_id,trip_id,videoUri,longitude,latitude,'video')
-         const data = respond.data
-        // sync leave for later
-
-        // if (respond.status === 409){
-        //     await TripSync.processTripMediaSync(data.missing_versions)
-        // }
-        const hash = data.hash
-        if (hash){
-            TripContentSyncManager.checkTripMediaHash(hash,trip_id)
+        finally{
+            this._uploadPending--
         }
-        if(!respond.ok || respond.status !==200) return 
-        return respond   
     }
+   
     async deleteMediaHandler(trip_id,media_id,media_path,media_lib_path){
          // delete in database
-        await safeRun(()=>Albumdb.deleteMediaFromDB(media_path,trip_id),'failed_delete_media_from_db')
+        await safeRun(()=>Albumdb.deleteMediaFromDB(media_id,trip_id),'failed_delete_media_from_db')
+        
+        
+        await safeRun(()=>MediaService.deleteMediaToLocalAlbum(media_id),'failed at delete media from album')
         // delete in album 
         Albumdb.deleteFromAlbumArray(media_lib_path)
-        
-        await safeRun(()=>MediaService.deleteMediaToLocalAlbum(media_lib_path),'failed at delete media from album')
         CurrentDisplayTripMediaObserver.deleteAssestFromArrayByUri(trip_id,media_path)
 
         let respond = null

@@ -21,7 +21,7 @@ class CameraService{
         try{
             // const options = {quality: 1, base64 :true}; // control option for picture
             const photo =await cameraRef.current.takePhoto(options) // return a photo
-            await MediaService.saveImagehandler(photo.path)
+            await MediaService.saveMediaHandler(photo.path)
             return photo;
         }    
         catch(err){
@@ -54,7 +54,7 @@ class CameraService{
     console.log(this.video)
     if (this.video?.path) {
         try{
-            await MediaService.sendVideoHandler(this.video.path)}
+            await MediaService.saveMediaHandler(this.video.path)}
             catch(err){
                 console.error("failed to save video!",err)
             }
