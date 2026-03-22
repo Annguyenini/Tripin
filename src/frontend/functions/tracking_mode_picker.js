@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Animated } from 'react
 const MODES = [
   {
     key: 'normal',
-    label: 'Detail Tracking',
+    label: 'Detail Tracking (disable for now)',
     sub: 'GPS path, speed, altitude & photos',
     // preview: require('../../../assets/preview_detail.png'),   // swap with your asset
     // fallback placeholder if no asset yet:
@@ -40,6 +40,7 @@ export const TrackingModePicker = ({ value, onChange }) => {
       <View style={s.toggleRow}>
         {MODES.map(mode => (
           <TouchableOpacity
+            disabled ={mode.key ==='normal'? true : false}
             key={mode.key}
             style={[s.option, selected === mode.key && s.optionActive]}
             onPress={() => handleSelect(mode.key)}
@@ -67,7 +68,7 @@ export const TrackingModePicker = ({ value, onChange }) => {
           <Text style={s.previewSub}>{active.sub}</Text>
 
           {/* feature bullets */}
-          {active.key === 'detail' ? (
+          {active.key === 'normal' ? (
             <>
               <FeatureRow text="GPS coordinates logged" />
               <FeatureRow text="Speed & altitude tracked" />

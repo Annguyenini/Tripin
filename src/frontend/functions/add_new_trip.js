@@ -27,11 +27,11 @@ export const NewTripFiller = ({set_show_create_trip_filler,request_new_trip})=>{
     request_new_trip(tripName,imageUri)
   }
   const trackingModeHandler =async(mode)=>{
-    if (mode === 'media'){
-      await Setting.setTrackingMode(TRACKING_MODE.MEDIAS_ONLY)
+    if (mode === 'normal'){
+      await Setting.setTrackingMode(TRACKING_MODE.NORMAL)
     }
     else{
-      await Setting.setTrackingMode(TRACKING_MODE.NORMAL)
+      await Setting.setTrackingMode(TRACKING_MODE.MEDIAS_ONLY)
     }
   }
   return (
