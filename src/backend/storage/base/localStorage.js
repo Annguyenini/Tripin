@@ -82,9 +82,9 @@ class LocalStorage {
     }
 
     async saveToLocal(key,data){
-        if (typeof(data)!=='string' || typeof(key)!=='string'){
-            console.error('AsyncStorage only allow string')
-            return false 
+        if (typeof data !== 'string' || typeof key !== 'string') {
+            console.error('AsyncStorage only allow string',data,key)
+            throw new Error('saveToLocal only allow string')
         }
         try {
             await AsyncStorage.setItem(key,data)

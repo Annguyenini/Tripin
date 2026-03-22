@@ -44,7 +44,7 @@ class HashService extends LocalStorage{
         const media_metadata = await safeRun(()=>Albumdb.getAssestsFromTripId(trip_id))
         local_hash = await safeRun(()=>this._generateLocalTripMediaHash(media_metadata),'failed_at_generate_trip_media_hash')
         if(local_hash){
-            await safeRun(()=>this.saveHashToLocalStorage(trip_id,'trip_media'),'failed_at_save_hash_to_local')
+            await safeRun(()=>this.saveHashToLocalStorage(trip_id,'trip_media',local_hash),'failed_at_save_hash_to_local')
         }
         return local_hash
     }
@@ -52,7 +52,7 @@ class HashService extends LocalStorage{
         const media_metadata = await safeRun(()=>Albumdb.getAssestsFromTripId(trip_id))
         const local_hash = await safeRun(()=>this._generateLocalTripMediaHash(media_metadata),'failed_at_generate_trip_media_hash')
         if(local_hash){
-            await safeRun(()=>this.saveHashToLocalStorage(trip_id,'trip_media'),'failed_at_save_hash_to_local')
+            await safeRun(()=>this.saveHashToLocalStorage(trip_id,'trip_media',local_hash),'failed_at_save_hash_to_local')
         }
         return local_hash
     }

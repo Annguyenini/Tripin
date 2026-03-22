@@ -7,37 +7,36 @@ import CurrentTripDataService from '../../backend/storage/current_trip'
 
 import * as FileSystem from'expo-file-system/legacy'
 import TripDatabase from '../database/TripDatabaseService'
+ const GENERATE_MEDIA_ID=(media_type,id)=>{
+        // return `${trip_id ? `trip_${trip_id}`:''}:${media_type}:${time_stamp}`
+        return `${media_type}:${id}`
 
+    }
 class Album {
     constructor(){
         this.AlbumsArray =[]
         this.observers =[]
     }
     attach(observer){
-        console.log('attach',observer)
         if(this.observers.find(obs => obs ===observer)) return 
         this.observers.push(observer)
     }
     detach(observer){
-        console.log('dettach')
         this.observers = this.observers.filter(obs =>obs !==observer)
     }
     notify(){
-        console.log('notify',this.observers)
         for(const obs of this.observers){
             obs.update(this.AlbumsArray)
         }
     }
 
     addToAlbumArray(object){
-        console.log('album',object)
         // if(typeof(object)!=='object'){
         //     console.error('Failed to add into Album array ')
         //     return
         // }
         try{
             
-            console.log('is array frozen at add ',Object.isFrozen(this.AlbumsArray), object)
             this.AlbumsArray = [object, ...this.AlbumsArray]
         }
         catch(err){
@@ -48,20 +47,16 @@ class Album {
     }
     deleteFromAlbumArray(uri) {
         try {
-            console.log('deleting', uri)
-            console.log('array sample', this.AlbumsArray[0]) // check actual field name
             this.AlbumsArray = this.AlbumsArray.filter(item => {
-                console.log('comparing', item.uri, 'vs', uri)
                 return item.uri !== uri
             })
-            console.log('after delete count', this.AlbumsArray.length)
         } catch(err) {
             console.error('Failed to delete from Album array ', err)
             throw new Error('Error at delete from Album')
         }
         this.notify()
     }
-    async getAlbumAssetObjectReady(media_asset_object,Uri,media_id,latitude,longitude){
+    getAlbumAssetObjectReady(media_asset_object,Uri,media_id,latitude,longitude){
         if(typeof(media_asset_object) != 'object') {
             console.error('media_assest must be object')
             return null
@@ -103,7 +98,6 @@ class Album {
         }
         const mergedData = await this.getMergedMediasArray()
         this.AlbumsArray = [...mergedData] 
-        console.log('is array frozen ',Object.isFrozen(this.AlbumsArray))
     }
     async addMediaIntoDB(media_type,media_path,library_media_path=null,time,media_id,longitude,latitude){
       
@@ -135,13 +129,12 @@ class Album {
             throw new Error('Failed to insert to db')
         }
     }
-    async deleteMediaFromDB (media_path,trip_id){
-        console.log('db',media_path,trip_id)
+    async deleteMediaFromDB (media_id,trip_id){
         const DB = await SqliteService.connectDB()
         
         try{
-            await DB.runAsync(`DELETE FROM user_${UserDataService.getUserId()}_album WHERE media_path = ?`
-                ,media_path)        
+            await DB.runAsync(`DELETE FROM user_${UserDataService.getUserId()}_album WHERE media_id = ?`
+                ,media_id)        
             
             if (trip_id){
                 const current_version = await TripDatabase.getTripMediaVersion(trip_id)
@@ -203,6 +196,8 @@ class Album {
     async mergeMediasFromAlbumAndDB(db_array,album_array){
         let hash_map ={}
         for(const object of album_array){
+            // create media_id, 
+            object.media_id = GENERATE_MEDIA_ID(object.mediaType,object.id)
             hash_map[object.uri]=object
         }
         for(const object of db_array){
