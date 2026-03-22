@@ -11,7 +11,8 @@ const mapData = ()=>{
     useEffect(()=>{
         const updateTripData={
             update(newTripData){
-                setCurrentTripDisplayData(newTripData)
+                if(!newTripData) return setCurrentTripDisplayData(null)
+                setCurrentTripDisplayData({...newTripData})
             }
         }
 
@@ -22,16 +23,28 @@ const mapData = ()=>{
         
     },[])
     useEffect(()=>{
-        if (currentTripDisplayData){
-            const coords_array = CurrentDisplayCoordinateObserver.getCoordArray(currentTripDisplayData.trip_id)
-            setTripSelectedCoordsArray(coords_array ? [...coords_array]:[])
+
+        if(currentTripDisplayData){
+            const existing = CurrentDisplayCoordinateObserver.getCoordArray(currentTripDisplayData.trip_id)
+            if (existing?.length) setTripSelectedCoordsArray([...existing])
+            const coordinate_array ={
+                update(new_coordinate_array){
+                    setTripSelectedCoordsArray([...new_coordinate_array])
+                }
+            }
+        CurrentDisplayCoordinateObserver.attach(coordinate_array,CurrentDisplayCoordinateObserver.GENERATE_KEY(currentTripDisplayData.trip_id))
+        return ()=> CurrentDisplayCoordinateObserver.detach(coordinate_array,CurrentDisplayCoordinateObserver.GENERATE_KEY(currentTripDisplayData.trip_id))
+            
+    }
+        else{
+            setTripSelectedCoordsArray(null)
         }
     },[currentTripDisplayData])
     // if(currentTripDisplayData && currentTripDisplayData.trip_id === CurrentTripDataService.getCurrentTripId()){
     //     return{centerCoords:undefined}
     // }
     const centerCoords = useMemo(()=>{
-        if(!tripSelectedCoordsArray[0]) return {centerCoords:undefined}
+        if(!tripSelectedCoordsArray?.[0]) return null
         const {latitude,longitude} = tripSelectedCoordsArray[0]
         // if(!latitude||!longitude) return null
         // const {latitude:new_lat,longitude:new_lon} = CoordinateCal.CoorFromDistance(latitude,longitude,130,270) 

@@ -46,7 +46,6 @@ export const MapBoxLayout =({})=>{
 
     // }
 
-    // console.log(isDisplay,currentDisplayTripId,centerCoords)
     return(
         <View style={{flex:1}}> 
             
@@ -68,19 +67,20 @@ export const MapBoxLayout =({})=>{
                     
                 }}
 
-                onMapIdle={()=>{
+                onTouchStart={()=>{
                     setIsFollowingUser(false)
                 }}
-                onCameraChanged={zoomHandler}
-            
+                onCameraChanged={()=>{
+                    zoomHandler
+                }}
             >   
             
             <MapboxGL.Camera 
             followUserLocation={isFollowingUser}  
             followUserMode="normal"
             followZoomLevel={13}
-            // centerCoordinate={centerCoords[0]? centerCoords :undefined} // lat 20 just looks nice
-            // zoomLevel={centerCoords? 16:13}
+            centerCoordinate={centerCoords?.[0] ? centerCoords :undefined} // lat 20 just looks nice
+            zoomLevel={centerCoords? 16:13}
             // followZoomLevel={zoomLevel}
             // animationMode="easeTo"
             // animationDuration={1}
