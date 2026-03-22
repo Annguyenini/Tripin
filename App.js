@@ -89,19 +89,19 @@ function AuthLayout() {
 }
 function PermissionLayout() {
   return (
-      <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
+      <View  style={styles.backgroundImage}>
         <Image source={logo} style={styles.logo} />
         <PermissionsScreen />
-      </ImageBackground>
+      </View>
   );
 }
 const MainLayout =()=> {
   console.log('render1')
   return (
-      <ImageBackground source={backgroundImage} style={mainScreenStyle.backgroundImage}>
+      <View  style={styles.backgroundImage}>
         <Image source={logo} style={mainScreenStyle.logo} />
         <MainScreen />
-      </ImageBackground>
+      </View>
   );
 }
 function CameraLayout(){
@@ -116,17 +116,17 @@ function CameraLayout(){
 
 function SettingLayout(){
   return(
-      <ImageBackground source={backgroundImage} style={mainScreenStyle.backgroundImage}>
+      <View  style={styles.backgroundImage}>
         <Image source={logo} style={mainScreenStyle.logo} />
         <SettingScreen />
-      </ImageBackground>
+      </View>
   )
 }
 function AlbumLayout(){
   return(
-      <ImageBackground source={backgroundImage} style={mainScreenStyle.backgroundImage}>
+      <View  style={styles.backgroundImage}>
         <Image source={logo} style={mainScreenStyle.logo} />
         <AlbumScreen />
-      </ImageBackground>
+      </View>
   )
 }

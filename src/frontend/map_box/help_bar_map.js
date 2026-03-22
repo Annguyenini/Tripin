@@ -78,6 +78,7 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
 
         }
     },[currentDisplayTripData,current_trip_id])
+    console.log(isFollowingUser)
     return(
         <View style ={helpBarMapStyle.container}>
             {isOnATrip&&
@@ -95,7 +96,7 @@ export const HelpBarMap =({isFollowingUser,setIsFollowingUser})=>{
                 setIsFollowingUser(true)
                 }}
             >
-                <Image style ={helpBarMapStyle.icon} source={isFollowingUser? navigation_icon :navigation_outline_icon}/>
+                <Image style ={helpBarMapStyle.icon} source={isFollowingUser? navigation_outline_icon :navigation_icon}/>
             </TouchableOpacity>
         </View>
     )
