@@ -97,7 +97,7 @@ export const MapBoxLayout =({})=>{
             && 
             <>
             <MarkerManager imageMarkerDisplay={isImageMarkerDisplay} setIsImageMarkerDisplay={setIsImageMarkerDisplay} isCoordsMarkerDisplay ={isCoordsMarkerDisplay} setIsCoordsMarkerDisplay={setIsCoordsMarkerDisplay}></MarkerManager>
-            <TrackingModeManager></TrackingModeManager>
+            {/* <TrackingModeManager></TrackingModeManager> */}
             <HelpBarMap isFollowingUser={isFollowingUser} setIsFollowingUser={()=>setIsFollowingUser(true)}></HelpBarMap>
             </>            
             }
