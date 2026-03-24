@@ -80,14 +80,12 @@ class TripHandler{
 
         const data = respond.data
         if (!data.all_trip_data.trip_data_list) return true
-        console.log(data)
         await safeRun(
             () => TripDataService.handleAllTripsList(data.all_trip_data.trip_data_list),
             'save_trips_failed'
         )
 
         if (data.etag) {
-            console.log('etag', data.etag)
             await safeRun(
                 () => EtagService.saveEtagToLocal(ETAG_KEY.ALL_TRIPS_LIST, data.etag),
                 'save_etag_failed'
@@ -121,7 +119,6 @@ class TripHandler{
         const trip_id = data.current_trip_id
 
         if (trip_id) {
-            console.log(trip_id)
             const current_trip_respond = await safeRun(
                 () => Trip.requestTripData(trip_id),
                 'fetch_trip_data_failed'
@@ -199,7 +196,6 @@ class TripHandler{
     }
 
     async modifyTripDataHandler(trip_id,trip_name=null,image_uri=null){
-        console.log(trip_name,image_uri)
         const respond = await Trip.requestTripDataChange(trip_id,trip_name,image_uri)
         if(respond.status!==200){
             console.error('failed to save change in server',respond)
@@ -224,7 +220,6 @@ class TripHandler{
     async requestSharedTripLink(trip_id){
         const res = await Trip.requestSharedTripLink(trip_id)
         if(res.status!==200)return {'status':false,'message':res.message}
-        console.log(res)
         return {'status':true,'message':res.data.message,'url':res.data.url}
     }
     /**

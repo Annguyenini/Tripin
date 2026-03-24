@@ -2,6 +2,7 @@ import * as Location from 'expo-location'
 import * as TaskManager from 'expo-task-manager'
 import CurrentTripDataService from '../storage/current_trip'
 import permission from '../storage/settings/permissions';
+import * as Crypto from 'expo-crypto';
 const TASK_NAME = "background-location-task";
 let _onLocationUpdate = null
 export const _registerLocationCallback =(callback)=>{
@@ -16,22 +17,22 @@ TaskManager.defineTask(TASK_NAME,async ({data,error})=>{
       
     
         const {trip_id} = await CurrentTripDataService.getCurrentTripDataFromLocal()
-        console.log('lala',trip_id)
         if(!trip_id){
             console.warn('No trip id')
         }
-        console.log(data)
         const {locations} = data
         const location = locations[0]
         const payload = {
             time_stamp: Date.now(),
-            trip_id,
+            trip_id:trip_id,
             coordinates: {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
             altitude: location.coords.altitude,
             speed: location.coords.speed,
             heading: location.coords.heading,
+            event:'add',
+            coordinate_id:Crypto.randomUUID(),
             },
         };
         // 

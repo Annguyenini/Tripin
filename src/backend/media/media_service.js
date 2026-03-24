@@ -6,6 +6,7 @@ import CurrentDisplayTripMediaObserver from "../../frontend/map_box/functions/cu
 import LocationData from "../../app-core/local_data/local_location_data"
 import safeRun from "../../app-core/helpers/safe_run"
 import * as MediaLibrary from 'expo-media-library';
+import * as Crypto from 'expo-crypto';
 const ALBUM_NAME ="Tripin_album";
 
 class MediaService {
@@ -18,9 +19,9 @@ class MediaService {
         let asset
         let asset_object
         let media_id
+        let coordinate_id
         const trip_id = CurrentTripDataService.getCurrentTripId()
         const location_data = (await LocationData.getCurrentCoor())?.coords
-        console.log('trip_id',trip_id)
         if (!location_data) {
             return
         }
@@ -34,7 +35,7 @@ class MediaService {
             }
             // generate media an unique media id 
             media_id =  this.GENERATE_MEDIA_ID(asset.mediaType,asset.id)
-
+            coordinate_id = Crypto.randomUUID() 
             // get object ready to insert into album 
             asset_object = Albumdb.getAlbumAssetObjectReady(asset,media_uri,media_id,latitude,longitude)
             // insert into album 
@@ -43,19 +44,20 @@ class MediaService {
             // trip_album_subject.addAssetIntoArray(asset_object)
             
             // add media into sqlite 3
-            await safeRun(()=>Albumdb.addMediaIntoDB(asset.mediaType,media_uri,asset.uri,asset.creationTime,media_id,longitude,latitude),'failed_at_save_image_to_sqlite3')
+            await safeRun(()=>Albumdb.addMediaIntoDB(asset.mediaType,media_uri,asset.uri,asset.creationTime,media_id,longitude,latitude,coordinate_id),'failed_at_save_image_to_sqlite3')
             
         }
         catch(err){
             console.error('Failed to save media to local db',err)
+            throw new ('Failed to save image to local')
         }
         // if in a active trip 
         if(trip_id){
             try{
 
-                TripContentHandler.uploadTripMediaHandler(media_id,trip_id,media_uri,longitude,latitude)
+                TripContentHandler.uploadTripMediaHandler(media_id,trip_id,media_uri,longitude,latitude,coordinate_id)
                 // generate a location object
-                const coordinate_object = CurrentTripCoordinateService.generateCoordinatePayload(location_data)
+                const coordinate_object = CurrentTripCoordinateService.generateCoordinatePayload(location_data,coordinate_id)
                 // add the coordinate obejct to service
                 CurrentTripCoordinateService.push(coordinate_object)
                 // display to map
@@ -86,6 +88,7 @@ class MediaService {
     }
     catch(error){
         console.error("Error at save media to album: ",error);
+        throw new Error('failed to save image to gallery')
     }
     // console.log("save successfully")
 
@@ -93,12 +96,12 @@ class MediaService {
   async deleteMediaToLocalAlbum(path){
     const id = path.replace(/^(photo|video):/, '').replace(/^ph:\/\//, '');    if (id.length<10) return
     // console.log (ALBUM_NAME)    
-    console.log('id',id)
     try{
        await MediaLibrary.deleteAssetsAsync([id])            
     }
     catch(error){
         console.error("Error at delete from album: ",error);
+        throw new Error('Failed to delete from gallery')
     }
     // console.log("save successfully")
 

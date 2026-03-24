@@ -20,7 +20,6 @@ class TripContentHandler{
     }
 
     async sendCoordinatesHandler(coors_object,version=null){
-        console.log('prepare', coors_object,version)
         const respond = await TripContents.send_coordinates(coors_object,version)
         
         if (respond.status ===409){
@@ -29,7 +28,6 @@ class TripContentHandler{
                 TripSync.addIntoQueue('coordinate',version,coors_object)   
                 return respond.ok
             }
-            console.log('missing')
             await TripSync.processTripCoordinatesSync(respond.data.missing_versions)
         }
         return respond.ok
@@ -80,7 +78,6 @@ class TripContentHandler{
                 () => this.TripCoordinateDatabaseService.getAllCoordinatesFromTripId(trip_id),
                 'load_local_coordinates_failed'
             )
-            console.log(coordinates)
             return coordinates
         }
 
@@ -115,13 +112,13 @@ class TripContentHandler{
         else return respond.data.medias
 
     }
-    async uploadTripMediaHandler(media_id,trip_id,media_uri,longitude,latitude){
+    async uploadTripMediaHandler(media_id,trip_id,media_uri,longitude,latitude,coordinate_id){
         if (!media_uri)return
         this._uploadPending =(this._uploadPending||0)+1
         try{
             // pending count to prevent spam lead to loop sync
             // send to server
-            const respond = await safeRun(()=>TripContents.sendTripMedia(media_id,trip_id,media_uri,longitude,latitude,'image'),'failed_at_send_media_to_server')
+            const respond = await safeRun(()=>TripContents.sendTripMedia(media_id,trip_id,media_uri,longitude,latitude,'image',coordinate_id),'failed_at_send_media_to_server')
                        
             if(!respond.ok || respond.status !==200) return 
            
@@ -131,7 +128,6 @@ class TripContentHandler{
             const hash = data.hash
             
             // after process all request, check hash and sync
-            console.log('peding',this._uploadPending)
             if (hash && this._uploadPending ===1){
                 TripContentSyncManager.checkTripMediaHash(hash,trip_id)
             }       
@@ -157,7 +153,6 @@ class TripContentHandler{
 
         let respond = null
         if (trip_id){
-
             respond = await TripContents.deleteMedias(trip_id,media_id)
         }
         if(respond.status==200){   
