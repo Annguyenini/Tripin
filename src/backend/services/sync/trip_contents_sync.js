@@ -22,6 +22,14 @@ class TripContentsSyncService{
         })
         return response
     }
+    async requestTripCoordinateVersions(trip_id){
+        const respond = await fetchFunction(API.TRIP_COORDINATE_VERSION,{
+            method :'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({'trip_id':trip_id})  
+        })
+        return respond
+    }
 }
 
 export default new TripContentsSyncService

@@ -8,7 +8,6 @@ import TripDatabaseService from './TripDatabaseService';
 class TripCoordinateDatabase {
 
     async create_trip(trip_id){
-        console.log('created trip table for',trip_id)
             const DB = await SqliteService.connectDB()
             try {
                 await DB.execAsync(`
@@ -20,6 +19,8 @@ class TripCoordinateDatabase {
                     speed REAL NOT NULL,
                     time_stamp INTEGER PRIMARY KEY,
                     version INTEGER DEFAULT 0,
+                    event TEXT NOT NULL CHECK(type IN ('add', 'remove')),
+                    coordinate_id TEXT NOT NULL DEFAULT "empty",
                     type TEXT DEFAULT NULL
                     );
                 `);
@@ -30,14 +31,12 @@ class TripCoordinateDatabase {
         }
     
     async handlerCoordinateFromServer(data_objects,trip_id){
-        console.log('handler',data_objects,trip_id)
 
         const DB = await SqliteService.connectDB()
         // await DB.execAsync(`DROP TABLE IF EXISTS trip_${trip_id}`)
         await this.create_trip(trip_id)
         await DB.withTransactionAsync(async()=>{
             for(const coord of data_objects){
-                console.log('insert')
                 try{
                     await DB.runAsync(`INSERT OR IGNORE INTO trip_${trip_id} (altitude, latitude, longitude,heading,speed,time_stamp,version) VALUES (?,?,?,?,?,?,?)`,
                         [coord.altitude,coord.latitude,coord.longitude,coord.heading,coord.speed,coord.time_stamp,coord.batch_version]

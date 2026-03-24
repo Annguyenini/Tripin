@@ -3,6 +3,7 @@ import HashService from "../../../backend/services/hash_service/hash_service";
 import Albumdb from "../../../backend/album/albumdb";
 import safeRun from "../../helpers/safe_run";
 import TripContentsSync from "./trip_contents_sync";
+import TripDatabaseService from "../../../backend/database/TripDatabaseService";
 class TripContentSyncManager{
     
     /**
@@ -30,7 +31,6 @@ class TripContentSyncManager{
         
 
         const local_trip_media_assets = await safeRun( ()=>Albumdb.getAssestsFromTripId(trip_id),'failed_at_get_trip_media')
-        console.log(server_metadata,local_trip_media_assets)
         // define as items that server carry but local not \
 
         const delete_array = server_metadata.filter( server_media =>
@@ -40,7 +40,6 @@ class TripContentSyncManager{
         const upload_array = local_trip_media_assets.filter(local=>
             ! server_metadata.find(server=>server.media_id === local.media_id)
         ) 
-        console.log('array',delete_array,upload_array)
         if ( delete_array )await safeRun(()=>this._processRequestDeleteTripMedias(trip_id,delete_array),'failed_to_process_trip_media_delete_sync')
         if ( upload_array )await safeRun(()=>this._processRequestUploadTripMedias(trip_id,upload_array),'failed_to_process_trip_upload_delete_sync')
         return
@@ -72,6 +71,15 @@ class TripContentSyncManager{
         await safeRun (()=>TripContentsSync.process(),'failed_at_process_upload_media_sync')
         return
     }
+
+    async tripCoordinateSync(trip_id){
+        const respond = await safeRun(()=>TripContentsSyncService.requestTripCoordinateVersions(trip_id),'failed_at_request_trip_coordinate_version')
+        if (!respond.ok||respond.status!==200) return
+        const server_version = respond.data.coordinates_version
+        const local_service = await safeRun(()=>TripDatabaseService.getTripCoordinateVersion(trip_id),'failed_at_get_trip_coordinate_version')
+        if (server_version===local_service)return
+        await safeRun(()=>TripContentsSync.processTripCoordinatesSync(server_version),'failed_at_process_trip_coordinate_sync')
+    }
     /**
      * handler trip media sync 
      * @param {*} trip_id 
@@ -94,12 +102,14 @@ class TripContentSyncManager{
     async checkTripMediaHash(hash,trip_id){
         const local_hash = await safeRun(()=>HashService.generateTripMediaHash(trip_id),'faild_at_generate_and_save_trip_hash')
         if (local_hash !== hash){
-            console.log(hash,local_hash)
             // await this._getAndProcessTripMediasMetadata(trip_id)
             await safeRun(()=> this._getAndProcessTripMediasMetadata(trip_id),'failed_at_sync_trip_media')
         }
         return
     }
     
+    async tripCoordinateSyncHandler(trip_id){
+
+    }
 }
 export default new TripContentSyncManager

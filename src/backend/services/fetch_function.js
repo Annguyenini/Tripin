@@ -5,7 +5,7 @@ import TokenService from './token_service'
 const activeFetch = {}
 
 export default async function fetchFunction(url, options = {}, retry = true) {
-    const key = `${url}::${options?.headers?.['media-id']||''}`
+    const key = `${url}::${options?.headers?.['id']||''}`
     console.log('key',key,options)
     if (activeFetch[key]) {
         console.log('deduped request for', url)

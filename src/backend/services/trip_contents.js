@@ -10,7 +10,7 @@ class TripContentService{
     async send_coordinates(coor_object,version){
         const respond = await fetchFunction(API.SEND_COORDINATES+`/${CurrentTripDataService.getCurrentTripId()}/coordinates`,{
             method:'POST',
-            headers:{"Content-Type":"application/json"},
+            headers:{"Content-Type":"application/json",'id':version},
             body:JSON.stringify({
                 coordinates:coor_object,
                 version:version})
@@ -25,7 +25,6 @@ class TripContentService{
         if(version){
             headers['Version'] =version
         }
-        console.log(headers)
         const respond = await fetchFunction(API.REQUEST_TRIP_COORDINATES+`/${trip_id}/coordinates`,{
             method:'GET',
             headers:headers
@@ -42,7 +41,7 @@ class TripContentService{
     }
 
 
-    async sendTripMedia(media_id, trip_id, mediaUri, longitude, latitude, mediaType) {
+    async sendTripMedia(media_id, trip_id, mediaUri, longitude, latitude, mediaType,coordinate_id) {
         const form = new FormData()
         const path = `trip${trip_id}_${getTimestamp()}`
         const isVideo = mediaType === 'video'
@@ -58,10 +57,11 @@ class TripContentService{
             longitude: String(longitude),
             latitude: String(latitude),
             time_stamp: getTimestamp(),
-            media_id: media_id
+            media_id: media_id,
+            coordinate_id:coordinate_id
         }))
         const headers={
-            'media-id':media_id
+            'id':media_id
         }
         const respond = await fetchFunction(API.SEND_MEDIAS_BASE + `/${trip_id}/upload`, {
             headers:headers,
@@ -81,16 +81,7 @@ class TripContentService{
             })
         return respond
     }
-    async requestTripDataVersions(trip_id){
-                console.log('trip sync2')
 
-        const respond = await fetchFunction(API.TRIP_DATA_VERSION,{
-            method :'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({'trip_id':trip_id})  
-        })
-        return respond
-    }
     async deleteMedias(trip_id,media_id){
         const respond = await fetchFunction(API.DELETE_TRIP_MEDIA,{
             method:'DELETE',

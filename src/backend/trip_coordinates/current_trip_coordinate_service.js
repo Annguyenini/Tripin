@@ -24,15 +24,23 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
     }
     async insert_into_DB(temp_storage){
         const DB = await SqliteService.connectDB()
-
+        console.log(temp_storage)
         const current_version = await TripDatabase.getTripCoordinateVersion(CurrentTripDataService.getCurrentTripId())+1 
         await DB.withTransactionAsync(async()=>{
             
         for(const item of temp_storage){
 
             try{
-                await DB.runAsync(`INSERT INTO trip_${CurrentTripDataService.getCurrentTripId()} (altitude, latitude, longitude,heading,speed,time_stamp,version) VALUES (?,?,?,?,?,?,?)`,[item.coordinates.altitude,item.coordinates.latitude,
-                    item.coordinates.longitude,item.coordinates.heading,item.coordinates.speed,item.time_stamp,current_version])
+                await DB.runAsync(`INSERT INTO trip_${CurrentTripDataService.getCurrentTripId()} (altitude, latitude, longitude,heading,speed,time_stamp,version,event,coordinate_id) VALUES (?,?,?,?,?,?,?,?,?)`,
+                [item.coordinates.altitude,
+                    item.coordinates.latitude,
+                    item.coordinates.longitude,
+                    item.coordinates.heading,
+                    item.coordinates.speed,
+                    item.time_stamp,
+                    current_version,
+                    item.coordinates.event,
+                    item.coordinates.coordinate_id])
                 }
                 catch(err){
                     console.error(err)
@@ -106,11 +114,13 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase{
         }
 
     }
-    generateCoordinatePayload(coordinate_payload){
+    generateCoordinatePayload(coordinate_payload,coordinate_id){
         const payload = {
                 time_stamp: Date.now(),
                 coordinates: {
-                ...coordinate_payload
+                ...coordinate_payload,
+                event:'add',
+                coordinate_id:coordinate_id,
                 },
                 type: null
             };

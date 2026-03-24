@@ -16,7 +16,6 @@ class AppFlow{
     }
     async tokenAuthorization(){
         const loginViaToken  = await AuthHandler.loginWithTokenHandler()
-        console.log('rere',loginViaToken)
         if(!loginViaToken){
             await this.LocalStorage.clearAllStorage()
             return false
@@ -79,7 +78,10 @@ class AppFlow{
     // }
     async syncCurrentTripContents(){
         const trip_id = CurrentTripDataService.getCurrentTripId()
-        if (trip_id) await TripContentSyncManager.tripMediaSyncHandler(trip_id)
+        if (trip_id) {
+            await TripContentSyncManager.tripMediaSyncHandler(trip_id)
+            await safeRun (()=>TripContentSyncManager.tripCoordinateSync(trip_id),'faild_at_sync_trip_coordinate')
+        }
         // await TripContentsSync.currentTripContentsSync(CurrentTripDataService.getCurrentTripId())
         // return
     }

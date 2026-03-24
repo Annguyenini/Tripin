@@ -37,12 +37,9 @@ class HashService extends LocalStorage{
      * @param {*} trip_id 
      * @returns 
      */
-    async generateAndSaveTripMediaHash(trip_id){
-        let local_hash = await safeRun(()=> this.getHashFromLocalStorage(trip_id,'trip_media'),'failed_at_get_local_hash')
-        if (local_hash) return local_hash
-        
+    async generateAndSaveTripMediaHash(trip_id){        
         const media_metadata = await safeRun(()=>Albumdb.getAssestsFromTripId(trip_id))
-        local_hash = await safeRun(()=>this._generateLocalTripMediaHash(media_metadata),'failed_at_generate_trip_media_hash')
+        const local_hash = await safeRun(()=>this._generateLocalTripMediaHash(media_metadata),'failed_at_generate_trip_media_hash')
         if(local_hash){
             await safeRun(()=>this.saveHashToLocalStorage(trip_id,'trip_media',local_hash),'failed_at_save_hash_to_local')
         }

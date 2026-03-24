@@ -75,7 +75,8 @@ class Album {
     async initUserAlbum(){
         const DB = await SqliteService.connectDB()
         try{
-            await DB.execAsync(`CREATE TABLE IF NOT EXISTS 
+            await DB.execAsync(`
+                CREATE TABLE IF NOT EXISTS 
                 "user_${UserDataService.getUserId()}_album"( 
                 id INTEGER PRIMARY KEY AUTOINCREMENT, 
                 media_type TEXT NOT NULL,
@@ -87,7 +88,8 @@ class Album {
                 trip_name TEXT DEFAULT NULL, 
                 time_stamp TEXT NOT NULL,
                 version INTEGER DEFAULT 0,
-                media_id TEXT NOT NULL              
+                media_id TEXT NOT NULL,
+                coordinate_id TEXT NOT NULL
                 );`)
         }
         catch(err){
@@ -95,19 +97,31 @@ class Album {
         }
         finally{
             await DB.closeAsync()
+            const mergedData = await this.getMergedMediasArray()
+            this.AlbumsArray = [...mergedData] 
         }
-        const mergedData = await this.getMergedMediasArray()
-        this.AlbumsArray = [...mergedData] 
+        
     }
-    async addMediaIntoDB(media_type,media_path,library_media_path=null,time,media_id,longitude,latitude){
+    async addMediaIntoDB(media_type,media_path,library_media_path=null,time,media_id,longitude,latitude,coordinate_id){
       
         const trip_id = CurrentTripDataService.getCurrentTripId()
         const trip_name = CurrentTripDataService.getCurrentTripName()
         // const current_version = await TripDatabase.getTripMediaVersion(trip_id)
         const DB = await SqliteService.connectDB()
         try{
-            await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()}_album (media_type,media_path,library_media_path,latitude,longitude,trip_id,trip_name,time_stamp,media_id) VALUES (?,?,?,?,?,?,?,?,?)`
-                ,[media_type,media_path,library_media_path,latitude,longitude,trip_id,trip_name,time,media_id])        
+            await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()}_album 
+            (media_type,
+            media_path,
+            library_media_path,
+            latitude,
+            longitude,
+            trip_id,
+            trip_name,
+            time_stamp,
+            media_id,
+            coordinate_id) 
+            VALUES (?,?,?,?,?,?,?,?,?,?)`
+                ,[media_type,media_path,library_media_path,latitude,longitude,trip_id,trip_name,time,media_id,coordinate_id])        
             
             // await TripDatabase.updateTripMediaVersion(trip_id)
             const data ={
@@ -145,7 +159,7 @@ class Album {
         }
         catch(err){
             console.error(err)
-            throw new Error('Failed to insert to db')
+            throw new Error('Failed to delete from db')
         }
     }
     async getAssestsFromTripId(trip_id){
