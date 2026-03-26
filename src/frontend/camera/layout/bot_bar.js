@@ -1,5 +1,6 @@
 
-import { View, Text, TouchableOpacity,Image } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import {Image} from 'expo-image'
 import { cameraStyle,camera_zoom } from '../../../styles/camera_style.js';
 import MediaViewCard from '../../albums/viewer_card.js';
 import { useRef, useState } from 'react';
@@ -29,9 +30,9 @@ const BotBarControl = ({toggleCameraMode,recording,image_icon,type,shutterButton
   }
   // const 
     return(<View style={cameraStyle.botControls}>
-            <TouchableOpacity style={cameraStyle.flipButton}>
+            {/* <TouchableOpacity style={cameraStyle.flipButton}>
               <Image source={cameraSetting_icon} style={[cameraStyle.icon, { width: 50, height: 50 }]} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
     
     
            
@@ -44,7 +45,15 @@ const BotBarControl = ({toggleCameraMode,recording,image_icon,type,shutterButton
             <TouchableOpacity >
             </TouchableOpacity>
             <TouchableOpacity style={cameraStyle.flipButton} onPress={()=>setVisible(true)}>
-              <Image source={{ uri: image_icon }} style={[cameraStyle.icon, { width: 70, height: 70 }]} />
+
+            <Image source={{ uri: image_icon }} style={[cameraStyle.icon, { left:40,width: 50, height: 50 }]} cachePolicy='memory-disk'/>
+            {
+              type ==='video'&&
+              <View style={cameraStyle.overlay}>
+                  <Text style={cameraStyle.playButton}>▶</Text>
+              </View>
+            }
+            
             </TouchableOpacity>
             {visible && <MediaViewCard title={'test'} uri={image_icon} type ={type} visible={visible} onClose={()=>setVisible(false)} AssetArray={AlbumService.AlbumsArray}></MediaViewCard>}
           </View>)

@@ -13,6 +13,10 @@ export const imageLabelStyle = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: "#fff",
   },
+   playButton:{
+  fontSize: 25,
+    color: '#f0f0ec',
+},
   badgeText: {
     color: "#fff",
     fontSize: 10,
@@ -20,7 +24,6 @@ export const imageLabelStyle = StyleSheet.create({
   },
   videoOverlayCard :{
         ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.4)', // optional dim
     justifyContent: 'center',
     alignItems: 'center',
         borderRadius: 9,

@@ -77,4 +77,8 @@ accessLink: {
     color: '#f0f0ec',
     fontWeight: '600',
 },
+playButton:{
+  fontSize: 25,
+    color: '#f0f0ec',
+}
 });

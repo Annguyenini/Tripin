@@ -9,6 +9,7 @@ import MediaViewCard from '../../albums/viewer_card';
 import { computeCluster } from '../../../backend/addition_functions/compute_cluster';
 import {imageLabelStyle} from '../../../styles/function/image_label'
 import TripContentHandler from '../../../app-core/flow/trip_contents_handler';
+import { generateOrGetThumbnailFromMediaId } from '../../../backend/media/generate_thumbnail';
 const videoPauseIcon = require('../../../../assets/image/video_pause_icon.png')
 const image_icon = require('../../../../assets/image/gallery_icon.png')
 const RenderImageLable =({clusters,mapKey, onClick})=>{
@@ -27,17 +28,14 @@ const RenderImageLable =({clusters,mapKey, onClick})=>{
             <View style={{ width: 50, height: 50 }}>
               <Image
                 cachePolicy="memory-disk" 
-                source={ cluster.members[0]?.media_path }
+                source={ {uri: cluster.members[0]?.media_type === 'video'? cluster.members[0]?.thumb_nail : cluster.members[0]?.media_path} }
                 style={{ width: 50, height: 50, borderRadius: 15 }}
                 resizeMode="cover"
               />
               { cluster.members[0].media_type ==='video'&&
                 <View style={imageLabelStyle.videoOverlayCard}>
-                  <Image
-                    source={videoPauseIcon} 
-                    resizeMode="contain"
-                    style={imageLabelStyle.overlayImage}
-                  />
+                  <Text style={imageLabelStyle.playButton}>▶</Text>
+                  
                 </View>
                 } 
               <View style={imageLabelStyle.badge}>
@@ -69,8 +67,17 @@ const ImageLabel = ({ trip_id,zoomLevel,ready }) => {
             return{uri:item.media_path,...item}
           })]
         CurrentDisplayTripMediaObserver.setDefaultArray(trip_id,albumArray)      // TripAlbumSubject.initAlbumArray(albumArray)
-        console.log(albumArray)
-        setCurrentAssetsArray([...albumArray])
+                // get thumbnail
+
+        const finailizeArray = await Promise.all(
+          albumArray.map(async(asset)=>{
+            if(asset.media_type!=='video') return {...asset}
+            const thumbnail = await generateOrGetThumbnailFromMediaId(asset.media_id,asset.media_path)
+            return {...asset,thumb_nail:thumbnail}
+          })
+        )
+        console.log(finailizeArray)
+        setCurrentAssetsArray([...finailizeArray])
 
       }
       catch(err){
@@ -82,9 +89,16 @@ const ImageLabel = ({ trip_id,zoomLevel,ready }) => {
     }
     
     const updateAssetsArray = {
-      update(newArray) {
-        console.log('new images',newArray)
-        setCurrentAssetsArray([...newArray])
+      async update(newArray) {
+        // get thumbnail
+        const finailizeArray = await Promise.all(
+          newArray.map(async(asset)=>{
+            if(asset.media_type!=='video') return {...asset}
+            const thumbnail = await generateOrGetThumbnailFromMediaId(asset.media_id,asset.media_path)
+            return {...asset,thumb_nail:thumbnail}
+          })
+        )
+        setCurrentAssetsArray([...finailizeArray])
         setMapKey(prev => prev + 1) 
         console.log(mapKey)
       }
@@ -93,6 +107,7 @@ const ImageLabel = ({ trip_id,zoomLevel,ready }) => {
     initArray()
     return () => CurrentDisplayTripMediaObserver.detach(updateAssetsArray,CurrentDisplayTripMediaObserver.GENERATE_KEY(trip_id))    
   }, [trip_id])
+
   const clusters = useMemo(()=>{
     return new Map([
       [7, computeCluster(currentAssetsArray,2500)],

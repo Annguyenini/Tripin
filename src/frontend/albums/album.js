@@ -18,7 +18,9 @@ import MediaViewCard from './viewer_card';
 import Permission from '../../backend/storage/settings/permissions';
 import { getAlbumPermission } from '../../backend/album/album_permission';
 import * as VideoThumbnails from 'expo-video-thumbnails';
-
+import { copyAsync,documentDirectory,getInfoAsync,makeDirectoryAsync } from 'expo-file-system/legacy';
+import safeRun from '../../app-core/helpers/safe_run';
+import {generateOrGetThumbnailFromMediaId} from '../../backend/media/generate_thumbnail'
 const videoPauseIcon = require('../../../assets/image/video_pause_icon.png')
 export default function AlbumScreen() {
     const [Images ,setImages]=useState([])
@@ -26,6 +28,7 @@ export default function AlbumScreen() {
     const [currentMedia,setCurrentMedia] = useState(null)
     const [currentMediaType,setCurrentMediaType] = useState(null)
     const [fullAlbumPermission,setFullAlbumPermission]=useState(false)
+    const [finalImagesArray,setFinalImagesArray]=useState(null)
     useEffect(()=>{
         const fetchImages=async()=>{
           const assets = await AlbumService.getMergedMediasArray()
@@ -51,6 +54,25 @@ export default function AlbumScreen() {
         return ()=>AlbumService.detach(updateImages)
     },[])
     
+    useEffect(()=>{
+        // get thumbnail or get it from cache
+      const generateThumbnails =async()=>{
+        const result=await Promise.all(
+          Images.map(async(asset)=>{
+            if (asset.media_type!=='video') return asset
+            const dest = await generateOrGetThumbnailFromMediaId(asset.media_id,asset.media_path)
+            return {...asset,thumb_nail:dest}
+          })
+        )
+        console.log(result)
+        setFinalImagesArray(result)
+
+      }
+      generateThumbnails()
+      console.log(finalImagesArray)
+    },[Images])
+
+
     const onCallMainScreen =()=>{
         navigate('Main')
     }
@@ -63,8 +85,7 @@ export default function AlbumScreen() {
         setImageVisible(true)        
         console.log('item',item,imageVisible)
     }
-    
-    console.log(Images)
+  
   return (
     
     <View style={Albumstyles.container}>
@@ -82,8 +103,8 @@ export default function AlbumScreen() {
         </View>
 }
       <FlatList
-        data={Images}
-        extraData={Images}
+        data={finalImagesArray}
+        extraData={finalImagesArray}
         keyExtractor={(item) => item.id}
         numColumns={3}
         showsVerticalScrollIndicator={false}
@@ -91,16 +112,11 @@ export default function AlbumScreen() {
         renderItem={({ item }) => (
             <TouchableOpacity onPress={()=>handleImageClick(item)}>
               
-          <Image source={{ uri: item.media_path }} style={Albumstyles.image} cachePolicy="memory-disk"  />
+          <Image source={{uri : item.media_type == 'video'? item.thumb_nail:item.media_path  }} style={Albumstyles.image} cachePolicy="memory-disk"  />
           {
-                item.mediaType ==='video' &&
-                 <View style={Albumstyles.overlay}>
-                  <Image
-                    cachePolicy="memory-disk" 
-                    source={videoPauseIcon} 
-                    resizeMode="contain"
-                    style={Albumstyles.overlayImage}
-                  />
+                item.media_type ==='video' &&
+                <View style={Albumstyles.overlay}>
+                    <Text style={Albumstyles.playButton}>▶</Text>
                 </View>
               }
           </TouchableOpacity>
@@ -110,7 +126,7 @@ export default function AlbumScreen() {
       <MediaViewCard title ={'test'} uri ={currentMedia} type={currentMediaType} visible ={imageVisible} onClose={() => {
   setImageVisible(false)
   setCurrentMedia(null)
-}} AssetArray={Images}></MediaViewCard>
+}} AssetArray={finalImagesArray}></MediaViewCard>
 
       }
     </View>

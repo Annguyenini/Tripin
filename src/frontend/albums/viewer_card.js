@@ -164,15 +164,11 @@ currentAssetsArray[currentIndex].media_type === 'video'? (
                 renderItem={({ item,index }) => (
                   <View style={mediaCardStyle.clusterCard}>
                     <TouchableOpacity onPress={()=>setCurrentIndex(index)}>
-                    <Image source={{ uri: item.media_path }} style={mediaCardStyle.imageList} />
+                    <Image source={{ uri: item.media_type === 'video' ? item.thumb_nail : item.media_path }} style={mediaCardStyle.imageList} />
                     {
                       item.media_type === 'video'&& 
                       <View style ={mediaCardStyle.ImageListOverlay}>
-                        <Image
-                        source={videoPauseIcon} 
-                        resizeMode="contain" 
-                        style ={mediaCardStyle.overlayImage}>
-                        </Image>
+                        <Text style={mediaCardStyle.playButton}>▶</Text>
                       </View>
                     }
                     </TouchableOpacity>
