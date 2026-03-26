@@ -17,6 +17,9 @@ export const STORAGE_KEYS={
         TRIP_STATUS:'settings.trip_status',
         FOREGROUNDPERMISSION :"settings.foreground_permission",
         BACKGROUNDPERMISSION :"settings.background_permission",
+        CAMERAPERMISSION:'settings.camera_permission',
+        ALBUMPERMISSION:'settings.album_permission',
+        INITSETTINGS:'settings.init_setting',
         TRACKING_MODE:'settings.tracking_mode'
     },
     
@@ -55,7 +58,8 @@ export const DATA_KEYS ={
     PERMISSIONS:{
         FOREGROUNDPERMISSION :"settings.foreground_permission",
         BACKGROUNDPERMISSION :"settings.background_permission",
-    },
+        CAMERAPERMISSION:'settings.camera_permission',
+        ALBUMPERMISSION:'settings.album_permission',    },
     TRIP_CONTENTS:{
         CURRENT_TRIP_COORDINATES:'current_trip_coordinates',
         CURRENT_TRIP_MEDIA:'current_trip_medias',

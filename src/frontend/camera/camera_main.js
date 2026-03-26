@@ -66,13 +66,13 @@ export const CameraApp = () => {
     // const frameProcessor = useFrameFilter(filter,filterIntensity)
     useEffect(() => {
         const fetchImages = async () => {
-            setImage_icon(AlbumService.AlbumsArray[0].uri??library_media_path)
+            setImage_icon(AlbumService.AlbumsArray[0].media_path)
             setImageIconType(AlbumService.AlbumsArray[0].mediaType)
         }
         const updateImages = {
             update(newArray) {
-
-                setImage_icon(newArray[0].uri??library_media_path)
+                console.log('new array',newArray)
+                setImage_icon(newArray[0].media_path)
                 setImageIconType(newArray[0].mediaType)
             }
         }

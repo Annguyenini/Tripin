@@ -65,5 +65,17 @@ class TripCoordinateDatabase {
             return null
         }
     }
+    async deleteCoordinateFromTripId(trip_id,coordinate_id){
+        const DB = await SqliteService.connectDB()
+        try{
+
+            await DB.execAsync(`DELETE FROM trip_${trip_id} WHERE coordinate_id = ?`,(coordinate_id))
+            return 
+        }
+        catch(err){
+            console.error (err)
+            return 
+        }
+    }
 }
 export default TripCoordinateDatabase

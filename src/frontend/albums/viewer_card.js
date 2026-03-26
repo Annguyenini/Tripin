@@ -24,11 +24,11 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
     
 
   const currentAssetsArray = AssetArray;
-  const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(asset => asset.uri === uri || asset.library_media_path === uri),0))
+  const [currentIndex, setCurrentIndex] = useState(Math.max(currentAssetsArray.findIndex(asset => asset.media_path === uri),0))
   const [dataVisible, setDataVisible] = useState(false)
   const observerRef = useRef(null)
   const [isFullScreen,setFullScreen] = useState(false)
-  console.log('media',currentAssetsArray[currentIndex],currentIndex)
+  console.log('media',currentAssetsArray[currentIndex].media_path,currentIndex)
   // ── ANIMATION ──
   const slideAnim = useRef(new Animated.Value(0)).current
   const fadeAnim  = useRef(new Animated.Value(1)).current
@@ -80,9 +80,10 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
     await TripContentHandler.deleteMediaHandler(
       current_media.trip_id,
       current_media.media_id,
-      current_media.media_path,
-      current_media.library_media_path || current_media.uri)
-
+      current_media.media_path,)
+    if(current_media.coordinate_id){
+      
+    }
   }
   // const source = ()=>{
     
@@ -120,10 +121,10 @@ export default function MediaViewCard({title,uri,type,visible,onClose,AssetArray
             }}>
               {/* Media Display */}
               {currentAssetsArray[currentIndex].media_type === 'video' || 
-currentAssetsArray[currentIndex].mediaType === 'video'? (
+currentAssetsArray[currentIndex].media_type === 'video'? (
                 <Video
                   style={isFullScreen ? mediaCardStyle.fullVideo:  mediaCardStyle.video}
-                  source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path}}
+                  source={{uri: currentAssetsArray[currentIndex].media_path}}
                   controls
                   resizeMode="cover"
                   paused={false}
@@ -132,7 +133,7 @@ currentAssetsArray[currentIndex].mediaType === 'video'? (
                 
                 <Image 
                   style={isFullScreen? mediaCardStyle.fullImage : mediaCardStyle.image} 
-                  source={{uri: currentAssetsArray[currentIndex].uri ? currentAssetsArray[currentIndex].uri : currentAssetsArray[currentIndex].library_media_path }}
+                  source={{uri: currentAssetsArray[currentIndex].media_path }}
                 />
               )}
             </Animated.View>
@@ -158,14 +159,14 @@ currentAssetsArray[currentIndex].mediaType === 'video'? (
                 data={AssetArray}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item.media_id.toString()}
                 contentContainerStyle={{ paddingHorizontal: 12 }}
                 renderItem={({ item,index }) => (
                   <View style={mediaCardStyle.clusterCard}>
                     <TouchableOpacity onPress={()=>setCurrentIndex(index)}>
-                    <Image source={{ uri: item.uri? item.uri :item.library_media_path }} style={mediaCardStyle.imageList} />
+                    <Image source={{ uri: item.media_path }} style={mediaCardStyle.imageList} />
                     {
-                      item.media_type === 'video' || item.mediaType==='video' && 
+                      item.media_type === 'video'&& 
                       <View style ={mediaCardStyle.ImageListOverlay}>
                         <Image
                         source={videoPauseIcon} 

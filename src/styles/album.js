@@ -7,8 +7,8 @@ export const Albumstyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
     paddingTop: 48,
-    paddingHorizontal: 12,
-    width:'100%'
+    paddingHorizontal: 10,
+    width:'100%',
   },
   filterBar: {
     marginBottom: 16,
@@ -56,4 +56,25 @@ export const Albumstyles = StyleSheet.create({
     height: 100,
     tintColor: 'white', // optional
   },
+  accessBanner: {
+    backgroundColor: '#1a1917',
+    borderWidth: 1,
+    borderColor: '#2e2c29',
+    borderRadius: 12,
+    padding: 18,
+    paddingBottom:20,
+    gap: 8,
+},
+accessText: {
+    fontFamily: 'DMMono',
+    fontSize: 13,
+    color: '#a09e99',
+    lineHeight: 20,
+},
+accessLink: {
+    fontFamily: 'DMMono',
+    fontSize: 13,
+    color: '#f0f0ec',
+    fontWeight: '600',
+},
 });
