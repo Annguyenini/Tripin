@@ -1,14 +1,19 @@
 import * as SecureStore from 'expo-secure-store'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { STORAGE_KEYS ,DATA_KEYS } from '../keys/storage_keys'
-class Permission{
+import LocalStorage from '../base/localStorage'
+import safeRun from '../../../app-core/helpers/safe_run'
+class Permission extends(LocalStorage){
 
     constructor(){
             //since this object can keep track of 2 states
+        super()
         this.observers = {}
         this.item = {
             [DATA_KEYS.PERMISSIONS.BACKGROUNDPERMISSION]:null,
             [DATA_KEYS.PERMISSIONS.FOREGROUNDPERMISSION]: null,
+            [DATA_KEYS.PERMISSIONS.CAMERAPERMISSION]:null,
+            [DATA_KEYS.PERMISSIONS.ALBUMPERMISSION]: null,
             set(prop,value){
                 this[prop] = value
             },
@@ -53,12 +58,12 @@ class Permission{
     }
 
     /** set foreground permission (Location) 
-     * @param status - boolean
+     * @param status - string
     */
     async setForeGroundPer(status){
-        console.assert
+        console.assert(typeof(status)==='string')
         try{
-            await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS.FOREGROUNDPERMISSION,status)
+            await safeRun(()=>this.saveToLocal(STORAGE_KEYS.SETTINGS.FOREGROUNDPERMISSION,status),'failed_at_save_foreground_to_local')
         }
         catch(asyncError){
             console.error`ERROR to set FOREGROUND KEY ${asyncError}`
@@ -68,11 +73,11 @@ class Permission{
     }
 
     /** set background permission (Location) 
-     * @param status - boolean
+     * @param status - string
     */
     async setBackGroundPer(status){
         try{
-            await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS.BACKGROUNDPERMISSION,status)
+            await safeRun(()=>this.saveToLocal(STORAGE_KEYS.SETTINGS.BACKGROUNDPERMISSION,status),'failed_at_save_background_to_local')
         }
         catch(asyncError){
             console.error`ERROR to set BACKGROUND KEY`
@@ -81,12 +86,55 @@ class Permission{
         this.notify(DATA_KEYS.PERMISSIONS.BACKGROUNDPERMISSION)
     }
 
-    /** return foreground permission (Location) 
-     * @returns value - boolean
+    /** set camera permission (Location) 
+     * @param status - string
+    */
+    async setCameraPer(status){
+        console.assert(typeof(status)==='string')
+        try{
+            await safeRun(()=>this.saveToLocal(STORAGE_KEYS.SETTINGS.CAMERAPERMISSION,status),'failed_at_save_camera_to_local')
+        }
+        catch(asyncError){
+            console.error`ERROR to set CAMERA KEY ${asyncError}`
+        }
+        this.item.set(DATA_KEYS.PERMISSIONS.CAMERAPERMISSION,status)
+        this.notify(DATA_KEYS.PERMISSIONS.CAMERAPERMISSION)
+    }
+    /** set album permission (Location) 
+     * @param status - string
+    */
+    async setAlbumPer(status){
+        console.assert(typeof(status)==='string')
+        try{
+            await safeRun(()=>this.saveToLocal(STORAGE_KEYS.SETTINGS.ALBUMPERMISSION,status),'failed_at_save_camera_to_local')
+        }
+        catch(asyncError){
+            console.error`ERROR to set ALBUMN KEY ${asyncError}`
+        }
+        this.item.set(DATA_KEYS.PERMISSIONS.ALBUMPERMISSION,status)
+        this.notify(DATA_KEYS.PERMISSIONS.ALBUMPERMISSION)
+    }
+
+ /** set init settings (Location) 
+     * @param status - string
+    */
+    async setInitSettings(status){
+        console.assert(typeof(status)==='string')
+        try{
+            await safeRun(()=>this.saveToLocal(STORAGE_KEYS.SETTINGS.INITSETTINGS,status),'failed_at_save_init_setting_to_local')
+        }
+        catch(asyncError){
+            console.error`ERROR to set INIT SETTING KEY ${asyncError}`
+        }
+    }
+
+
+      /** return foreground permission (Location) 
+     * @returns value - string
     */
     async getForeGroundPer(){
         try{
-            const status = await AsyncStorage.getItem(STORAGE_KEYS.SETTINGS.BACKGROUNDPERMISSION)
+            const status = await safeRun(()=>this.getDataFromLocal(STORAGE_KEYS.SETTINGS.FOREGROUNDPERMISSION),'failed_at_get_foreground_setting')
             return status
         }
         catch(asyncError){
@@ -96,11 +144,11 @@ class Permission{
     }
 
     /** return background permission (Location) 
-     * @returns value - boolean
+     * @returns value - string
     */
     async getBackGroundPer(){
         try{
-            const status = await AsyncStorage.getItem(STORAGE_KEYS.SETTINGS.BACKGROUNDPERMISSION)
+            const status = await safeRun(()=>this.getDataFromLocal(STORAGE_KEYS.SETTINGS.BACKGROUNDPERMISSION),'failed_at_get_background_setting')
             return status
         }
         catch(asyncError){
@@ -108,8 +156,47 @@ class Permission{
             return null
         }
     }
+      /** return camera permission (Location) 
+     * @returns value - string
+    */
+    async getCameraPer(){
+        try{
+            const status = await safeRun(()=>this.getDataFromLocal(STORAGE_KEYS.SETTINGS.CAMERAPERMISSION),'failed_at_get_foreground_setting')
+            return status
+        }
+        catch(asyncError){
+            console.error`ERROR to get CAMERA Value`
+            return null
+        }
+    }
 
-    
+    /** return album permission (Location) 
+     * @returns value - string
+    */
+    async getAlbumPer(){
+        try{
+            const status = await safeRun(()=>this.getDataFromLocal(STORAGE_KEYS.SETTINGS.ALBUMPERMISSION),'failed_at_get_background_setting')
+            return status
+        }
+        catch(asyncError){
+            console.error`ERROR to get ALBUM Value`
+            return null
+        }
+    }
+
+    /** return init setting permission (Location) 
+     * @returns value - string
+    */
+    async getInitSettingPer(){
+        try{
+            const status = await safeRun(()=>this.getDataFromLocal(STORAGE_KEYS.SETTINGS.INITSETTINGS),'failed_at_get_init_setting_setting')
+            return status
+        }
+        catch(asyncError){
+            console.error`ERROR to get INIT SETTING Value`
+            return null
+        }
+    }
 }
 const permission = new Permission()
 export default permission

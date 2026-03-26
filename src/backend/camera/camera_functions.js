@@ -10,6 +10,7 @@ import trip_album_subject from '../trip_album/trip_album_subject';
 // import TripDatabaseService from '../database/TripDatabaseService';
 import CurrentDisplayTripMediaObserver from '../../frontend/map_box/functions/current_display_media_observer';
 import MediaService from '../media/media_service'
+import safeRun from '../../app-core/helpers/safe_run';
 class CameraService{
     constructor(){
         this.album_name = "Tripin_album";
@@ -21,7 +22,9 @@ class CameraService{
         try{
             // const options = {quality: 1, base64 :true}; // control option for picture
             const photo =await cameraRef.current.takePhoto(options) // return a photo
-            await MediaService.saveMediaHandler(photo.path)
+            console.log('photo',photo)
+
+            await safeRun(()=>MediaService.saveMediaHandler(photo.path,'photo'),'faile_at_save_imgae')
             return photo;
         }    
         catch(err){
@@ -54,10 +57,11 @@ class CameraService{
     console.log(this.video)
     if (this.video?.path) {
         try{
-            await MediaService.saveMediaHandler(this.video.path)}
+            await MediaService.saveMediaHandler(this.video.path,'video')}
             catch(err){
                 console.error("failed to save video!",err)
             }
+        console.log(this.video)
         return this.video
     } else {
         console.warn("No video URI found yet!");

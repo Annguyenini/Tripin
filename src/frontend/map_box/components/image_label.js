@@ -27,7 +27,7 @@ const RenderImageLable =({clusters,mapKey, onClick})=>{
             <View style={{ width: 50, height: 50 }}>
               <Image
                 cachePolicy="memory-disk" 
-                source={ cluster.members[0]?.library_media_path ?{uri: cluster.members[0].library_media_path} : {uri:cluster.members[0].uri} }
+                source={ cluster.members[0]?.media_path }
                 style={{ width: 50, height: 50, borderRadius: 15 }}
                 resizeMode="cover"
               />
@@ -83,7 +83,7 @@ const ImageLabel = ({ trip_id,zoomLevel,ready }) => {
     
     const updateAssetsArray = {
       update(newArray) {
-        console.log('new images')
+        console.log('new images',newArray)
         setCurrentAssetsArray([...newArray])
         setMapKey(prev => prev + 1) 
         console.log(mapKey)

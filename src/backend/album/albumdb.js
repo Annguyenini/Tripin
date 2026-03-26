@@ -4,9 +4,10 @@ import LocationData from '../../app-core/local_data/local_location_data'
 import timestamp from '../addition_functions/get_current_time'
 import * as MediaLibrary from 'expo-media-library';
 import CurrentTripDataService from '../../backend/storage/current_trip'
-
+import * as MediaPermission from './album_permission'
 import * as FileSystem from'expo-file-system/legacy'
 import TripDatabase from '../database/TripDatabaseService'
+import { RectButton } from 'react-native-gesture-handler';
  const GENERATE_MEDIA_ID=(media_type,id)=>{
         // return `${trip_id ? `trip_${trip_id}`:''}:${media_type}:${time_stamp}`
         return `${media_type}:${id}`
@@ -45,10 +46,10 @@ class Album {
         }
             this.notify()
     }
-    deleteFromAlbumArray(uri) {
+    deleteFromAlbumArray(media_id) {
         try {
             this.AlbumsArray = this.AlbumsArray.filter(item => {
-                return item.uri !== uri
+                return item.media_id !== media_id
             })
         } catch(err) {
             console.error('Failed to delete from Album array ', err)
@@ -56,19 +57,19 @@ class Album {
         }
         this.notify()
     }
-    getAlbumAssetObjectReady(media_asset_object,Uri,media_id,latitude,longitude){
-        if(typeof(media_asset_object) != 'object') {
-            console.error('media_assest must be object')
-            return null
-        }
+    getAlbumAssetObjectReady(Uri,media_id,media_type,latitude,longitude,coordinate_id){
+       
         const trip_name = CurrentTripDataService.getCurrentTripName()
         const trip_id = CurrentTripDataService.getCurrentTripId()
+        let media_asset_object ={}
         media_asset_object['longitude'] =longitude
         media_asset_object['latitude']=latitude
         media_asset_object['trip_name']=trip_name
         media_asset_object['trip_id']=trip_id
         media_asset_object['media_path']=Uri
+        media_asset_object['media_type']=media_type
         media_asset_object['media_id']=media_id
+        media_asset_object['coordinate_id']=coordinate_id
         return media_asset_object
     }
 
@@ -81,7 +82,6 @@ class Album {
                 id INTEGER PRIMARY KEY AUTOINCREMENT, 
                 media_type TEXT NOT NULL,
                 media_path TEXT NOT NULL, 
-                library_media_path TEXT,
                 latitude REAL DEFAULT NULL, 
                 longitude REAL DEFAULT NULL, 
                 trip_id INTEGER DEFAULT NULL,
@@ -102,7 +102,7 @@ class Album {
         }
         
     }
-    async addMediaIntoDB(media_type,media_path,library_media_path=null,time,media_id,longitude,latitude,coordinate_id){
+    async addMediaIntoDB(media_type,media_path,time,media_id,longitude,latitude,coordinate_id){
       
         const trip_id = CurrentTripDataService.getCurrentTripId()
         const trip_name = CurrentTripDataService.getCurrentTripName()
@@ -112,7 +112,6 @@ class Album {
             await DB.runAsync(`INSERT INTO user_${UserDataService.getUserId()}_album 
             (media_type,
             media_path,
-            library_media_path,
             latitude,
             longitude,
             trip_id,
@@ -120,23 +119,11 @@ class Album {
             time_stamp,
             media_id,
             coordinate_id) 
-            VALUES (?,?,?,?,?,?,?,?,?,?)`
-                ,[media_type,media_path,library_media_path,latitude,longitude,trip_id,trip_name,time,media_id,coordinate_id])        
+            VALUES (?,?,?,?,?,?,?,?,?)`
+                ,[media_type,media_path,latitude,longitude,trip_id,trip_name,time,media_id,coordinate_id])        
             
             // await TripDatabase.updateTripMediaVersion(trip_id)
-            const data ={
-                'longitude':longitude,
-                'latitude':latitude,
-                'trip_id':trip_id,
-                'trip_name':trip_name,
-                'media_path':media_path,
-                'library_media_path':library_media_path,
-                'media_type':media_type,
-                'time_stamp':time,
-                'media_id':media_id
-
-            }
-            return data
+            return
         }
         catch(err){
             console.error(err)
@@ -187,20 +174,22 @@ class Album {
     }
     async getAllMediasFromAlbumn(media_type = null){
         // return an array of assets
-        const album = await MediaLibrary.getAlbumAsync('Tripin_album') 
-        const options = {
+        try{
+            const permission = await MediaPermission.getAlbumPermission()
+            if(permission.accessPrivileges !== 'all') return null
+            const album = await MediaLibrary.getAlbumAsync('Tripin_album') 
+            const options = {
             album : album,
             sortBy : [MediaLibrary.SortBy.creationTime],
             first:100,
             mediaType:['video','photo']
             
-        }
-        if (media_type){
-            options ['mediaType'] = media_type
-        }
-        let result =[]
-        try{
+            }
+            if (media_type){
+                options ['mediaType'] = media_type
+            }
             const assets = await MediaLibrary.getAssetsAsync(options)
+            console.log('merge album',assets)
             return assets.assets
         }
         catch(err){
@@ -208,29 +197,42 @@ class Album {
         }
     }
     async mergeMediasFromAlbumAndDB(db_array,album_array){
+        console.log('merge1 ',db_array)
+        console.log('merge2 ',album_array)
+
         let hash_map ={}
         for(const object of album_array){
             // create media_id, 
-            object.media_id = GENERATE_MEDIA_ID(object.mediaType,object.id)
-            hash_map[object.uri]=object
+            object.media_id = GENERATE_MEDIA_ID(object.mediaType,object.uri)
+
+            hash_map[object.media_id]=object
         }
-        for(const object of db_array){
-            if(hash_map[object.library_media_path]){
-                hash_map[object.library_media_path] = {
-                ...hash_map[object.library_media_path], 
-                latitude: object.latitude,
-                longitude: object.longitude,
-                trip_name: object.trip_name
-            }
-            }
-        }
-        // console.log(hash_map)
-        return([...Object.values(hash_map)])
+        const merge = album_array.filter((album)=>{
+            !db_array.find((db)=>db.media_id ==album.id)
+        })
+        const result = [...db_array, ...merge]
+        console.log('test',result)
+        // for(const object of db_array){
+        //     if(hash_map[object.media_id]){
+        //         hash_map[object.media_id] = {
+        //         ...hash_map[object.media_id], 
+        //         latitude: object.latitude,
+        //         longitude: object.longitude,
+        //         trip_name: object.trip_name,
+        //         media_path: object.media_path
+        //     }
+        //     }
+        // }
+        console.log('merge',result)
+        return(result)
     }
 
     async getMergedMediasArray(){
         const db_medias = await this.getAllMediasFromDb()
         const album_medias = await this.getAllMediasFromAlbumn()
+        if (!album_medias || album_medias.length ===0) {
+            console.log('db_medias',db_medias)
+            return db_medias }
         const result = await this.mergeMediasFromAlbumAndDB(db_medias,album_medias)
         return result
     }

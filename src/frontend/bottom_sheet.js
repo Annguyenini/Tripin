@@ -1,7 +1,8 @@
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import TripHandler from "../app-core/flow/trip_handler.js";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
-import { TouchableOpacity, Text, StyleSheet, View, Image, Modal } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, View, Modal } from "react-native";
+import { Image } from "expo-image";
 import { NewTripFiller } from "./functions/add_new_trip.js";
 import TripDataService from "../backend/storage/trips.js";
 import UserDataService from "../backend/storage/user.js";
@@ -70,6 +71,7 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
       <View style={s.userCard}>
         <TouchableOpacity onPress={() => set_show_profile_picker(true)} activeOpacity={0.8}>
           <Image
+            cachePolicy="memory-disk" 
             key={dataKey}
             source={userProfileImage ? { uri: userProfileImage } : default_user_image}
             style={s.avatar}

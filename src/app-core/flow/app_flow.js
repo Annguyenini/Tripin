@@ -39,8 +39,8 @@ class AppFlow{
     }
     async initDBs(){
         try{
-            await Albumdb.initUserAlbum()
-            await TripDatabaseService.initTripTable()
+            await safeRun(()=>Albumdb.initUserAlbum(),'failed_at_create_album_database')
+            await safeRun(()=>TripDatabaseService.initTripTable(),'failed_at_create_trips_database')
         }
         catch(err){
             console.error(err)

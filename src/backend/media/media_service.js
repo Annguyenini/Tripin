@@ -7,6 +7,9 @@ import LocationData from "../../app-core/local_data/local_location_data"
 import safeRun from "../../app-core/helpers/safe_run"
 import * as MediaLibrary from 'expo-media-library';
 import * as Crypto from 'expo-crypto';
+import * as AlbumPermission from '../album/album_permission'
+import { copyAsync, deleteAsync, documentDirectory, downloadAsync,makeDirectoryAsync }  from 'expo-file-system/legacy';
+
 const ALBUM_NAME ="Tripin_album";
 
 class MediaService {
@@ -15,13 +18,15 @@ class MediaService {
         return `${media_type}:${id}`
 
     }
-    async saveMediaHandler(media_uri){
+    async saveMediaHandler(media_uri,type){
+        console.log('sdsdsdsd')
         let asset
         let asset_object
         let media_id
+        let local_uri
         let coordinate_id
         const trip_id = CurrentTripDataService.getCurrentTripId()
-        const location_data = (await LocationData.getCurrentCoor())?.coords
+        const {coords:location_data} = await safeRun(()=>LocationData.getCurrentCoor(),'failed_at_get_location')
         if (!location_data) {
             return
         }
@@ -29,23 +34,25 @@ class MediaService {
         const latitude = location_data.latitude
         try{
             // save to camera roll, gallery
-            asset = await safeRun(()=>this.saveMediaToLocalAlbum(media_uri),'failed_at_save_media_to_gallery')
-            if (!asset){
+            local_uri = await safeRun(()=>this.saveMediaToLocalAlbum(media_uri,type),'failed_at_save_media_to_gallery')
+            if (!local_uri){
                 throw new Error('Failed to generate asset!')
             }
             // generate media an unique media id 
-            media_id =  this.GENERATE_MEDIA_ID(asset.mediaType,asset.id)
+            media_id = this.GENERATE_MEDIA_ID(type,local_uri)
             coordinate_id = Crypto.randomUUID() 
             // get object ready to insert into album 
-            asset_object = Albumdb.getAlbumAssetObjectReady(asset,media_uri,media_id,latitude,longitude)
+            asset_object = Albumdb.getAlbumAssetObjectReady(local_uri,media_id,type,latitude,longitude,coordinate_id)
             // insert into album 
 
-            Albumdb.addToAlbumArray(asset_object)
+           
             // trip_album_subject.addAssetIntoArray(asset_object)
             
             // add media into sqlite 3
-            await safeRun(()=>Albumdb.addMediaIntoDB(asset.mediaType,media_uri,asset.uri,asset.creationTime,media_id,longitude,latitude,coordinate_id),'failed_at_save_image_to_sqlite3')
+            await safeRun(()=>Albumdb.addMediaIntoDB(type,local_uri,Date.now(),media_id,longitude,latitude,coordinate_id),'failed_at_save_image_to_sqlite3')
             
+            
+            Albumdb.addToAlbumArray(asset_object)
         }
         catch(err){
             console.error('Failed to save media to local db',err)
@@ -71,32 +78,64 @@ class MediaService {
     }
    
 
-  async saveMediaToLocalAlbum(uri){
-    // console.log (ALBUM_NAME)    
-    const album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
-    const asset = await MediaLibrary.createAssetAsync(uri)
-    console.log(asset)
-    try{
-        if(album){
-            await MediaLibrary.addAssetsToAlbumAsync([asset],album,false)            
-            return asset
+  async saveMediaToLocalAlbum(uri,type){
+    /**
+     * save to local, depend on user allow app to access full album
+     * generate depe
+     */
+    const albumPermission = await safeRun(()=>AlbumPermission.getAlbumPermission())
+    if (albumPermission.accessPrivileges==='all'){
+        try{
+            const asset = await safeRun(()=>MediaLibrary.createAssetAsync(uri),'failed_to_save_asset')
+            const album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
+            if(album){
+                const safeToAlbum = await safeRun(()=>MediaLibrary.addAssetsToAlbumAsync([asset],album,false),'failed_at_save_to_camera_roll_album')          
+                return asset.uri
+            }
+            else{
+                await MediaLibrary.createAlbumAsync(ALBUM_NAME,asset);
+                return await this.saveMediaToLocalAlbum(uri)
+            }
         }
-        else{
-            await MediaLibrary.createAlbumAsync(ALBUM_NAME,asset);
-            return await this.saveMediaToLocalAlbum(uri)
+        catch(error){
+            console.error("Error at save media to album: ",error);
+            throw new Error('failed to save image to gallery')
         }
     }
-    catch(error){
-        console.error("Error at save media to album: ",error);
-        throw new Error('failed to save image to gallery')
+    else if(albumPermission.accessPrivileges==='limited'){
+        // const saveToCameraRoll = await safeRun(()=>MediaLibrary.saveToLibraryAsync(uri),'failed_to_save_asset')
+        let fileName 
+        if(type==='photo'){
+            fileName= `${Crypto.randomUUID()}.jpg`;
+        }
+        else{
+            const ext = uri.endsWith('.mov') ? 'mov' : 'mp4';
+            fileName= `${Crypto.randomUUID()}.${ext}`;
+        }
+        
+        const localUri = `${documentDirectory}media/${fileName}`;
+        await makeDirectoryAsync(
+            `${documentDirectory}media/`, 
+            { intermediates: true }
+        );
+        await copyAsync({ from: uri, to: localUri });
+        return localUri
     }
     // console.log("save successfully")
 
   }
+
+
   async deleteMediaToLocalAlbum(path){
     const id = path.replace(/^(photo|video):/, '').replace(/^ph:\/\//, '');    if (id.length<10) return
-    // console.log (ALBUM_NAME)    
+    console.log ('id',id)    
     try{
+        if (id.includes('file://')){
+            await safeRun(()=>deleteAsync(id),'faild_to_delete_media_document')
+            return
+        }
+        const permission =await AlbumPermission.getAlbumPermission()
+        if(permission.accessPrivileges!=='all') return
        await MediaLibrary.deleteAssetsAsync([id])            
     }
     catch(error){

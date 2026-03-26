@@ -97,8 +97,8 @@ class LocalStorage {
     }
     async getDataFromLocal(key){
         if ( typeof(key)!=='string'){
-            console.error('AsyncStorage only allow string')
-            return false 
+            console.error('AsyncStorage only allow string',key)
+            throw new Error('AsyncStorage only allow string') 
         }
         try{
             const data = await AsyncStorage.getItem(key)

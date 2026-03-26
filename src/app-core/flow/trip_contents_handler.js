@@ -141,14 +141,14 @@ class TripContentHandler{
         }
     }
    
-    async deleteMediaHandler(trip_id,media_id,media_path,media_lib_path){
+    async deleteMediaHandler(trip_id,media_id,media_path){
          // delete in database
         await safeRun(()=>Albumdb.deleteMediaFromDB(media_id,trip_id),'failed_delete_media_from_db')
         
         
         await safeRun(()=>MediaService.deleteMediaToLocalAlbum(media_id),'failed at delete media from album')
         // delete in album 
-        Albumdb.deleteFromAlbumArray(media_lib_path)
+        Albumdb.deleteFromAlbumArray(media_id)
         CurrentDisplayTripMediaObserver.deleteAssestFromArrayByUri(trip_id,media_path)
 
         let respond = null
@@ -166,6 +166,7 @@ class TripContentHandler{
         return
 
     }
+    
     // async requestSTripMedias (){
     //     console.log(CurrentTripDataService.getCurrentTripId())
     //     const respond = await TripContents.requestTripMedias(CurrentTripDataService.getCurrentTripId())

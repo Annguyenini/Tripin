@@ -89,10 +89,8 @@ function AuthLayout() {
 }
 function PermissionLayout() {
   return (
-      <View  style={styles.backgroundImage}>
-        <Image source={logo} style={styles.logo} />
+      
         <PermissionsScreen />
-      </View>
   );
 }
 const MainLayout =()=> {
