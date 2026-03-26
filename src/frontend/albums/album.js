@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState ,useMemo, useCallback} from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,8 @@ import { navigate } from '../custom_function/navigationService';
 import MediaViewCard from './viewer_card';
 import Permission from '../../backend/storage/settings/permissions';
 import { getAlbumPermission } from '../../backend/album/album_permission';
+import * as VideoThumbnails from 'expo-video-thumbnails';
+
 const videoPauseIcon = require('../../../assets/image/video_pause_icon.png')
 export default function AlbumScreen() {
     const [Images ,setImages]=useState([])
@@ -43,9 +45,12 @@ export default function AlbumScreen() {
         }
         AlbumService.attach(updateImages)
         fetchImages()
+
+        
+    
         return ()=>AlbumService.detach(updateImages)
     },[])
-
+    
     const onCallMainScreen =()=>{
         navigate('Main')
     }
@@ -58,6 +63,8 @@ export default function AlbumScreen() {
         setImageVisible(true)        
         console.log('item',item,imageVisible)
     }
+    
+    console.log(Images)
   return (
     
     <View style={Albumstyles.container}>
