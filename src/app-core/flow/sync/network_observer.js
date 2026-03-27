@@ -1,4 +1,6 @@
 import LocalStorage  from "../../../backend/storage/base/localStorage";
+
+import * as API from '../../../config/config_api'
 let _onNetworkUpdate = null
 export const _registerNetworkCallback =(callback)=>{
     _onNetworkUpdate = callback
@@ -9,20 +11,27 @@ class NetworkObserver extends (LocalStorage){
         this.EVENTS ={
             IS_SERVER_REACHABLE : 'is_server_reachable'
         }
-        this.items ={
-            [this.EVENTS.IS_SERVER_REACHABLE] : null,
-            set(key,value){
-                this[key] = value
-            },
-            get(key){
-                return this[key]
-            }
-        }
+        this.isReachable = null
     }
     setServerStatus(state){
-        this.items.set(this.EVENTS.IS_SERVER_REACHABLE,state)
+        this.isReachable = state
         if(_onNetworkUpdate){
             _onNetworkUpdate(state)
+        }
+    }
+    async callServer(){
+        console.log('net callserver')
+        try{
+            const respone = await fetch(API.BASE_API,{
+                method:'POST'
+            })
+            this.setServerStatus(true)
+            // await app_flow.onAppReady()
+        }
+        catch(err){
+            if (err instanceof TypeError && err.message === 'Network request failed') {
+                this.setServerStatus(false)
+            }  
         }
     }
 }

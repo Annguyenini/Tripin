@@ -4,6 +4,11 @@ import Albumdb from "../../../backend/album/albumdb";
 import safeRun from "../../helpers/safe_run";
 import TripContentsSync from "./trip_contents_sync";
 import TripDatabaseService from "../../../backend/database/TripDatabaseService";
+import { UseOverlay } from "../../../frontend/overlay/overlay_main";
+let _onCallBack = null
+export const _registerSyncingCallback =(callback)=>{
+    _onCallBack = callback
+}
 class TripContentSyncManager{
     
     /**
@@ -73,12 +78,24 @@ class TripContentSyncManager{
     }
 
     async tripCoordinateSync(trip_id){
+        // callback to ui
+        if (_onCallBack)_onCallBack(true)
+
+
         const respond = await safeRun(()=>TripContentsSyncService.requestTripCoordinateVersions(trip_id),'failed_at_request_trip_coordinate_version')
         if (!respond.ok||respond.status!==200) return
         const server_version = respond.data.coordinates_version
         const local_service = await safeRun(()=>TripDatabaseService.getTripCoordinateVersion(trip_id),'failed_at_get_trip_coordinate_version')
-        if (server_version===local_service)return
+        
+        if (server_version===local_service){
+            if (_onCallBack)_onCallBack(false)
+            return
+        }
         await safeRun(()=>TripContentsSync.processTripCoordinatesSync(server_version),'failed_at_process_trip_coordinate_sync')
+        // callback to ui
+        if (_onCallBack)_onCallBack(false)
+
+
     }
     /**
      * handler trip media sync 
@@ -86,10 +103,15 @@ class TripContentSyncManager{
      * @returns 
      */
     async tripMediaSyncHandler(trip_id){
+        // callback to ui
+        if (_onCallBack)_onCallBack(true)
         const compare_hash = await this._getAndCompareTripMediasHash(trip_id)
         if (!compare_hash){
             await safeRun(()=>this._getAndProcessTripMediasMetadata(trip_id),'failed_at_trip_media_sync_manager')
         }
+        // callback to ui
+        if (_onCallBack)_onCallBack(false)
+
         return
     }
 
@@ -100,11 +122,16 @@ class TripContentSyncManager{
      * @returns 
      */
     async checkTripMediaHash(hash,trip_id){
+        // callback to ui
+        if (_onCallBack)_onCallBack(true)
         const local_hash = await safeRun(()=>HashService.generateTripMediaHash(trip_id),'faild_at_generate_and_save_trip_hash')
         if (local_hash !== hash){
             // await this._getAndProcessTripMediasMetadata(trip_id)
             await safeRun(()=> this._getAndProcessTripMediasMetadata(trip_id),'failed_at_sync_trip_media')
         }
+        // callback to ui
+        if (_onCallBack)_onCallBack(false)
+
         return
     }
     
