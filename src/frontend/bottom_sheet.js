@@ -13,6 +13,7 @@ import AppFlow from "../app-core/flow/app_flow.js";
 import { UseOverlay } from "./overlay/overlay_main.js";
 import TripDisplayObserver from "./map_box/functions/trip_display_observer.js";
 import { TestScreen } from "../test_screen.js";
+import { OfflineBanner } from "./overlay/banner_manager.js";
 const default_user_image = require('../../assets/image/profile_icon.png')
 
 export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }) => {
@@ -86,6 +87,7 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
           <Text style={s.displaySub}>your journeys</Text>
         </View>
       </View> 
+
       <TouchableOpacity onPress={()=>setTest(true)}>
         <Text>test</Text>
       </TouchableOpacity>

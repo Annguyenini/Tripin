@@ -109,6 +109,11 @@ class TripContentHandler{
             return assests
         }
         else if (respond.status !==200) return []
+        const hash = respond.data.hash
+        if (hash){
+                await safeRun(()=>TripContentSyncManager.checkTripMediaHash(hash,trip_id),'failed_at_sync_trip_merdia')
+            return await this.requestTripMediasHandler(trip_id)
+            }     
         else return respond.data.medias
 
     }

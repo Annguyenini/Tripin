@@ -19,7 +19,7 @@ import AppFlow from '../app-core/flow/app_flow.js'
 import LoadingScreen from './map_box/components/fetching_loading_screen.js';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system/legacy';
-
+import { BannerManager } from './overlay/banner_manager.js';
 export const MainScreen = () => {
   // user profile state from local storage
   const [user_id, setUserId] = useState(UserDataService.getUserId())
@@ -89,6 +89,8 @@ export const MainScreen = () => {
   const callSetting = () => navigate("Setting")
   const callAlbum = () => navigate('Album')
 
+
+  
   // memoized to prevent map re-mounting on unrelated state changes
   const RenderMap = useCallback(() => {
     return <MapBoxLayout />
@@ -97,8 +99,7 @@ export const MainScreen = () => {
   return (
     <View style={styles.container}>
       {/* floating location permission banner */}
-      <LocationPermission />
-
+      <BannerManager/>
       {/* show map once trip data is ready, otherwise show loading */}
       {tripDataSuccess && RenderMap()}
       {!tripDataSuccess && <LoadingScreen />}

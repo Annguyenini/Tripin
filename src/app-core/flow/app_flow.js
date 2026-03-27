@@ -10,6 +10,7 @@ import TripContentsSync from "./sync/trip_contents_sync"
 import LocalStorage from "../../backend/storage/base/localStorage"
 import TripContentSyncManager from "./sync/trip_contents_sync_manager"
 import safeRun from "../helpers/safe_run"
+import {_registerNetworkCallback} from "./sync/network_observer"
 class AppFlow{
     constructor(){
         this.LocalStorage = new LocalStorage()
@@ -24,6 +25,7 @@ class AppFlow{
 
         return true
     }
+    
     async onAuthSuccess(){
         await safeRun(()=>UserDataHandler.GetUserDataHandler(),'failed_at_get_user_data')
         // if (!requestUserData){ return false}
@@ -79,8 +81,10 @@ class AppFlow{
     async syncCurrentTripContents(){
         const trip_id = CurrentTripDataService.getCurrentTripId()
         if (trip_id) {
-            await TripContentSyncManager.tripMediaSyncHandler(trip_id)
+            console.log('sync')
+            await safeRun (()=>TripContentSyncManager.tripCoordinateSync(trip_id),'faild_at_sync_trip_media')
             await safeRun (()=>TripContentSyncManager.tripCoordinateSync(trip_id),'faild_at_sync_trip_coordinate')
+            console.log('sync complete')
         }
         // await TripContentsSync.currentTripContentsSync(CurrentTripDataService.getCurrentTripId())
         // return

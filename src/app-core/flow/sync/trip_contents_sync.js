@@ -4,6 +4,7 @@ import TripContentsService from '../../../backend/services/trip_contents'
 import TripDatabaseService from '../../../backend/database/TripDatabaseService'
 import UserDataService from '../../../backend/storage/user'
 import { _registerNetworkCallback } from './network_observer'
+import safeRun from '../../helpers/safe_run'
 class TripSync {
     constructor(){
         this.pennding = []
@@ -63,7 +64,7 @@ class TripSync {
     async processTripCoordinatesSync(server_version){
         this.coordinatesSyncing = true
         const DB = await SqliteService.connectDB()
-        const current_version = await TripDatabaseService.getTripCoordinateVersion(CurrentTripDataService.getCurrentTripId())
+        const current_version = await safeRun(()=>TripDatabaseService.getTripCoordinateVersion(CurrentTripDataService.getCurrentTripId()),'failed_to_get_tripCoordiante_version')
         // const all_trip_coords = await DB.getAllAsync(`
         //     SELECT * FROM trip_${CurrentTripDataService.getCurrentTripId()} 
         //     WHERE version >= ?
