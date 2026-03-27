@@ -8,7 +8,16 @@ export const cameraStyle = StyleSheet.create({
     left: 0, width, height
    
   },
-
+  overlay:{
+  ...StyleSheet.absoluteFillObject,
+      justifyContent: 'center',
+      alignItems: 'center',
+  },
+  playButton:{
+  fontSize: 25,
+    color: '#f0f0ec',
+    left:40
+},
   container: {
     flex: 1,
     // backgroundColor: 'black',

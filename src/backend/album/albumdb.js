@@ -165,7 +165,7 @@ class Album {
         const DB = await SqliteService.connectDB()
         let result 
         try{
-            result = await DB.getAllAsync(`SELECT * FROM user_${UserDataService.getUserId()}_album`)
+            result = await DB.getAllAsync(`SELECT * FROM user_${UserDataService.getUserId()}_album ORDER BY time_stamp DESC`)
             return result
         }
         catch(err){

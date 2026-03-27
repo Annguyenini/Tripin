@@ -5,8 +5,10 @@ import { cameraStyle,camera_zoom } from '../../../styles/camera_style';
 const PermissionLayout = ({ cameraPermission, albumPermission, requestAlbumPermission, requestcameraPermission, microphonePermission, requestMicrophonePermission }) => {
     const allGranted = cameraPermission?.granted && albumPermission?.granted && microphonePermission?.granted
     if (allGranted) return null
-
-    return (
+    if (!microphonePermission) requestMicrophonePermission()
+    if(!cameraPermission) requestcameraPermission()
+    if(!albumPermission) requestAlbumPermission()
+        return (
         <View style={styles.wrapper}>
             {!cameraPermission || !cameraPermission.granted && (
                 <TouchableOpacity style={styles.button} onPress={requestcameraPermission}>

@@ -218,12 +218,14 @@ export const mediaCardStyle = StyleSheet.create({
   // ── IMAGE LIST OVERLAY ──
   ImageListOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
   },
-
+playButton:{
+  fontSize: 25,
+    color: '#f0f0ec',
+},
   overlayImage: {
     width: 100,
     height: 100,

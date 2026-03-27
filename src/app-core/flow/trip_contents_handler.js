@@ -112,13 +112,13 @@ class TripContentHandler{
         else return respond.data.medias
 
     }
-    async uploadTripMediaHandler(media_id,trip_id,media_uri,longitude,latitude,coordinate_id){
+    async uploadTripMediaHandler(media_id,trip_id,media_uri,longitude,latitude,coordinate_id,type){
         if (!media_uri)return
         this._uploadPending =(this._uploadPending||0)+1
         try{
             // pending count to prevent spam lead to loop sync
             // send to server
-            const respond = await safeRun(()=>TripContents.sendTripMedia(media_id,trip_id,media_uri,longitude,latitude,'image',coordinate_id),'failed_at_send_media_to_server')
+            const respond = await safeRun(()=>TripContents.sendTripMedia(media_id,trip_id,media_uri,longitude,latitude,type,coordinate_id),'failed_at_send_media_to_server')
                        
             if(!respond.ok || respond.status !==200) return 
            

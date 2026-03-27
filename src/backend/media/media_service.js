@@ -19,13 +19,12 @@ class MediaService {
 
     }
     async saveMediaHandler(media_uri,type){
-        console.log('sdsdsdsd')
-        let asset
         let asset_object
         let media_id
         let local_uri
         let coordinate_id
         const trip_id = CurrentTripDataService.getCurrentTripId()
+        // get coordinate for image
         const {coords:location_data} = await safeRun(()=>LocationData.getCurrentCoor(),'failed_at_get_location')
         if (!location_data) {
             return
@@ -43,15 +42,11 @@ class MediaService {
             coordinate_id = Crypto.randomUUID() 
             // get object ready to insert into album 
             asset_object = Albumdb.getAlbumAssetObjectReady(local_uri,media_id,type,latitude,longitude,coordinate_id)
-            // insert into album 
-
-           
-            // trip_album_subject.addAssetIntoArray(asset_object)
             
             // add media into sqlite 3
             await safeRun(()=>Albumdb.addMediaIntoDB(type,local_uri,Date.now(),media_id,longitude,latitude,coordinate_id),'failed_at_save_image_to_sqlite3')
             
-            
+            // insert into album 
             Albumdb.addToAlbumArray(asset_object)
         }
         catch(err){
@@ -62,7 +57,7 @@ class MediaService {
         if(trip_id){
             try{
 
-                TripContentHandler.uploadTripMediaHandler(media_id,trip_id,media_uri,longitude,latitude,coordinate_id)
+                TripContentHandler.uploadTripMediaHandler(media_id,trip_id,media_uri,longitude,latitude,coordinate_id,type)
                 // generate a location object
                 const coordinate_object = CurrentTripCoordinateService.generateCoordinatePayload(location_data,coordinate_id)
                 // add the coordinate obejct to service

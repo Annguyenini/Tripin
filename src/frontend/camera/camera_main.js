@@ -25,6 +25,7 @@ import CameraSetting from './layout/camera_setting_bar.js';
 import { Audio } from 'expo-av'
 import HorizontalSlider from './layout/vertical_slider.js'
 import useFrameFilter from './fillter/use_frame_filter.js';
+import { generateOrGetThumbnailFromMediaId } from '../../backend/media/generate_thumbnail.js';
 const { width, height } = Dimensions.get('window');
 
 const exitCamera = () => navigate('Main');
@@ -65,15 +66,32 @@ export const CameraApp = () => {
     // frame filter
     // const frameProcessor = useFrameFilter(filter,filterIntensity)
     useEffect(() => {
-        const fetchImages = async () => {
-            setImage_icon(AlbumService.AlbumsArray[0].media_path)
-            setImageIconType(AlbumService.AlbumsArray[0].mediaType)
-        }
+      const fetchImages = async () => {
+            const recentImageAsset = AlbumService.AlbumsArray[0];
+            if (!recentImageAsset) return;
+
+            if (recentImageAsset.media_type === 'video') {
+                const thumbnail = await generateOrGetThumbnailFromMediaId(recentImageAsset.media_id, recentImageAsset.media_path);
+                setImage_icon(thumbnail);
+            } else {
+                setImage_icon(recentImageAsset.media_path);
+            }
+            
+            setImageIconType(recentImageAsset.media_type);
+        };
         const updateImages = {
-            update(newArray) {
-                console.log('new array',newArray)
-                setImage_icon(newArray[0].media_path)
-                setImageIconType(newArray[0].mediaType)
+            async update(newArray) {
+                const recentImageAsset = newArray[0];
+                if (!recentImageAsset) return;
+
+                if (recentImageAsset.media_type === 'video') {
+                    const thumbnail = await generateOrGetThumbnailFromMediaId(recentImageAsset.media_id, recentImageAsset.media_path);
+                    setImage_icon(thumbnail);
+                } else {
+                    setImage_icon(recentImageAsset.media_path);
+                }
+                
+                setImageIconType(recentImageAsset.media_type);
             }
         }
         AlbumService.attach(updateImages)
