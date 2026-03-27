@@ -88,9 +88,9 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
         </View>
       </View> 
 
-      <TouchableOpacity onPress={()=>setTest(true)}>
+      {/* <TouchableOpacity onPress={()=>setTest(true)}>
         <Text>test</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       
       {/* section header */}
       <View style={s.sectionHeader}>
