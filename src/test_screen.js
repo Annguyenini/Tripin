@@ -25,7 +25,7 @@ export const TestScreen = ({testScreenHandler}) => {
     console.log(await Albumn.getAllMediasFromDb())
   }
   const onGetUserDb = async()=>{
-    await TripDatabaseService.getAllTrip()
+    console.log(await TripDatabaseService.getAllTrip())
   }
   const getKeys =async()=>{
     console.log(await localStorage.getAllKeys())

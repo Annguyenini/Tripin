@@ -1,9 +1,8 @@
-import { Alert } from 'react-native'
-import {STORAGE_KEYS,DATA_KEYS} from './keys/storage_keys'
-import * as SecureStore from 'expo-secure-store'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { copyAsync, deleteAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
+import {DATA_KEYS} from './keys/storage_keys'
+
 import TripLocalDataStorage from './base/trip_base'
+import TripDatabaseService from '../database/TripDatabaseService';
+import safeRun from '../../app-core/helpers/safe_run';
 class CurrentTripDataService extends TripLocalDataStorage{
     /**
      * trip data service, use to store trip_name...
@@ -56,7 +55,8 @@ class CurrentTripDataService extends TripLocalDataStorage{
     
 
     getCurrentTripDataFromLocal(){
-        return this.getTripDataObjectFromLocal(STORAGE_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA)
+        return TripDatabaseService.getCurrentTripData()
+        // return this.getTripDataObjectFromLocal(STORAGE_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA)
     }
 
     // ==========================================================
@@ -67,14 +67,13 @@ class CurrentTripDataService extends TripLocalDataStorage{
      */
     
     async saveCurrentTripDataToLocal (trip_data){
-
+        
         if(!trip_data||typeof(trip_data)!=='object'||Array.isArray(trip_data)){
             console.log('trip_data must be object')
         }
-        console.log('trip data',trip_data)
         try{        
-            await this.saveTripDataObjectToLocal(STORAGE_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
-        
+            // await this.saveTripDataObjectToLocal(STORAGE_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
+            await safeRun(()=>TripDatabaseService.addTripToDatabase(trip_data),'failed_at_save_to_database')
             this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,trip_data)
             this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID, trip_data.trip_id)
             this.item.set(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_NAME,trip_data.trip_name)
@@ -85,9 +84,7 @@ class CurrentTripDataService extends TripLocalDataStorage{
             return true
         }
         catch(err){
-            console.error('Failed at save current trip data tp local',err)
             throw new Error ('Failed at save current trip data tp local',err)
-            return false
         }
     }
 
@@ -112,16 +109,10 @@ class CurrentTripDataService extends TripLocalDataStorage{
     async setCurrentTripImageCoverToLocal(imageUri,trip_id,source='local'){
         try{        
             const filename = `${trip_id}_cover.jpg`;
-            const local_trip_imageuri = await this.saveTripImageToLocal(imageUri,filename,source)
-            // if (local_trip_imageuri){
-            //     await this.saveTripDataToLocal(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE,local_trip_imageuri)
-
-            // }
-            const current_trip_data = await this.getCurrentTripDataFromLocal()
-            if(current_trip_data){
-                current_trip_data.image = local_trip_imageuri
-                await this.saveCurrentTripDataToLocal(current_trip_data)
-            }
+            // save image to local 
+            const local_trip_imageuri = await this.saveTripImageToLocal(imageUri,filename,source) 
+            // update image to database
+            await TripDatabaseService.updateValueInDatabase('image',local_trip_imageuri,'trip_id',trip_id)
             return local_trip_imageuri
         }
         catch(err){
@@ -134,7 +125,9 @@ class CurrentTripDataService extends TripLocalDataStorage{
     
     async deleteTripImageCoverFromLocal(){
         try{
-            const file_path = this.item.get(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_IMAGE)
+            const trip_data = await TripDatabaseService.getCurrentTripData()
+            const file_path = trip_data['image']
+            if (!file_path) return
             await this.deleteDataFromLocal(file_path)
             await this.deleteImageFromLocal(file_path)
 
@@ -147,23 +140,24 @@ class CurrentTripDataService extends TripLocalDataStorage{
     /**
      * delete the trip data object
      */
-    async deleteCurrentTripDataFromLocal(){
-        try{
-            await this.deleteDataFromLocal(STORAGE_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA)
-        }
-        catch(err){
-            console.error('Failed at delete current trip data',err)
-        }
-    }
+    // async deleteCurrentTripDataFromLocal(){
+    //     try{
+    //         await this.deleteDataFromLocal(STORAGE_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA)
+    //     }
+    //     catch(err){
+    //         console.error('Failed at delete current trip data',err)
+    //     }
+    // }
 
     /**
      * This function will delete trip data, trip image, and set the trip status back to false
      */
-    async resetCurrentTripData(){
+    async endCurrentTrip(){
         try{
             await this.deleteTripImageCoverFromLocal()
-            await this.deleteCurrentTripDataFromLocal()
-            // await this.setTripStatusToLocal('false')
+            await TripDatabaseService.updateValueInDatabase('active',false,'trip_id',this.getCurrentTripId())
+            await TripDatabaseService.updateValueInDatabase('end_time',Date.now(),'trip_id',this.getCurrentTripId())
+
         }
         catch(err){
             console.error('Failed at reset current trip data', err)
@@ -173,14 +167,17 @@ class CurrentTripDataService extends TripLocalDataStorage{
     }
 
 
-    getObjectReady(trip_name, trip_id, created_time,image_uri){
-        const tripdata ={
-            "trip_name":trip_name,
-            "trip_id":trip_id,
-            "created_time":created_time,
-            'image':image_uri
+   
+    getObjectReady(user_id, trip_id, trip_name, image_path = null,active) {
+        return {
+            user_id,
+            trip_id,
+            trip_name,
+            created_time: Date.now(),
+            image: image_path,
+            active:active
+
         }
-        return tripdata
     }
     generateCurrentTripIdKey(user_id){
         return `user_${user_id}:current_trip_id`

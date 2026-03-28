@@ -17,7 +17,7 @@ export const SettingScreen =()=>{
         await safeRun(() => TokenService.deleteToken("access_token"), 'failed_at_delete_access_token')
         await safeRun(() => TokenService.deleteToken("refresh_token"), 'failed_at_delete_refresh_token')
         await safeRun(() => UserDataService.deleteAllUserData(), 'failed_at_delete_user_data')
-        await safeRun(() => CurrentTripDataService.resetCurrentTripData(), 'failed_at_reset_trip_data')
+        await safeRun(() => CurrentTripDataService.endCurrentTrip(), 'failed_at_reset_trip_data')
         await safeRun(() => TripService.endGPSLogic(), 'failed_at_end_gps_logic')
         await safeRun(() => Localstorage.clearAllStorage(), 'failed_at_clear_storage')
         console.log('signout1')
