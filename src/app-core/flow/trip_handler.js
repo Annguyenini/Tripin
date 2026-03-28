@@ -29,11 +29,13 @@ class TripHandler{
             // data from server
             const data = respond.data
             const trip_id = data.trip_id
-            // generate image path nad save to local
+            
+            const user_id = UserDataService.getUserId()
+            // generate image path nad save     to local
             
             const trip_image_uri = await safeRun(()=>CurrentTripDataService.setCurrentTripImageCoverToLocal(imageUri,trip_id) , 'trip_image_save_failed')
             // tripdata object
-            const trip_data = CurrentTripDataService.getObjectReady(trip_name,trip_id,Date.now(),trip_image_uri)
+            const trip_data = CurrentTripDataService.getObjectReady(user_id,trip_id,trip_name,trip_image_uri,true)
             // save tripdata
             await safeRun(()=> CurrentTripDataService.saveCurrentTripDataToLocal(trip_data),'current_trip_save_failed')
 
@@ -43,8 +45,8 @@ class TripHandler{
             //create db sqlite for coordinates
             await safeRun (()=>TripDataStorage.init_new_trip(trip_id),'created_trip_coordinate_table_failed')
 
-            const trip_object = TripDatabaseService.getObjectReady(UserDataService.getUserId(),trip_id,trip_name,imageUri)
-            await safeRun (()=>TripDatabaseService.addTripToDatabase(trip_object),'add_trip_to_table_failed')
+            // const trip_object = TripDatabaseService.getObjectReady(UserDataService.getUserId(),trip_id,trip_name,imageUri)
+            // await safeRun (()=>TripDatabaseService.addTripToDatabase(trip_object),'add_trip_to_table_failed')
             GPSLogic.syncGPSTask()
             return respond
         }
@@ -112,9 +114,10 @@ class TripHandler{
             () => Trip.requestCurrentTripId(),
             'fetch_current_trip_id_failed'
         )
-
-        if (respond.status !== 200) return false
-
+        if(!respond.ok || respond.status !==200){
+            await safeRun(() => CurrentTripDataService.loadCurrentTripDataFromLocal(UserDataService.getUserId(), trip_id),
+                    'load_local_trip_failed')
+        }
         const data = respond.data
         const trip_id = data.current_trip_id
 
@@ -243,8 +246,8 @@ class TripHandler{
                     ))
             }
 
-            await safeRun(()=>CurrentTripDataService.resetCurrentTripData(),'failed_at_reset_current_trip_data')
-            await safeRun(()=>trips.updateTripEndTime(Date.now(),trip_id),'failed_at_update_end_time')
+            await safeRun(()=>CurrentTripDataService.endCurrentTrip(),'failed_at_reset_current_trip_data')
+            await safeRun(()=>trips.setTripEnd(Date.now(),trip_id),'failed_at_update_end_time')
             GPSLogic.endGPSLogic()
             return true
         }

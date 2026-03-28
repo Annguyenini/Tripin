@@ -15,7 +15,9 @@ const CoordinatesPointsLayout =({trip_id,ready})=> {
     const setUpWatchList =async()=>{
       const newCoords = await TripContentHandler.getTripCoordinatesHandler(trip_id)
       if(_cancelled)return
+      
       CurrentDisplayCoordinateObserver.setDefaultCoordsArray(trip_id,newCoords)
+
       setAssestsObjectsArray(newCoords? [...newCoords]:[])
       ready()
 

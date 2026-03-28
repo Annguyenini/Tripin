@@ -1,4 +1,5 @@
-import { View, Text, Image,StyleSheet,TouchableOpacity,AppState } from 'react-native';
+import { View, Text,StyleSheet,TouchableOpacity,AppState } from 'react-native';
+import {Image} from 'expo-image'
 import { useEffect, useState } from "react";
 import CurrentTripDataService from '../../../backend/storage/current_trip'
 import { DATA_KEYS } from '../../../backend/storage/keys/storage_keys';
@@ -29,6 +30,7 @@ export const CurrentTripBox = ({isMinimize})=>{
 
       {/* Image */}
       <Image 
+      cachePolicy='memory-disk'
       source={tripImageCover ? { uri: tripImageCover } : default_image} 
       style={currentTripBoxStyle.image} 
       />

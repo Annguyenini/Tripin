@@ -125,14 +125,22 @@ class TripContentSyncManager{
         // callback to ui
         if (_onCallBack)_onCallBack(true)
         const local_hash = await safeRun(()=>HashService.generateTripMediaHash(trip_id),'faild_at_generate_and_save_trip_hash')
-        if (local_hash !== hash){
+        if (local_hash && local_hash !== hash){
             // await this._getAndProcessTripMediasMetadata(trip_id)
-            await safeRun(()=> this._getAndProcessTripMediasMetadata(trip_id),'failed_at_sync_trip_media')
+            try{
+                await this._getAndProcessTripMediasMetadata(trip_id)
+                if (_onCallBack)_onCallBack(false)
+                return {'ok':true,'code':'sync_complete'}
+            }
+            catch(err){
+                if (_onCallBack)_onCallBack(false)
+                return {'ok':false,'code':'sync_failed'}
+            }
         }
         // callback to ui
         if (_onCallBack)_onCallBack(false)
-
-        return
+        if(!local_hash) return {'ok':true,'code':'fresh'}
+        return {'ok':true,'code':'no_sync'}
     }
     
     async tripCoordinateSyncHandler(trip_id){

@@ -79,10 +79,15 @@ class TripDataService extends TripLocalDataStorage{
         const status = await TripDatabaseService.updateValueInDatabase('image',image_uri,'trip_id',trip_id)
         return status
     }
-    async updateTripEndTime(end_time,trip_id){
-        const status = await TripDatabaseService.updateValueInDatabase('end_time',end_time,'trip_id',trip_id)
-        console.log('update end time',end_time,status)
-        return status
+    async setTripEnd(end_time,trip_id){
+        try{
+            const end_time_status = await TripDatabaseService.updateValueInDatabase('end_time',end_time,'trip_id',trip_id)
+            const end_status = await TripDatabaseService.updateValueInDatabase('active',false,'trip_id',trip_id)
+            console.log('update end time',end_time,end_time_status,end_status)
+        }
+        catch{
+            throw new Error('Failed to end trip locally')
+        }
     }
     async loadAllTripsListFromLocal(){
         const user_id = UserDataService.getUserId()
