@@ -54,15 +54,14 @@ class TripCoordinateDatabase {
     }
 
     async getAllCoordinatesFromTripId(trip_id){
-        const DB = await SqliteService.connectDB()
         try{
-
+            const DB = await SqliteService.connectDB()
             const allRows = await DB.getAllAsync(`SELECT * FROM trip_${trip_id}`)
             return allRows
         }
         catch(err){
             console.error (err)
-            return null
+            throw new Error('No trip table')
         }
     }
     async deleteCoordinateFromTripId(trip_id,coordinate_id){

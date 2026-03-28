@@ -8,11 +8,11 @@ class CurrentDisplayCoordinateObserver extends(LocalStorage){
         return `coords_array:${trip_id}`
     }
     setDefaultCoordsArray(trip_id, coords_array){
-        console.log('set default',coords_array)
         if(!this.CoordsArray[trip_id]){
-            this.CoordsArray[trip_id]=coords_array
+            this.CoordsArray[trip_id]=coords_array ||[]
         }
-        this.notify(this.GENERATE_KEY(trip_id),coords_array)
+        this.notify(this.GENERATE_KEY(trip_id),coords_array||[])
+
     }
     getCoordArray(trip_id){
         return this.CoordsArray[trip_id]
