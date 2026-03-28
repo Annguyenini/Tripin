@@ -39,4 +39,4 @@ When a media is deleted:
 
 This also happens on the server side.
 
-> Ghost delete is easier to deal with in terms of sync, while the file itself gets deleted.
+> Ghost delete is easier to deal with in terms of sync, while the file itself gets deleted.git 
