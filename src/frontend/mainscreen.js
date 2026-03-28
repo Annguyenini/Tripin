@@ -20,6 +20,7 @@ import LoadingScreen from './map_box/components/fetching_loading_screen.js';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system/legacy';
 import { BannerManager } from './overlay/banner_manager.js';
+import { CameraApp } from './camera/camera_main.js';
 export const MainScreen = () => {
   // user profile state from local storage
   const [user_id, setUserId] = useState(UserDataService.getUserId())
@@ -98,6 +99,7 @@ export const MainScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* <CameraApp></CameraApp> */}
       {/* floating location permission banner */}
       <BannerManager/>
       {/* show map once trip data is ready, otherwise show loading */}
