@@ -71,15 +71,8 @@ class MediaService {
         }
         return
     }
-   
 
-  async saveMediaToLocalAlbum(uri,type){
-    /**
-     * save to local, depend on user allow app to access full album
-     * generate depe
-     */
-    const albumPermission = await safeRun(()=>AlbumPermission.getAlbumPermission())
-    if (albumPermission.accessPrivileges==='all'){
+    async _saveMediaToCameraroll(uri){
         try{
             const asset = await safeRun(()=>MediaLibrary.createAssetAsync(uri),'failed_to_save_asset')
             const album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
@@ -97,24 +90,50 @@ class MediaService {
             throw new Error('failed to save image to gallery')
         }
     }
-    else if(albumPermission.accessPrivileges==='limited'){
-        // const saveToCameraRoll = await safeRun(()=>MediaLibrary.saveToLibraryAsync(uri),'failed_to_save_asset')
-        let fileName 
-        if(type==='photo'){
-            fileName= `${Crypto.randomUUID()}.jpg`;
+
+    async _saveMediaToLocalStorage(uri,type){
+        try{
+            let fileName 
+            if(type==='video'){
+                const ext = uri.endsWith('.mov') ? 'mov' : 'mp4';
+                fileName= `${Crypto.randomUUID()}.${ext}`;
+            }
+            else{
+                fileName= `${Crypto.randomUUID()}.jpg`;
+            }
+
+            const localUri = `${documentDirectory}media/${fileName}`;
+            await makeDirectoryAsync(
+                `${documentDirectory}media/`, 
+                { intermediates: true }
+            );
+            await copyAsync({ from: uri, to: localUri });
+            return localUri
         }
-        else{
-            const ext = uri.endsWith('.mov') ? 'mov' : 'mp4';
-            fileName= `${Crypto.randomUUID()}.${ext}`;
+        catch(error){
+             console.error("Error at save media to album: ",error);
+            throw new Error('failed to save image to local storage')
         }
-        
-        const localUri = `${documentDirectory}media/${fileName}`;
-        await makeDirectoryAsync(
-            `${documentDirectory}media/`, 
-            { intermediates: true }
-        );
-        await copyAsync({ from: uri, to: localUri });
-        return localUri
+    }
+  async saveMediaToLocalAlbum(uri,type){
+    /**
+     * save to local, depend on user allow app to access full album
+     * generate depe
+     */
+    try{
+        const albumPermission = await safeRun(()=>AlbumPermission.getAlbumPermission())
+        if (albumPermission.accessPrivileges==='all'){
+            const assetUri = await this._saveMediaToCameraroll(uri)
+            return assetUri
+        }
+        else if(albumPermission.accessPrivileges==='limited'){
+            const localUri = await this._saveMediaToLocalStorage(uri,type)
+            return localUri
+        }
+    }
+    catch(error){
+        console.error(error)
+        return null
     }
     // console.log("save successfully")
 

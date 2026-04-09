@@ -89,7 +89,8 @@ class Album {
                 time_stamp TEXT NOT NULL,
                 version INTEGER DEFAULT 0,
                 media_id TEXT NOT NULL,
-                coordinate_id TEXT NOT NULL
+                coordinate_id TEXT NOT NULL,
+                event TEXT NOT NULL DEFAULT 'add'
                 );`)
         }
         catch(err){
@@ -118,9 +119,10 @@ class Album {
             trip_name,
             time_stamp,
             media_id,
-            coordinate_id) 
-            VALUES (?,?,?,?,?,?,?,?,?)`
-                ,[media_type,media_path,latitude,longitude,trip_id,trip_name,time,media_id,coordinate_id])        
+            coordinate_id,
+            event) 
+            VALUES (?,?,?,?,?,?,?,?,?,?)`
+                ,[media_type,media_path,latitude,longitude,trip_id,trip_name,time,media_id,coordinate_id,'add'])        
             
             // await TripDatabase.updateTripMediaVersion(trip_id)
             return
@@ -131,11 +133,12 @@ class Album {
         }
     }
     async deleteMediaFromDB (media_id,trip_id){
+        // ghost delete in database for sync purposes
         const DB = await SqliteService.connectDB()
         
         try{
-            await DB.runAsync(`DELETE FROM user_${UserDataService.getUserId()}_album WHERE media_id = ?`
-                ,media_id)        
+            await DB.runAsync(`UPDATE TABLE user_${UserDataService.getUserId()}_album SET event = ? WHERE media_id = ?`
+                ,media_id,'remove')        
             
             if (trip_id){
                 const current_version = await TripDatabase.getTripMediaVersion(trip_id)

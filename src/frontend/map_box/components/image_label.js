@@ -63,12 +63,15 @@ const ImageLabel = ({ trip_id,zoomLevel,ready }) => {
     const initArray = async () => {
       try{
         const respond = await TripContentHandler.requestTripMediasHandler(trip_id)
-        const albumArray =[...respond.map((item)=>{
+        let albumArray =[...respond.map((item)=>{
             return{uri:item.media_path,...item}
           })]
+        albumArray = albumArray.filter((asset)=>{
+          asset.event != 'remove'
+        })
         CurrentDisplayTripMediaObserver.setDefaultArray(trip_id,albumArray)      // TripAlbumSubject.initAlbumArray(albumArray)
                 // get thumbnail
-
+        
         const finailizeArray = await Promise.all(
           albumArray.map(async(asset)=>{
             if(asset.media_type!=='video') return {...asset}
@@ -98,6 +101,9 @@ const ImageLabel = ({ trip_id,zoomLevel,ready }) => {
             return {...asset,thumb_nail:thumbnail}
           })
         )
+        finailizeArray = finailizeArray.filter((asset)=>{
+          asset.event != 'remove'
+        })
         setCurrentAssetsArray([...finailizeArray])
         setMapKey(prev => prev + 1) 
         console.log(mapKey)
