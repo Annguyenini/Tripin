@@ -82,12 +82,12 @@ class TripContentSyncManager{
         
         if (!local_trip_media_assets) {
             // make a fucntion that save image of trip to local
-
+            const freshSave = await this._freshSaveMediasHandler(trip_id)
+            if (!freshSave) return
         }
-        // define as items that server carry but local not \
-
+        // define at items marked as remove in local but not in server
         const delete_array = server_metadata.filter( server_media =>
-            ! local_trip_media_assets.find(local => local.event === server_media.media_id)
+            local_trip_media_assets.find(local => local.media_id === server_media.media_id && local.event =='remove' && server_media.event =='add')
         )
         //define as items that local carry but server not 
         const upload_array = local_trip_media_assets.filter(local=>
