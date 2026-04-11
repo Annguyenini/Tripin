@@ -1,89 +1,95 @@
-import  MapboxGL from '@rnmapbox/maps'
+import MapboxGL from '@rnmapbox/maps'
 import { useEffect, useMemo, useRef, useState } from 'react';
 import TripDataStorage from '../../../backend/trip_coordinates/current_trip_coordinate_service'
 import CurrentDisplayCoordinateObserver from '../functions/current_display_coordinates_observer';
 import { computeCluster } from '../../../backend/addition_functions/compute_cluster';
 import eventBus from '../../../backend/services/UI_event_bus';
 import TripContentHandler from '../../../app-core/flow/trip_contents_handler';
-const CoordinatesPointsLayout =({trip_id,ready})=> {
-  const [assestsObjectsArray,setAssestsObjectsArray]= useState([])
-  const [radiusForGrouping,setRadiusForGrouping]=useState(0)
+const CoordinatesPointsLayout = ({ trip_id, ready }) => {
+  const [assestsObjectsArray, setAssestsObjectsArray] = useState([])
+  const [radiusForGrouping, setRadiusForGrouping] = useState(0)
   const previousClusterKey = useRef('empty')
   // const [coordinatesObject,setCoordinatesObject]=useState({})
-  useEffect (()=>{
+  useEffect(() => {
     let _cancelled = false
-    const setUpWatchList =async()=>{
+    const setUpWatchList = async () => {
       const newCoords = await TripContentHandler.getTripCoordinatesHandler(trip_id)
-      if(_cancelled)return
-      
-      CurrentDisplayCoordinateObserver.setDefaultCoordsArray(trip_id,newCoords)
 
-      setAssestsObjectsArray(newCoords? [...newCoords]:[])
+      if (_cancelled) return
+      console.log('ready1', newCoords)
+
+      CurrentDisplayCoordinateObserver.setDefaultCoordsArray(trip_id, newCoords)
+      console.log('ready2')
+
+      setAssestsObjectsArray(newCoords ? [...newCoords] : [])
+      console.log('ready')
       ready()
 
     }
-    const updateWatchList ={
-      update(newCoords){
-        console.log('update new coords',newCoords)
-        setAssestsObjectsArray(newCoords? [...newCoords]:[])
+    const updateWatchList = {
+      update(newCoords) {
+        console.log('update new coords', newCoords)
+        setAssestsObjectsArray(newCoords ? [...newCoords] : [])
       }
     }
-    const radiusListener=(val)=>{
+    const radiusListener = (val) => {
       setRadiusForGrouping(val)
     }
-    eventBus.on('RadiusChange',radiusListener)
-    CurrentDisplayCoordinateObserver.attach(updateWatchList,CurrentDisplayCoordinateObserver.GENERATE_KEY(trip_id))
+    eventBus.on('RadiusChange', radiusListener)
+    CurrentDisplayCoordinateObserver.attach(updateWatchList, CurrentDisplayCoordinateObserver.GENERATE_KEY(trip_id))
     setUpWatchList()
-    return()=>{
-      _cancelled  = true
-      CurrentDisplayCoordinateObserver.detach(updateWatchList,CurrentDisplayCoordinateObserver.GENERATE_KEY(trip_id))
-      eventBus.off('RadiusChange',radiusListener)
+    return () => {
+      _cancelled = true
+      CurrentDisplayCoordinateObserver.detach(updateWatchList, CurrentDisplayCoordinateObserver.GENERATE_KEY(trip_id))
+      eventBus.off('RadiusChange', radiusListener)
 
     }
 
-  },[trip_id])
-  
+  }, [trip_id])
 
-  const coordinatesMap = useMemo(()=>{
+
+  const coordinatesMap = useMemo(() => {
     return new Map([
-      [0,[...assestsObjectsArray.map((obj)=>{
-      return[obj.longitude,obj.latitude]})] ],
-      [20, [...computeCluster(assestsObjectsArray,20,true).map((obj)=>{
-      return [obj.center.lng,obj.center.lat]
+      [0, [...assestsObjectsArray.map((obj) => {
+        return [obj.longitude, obj.latitude]
       })]],
-      [40, [...computeCluster(assestsObjectsArray,40,true).map((obj)=>{
-      return [obj.center.lng,obj.center.lat]
+      [20, [...computeCluster(assestsObjectsArray, 20, true).map((obj) => {
+        return [obj.center.lng, obj.center.lat]
       })]],
-      [60, [...computeCluster(assestsObjectsArray,60,true).map((obj)=>{
-      return [obj.center.lng,obj.center.lat]
+      [40, [...computeCluster(assestsObjectsArray, 40, true).map((obj) => {
+        return [obj.center.lng, obj.center.lat]
       })]],
-      [80, [...computeCluster(assestsObjectsArray,80,true).map((obj)=>{
-      return [obj.center.lng,obj.center.lat]
+      [60, [...computeCluster(assestsObjectsArray, 60, true).map((obj) => {
+        return [obj.center.lng, obj.center.lat]
       })]],
-      [100, [...computeCluster(assestsObjectsArray,100,true).map((obj)=>{
-      return [obj.center.lng,obj.center.lat]
+      [80, [...computeCluster(assestsObjectsArray, 80, true).map((obj) => {
+        return [obj.center.lng, obj.center.lat]
+      })]],
+      [100, [...computeCluster(assestsObjectsArray, 100, true).map((obj) => {
+        return [obj.center.lng, obj.center.lat]
       })]]
     ])
-  },[assestsObjectsArray])    
+  }, [assestsObjectsArray])
 
-  const currentCluster = useMemo(()=>{
+  const currentCluster = useMemo(() => {
     return (coordinatesMap.get(radiusForGrouping))
-  },[coordinatesMap,radiusForGrouping])
-  
-  
+  }, [coordinatesMap, radiusForGrouping])
+
+
   const clusterKey = useMemo(() => {
     if (!currentCluster || currentCluster.length === 0) {
       return previousClusterKey.current
     }
-    const key = `${currentCluster.length}-${currentCluster[0]}-${currentCluster[currentCluster.length-1]}`
+    const key = `${currentCluster.length}-${currentCluster[0]}-${currentCluster[currentCluster.length - 1]}`
     previousClusterKey.current = key
     return key
   }, [currentCluster])
-  
-if (!currentCluster || currentCluster.length === 0) {
-  return null}
-  const geoJson ={
-        type: 'FeatureCollection',
+
+  if (!currentCluster || currentCluster.length === 0) {
+    return null
+  }
+  const geoJson = {
+    type: 'FeatureCollection',
     features: [
       // POINTS
       ...currentCluster.map((coors) => ({
@@ -106,28 +112,28 @@ if (!currentCluster || currentCluster.length === 0) {
 
     ],
   };
-    return(
-        <MapboxGL.ShapeSource id ='route' key = {clusterKey} shape={geoJson}>
-          
-          <MapboxGL.LineLayer
-            id="line-layer"
-            style={{
-              lineWidth: 2,
-              lineColor: '#1a1a1a',
-              lineDasharray: [2, 2],
-            }}
-          />
+  return (
+    <MapboxGL.ShapeSource id='route' key={clusterKey} shape={geoJson}>
 
-          <MapboxGL.CircleLayer
-            id="points-layer"
-            style={{
-              circleRadius: 8,
-              circleColor: '#1a1a1a',
-              circleStrokeWidth: 2,
-              circleStrokeColor: '#f0f0ec',
-            }}
-/>
-        </MapboxGL.ShapeSource>
-    )
+      <MapboxGL.LineLayer
+        id="line-layer"
+        style={{
+          lineWidth: 2,
+          lineColor: '#1a1a1a',
+          lineDasharray: [2, 2],
+        }}
+      />
+
+      <MapboxGL.CircleLayer
+        id="points-layer"
+        style={{
+          circleRadius: 8,
+          circleColor: '#1a1a1a',
+          circleStrokeWidth: 2,
+          circleStrokeColor: '#f0f0ec',
+        }}
+      />
+    </MapboxGL.ShapeSource>
+  )
 }
 export default CoordinatesPointsLayout

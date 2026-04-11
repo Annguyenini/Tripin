@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { Image } from 'expo-image'
-import { View, TouchableOpacity, Text, Button, TextInput, Alert, StyleSheet, Dimensions } from 'react-native';
+import { View, TouchableOpacity, Text, Button, TextInput, Alert, StyleSheet, Dimensions, Modal } from 'react-native';
 import { mainScreenStyle, footer } from '../styles/main_screen_styles.js'
 import { navigate } from './custom_function/navigationService.js';
 import { LocationPermission } from './functions/location_permision.js';
@@ -21,11 +21,14 @@ import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system/legacy';
 import { BannerManager } from './overlay/banner_manager.js';
 import { CameraApp } from './camera/camera_main.js';
+import { TripsList } from './trips_list.js';
 export const MainScreen = () => {
   // user profile state from local storage
   const [user_id, setUserId] = useState(UserDataService.getUserId())
   const [user_name, setUsername] = useState(UserDataService.getUserName())
   const [display_name, setDisplayName] = useState(UserDataService.getDisplayName())
+  const [cameraVisible, setCameraVisible] = useState(false)
+  const [tripsListVisible, setTripsListVisible] = useState(false)
 
   // controls whether map renders — waits for trip data to be ready
   const [tripDataSuccess, setTripDataSuccess] = useState(false)
@@ -91,7 +94,7 @@ export const MainScreen = () => {
   const callAlbum = () => navigate('Album')
 
 
-  
+
   // memoized to prevent map re-mounting on unrelated state changes
   const RenderMap = useCallback(() => {
     return <MapBoxLayout />
@@ -99,9 +102,21 @@ export const MainScreen = () => {
 
   return (
     <View style={styles.container}>
+      {
+        cameraVisible &&
+        <Modal>
+          <CameraApp onClose={() => setCameraVisible(false)} ></CameraApp>
+        </Modal>
+      }
+      {
+        tripsListVisible &&
+        <Modal>
+          <TripsList onClose={() => setTripsListVisible(false)}></TripsList>
+        </Modal>
+      }
       {/* <CameraApp></CameraApp> */}
       {/* floating location permission banner */}
-      <BannerManager/>
+      <BannerManager />
       {/* show map once trip data is ready, otherwise show loading */}
       {tripDataSuccess && RenderMap()}
       {!tripDataSuccess && <LoadingScreen />}
@@ -119,7 +134,10 @@ export const MainScreen = () => {
           <TouchableOpacity style={footer.fotterbutton}>
             <Ionicons name="home-outline" size={24} color="#00000" />
           </TouchableOpacity>
-          <TouchableOpacity style={footer.fotterbutton} onPress={callCamera}>
+          <TouchableOpacity style={footer.fotterbutton} onPress={() => setTripsListVisible(true)}>
+            <Ionicons name="map-outline" size={24} color="#00000" />
+          </TouchableOpacity>
+          <TouchableOpacity style={footer.fotterbutton} onPress={() => setCameraVisible(true)}>
             <Ionicons name="camera-outline" size={24} color="#00000" />
           </TouchableOpacity>
           <TouchableOpacity style={footer.fotterbutton} onPress={callAlbum}>

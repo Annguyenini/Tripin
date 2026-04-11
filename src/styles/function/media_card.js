@@ -96,7 +96,7 @@ export const mediaCardStyle = StyleSheet.create({
     shadowRadius: 0,
     elevation: 3,
   },
-   deleteButton: {
+  deleteButton: {
     position: 'absolute',
     top: 120,
     right: 10,
@@ -222,13 +222,53 @@ export const mediaCardStyle = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
   },
-playButton:{
-  fontSize: 25,
+  playButton: {
+    fontSize: 25,
     color: '#f0f0ec',
-},
+  },
   overlayImage: {
     width: 100,
     height: 100,
     tintColor: '#f0f0ec',
   },
+})
+export const deleteCardStyle = StyleSheet.create({
+
+  iconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#111',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#111',
+    marginBottom: 20,
+  },
+  buttons: {
+    flexDirection: 'row',
+    gap: 10,
+    width: '100%',
+  },
+  cancelBtn: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 0.5,
+    borderColor: '#111',
+    alignItems: 'center',
+  },
+  cancelText: { fontSize: 13, color: '#111' },
+  confirmBtn: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#111',
+    alignItems: 'center',
+  },
+  confirmText: { fontSize: 13, color: '#fff' },
 })

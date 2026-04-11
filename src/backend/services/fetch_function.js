@@ -5,18 +5,18 @@ import TokenService from './token_service'
 const activeFetch = {}
 
 export default async function fetchFunction(url, options = {}, retry = true) {
-    const key = `${url}::${options?.headers?.['id']||''}`
-    console.log('key',key,options)
+    const key = `${url}::${options?.headers?.['id'] || ''}`
+    console.log('key', key, options)
     if (activeFetch[key]) {
         console.log('deduped request for', url)
         return activeFetch[url]  // return the same promise to both callers
     }
-    
-    activeFetch[url] =  _doFetch(url, options, retry).finally(() => {
+
+    activeFetch[url] = _doFetch(url, options, retry).finally(() => {
         delete activeFetch[url]
     })
 
-    console.log('fetch data',url)
+    console.log('fetch data', url)
 
     return activeFetch[url]
 }
@@ -24,9 +24,9 @@ export default async function fetchFunction(url, options = {}, retry = true) {
 async function _doFetch(url, options, retry) {
     try {
         const token = await TokenService.getToken('access_token')
-        
+
         const headers = { ...(options.headers || {}) }
-        if (!token)return { ok: false, code: 'no_token' } 
+        if (!token) return { ok: false, code: 'no_token' }
         headers['Authorization'] = `Bearer ${token}`
         const respond = await fetch(url, { ...options, headers })
 
@@ -34,20 +34,27 @@ async function _doFetch(url, options, retry) {
 
         const data = await respond.json()
 
-        if (respond.status === 401 && data.code === 'token_expired' && retry) {
-            await AuthService.requestNewAccessToken()
-            delete activeFetch[url]
-            return fetchFunction(url, options, false)
+        if (respond.status === 401) {
+            console.log('data', data.code)
+            if (data.code === 'token_expired' && retry) {
+                await AuthService.requestNewAccessToken()
+                delete activeFetch[url]
+                return fetchFunction(url, options, false)
+            }
+            else if (data.code === 'token_invalid') {
+                console.error('invalid')
+                // Add force signout 
+            }
         }
 
         NetworkObserver.setServerStatus(true)
-        return { ok: true, status: respond.status, data:data }
+        return { ok: true, status: respond.status, data: data }
 
     } catch (err) {
         console.error('Failed to fetch', err)
         if (err instanceof TypeError && err.message === 'Network request failed') {
             NetworkObserver.setServerStatus(false)
-            return { ok: false, code:'network_error'}
+            return { ok: false, code: 'network_error' }
         }
         return { ok: false }
     }

@@ -41,7 +41,7 @@ class TripDataBaseService {
     // Helpers
     // -------------------------
 
-   
+
 
     // -------------------------
     // Read
@@ -70,13 +70,13 @@ class TripDataBaseService {
         }
     }
 
-    async getCurrentTripData(){
-        try{
+    async getCurrentTripData() {
+        try {
             const DB = await SqliteService.connectDB()
             const current_trip_data = await DB.getFirstAsync(`SELECT * FROM trips WHERE active = 1`)
-            return current_trip_data||null
+            return current_trip_data || null
         }
-        catch(err){
+        catch (err) {
             return null
         }
     }
