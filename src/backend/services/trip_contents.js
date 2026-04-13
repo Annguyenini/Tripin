@@ -8,9 +8,10 @@ import fetchFunction from './fetch_function'
 class TripContentService {
 
     async send_coordinates(coor_object, version) {
+        console.log('after send', coor_object)
         const respond = await fetchFunction(API.SEND_COORDINATES + `/${CurrentTripDataService.getCurrentTripId()}/coordinates`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", 'id': version },
+            headers: { "Content-Type": "application/json", 'id': coor_object.coordinate_id },
             body: JSON.stringify({
                 coordinates: coor_object,
                 version: version
@@ -31,12 +32,12 @@ class TripContentService {
         return respond
     }
 
-    async requestTripCoordinates(trip_id, version) {
+    async requestTripCoordinates(trip_id, coordinateHash) {
         if (!trip_id) return
         const headers = {}
-        // if(version){
-        //     headers['Version'] =version
-        // }
+        if (coordinateHash) {
+            headers['If-None-Match'] = coordinateHash
+        }
         const respond = await fetchFunction(API.REQUEST_TRIP_COORDINATES + `/${trip_id}/coordinates`, {
             method: 'GET',
             headers: headers

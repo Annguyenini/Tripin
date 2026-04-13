@@ -12,8 +12,10 @@ import { UseOverlay } from "./overlay/overlay_main.js";
 import TripDisplayObserver from "./map_box/functions/trip_display_observer.js";
 import CurrentTripDataService from '../backend/storage/current_trip.js'
 import { TestScreen } from "../test_screen.js";
+import { TripStatCards } from "./map_box/functions/trip_stat.js";
 const default_user_image = require('../../assets/image/profile_icon.png')
 const default_image = require('../../assets/icon.png')
+import { UseOvelay } from "./overlay/overlay_main";
 
 export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }) => {
   const bottomSheetRef = useRef(null)
@@ -26,6 +28,7 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
   const [dataKey, setDataKey] = useState(0)
   const { showLoading, hideLoading, showErrorBox } = UseOverlay()
   const [isOnATrip, setIsOnATrip] = useState(false)
+
   useEffect(() => {
     const onAvatarUpdate = { update: (uri) => { setUserProfileImage(uri); setDataKey(k => k + 1) } }
     const onSnapPointReset = { update: () => { setSnapIndex(0); setDataKey(k => k + 1) } }
@@ -57,7 +60,11 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
 
   }, [])
 
-
+  const end_trip = async () => {
+    showLoading()
+    const status = await TripHandler.endTripHandler();
+    hideLoading()
+  }
   const handleCreateTrip = useCallback(async (trip_name, imageUri) => {
     showLoading()
     const res = await TripHandler.requestNewTripHandler(trip_name, imageUri ?? null)
@@ -121,34 +128,21 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
               <View style={s.titleBlock}>
 
                 <Text style={s.tripName}>{tripName}</Text>
+
                 <View style={s.statusRow}>
                   <View style={s.statusDot} />
                   <Text style={s.statusText}>Day 3 of 6 · Heading south</Text>
                 </View>
               </View>
-              <TouchableOpacity style={s.upBtn} activeOpacity={0.8}>
-                <Text style={s.upBtnText}>↑</Text>
-              </TouchableOpacity>
+              <View style={s.endTripCover}>
+                <TouchableOpacity onPress={end_trip} style={s.upBtn} activeOpacity={0.8}>
+                  <Text style={s.upBtnText}>End trip</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* ── stat cards ── */}
-            <View style={s.statsRow}>
-              <View style={[s.statCard, { backgroundColor: '#fef3e2', borderColor: '#f5d8a8' }]}>
-                <Text style={s.statEmoji}>🛣️</Text>
-                <Text style={[s.statLabel, { color: '#b86a10' }]}>Travel</Text>
-                <Text style={s.statValue}>482Km</Text>
-              </View>
-              <View style={[s.statCard, { backgroundColor: '#e8f4fd', borderColor: '#b8d8f0' }]}>
-                <Text style={s.statEmoji}>📸</Text>
-                <Text style={[s.statLabel, { color: '#2a6aaa' }]}>Shots taken</Text>
-                <Text style={s.statValue}>128</Text>
-              </View>
-              <View style={[s.statCard, { backgroundColor: '#fde8ef', borderColor: '#f0b8cc' }]}>
-                <Text style={s.statEmoji}>🌅</Text>
-                <Text style={[s.statLabel, { color: '#a83058' }]}>Days left</Text>
-                <Text style={[s.statValue, { color: '#e07a3a' }]}>4</Text>
-              </View>
-            </View>
+            <TripStatCards></TripStatCards>
 
             {/* ── memories divider ── */}
             <View style={s.dividerRow}>
@@ -228,8 +222,25 @@ const s = StyleSheet.create({
   statusDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#4caf50' },
   statusText: { fontSize: 12, color: '#a08060', fontFamily: 'DMMono', fontStyle: 'italic' },
   upBtn: {
-    width: 36, height: 36, borderRadius: 18,
-    backgroundColor: '#e07a3a', alignItems: 'center', justifyContent: 'center',
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#f0f0ec',
+    fontFamily: 'DMMono',
+    letterSpacing: 0.08,
+  },
+  endTripCover: {
+    backgroundColor: '#c03030',
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    alignItems: 'center',
+    marginVertical: 4,
+    minWidth: 70,
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 0,
+    elevation: 3,
   },
   upBtnText: { color: '#fff', fontSize: 16 },
 

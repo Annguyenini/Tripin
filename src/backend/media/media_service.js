@@ -60,7 +60,7 @@ class MediaService {
 
                 TripContentHandler.uploadTripMediaHandler(media_id, trip_id, media_uri, longitude, latitude, coordinate_id, type, time_stamp)
                 // generate a location object
-                const coordinate_object = CurrentTripCoordinateService.generateCoordinatePayload(location_data, coordinate_id)
+                const coordinate_object = CurrentTripCoordinateService.generateCoordinatePayload(location_data, coordinate_id, time_stamp)
                 // add the coordinate obejct to service
                 CurrentTripCoordinateService.push(coordinate_object)
                 // display to map

@@ -106,6 +106,7 @@ export default function MediaViewCard({ title, uri, type, visible, onClose, Asse
       current_media.media_id,
       current_media.media_path,)
     if (current_media.coordinate_id) {
+      console.log(current_media)
       await TripContentHandler.deleteCoordinateHandler(current_media.trip_id, current_media.coordinate_id)
     }
   }

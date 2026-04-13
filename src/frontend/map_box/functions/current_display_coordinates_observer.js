@@ -25,28 +25,35 @@ class CurrentDisplayCoordinateObserver extends (LocalStorage) {
         return this.CoordsArray[trip_id]
     }
     addCoorddinateToArray(trip_id, coords_object) {
-        console.log('before', this.CoordsArray[trip_id])
-        if (!this.CoordsArray[trip_id]) {
-            this.CoordsArray[trip_id] = []
+        try {
+            console.log('before', this.CoordsArray[trip_id])
+            if (!this.CoordsArray[trip_id]) {
+                this.CoordsArray[trip_id] = []
+            }
+            const new_object = {
+                altitude: coords_object.altitude,
+                latitude: coords_object.latitude,
+                longitude: coords_object.longitude,
+                heading: coords_object.heading,
+                speed: coords_object.speed,
+                time_stamp: coords_object.time_stamp,
+                coordinate_id: coords_object.coordinate_id
+            }
+            this.CoordsArray[trip_id].push(new_object)
+            console.log('after', this.CoordsArray[trip_id])
+            this.notify(this.GENERATE_KEY(trip_id), this.CoordsArray[trip_id])
         }
-        const new_object = {
-            altitude: coords_object.coordinates.altitude,
-            latitude: coords_object.coordinates.latitude,
-            longitude: coords_object.coordinates.longitude,
-            heading: coords_object.coordinates.heading,
-            speed: coords_object.coordinates.speed,
-            time_stamp: coords_object.time_stamp
+        catch (error) {
+            console.error(error)
         }
-        this.CoordsArray[trip_id].push(new_object)
-        console.log('after', this.CoordsArray[trip_id])
-        this.notify(this.GENERATE_KEY(trip_id), this.CoordsArray[trip_id])
     }
     deleteCoordinateFromArray(trip_id, coordinate_id) {
 
         try {
-            this.CoordsArray[trip_id] = this.CoordsArray[trip_id].filter((media) => {
-                return media.coordinate_id != coordinate_id
-            })
+            this.CoordsArray[trip_id] = this.CoordsArray[trip_id].filter((media) =>
+                media.coordinate_id !== coordinate_id)
+            console.log(this.CoordsArray[trip_id])
+            this.notify(this.GENERATE_KEY(trip_id), this.CoordsArray[trip_id])
         }
         catch (error) {
             throw new Error('Failed to delete coordinate from watcher!')

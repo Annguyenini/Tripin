@@ -21,14 +21,7 @@ class TripContentHandler {
     async sendCoordinatesHandler(coors_object, version = null) {
         const respond = await TripContents.send_coordinates(coors_object, version)
         ///
-        if (respond.status === 409) {
-            // prevent duplicate sync
-            if (TripSync.coordinatesSyncing) {
-                TripSync.addIntoQueue('coordinate', version, coors_object)
-                return respond.ok
-            }
-            await TripSync.processTripCoordinatesSync(respond.data.missing_versions)
-        }
+
         return respond.ok
     }
 
@@ -56,14 +49,14 @@ class TripContentHandler {
     async getTripCoordinatesHandler(trip_id) {
         let coordinates = null
         let version = null
-
+        const coordinateHash = await safeRun(() => this.TripCoordinateDatabaseService.getTripCoordinateHash(trip_id))
         coordinates = await this.TripCoordinateDatabaseService.getAllCoordinatesFromTripId(trip_id)
         if (coordinates?.length) {
             version = await TripDatabaseService.getTripCoordinateVersion(trip_id)
         }
 
         const respond = await safeRun(
-            () => TripContents.requestTripCoordinates(trip_id, version),
+            () => TripContents.requestTripCoordinates(trip_id, coordinateHash),
             'fetch_coordinates_failed'
         )
         console.log(respond)
@@ -181,9 +174,9 @@ class TripContentHandler {
         await safeRun(() => this.TripCoordinateDatabaseService.deleteCoordinateFromTripId(trip_id, coordinate_id, modified_time))
         CurrentDisplayCoordinateObserver.deleteCoordinateFromArray(trip_id, coordinate_id)
         let respond = null
-        l
         if (trip_id) {
             respond = await TripContents.deleteCoordinate(trip_id, coordinate_id, modified_time)
+
         }
         return
     }

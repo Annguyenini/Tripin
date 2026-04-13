@@ -83,8 +83,8 @@ export const HelpBarMap = ({ isFollowingUser, setIsFollowingUser }) => {
         <View style={helpBarMapStyle.container}>
             {isOnATrip &&
                 <>
-                    <CurrentTripBar ></CurrentTripBar>
-                    <CurrentTripBox isMinimize={isTripBoxDisplay}></CurrentTripBox>
+                    {/* <CurrentTripBar ></CurrentTripBar> */}
+                    {/* <CurrentTripBox isMinimize={isTripBoxDisplay}></CurrentTripBox> */}
 
                 </>
             }

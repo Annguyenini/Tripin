@@ -13,8 +13,10 @@ const CoordinatesPointsLayout = ({ trip_id, ready }) => {
   useEffect(() => {
     let _cancelled = false
     const setUpWatchList = async () => {
-      const newCoords = await TripContentHandler.getTripCoordinatesHandler(trip_id)
+      let newCoords = await TripContentHandler.getTripCoordinatesHandler(trip_id)
+      newCoords = newCoords.filter((asset) => asset.event !== 'remove')
 
+      console.log(newCoords)
       if (_cancelled) return
       console.log('ready1', newCoords)
 
@@ -28,6 +30,8 @@ const CoordinatesPointsLayout = ({ trip_id, ready }) => {
     }
     const updateWatchList = {
       update(newCoords) {
+        newCoords = newCoords.filter((asset) => asset.event !== 'remove')
+
         console.log('update new coords', newCoords)
         setAssestsObjectsArray(newCoords ? [...newCoords] : [])
       }

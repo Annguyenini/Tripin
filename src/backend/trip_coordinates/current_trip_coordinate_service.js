@@ -23,6 +23,7 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase {
         return await this.create_trip(trip_id)
     }
     async insert_into_DB(temp_storage) {
+        console.log('save to database', temp_storage)
         const DB = await SqliteService.connectDB()
         const current_version = await TripDatabase.getTripCoordinateVersion(CurrentTripDataService.getCurrentTripId()) + 1
         await DB.withTransactionAsync(async () => {
@@ -30,16 +31,17 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase {
             for (const item of temp_storage) {
 
                 try {
-                    await DB.runAsync(`INSERT INTO trip_${CurrentTripDataService.getCurrentTripId()} (altitude, latitude, longitude,heading,speed,time_stamp,version,event,coordinate_id) VALUES (?,?,?,?,?,?,?,?,?)`,
-                        [item.coordinates.altitude,
-                        item.coordinates.latitude,
-                        item.coordinates.longitude,
-                        item.coordinates.heading,
-                        item.coordinates.speed,
+                    await DB.runAsync(`INSERT INTO trip_${CurrentTripDataService.getCurrentTripId()} (altitude, latitude, longitude,heading,speed,time_stamp,version,event,coordinate_id,modified_time) VALUES (?,?,?,?,?,?,?,?,?,?)`,
+                        [item.altitude,
+                        item.latitude,
+                        item.longitude,
+                        item.heading,
+                        item.speed,
                         item.time_stamp,
                             current_version,
-                        item.coordinates.event,
-                        item.coordinates.coordinate_id])
+                        item.event,
+                        item.coordinate_id,
+                        item.modified_time])
                 }
                 catch (err) {
                     console.error(err)
@@ -72,6 +74,7 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase {
         const temp_storage = [...this.storage]
         this.storage.length = 0
         if (temp_storage.length === 0) return
+        console.log('befor save')
         const version = await this.insert_into_DB(temp_storage)
 
         await TripDatabase.updateTripCorrdinateVersion(CurrentTripDataService.getCurrentTripId(), version)
@@ -85,18 +88,17 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase {
      * @param {*} trip_data_object - the object it self
      */
     async push(trip_data_object = null) {
-        console.log('push')
+        console.log('push', trip_data_object)
         if (trip_data_object === null) {
             const temp = await Location.getCurrentPositionAsync()
             const payload = {
                 time_stamp: Date.now(),
-                coordinates: {
-                    latitude: temp.coords.latitude,
-                    longitude: temp.coords.longitude,
-                    altitude: temp.coords.altitude,
-                    speed: temp.coords.speed,
-                    heading: temp.coords.heading,
-                },
+                latitude: temp.coords.latitude,
+                longitude: temp.coords.longitude,
+                altitude: temp.coords.altitude,
+                speed: temp.coords.speed,
+                heading: temp.coords.heading,
+
                 type: null
             };
             trip_data_object = payload
@@ -107,20 +109,18 @@ class CurrentTripCoordinateService extends TripCoordinateDatabase {
         this.storage.push(trip_data_object);
         CurrentDisplayCoordinateObserver.addCoorddinateToArray(CurrentTripDataService.getCurrentTripId(), trip_data_object)
         this.startTimer()
-        if (this.storage.length >= 2) {
-            //using an temp 
-            this.coordinatesStorageHandler()
-        }
+        this.coordinatesStorageHandler()
 
     }
-    generateCoordinatePayload(coordinate_payload, coordinate_id) {
+    generateCoordinatePayload(coordinate_payload, coordinate_id, time_stamp) {
         const payload = {
-            time_stamp: Date.now(),
-            coordinates: {
-                ...coordinate_payload,
-                event: 'add',
-                coordinate_id: coordinate_id,
-            },
+            time_stamp: time_stamp,
+
+            ...coordinate_payload,
+            event: 'add',
+            coordinate_id: coordinate_id,
+            modified_time: time_stamp,
+
             type: null
         };
         return payload

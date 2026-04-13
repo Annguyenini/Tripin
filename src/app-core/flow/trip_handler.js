@@ -5,13 +5,13 @@ import TripDataStorage from '../../backend/trip_coordinates/current_trip_coordin
 import CurrentTripDataService from '../../backend/storage/current_trip'
 import UserDataService from '../../backend/storage/user'
 import EtagService from '../../backend/services/etag/etag_service'
-import { ETAG_KEY ,GENERATE_TRIP_ETAG_KEY} from '../../backend/services/etag/etag_keys'
+import { ETAG_KEY, GENERATE_TRIP_ETAG_KEY } from '../../backend/services/etag/etag_keys'
 import TripDatabaseService from '../../backend/database/TripDatabaseService'
 import OfflineSyncManager from './sync/offline_sync_manager'
 import GPSLogic from '../../backend/gps_logic/gps_logic'
 import safeRun from '../helpers/safe_run'
 import trips from '../../backend/storage/trips'
-class TripHandler{
+class TripHandler {
     /**
      * 
      * @param {*} trip_name 
@@ -20,38 +20,38 @@ class TripHandler{
      * @returns boolean of sucess or no
      */
     // current depend on the server
-    async requestNewTripHandler(trip_name,imageUri =null){
-        try{
-            const respond = await Trip.requestNewTrip(trip_name,imageUri)
-            if(respond.status!==200)return respond
+    async requestNewTripHandler(trip_name, imageUri = null) {
+        try {
+            const respond = await Trip.requestNewTrip(trip_name, imageUri)
+            if (respond.status !== 200) return respond
             // if success fully send to server, process to store in the local 
-            
+
             // data from server
             const data = respond.data
             const trip_id = data.trip_id
-            
+
             const user_id = UserDataService.getUserId()
             // generate image path nad save     to local
-            
-            const trip_image_uri = await safeRun(()=>CurrentTripDataService.setCurrentTripImageCoverToLocal(imageUri,trip_id) , 'trip_image_save_failed')
+
+            const trip_image_uri = await safeRun(() => CurrentTripDataService.setCurrentTripImageCoverToLocal(imageUri, trip_id), 'trip_image_save_failed')
             // tripdata object
-            const trip_data = CurrentTripDataService.getObjectReady(user_id,trip_id,trip_name,trip_image_uri,true)
+            const trip_data = CurrentTripDataService.getObjectReady(user_id, trip_id, trip_name, trip_image_uri, true)
             // save tripdata
-            await safeRun(()=> CurrentTripDataService.saveCurrentTripDataToLocal(trip_data),'current_trip_save_failed')
+            await safeRun(() => CurrentTripDataService.saveCurrentTripDataToLocal(trip_data), 'current_trip_save_failed')
 
             // set current trip app state to true
             // await CurrentTripDataService.setTripStatusToLocal('true')
 
             //create db sqlite for coordinates
-            await safeRun (()=>TripDataStorage.init_new_trip(trip_id),'created_trip_coordinate_table_failed')
+            await safeRun(() => TripDataStorage.init_new_trip(trip_id), 'created_trip_coordinate_table_failed')
 
             // const trip_object = TripDatabaseService.getObjectReady(UserDataService.getUserId(),trip_id,trip_name,imageUri)
             // await safeRun (()=>TripDatabaseService.addTripToDatabase(trip_object),'add_trip_to_table_failed')
             GPSLogic.syncGPSTask()
             return respond
         }
-        catch(err){
-            console.error('Failed at request new trips',err)
+        catch (err) {
+            console.error('Failed at request new trips', err)
             return null
         }
     }
@@ -100,10 +100,10 @@ class TripHandler{
      * refresh all trips data, simply request again to server
      * @returns 
      */
-    async refreshAllTripsData(){
+    async refreshAllTripsData() {
         await EtagService.deleteEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST)
         return await this.requestAllTripHandler()
-    } 
+    }
 
     /**
      * request current trip handler, fetch trip_id, current trip_data then save it to local
@@ -114,9 +114,9 @@ class TripHandler{
             () => Trip.requestCurrentTripId(),
             'fetch_current_trip_id_failed'
         )
-        if(!respond.ok || respond.status !==200){
+        if (!respond.ok || respond.status !== 200) {
             await safeRun(() => CurrentTripDataService.loadCurrentTripDataFromLocal(UserDataService.getUserId(), trip_id),
-                    'load_local_trip_failed')
+                'load_local_trip_failed')
         }
         const data = respond.data
         const trip_id = data.current_trip_id
@@ -125,7 +125,7 @@ class TripHandler{
             const current_trip_respond = await safeRun(
                 () => Trip.requestTripData(trip_id),
                 'fetch_trip_data_failed'
-            ) 
+            )
 
             const status = current_trip_respond.status
 
@@ -156,8 +156,7 @@ class TripHandler{
                 }
 
                 const trip_data_object = CurrentTripDataService.getObjectReady(
-                    trip_data.trip_name, trip_data.trip_id,
-                    trip_data.created_time, trip_image_uri
+                    UserDataService.getUserId(), trip_data.trip_id, trip_data.trip_name, trip_image_uri, 'true'
                 )
 
                 await safeRun(
@@ -173,89 +172,90 @@ class TripHandler{
         }
 
         return true
-    } 
+    }
     /**
      * 
      * @param {*} trip_id 
      * request trip data base on trip_id
      * @returns 
      */
-    async requestTripDataHandler(trip_id){
+    async requestTripDataHandler(trip_id) {
         // return the process status not the data status meaning if the data is none, it will also return true
         const user_id = UserDataService.getUserId()
         const respond = await Trip.requestTripData(trip_id)
-        if(!respond.ok || respond.status ===304) {
-            return await TripDataService.getTripDataFromLocal(user_id,trip_id)
+        if (!respond.ok || respond.status === 304) {
+            return await TripDataService.getTripDataFromLocal(user_id, trip_id)
         }
-        if(respond.status!==200) return null
+        if (respond.status !== 200) return null
         const data = respond.data
         const trip_data = data.trip_data
         const etag = data.etag
-        if (await TripDataService.saveTripDataToLocal(user_id,trip_id,trip_data)){
+        if (await TripDataService.saveTripDataToLocal(user_id, trip_id, trip_data)) {
             const etag_key = GENERATE_TRIP_ETAG_KEY(trip_id)
-            await EtagService.saveEtagToLocal(etag_key,etag)
+            await EtagService.saveEtagToLocal(etag_key, etag)
         }
         return trip_data
     }
 
-    async modifyTripDataHandler(trip_id,trip_name=null,image_uri=null){
-        const respond = await Trip.requestTripDataChange(trip_id,trip_name,image_uri)
-        if(respond.status!==200){
-            console.error('failed to save change in server',respond)
-            return {'status':false,'message':respond.message}}
+    async modifyTripDataHandler(trip_id, trip_name = null, image_uri = null) {
+        const respond = await Trip.requestTripDataChange(trip_id, trip_name, image_uri)
+        if (respond.status !== 200) {
+            console.error('failed to save change in server', respond)
+            return { 'status': false, 'message': respond.message }
+        }
         // modify trip_name and image 
-        const trip_image_uri = await safeRun(()=>CurrentTripDataService.setCurrentTripImageCoverToLocal(image_uri,trip_id) , 'trip_image_save_failed')
-        
+        const trip_image_uri = await safeRun(() => CurrentTripDataService.setCurrentTripImageCoverToLocal(image_uri, trip_id), 'trip_image_save_failed')
+
         // save to
-        if(trip_name && !await safeRun(()=>TripDataService.updateTripName(trip_name,trip_id))){
+        if (trip_name && !await safeRun(() => TripDataService.updateTripName(trip_name, trip_id))) {
             console.error('Failed to save to local storage')
-            return {'status':false,'message':'Failed to save to local storage'}
+            return { 'status': false, 'message': 'Failed to save to local storage' }
         }
 
-        if(image_uri &&!await safeRun(()=>TripDataService.updateTripImage(image_uri,trip_id))){
+        if (image_uri && !await safeRun(() => TripDataService.updateTripImage(image_uri, trip_id))) {
             console.error('Failed to save to local storage')
-            return {'status':false,'message':'Failed to save to local storage'}
+            return { 'status': false, 'message': 'Failed to save to local storage' }
         }
-        return {'status':true,'message':'Success!'}
+        return { 'status': true, 'message': 'Success!' }
 
     }
 
-    async requestSharedTripLink(trip_id){
+    async requestSharedTripLink(trip_id) {
         const res = await Trip.requestSharedTripLink(trip_id)
-        if(res.status!==200)return {'status':false,'message':res.message}
-        return {'status':true,'message':res.data.message,'url':res.data.url}
+        if (res.status !== 200) return { 'status': false, 'message': res.message }
+        return { 'status': true, 'message': res.data.message, 'url': res.data.url }
     }
     /**
      * handle end trip
      * @returns 
      */
     // currently depend on server
-    async endTripHandler(){
-        try{
-            const trip_id =CurrentTripDataService.getCurrentTripId()
+    async endTripHandler() {
+        try {
+            const trip_id = CurrentTripDataService.getCurrentTripId()
 
             const respond = await Trip.end_trip()
-            if(!respond.ok || respond.status!==200){
+            if (!respond.ok || respond.status !== 200) {
                 OfflineSyncManager.pushEventToQueue(
                     OfflineSyncManager.getSyncObjectReady(
                         OfflineSyncManager.EVENTS.END_TRIP,
                         {
-                            trip_id:trip_id
+                            trip_id: trip_id
                         },
                         Date.now()
                     ))
             }
 
-            await safeRun(()=>CurrentTripDataService.endCurrentTrip(),'failed_at_reset_current_trip_data')
-            await safeRun(()=>trips.setTripEnd(Date.now(),trip_id),'failed_at_update_end_time')
+            await safeRun(() => CurrentTripDataService.endCurrentTrip(), 'failed_at_reset_current_trip_data')
+            await safeRun(() => trips.setTripEnd(Date.now(), trip_id), 'failed_at_update_end_time')
             GPSLogic.endGPSLogic()
             return true
         }
-        catch(err){
-            console.error('Failed to end trip',err)
+        catch (err) {
+            console.error('Failed to end trip', err)
             return false
         }
-    }   
-    
+    }
+
 }
 export default new TripHandler()

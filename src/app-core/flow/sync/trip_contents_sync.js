@@ -38,7 +38,10 @@ class TripSync {
 
             switch (item.itemType) {
                 case 'coordinate':
-                    await TripContentsService.send_coordinates(item.data, item.version)
+                    await TripContentsService.send_coordinates([item.data], item.version)
+                    break;
+                case 'delete_coordinate':
+                    await TripContentsService.deleteCoordinate(item.data.trip_id, item.data.coordinate_id, item.data.modified_time)
                     break;
                 case 'media':
                     await TripContentsService.sendTripMedia(item.data.media_id, CurrentTripDataService.getCurrentTripId(), item.data.media_path, item.data.longitude, item.data.latitude, item.data.media_type, item.data.coordinate_id, item.data.time_stamp)
@@ -64,17 +67,27 @@ class TripSync {
         const local_coordinate = await safeRun(() => this.TripCoordinateDatabase.getAllCoordinatesFromTripId(trip_id))
         console.log('arrayserver_coordinate', server_coordinate, local_coordinate)
 
-        const delete_array = server_coordinate.filter((server) => {
-            return local_coordinate.find((local) => local.coordinate_id === server.coordinate_id && local.event === 'remove' && server.event !== 'remove')
-        })
-        const upload_array = local_coordinate.filter((local) => {
-            return !server_coordinate.find((server) => server.coordinate_id === local.coordinate_id)
-        })
-        const download_array = server_coordinate.filter((server) => {
-            return !local_coordinate.find((local) => local.coordinate_id === server.coordinate_id)
-        })
+        const delete_array = server_coordinate?.filter((server) => {
+            return local_coordinate?.find((local) => local.coordinate_id === server.coordinate_id && local.event === 'remove' && server.event !== 'remove')
+        }) || []
+        const upload_array = local_coordinate?.filter((local) => {
+            return !server_coordinate?.find((server) => server.coordinate_id === local.coordinate_id)
+        }) || []
+        const download_array = server_coordinate?.filter((server) => {
+            return !local_coordinate?.find((local) => local.coordinate_id === server.coordinate_id)
+        }) || []
+        console.log('array', server_coordinate, local_coordinate, delete_array, upload_array, download_array)
         this.coordinatesSyncing = true
         if (download_array) await this._processDownloadCoordinate(download_array, trip_id)
+
+        if (delete_array) delete_array.forEach(element => {
+            this.addIntoQueue('delete_coordinate', null, element)
+        });
+        if (upload_array) upload_array.forEach(element => {
+            this.addIntoQueue('coordinate', null, element)
+        });
+        await safeRun(() => this.process(), 'failed_at_process_sync_trip_coordinate')
+        console.log('after process')
     }
     async _processDownloadCoordinate(localArray, trip_id) {
         await safeRun(() => this.TripCoordinateDatabase.handlerCoordinateFromServer(localArray, trip_id))
