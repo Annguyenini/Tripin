@@ -1,5 +1,6 @@
 import MapboxGL from '@rnmapbox/maps'
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import { Modal } from 'react-native';
 import { View, TouchableOpacity, Text } from 'react-native'
 import { Image } from 'expo-image'
 // import TripAlbumSubject from '../../../backend/trip_album/trip_album_subject';
@@ -57,6 +58,7 @@ const ImageLabel = ({ trip_id, zoomLevel, ready }) => {
   const [currentAsset, setCurrentAsset] = useState(null)
   const [currentDisplayCluster, setCurrentDisplayCluster] = useState([])
   const [displayImage, setDisplayImage] = useState(null)
+  const [isDisplayAllMedia, setIsDisplayAllMedia] = useState(false)
   // const clusters = new Map()
 
   useEffect(() => {
@@ -117,8 +119,14 @@ const ImageLabel = ({ trip_id, zoomLevel, ready }) => {
 
   const clusters = useMemo(() => {
     return new Map([
-      [7, computeCluster(currentAssetsArray, 2500)],
-      [8, computeCluster(currentAssetsArray, 2000)],
+      [1, computeCluster(currentAssetsArray, 80000)],
+      [2, computeCluster(currentAssetsArray, 70000)],
+      [3, computeCluster(currentAssetsArray, 60000)],
+      [4, computeCluster(currentAssetsArray, 50000)],
+      [5, computeCluster(currentAssetsArray, 40000)],
+      [6, computeCluster(currentAssetsArray, 30000)],
+      [7, computeCluster(currentAssetsArray, 8000)],
+      [8, computeCluster(currentAssetsArray, 3000)],
       [9, computeCluster(currentAssetsArray, 1500)],
       [10, computeCluster(currentAssetsArray, 700)],
       [11, computeCluster(currentAssetsArray, 400)],
@@ -135,7 +143,6 @@ const ImageLabel = ({ trip_id, zoomLevel, ready }) => {
   const currentCluster = useMemo(() => {
     return (clusters.get(zoomLevel) ?? [])
   }, [zoomLevel, clusters])
-
   if (!currentAssetsArray || currentAssetsArray.length < 1) return null
 
   const labelDisplayHandler = (media, cluster_id) => {
@@ -148,7 +155,13 @@ const ImageLabel = ({ trip_id, zoomLevel, ready }) => {
   return (
     <View key={mapKey}>
       <RenderImageLable clusters={currentCluster} mapKey={mapKey} onClick={labelDisplayHandler}></RenderImageLable>
-      {visible && <MediaViewCard title={'test'} uri={currentAsset.library_media_path ? currentAsset.library_media_path : currentAsset.media_path} type={currentAsset.media_type} visible={visible} onClose={() => setVisible(false)} AssetArray={currentDisplayCluster} isBottomList={true} />}
+      {visible && <MediaViewCard title={'test'} uri={currentAsset.library_media_path ? currentAsset.library_media_path : currentAsset.media_path} type={currentAsset.media_type} visible={visible} onClose={() => setVisible(false)} AssetArray={isDisplayAllMedia ? currentAssetsArray : currentDisplayCluster} isBottomList={true}
+        propButton={
+          < TouchableOpacity style={imageLabelStyle.clusterMode} onPress={() => setIsDisplayAllMedia((prev) => !prev)}>
+            <Text style={{ color: 'white' }} > {isDisplayAllMedia ? 'All Medias' : 'Save point'} </Text>
+          </TouchableOpacity>}
+      />}
+
     </View>
   )
 }

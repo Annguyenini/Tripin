@@ -23,7 +23,7 @@ class TripDataBaseService {
                     trip_name           TEXT    NOT NULL,
                     image               TEXT    DEFAULT NULL,
                     created_time        TEXT    NOT NULL,
-                    end_time            TEXT    DEFAULT NULL,
+                    ended_time            TEXT    DEFAULT NULL,
                     information_version INTEGER DEFAULT 0,
                     coordinate_version  INTEGER DEFAULT 0,
                     media_version       INTEGER DEFAULT 0,
@@ -130,8 +130,8 @@ class TripDataBaseService {
             const DB = await SqliteService.connectDB()
             await DB.runAsync(
                 `INSERT OR IGNORE INTO trips
-                    (user_id, trip_id, trip_name, image, created_time, active)
-                 VALUES (?, ?, ?, ?, ?, ?)`,
+                    (user_id, trip_id, trip_name, image, created_time, active,ended_time)
+                 VALUES (?, ?, ?, ?, ?, ?,?)`,
                 [
                     data_object.user_id,
                     data_object.trip_id,
@@ -139,6 +139,7 @@ class TripDataBaseService {
                     data_object.image,
                     data_object.created_time,
                     data_object.active,
+                    data_object.ended_time
                 ]
             )
             return true

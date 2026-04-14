@@ -14,8 +14,9 @@ const videoPauseIcon = require('../../../assets/image/video_pause_icon.png')
 import { MaterialIcons } from '@expo/vector-icons';
 import TripContentHandler from "../../app-core/flow/trip_contents_handler"
 import { OverlayCard } from "../custom_function/overlay_card"
+import safeRun from "../../app-core/helpers/safe_run"
 
-export default function MediaViewCard({ title, uri, type, visible, onClose, AssetArray, isBottomList }) {
+export default function MediaViewCard({ title, uri, type, visible, onClose, AssetArray, isBottomList, propButton }) {
   if (!AssetArray || AssetArray.length <= 0) return null
   // const modifiedAssetArray =[... AssetArray.map(async(item)=>{
   //   if(item.media_type ==='video' || item.mediaType==='video'){
@@ -107,7 +108,7 @@ export default function MediaViewCard({ title, uri, type, visible, onClose, Asse
       current_media.media_path,)
     if (current_media.coordinate_id) {
       console.log(current_media)
-      await TripContentHandler.deleteCoordinateHandler(current_media.trip_id, current_media.coordinate_id)
+      await safeRun(() => TripContentHandler.deleteCoordinateHandler(current_media.trip_id, current_media.coordinate_id))
     }
   }
   // const source = ()=>{
@@ -123,7 +124,9 @@ export default function MediaViewCard({ title, uri, type, visible, onClose, Asse
     >
       <GestureDetector gesture={changeMedia}>
         <View style={mediaCardStyle.overlayContainer}>
+
           <View style={isFullScreen ? mediaCardStyle.fullCard : mediaCardStyle.card}>
+            {propButton}
             <TouchableOpacity style={mediaCardStyle.exitButton} onPress={onClose}>
               <Text style={mediaCardStyle.exitText}>X</Text>
             </TouchableOpacity>
