@@ -1,11 +1,10 @@
 import { StyleSheet } from "react-native";
 export const helpBarMapStyle = StyleSheet.create({
-container: {
+  container: {
     position: "absolute",
     top: 110,        // distance from top
     right: 5,      // distance from right
     alignItems: "center",
-    
 
   },
   zoomContainer: {
@@ -27,6 +26,7 @@ container: {
     shadowOpacity: 0.3,
     shadowRadius: 3,
     elevation: 3,
+
   },
   text: {
     fontSize: 22,
@@ -44,6 +44,12 @@ container: {
     shadowOpacity: 0.3,
     shadowRadius: 3,
     elevation: 3,
+  },
+  styleSelection: {
+    backgroundColor: 'white',
+    width: 50,
+    height: 150,
+    borderRadius: 25,
   },
   icon: {
     width: 25,

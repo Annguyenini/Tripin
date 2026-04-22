@@ -156,7 +156,7 @@ class CurrentTripDataService extends TripLocalDataStorage {
         try {
             await this.deleteTripImageCoverFromLocal()
             await TripDatabaseService.updateValueInDatabase('active', false, 'trip_id', this.getCurrentTripId())
-            await TripDatabaseService.updateValueInDatabase('end_time', Date.now(), 'trip_id', this.getCurrentTripId())
+            await TripDatabaseService.updateValueInDatabase('ended_time', Date.now(), 'trip_id', this.getCurrentTripId())
 
         }
         catch (err) {

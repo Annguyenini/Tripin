@@ -54,11 +54,12 @@ class TripContentService {
     }
 
 
-    async sendTripMedia(media_id, trip_id, mediaUri, longitude, latitude, mediaType, coordinate_id, time_stamp) {
+    async sendTripMedia(media_id, trip_id, mediaUri, longitude, latitude, mediaType, coordinate_id, time_stamp, city, region, country, iso_country_code) {
+
         const form = new FormData()
         const path = `trip${trip_id}_${time_stamp}`
         const isVideo = mediaType === 'video'
-
+        console.log(mediaUri)
         form.append(isVideo ? 'video' : 'image', {
             uri: mediaUri,
             name: `${path}.${isVideo ? 'mp4' : 'jpg'}`,
@@ -71,13 +72,17 @@ class TripContentService {
             latitude: String(latitude),
             time_stamp: time_stamp,
             media_id: media_id,
-            coordinate_id: coordinate_id
+            coordinate_id: coordinate_id,
+            city: city,
+            region: region,
+            country: country,
+            iso_country_code: iso_country_code
         }))
-        const headers = {
-            'id': media_id
-        }
+        // const headers = {
+        //     'id': media_id
+        // }
         const respond = await fetchFunction(API.SEND_MEDIAS_BASE + `/${trip_id}/upload`, {
-            headers: headers,
+            // headers: headers,
             method: 'POST',
             body: form
         })

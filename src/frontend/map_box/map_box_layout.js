@@ -9,10 +9,15 @@ import { Marker } from './components/markers'
 import MarkerManager from './components/marker_manager';
 import TrackingModeManager from './components/tracking_mode_manager';
 MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN)
-
+const mapStyles = {
+    'street': "mapbox://styles/mapbox/streets-v12",
+    'satellite': 'mapbox://styles/mapbox/satellite-streets-v12',
+    'dark': 'mapbox://styles/mapbox/dark-v11'
+}
 export const MapBoxLayout = ({ }) => {
     const [isImageMarkerDisplay, setIsImageMarkerDisplay] = useState(true)
     const [isCoordsMarkerDisplay, setIsCoordsMarkerDisplay] = useState(true)
+    const [mapStyle, setMapStyle] = useState('street')
     const [mapRendered, setMapRendered] = useState(false)
     const zoomRef = useRef(0)
     const renderRef = useRef(false)
@@ -26,8 +31,6 @@ export const MapBoxLayout = ({ }) => {
         if (renderRef.current) return
         renderRef.current = true
         setMapRendered(true)
-
-        await AppFlow.onRenderMapSuccess()
     }
     const allowedZooms = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22];
 
@@ -61,7 +64,6 @@ export const MapBoxLayout = ({ }) => {
             }
             else if (!centerCoords) {
                 setIsFollowingUser(true)
-
             }
         }
         flyTo()
@@ -93,6 +95,7 @@ export const MapBoxLayout = ({ }) => {
                 onTouchStart={() => {
                     setIsFollowingUser(false)
                 }}
+                styleURL={`${mapStyles[mapStyle]}`}
             >
 
                 <MapboxGL.Camera
@@ -119,7 +122,7 @@ export const MapBoxLayout = ({ }) => {
                 <>
                     {/* <MarkerManager imageMarkerDisplay={isImageMarkerDisplay} setIsImageMarkerDisplay={setIsImageMarkerDisplay} isCoordsMarkerDisplay ={isCoordsMarkerDisplay} setIsCoordsMarkerDisplay={setIsCoordsMarkerDisplay}></MarkerManager> */}
                     {/* <TrackingModeManager></TrackingModeManager> */}
-                    <HelpBarMap isFollowingUser={isFollowingUser} setIsFollowingUser={() => setIsFollowingUser(true)}></HelpBarMap>
+                    <HelpBarMap setMapStyle={setMapStyle} isFollowingUser={isFollowingUser} setIsFollowingUser={() => setIsFollowingUser(true)}></HelpBarMap>
                 </>
             }
 

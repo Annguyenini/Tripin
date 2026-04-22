@@ -44,7 +44,7 @@ class TripSync {
                     await TripContentsService.deleteCoordinate(item.data.trip_id, item.data.coordinate_id, item.data.modified_time)
                     break;
                 case 'media':
-                    await TripContentsService.sendTripMedia(item.data.media_id, CurrentTripDataService.getCurrentTripId(), item.data.media_path, item.data.longitude, item.data.latitude, item.data.media_type, item.data.coordinate_id, item.data.time_stamp)
+                    await TripContentsService.sendTripMedia(item.data.media_id, CurrentTripDataService.getCurrentTripId(), item.data.media_path, item.data.longitude, item.data.latitude, item.data.media_type, item.data.coordinate_id, item.data.time_stamp, item.data.city, item.data.region, item.data.country, item.data.iso_country_code)
                     break;
 
                 case 'delete_media':

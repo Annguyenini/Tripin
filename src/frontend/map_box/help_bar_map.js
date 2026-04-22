@@ -11,12 +11,12 @@ import { DisplayTripBox } from './components/current_display_trip_box'
 import TripDisplayObserver from './functions/trip_display_observer'
 import { DATA_KEYS } from '../../backend/storage/keys/storage_keys'
 import MarkerManager from './components/marker_manager'
-/**
+import { Ionicons } from '@expo/vector-icons';/**
  * help decide waht trip to display 
  * @param {*} param
  * @returns 
  */
-export const HelpBarMap = ({ isFollowingUser, setIsFollowingUser }) => {
+export const HelpBarMap = ({ isFollowingUser, setIsFollowingUser, setMapStyle }) => {
     const navigation_icon = require('../../../assets/image/navigation_notoutline_icon.png')
     const navigation_outline_icon = require('../../../assets/image/navigation_outline_icon.png')
     const [isOnATrip, setIsOnATrip] = useState(CurrentTripDataService.getCurrentTripStatus())
@@ -24,6 +24,7 @@ export const HelpBarMap = ({ isFollowingUser, setIsFollowingUser }) => {
     const [isTripBoxDisplay, setIsTripBoxDisplay] = useState(false)
     const [current_trip_id, setCurrentTripId] = useState(CurrentTripDataService.getCurrentTripId())
     const [currentDisplayTripData, setCurrentDisplayTripData] = useState(TripDisplayObserver.getTripNeedRender())
+    const [styleSelectionVisible, setStyleSelectionVisible] = useState(false)
     useEffect(() => {
 
         const updateNewDisplayTrip = {
@@ -90,7 +91,7 @@ export const HelpBarMap = ({ isFollowingUser, setIsFollowingUser }) => {
             }
             {
                 isTripSelected &&
-                <DisplayTripBox onHide={() => setIsTripBoxDisplay(prev => prev === true ? false : true)} isFullDisplay={isTripBoxDisplay} />
+                <DisplayTripBox onHide={() => setIsTripBoxDisplay(false)} isFullDisplay={isTripBoxDisplay} />
             }
             <TouchableOpacity style={helpBarMapStyle.recenterButton} onPress={() => {
                 setIsFollowingUser(true)
@@ -98,6 +99,36 @@ export const HelpBarMap = ({ isFollowingUser, setIsFollowingUser }) => {
             >
                 <Image style={helpBarMapStyle.icon} source={isFollowingUser ? navigation_outline_icon : navigation_icon} />
             </TouchableOpacity>
+            <TouchableOpacity style={helpBarMapStyle.recenterButton} onPress={() => {
+                setStyleSelectionVisible(prev => prev = !prev)
+            }}
+            >
+                <Ionicons name="reorder-three-outline" size={24} color="#000000" />
+            </TouchableOpacity>
+            {styleSelectionVisible &&
+                <>
+                    <View style={helpBarMapStyle.styleSelection}>
+                        <TouchableOpacity style={helpBarMapStyle.recenterButton} onPress={() => {
+                            setMapStyle('satellite')
+                        }}
+                        >
+                            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#3B6D11' }} />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={helpBarMapStyle.recenterButton} onPress={() => {
+                            setMapStyle('dark')
+                        }}
+                        >
+                            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#2C2C2A' }} />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={helpBarMapStyle.recenterButton} onPress={() => {
+                            setMapStyle('street')
+                        }}
+                        >
+                            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#e8c9a0' }} />
+                        </TouchableOpacity>
+                    </View>
+                </>
+            }
         </View>
     )
 }

@@ -57,7 +57,7 @@ class Album {
         }
         this.notify()
     }
-    getAlbumAssetObjectReady(Uri, media_id, media_type, latitude, longitude, coordinate_id) {
+    getAlbumAssetObjectReady(Uri, media_id, media_type, latitude, longitude, coordinate_id, city, region, country, iso_country_code) {
 
         const trip_name = CurrentTripDataService.getCurrentTripName()
         const trip_id = CurrentTripDataService.getCurrentTripId()
@@ -71,6 +71,10 @@ class Album {
         media_asset_object['media_id'] = media_id
         media_asset_object['coordinate_id'] = coordinate_id
         media_asset_object['event'] = 'add'
+        media_asset_object['city'] = city
+        media_asset_object['region'] = region
+        media_asset_object['country'] = country
+        media_asset_object['iso_country_code'] = iso_country_code
         return media_asset_object
     }
 
@@ -95,6 +99,7 @@ class Album {
                 event TEXT NOT NULL DEFAULT 'add',
                 modified_time TEXT NOT NULL
                 );`)
+            await DB.execAsync('PRAGMA user_verison = 0;')
         }
         catch (err) {
             console.error('faild to created album db', err)
@@ -106,7 +111,28 @@ class Album {
         }
 
     }
-    async addMediaIntoDB(media_type, media_path, time, media_id, longitude, latitude, coordinate_id) {
+    async migration() {
+        const DB = await SqliteService.connectDB()
+        const { user_version } = await DB.getFirstAsync('PRAGMA user_version') ?? 0
+        const user_id = UserDataService.getUserId()
+        try {
+            if (user_version < 1) {
+                await DB.execAsync(`ALTER TABLE "user_${user_id}_album"
+                                    ADD COLUMN city TEXT DEFAULT NULL;
+                                    ALTER TABLE "user_${user_id}_album"
+                                    ADD COLUMN region TEXT DEFAULT NULL;
+                                    ALTER TABLE "user_${user_id}_album"
+                                    ADD COLUMN country TEXT DEFAULT NULL;
+                                    ALTER TABLE "user_${user_id}_album"
+                                    ADD COLUMN iso_country_code TEXT DEFAULT NULL;`);
+                await DB.execAsync(`PRAGMA user_version =1;`)
+            }
+        }
+        catch (err) {
+            throw new Error('FAILED TO UPGRADE TABLE')
+        }
+    }
+    async addMediaIntoDB(media_type, media_path, time, media_id, longitude, latitude, coordinate_id, city, region, country, iso_country_code) {
 
         const trip_id = CurrentTripDataService.getCurrentTripId()
         const trip_name = CurrentTripDataService.getCurrentTripName()
@@ -127,9 +153,13 @@ class Album {
             modified_time,
             media_id,
             coordinate_id,
-            event) 
-            VALUES (?,?,?,?,?,?,?,?,?,?,?)`
-                , [media_type, media_path, latitude, longitude, trip_id, trip_name, time, time, media_id, coordinate_id, 'add'])
+            event,
+            city,
+            region,
+            country,
+            iso_country_code) 
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                , [media_type, media_path, latitude, longitude, trip_id, trip_name, time, time, media_id, coordinate_id, 'add', city, region, country, iso_country_code])
 
             // await TripDatabase.updateTripMediaVersion(trip_id)
             return

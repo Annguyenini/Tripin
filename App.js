@@ -1,7 +1,7 @@
 
-import React, { useState,useEffect,useRef } from 'react';
-import { AuthScreen} from './src/frontend/auth.js';
-import {MainScreen} from './src/frontend/mainscreen.js'
+import React, { useState, useEffect, useRef } from 'react';
+import { AuthScreen } from './src/frontend/auth.js';
+import { MainScreen } from './src/frontend/mainscreen.js'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { navigationRef } from './src/frontend/custom_function/navigationService.js';
@@ -19,10 +19,10 @@ import {
 } from 'react-native';
 
 import { useFonts } from 'expo-font';
-import {styles} from './src/styles/style.js'
-import{mainScreenStyle} from './src/styles/main_screen_styles.js'
-import {CameraApp} from './src/frontend/camera/camera_main.js'
-import { SettingScreen } from './src/frontend/setting_screen.js';
+import { styles } from './src/styles/style.js'
+import { mainScreenStyle } from './src/styles/main_screen_styles.js'
+import { CameraApp } from './src/frontend/camera/camera_main.js'
+import { SettingScreen } from './src/frontend/setting/setting_screen.js';
 import AppFlow from './src/app-core/flow/app_flow.js'
 import AlbumScreen from './src/frontend/albums/album.js';
 import { OverLayProvider } from './src/frontend/overlay/overlay_main.js';
@@ -33,19 +33,19 @@ const { width, height } = Dimensions.get('window');
 const Stack = createStackNavigator();
 
 export default function App() {
-  const [authentication,setAuthentication] =useState(false)
-  const [font]=useFonts({
+  const [authentication, setAuthentication] = useState(false)
+  const [font] = useFonts({
     mainfont: require('./assets/fonts/Permanent_Marker/PermanentMarker-Regular.ttf'),
   });
-  
+
   if (!font) return null;
- 
+
 
   return (
     <OverLayProvider>
-    <View style={{flex:2}}>
-    {/* <SafeAreaProvider> */}
-      {/* <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <View style={{ flex: 2 }}>
+        {/* <SafeAreaProvider> */}
+        {/* <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
           <Image source={logo} style={styles.logo} />
       
@@ -54,77 +54,77 @@ export default function App() {
             <Stack.Screen name="Auth" component={AuthScreen} />
           </Stack.Navigator>
         </NavigationContainer> */}
-      {/* {!authentication&&<AuthLayout setAuthentication ={setAuthentication}></AuthLayout>} */}
-       <NavigationContainer  ref={navigationRef}>
+        {/* {!authentication&&<AuthLayout setAuthentication ={setAuthentication}></AuthLayout>} */}
+        <NavigationContainer ref={navigationRef}>
           <Stack.Navigator>
-            <Stack.Screen name="auth" component={AuthLayout}   options={{ headerShown: false }} />
-            <Stack.Screen name="Permission" component={PermissionLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} /// ← hides the "Auth" tet
-/>
-            <Stack.Screen name="Main" component={MainLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" tet
-/>  
-            <Stack.Screen name="Setting" component={SettingLayout}   options={{ headerShown: false, gestureEnabled:false, presentation:'card',animation:'none' }} // ← hides the "Auth" text
-/>  
-            <Stack.Screen name ="Camera" component={CameraLayout} options={{headerShown: false }}/>
-            <Stack.Screen name ='Album' component={AlbumLayout} options={{headerShown: false }}/>
-            </Stack.Navigator>
+            <Stack.Screen name="auth" component={AuthLayout} options={{ headerShown: false }} />
+            <Stack.Screen name="Permission" component={PermissionLayout} options={{ headerShown: false, gestureEnabled: false, presentation: 'card', animation: 'none' }} /// ← hides the "Auth" tet
+            />
+            <Stack.Screen name="Main" component={MainLayout} options={{ headerShown: false, gestureEnabled: false, presentation: 'card', animation: 'none' }} // ← hides the "Auth" tet
+            />
+            <Stack.Screen name="Setting" component={SettingLayout} options={{ headerShown: false, gestureEnabled: false, presentation: 'card', animation: 'none' }} // ← hides the "Auth" text
+            />
+            <Stack.Screen name="Camera" component={CameraLayout} options={{ headerShown: false }} />
+            <Stack.Screen name='Album' component={AlbumLayout} options={{ headerShown: false }} />
+          </Stack.Navigator>
         </NavigationContainer>
-          
 
-    {/* <AuthScreen/> */}
-      {/* </ImageBackground>sas
+
+        {/* <AuthScreen/> */}
+        {/* </ImageBackground>sas
       </ScrollView> */}
-    {/* </SafeAreaProvider> */}
-    </View>
+        {/* </SafeAreaProvider> */}
+      </View>
     </OverLayProvider>
   );
 }
 
 function AuthLayout() {
   return (
-      <View  style={styles.backgroundImage}>
-        <Image source={logo} style={styles.logo} />
-        <AuthScreen />
-      </View>
+    <View style={styles.backgroundImage}>
+      <Image source={logo} style={styles.logo} />
+      <AuthScreen />
+    </View>
   );
 }
 function PermissionLayout() {
   return (
-      
-        <PermissionsScreen />
+
+    <PermissionsScreen />
   );
 }
-const MainLayout =()=> {
+const MainLayout = () => {
   console.log('render1')
   return (
-      <View  style={styles.backgroundImage}>
-        <Image source={logo} style={mainScreenStyle.logo} />
-        <MainScreen />
-      </View>
+    <View style={styles.backgroundImage}>
+      <Image source={logo} style={mainScreenStyle.logo} />
+      <MainScreen />
+    </View>
   );
 }
-function CameraLayout(){
-  return(
+function CameraLayout() {
+  return (
     <GestureHandlerRootView style={{ flex: 1 }}>
 
       <CameraApp />
-      </GestureHandlerRootView>
+    </GestureHandlerRootView>
 
   )
 }
 
-function SettingLayout(){
-  return(
-      <View  style={styles.backgroundImage}>
-        <Image source={logo} style={mainScreenStyle.logo} />
-        <SettingScreen />
-      </View>
+function SettingLayout() {
+  return (
+    <View style={styles.backgroundImage}>
+      <Image source={logo} style={mainScreenStyle.logo} />
+      <SettingScreen />
+    </View>
   )
 }
-function AlbumLayout(){
-  return(
-      <View  style={styles.backgroundImage}>
-        <Image source={logo} style={mainScreenStyle.logo} />
-        <AlbumScreen />
-      </View>
+function AlbumLayout() {
+  return (
+    <View style={styles.backgroundImage}>
+      <Image source={logo} style={mainScreenStyle.logo} />
+      <AlbumScreen />
+    </View>
   )
 }

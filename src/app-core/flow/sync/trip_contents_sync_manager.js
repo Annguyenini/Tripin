@@ -28,7 +28,7 @@ class TripContentSyncManager {
         if (!response.ok || response.status !== 200 || !response.data.hash) return false
 
         const local_hash = await safeRun(() => Albumdb.getMediaHash(trip_id), 'failed to get max modified time')
-        console.log('down', local_hash, response.data.hash)
+        console.log('down', local_hash, response.data.hash, response.data.hash == local_hash)
 
         return response.data.hash == local_hash
     }
@@ -59,7 +59,7 @@ class TripContentSyncManager {
                 savedArray.map(async (asset) => {
                     try {
                         console.log(asset)
-                        await Albumdb.addMediaIntoDB(asset.media_type, asset.media_path, asset.time_stamp, asset.media_id, asset.longitude, asset.latitude, asset.coordinate_id)
+                        await Albumdb.addMediaIntoDB(asset.media_type, asset.media_path, asset.time_stamp, asset.media_id, asset.longitude, asset.latitude, asset.coordinate_id, asset.city, asset.region, asset.country, asset.iso_country_code)
                     } catch (err) {
                         console.error("failed at save medias to database", err)
                         throw err
@@ -78,14 +78,9 @@ class TripContentSyncManager {
     async _getAndProcessTripMediasMetadata(trip_id) {
         const response = await safeRun(() => TripContentsSyncService.requestTripMediasMetadata(trip_id), 'failed_at_get_trip_media_metadata_from_server')
         const server_metadata = response.data.metadata
-        if (!response.ok || response.status !== 200 || !server_metadata) return null
-
+        console.log('down', response, server_metadata)
+        if (!response.ok || response.status !== 200) return null
         const local_trip_media_assets = await safeRun(() => Albumdb.getAssestsFromTripId(trip_id), 'failed_at_get_trip_media')
-        if (!local_trip_media_assets) {
-            const freshSave = await this._freshSaveMediasHandler(trip_id)
-            if (!freshSave) return
-        }
-
         const delete_array = server_metadata.filter(server_media =>
             local_trip_media_assets.find(local =>
                 local.media_id === server_media.media_id &&
@@ -97,7 +92,7 @@ class TripContentSyncManager {
         const upload_array = local_trip_media_assets.filter(local =>
             !server_metadata.find(server => server.media_id === local.media_id)
         )
-
+        console.log('down', delete_array, upload_array)
         if (delete_array) await safeRun(() => this._processRequestDeleteTripMedias(trip_id, delete_array), 'failed_to_process_trip_media_delete_sync')
         if (upload_array) await safeRun(() => this._processRequestUploadTripMedias(trip_id, upload_array), 'failed_to_process_trip_upload_delete_sync')
         await safeRun(() => this._downloadMedias(trip_id, local_trip_media_assets))
@@ -105,28 +100,6 @@ class TripContentSyncManager {
     }
 
     // ─── Coordinate Sync ──────────────────────────────────────────────────────
-
-    async _getAndProcessTripCoordinateHash(trip_id) {
-        const server_coordinate = await safeRun(() => TripContentsService.requestTripCoordinates(trip_id))
-        const local_coordinate = await safeRun(() => this.TripCoordinateDatabase.getAllCoordinatesFromTripId(trip_id))
-
-        const delete_array = server_coordinate.filter((server) => {
-            local_coordinate.find((local) =>
-                local.coordinate_id === server.coordinate_id &&
-                local.event === 'remove' &&
-                server.event !== 'remove'
-            )
-        })
-
-        const upload_array = local_coordinate.filter((local) => {
-            !server_coordinate.find((server) => { server.coordinate_id === local.coordinate_id })
-        })
-
-        const download_array = server_coordinate.filter((server) => {
-            !local_coordinate.find((local) => { local.coordinate_id === server.coordinate_id })
-        })
-    }
-
     async tripCoordinateSync(trip_id) {
         const respond = await safeRun(() => TripContentsSyncService.requestTripCoordinateHash(trip_id), 'failed_at_request_trip_coordinate_hash')
         if (!respond.ok || respond.status !== 200) return
@@ -158,6 +131,7 @@ class TripContentSyncManager {
     }
 
     async _processRequestUploadTripMedias(trip_id, upload_array) {
+        console.log('down ,up ', upload_array)
         upload_array.forEach(element => {
             TripContentsSync.addIntoQueue('media', null, element)
         })

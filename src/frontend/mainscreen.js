@@ -4,13 +4,11 @@ import { Image } from 'expo-image'
 import { View, TouchableOpacity, Text, Button, TextInput, Alert, StyleSheet, Dimensions, Modal } from 'react-native';
 import { mainScreenStyle, footer } from '../styles/main_screen_styles.js'
 import { navigate } from './custom_function/navigationService.js';
-import { LocationPermission } from './functions/location_permision.js';
 import { UserDataBottomSheet } from './bottom_sheet.js';
 import UserDataService from '../../src/backend/storage/user.js'
 import { ProfileImagePicker } from './custom_components/profile_image_picker.js'
 import { AppState } from 'react-native';
 import { startForegroundGPSTracker, endForegroundGPSTracker } from '../backend/gps_logic/foreground_gps_logic.js';
-import CurrenTripDataService from '../backend/storage/current_trip.js'
 import GPSLogic from '../backend/gps_logic/gps_logic.js';
 import { MapBoxLayout } from './map_box/map_box_layout.js';
 import { DATA_KEYS } from '../backend/storage/keys/storage_keys.js';
@@ -22,6 +20,10 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { BannerManager } from './overlay/banner_manager.js';
 import { CameraApp } from './camera/camera_main.js';
 import { TripsList } from './trips_list.js';
+import { SettingScreen } from './setting/setting_screen.js';
+import CurrentTripDataService from '../backend/storage/current_trip.js';
+import { NewTripFiller } from './functions/add_new_trip.js';
+import PolaroidGallery from './albums/memories.js';
 export const MainScreen = () => {
   // user profile state from local storage
   const [user_id, setUserId] = useState(UserDataService.getUserId())
@@ -29,13 +31,14 @@ export const MainScreen = () => {
   const [display_name, setDisplayName] = useState(UserDataService.getDisplayName())
   const [cameraVisible, setCameraVisible] = useState(false)
   const [tripsListVisible, setTripsListVisible] = useState(false)
-
+  const [settingVisible, setSettingVisible] = useState(false)
   // controls whether map renders — waits for trip data to be ready
   const [tripDataSuccess, setTripDataSuccess] = useState(false)
   const isUserDataReady = useRef(false)
-
-  const [show_profile_picker, set_show_profile_picker] = useState(false)
+  const [isOnATrip, setIsOnATrip] = useState(CurrentTripDataService.getCurrentTripStatus())
+  // const [show_profile_picker, set_show_profile_picker] = useState(false)
   const [state, setState] = useState(AppState.currentState)
+  const [createTripScreen, setCreateTripScreen] = useState(false)
   const gpsTask = useRef(null)
 
   // lock orientation, init settings, and fetch trip data on mount
@@ -89,8 +92,20 @@ export const MainScreen = () => {
     }
   }, [])
 
-  const callCamera = () => navigate("Camera")
-  const callSetting = () => navigate("Setting")
+  useEffect(() => {
+    const updateTripStatus = {
+      update(newTripData) {
+        if (newTripData) {
+          setIsOnATrip(true)
+          return
+        }
+        setIsOnATrip(false)
+      }
+    }
+    CurrentTripDataService.attach(updateTripStatus, DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA);
+    return () => CurrentTripDataService.detach(updateTripStatus, DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA);
+
+  }, [])
   const callAlbum = () => navigate('Album')
 
 
@@ -101,7 +116,10 @@ export const MainScreen = () => {
   }, [])
 
   return (
+
     <View style={styles.container}>
+
+
       {
         cameraVisible &&
         <Modal>
@@ -114,8 +132,13 @@ export const MainScreen = () => {
           <TripsList onClose={() => setTripsListVisible(false)}></TripsList>
         </Modal>
       }
-      {/* <CameraApp></CameraApp> */}
-      {/* floating location permission banner */}
+      {
+        settingVisible &&
+        <Modal>
+          <SettingScreen onclose={() => setSettingVisible(false)}></SettingScreen>
+        </Modal>
+      }
+
       <BannerManager />
       {/* show map once trip data is ready, otherwise show loading */}
       {tripDataSuccess && RenderMap()}
@@ -125,36 +148,61 @@ export const MainScreen = () => {
       <UserDataBottomSheet
         userId={user_id}
         userDisplayName={display_name}
-        set_show_profile_picker={set_show_profile_picker}
+      // set_show_profile_picker={set_show_profile_picker}
       />
 
+      {/* bottom nav bar */}
       {/* bottom nav bar */}
       <View style={footer.footerContainer}>
         <View style={footer.fotterrow}>
           <TouchableOpacity style={footer.fotterbutton}>
-            <Ionicons name="home-outline" size={24} color="#00000" />
+            <Ionicons name="home-outline" size={22} color="#888" />
+            <Text style={footer.footerText}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity style={footer.fotterbutton} onPress={() => setTripsListVisible(true)}>
-            <Ionicons name="map-outline" size={24} color="#00000" />
+            <Ionicons name="map-outline" size={22} color="#888" />
+            <Text style={footer.footerText}>Trips</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={footer.fotterbutton} onPress={() => setCameraVisible(true)}>
-            <Ionicons name="camera-outline" size={24} color="#00000" />
-          </TouchableOpacity>
+
+          {/* hero buttons */}
+          <View style={footer.heroGroup}>
+            <View style={footer.heroItem}>
+              <TouchableOpacity style={footer.heroButton} onPress={() => setCameraVisible(true)}>
+                <Ionicons name="camera-outline" size={24} color="#0d0c0a" />
+              </TouchableOpacity>
+              <Text style={footer.heroText}>Camera</Text>
+            </View>
+            {!isOnATrip &&
+              <View style={footer.heroItem}>
+                <TouchableOpacity style={footer.heroButton} onPress={() => setCreateTripScreen(true)}>
+                  <Ionicons name="add" size={26} color="#0d0c0a" />
+                </TouchableOpacity>
+                <Text style={footer.heroText}>New Trip</Text>
+              </View>
+            }
+          </View>
+
           <TouchableOpacity style={footer.fotterbutton} onPress={callAlbum}>
-            <Ionicons name="images-outline" size={24} color="#00000" />
+            <Ionicons name="images-outline" size={22} color="#888" />
+            <Text style={footer.footerText}>Gallery</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={footer.fotterbutton} onPress={callSetting}>
-            <Ionicons name="settings-outline" size={24} color="#00000" />
+          <TouchableOpacity style={footer.fotterbutton} onPress={() => setSettingVisible(true)}>
+            <Ionicons name="settings-outline" size={22} color="#888" />
+            <Text style={footer.footerText}>Setting</Text>
           </TouchableOpacity>
         </View>
       </View>
-
+      {createTripScreen &&
+        <Modal>
+          <NewTripFiller set_show_create_trip_filler={() => setCreateTripScreen(false)}></NewTripFiller>
+        </Modal>
+      }
       {/* profile image picker overlay */}
-      {show_profile_picker && (
+      {/* {show_profile_picker && (
         <View style={mainScreenStyle.overlay}>
           <ProfileImagePicker set_show_profile_picker={set_show_profile_picker} />
         </View>
-      )}
+      )} */}
     </View>
   )
 };

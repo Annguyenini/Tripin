@@ -3,8 +3,6 @@ import TripHandler from "../app-core/flow/trip_handler.js";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import { TouchableOpacity, Text, StyleSheet, View, ScrollView, Modal } from "react-native";
 import { Image } from "expo-image";
-import { NewTripFiller } from "./functions/add_new_trip.js";
-import TripDataService from "../backend/storage/trips.js";
 import UserDataService from "../backend/storage/user.js";
 import { DATA_KEYS } from "../backend/storage/keys/storage_keys.js";
 import AppFlow from "../app-core/flow/app_flow.js";
@@ -13,15 +11,14 @@ import TripDisplayObserver from "./map_box/functions/trip_display_observer.js";
 import CurrentTripDataService from '../backend/storage/current_trip.js'
 import { TestScreen } from "../test_screen.js";
 import { TripStatCards } from "./map_box/functions/trip_stat.js";
+import PolaroidGallery from "./albums/memories.js";
 const default_user_image = require('../../assets/image/profile_icon.png')
 const default_image = require('../../assets/icon.png')
-import { UseOvelay } from "./overlay/overlay_main";
 
-export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }) => {
+export const UserDataBottomSheet = ({ userDisplayName }) => {
   const bottomSheetRef = useRef(null)
   const [test, setTest] = useState(false)
   const [snapIndex, setSnapIndex] = useState(0)
-  const [showCreateTrip, setShowCreateTrip] = useState(false)
   const [userProfileImage, setUserProfileImage] = useState(UserDataService.getProfileImageUri())
   const [tripImageCover, setTripImageCover] = useState(CurrentTripDataService.getCurrentTripImageUri())
   const [tripName, setTripName] = useState(CurrentTripDataService.getCurrentTripName())
@@ -47,6 +44,7 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
       update(newTripData) {
         if (!newTripData) {
           setIsOnATrip(false)
+          return
         }
         const newName = newTripData.trip_name
         const newImage = newTripData.image
@@ -65,13 +63,7 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
     const status = await TripHandler.endTripHandler();
     hideLoading()
   }
-  const handleCreateTrip = useCallback(async (trip_name, imageUri) => {
-    showLoading()
-    const res = await TripHandler.requestNewTripHandler(trip_name, imageUri ?? null)
-    hideLoading()
-    if (!res || res.status !== 200) showErrorBox('Error Creating Trip', res.data.message, 6000)
-    setShowCreateTrip(false)
-  }, [])
+
 
   return (
     <BottomSheet
@@ -83,10 +75,14 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
       handleIndicatorStyle={s.sheetHandle}
     >
       <BottomSheetScrollView contentContainerStyle={s.container}>
+        <TouchableOpacity onPress={() => setTest(true)}><Text>test</Text></TouchableOpacity>
+        {test &&
+          <Modal>
+            <TestScreen testScreenHandler={() => setTest(false)}></TestScreen></Modal>}
 
         {/* ── user card ── */}
-        <View style={s.userCard}>
-          <TouchableOpacity onPress={() => set_show_profile_picker(true)} activeOpacity={0.8} style={s.avatarWrap}>
+        {/* <View style={s.userCard}>
+          <TouchableOpacity activeOpacity={0.8} style={s.avatarWrap}>
             <Image
               cachePolicy="memory-disk"
               key={dataKey}
@@ -101,21 +97,17 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
             <Text style={s.displayName}>{userDisplayName}</Text>
             <Text style={s.displaySub}>your journeys</Text>
           </View>
-          <TouchableOpacity onPress={() => setTest(true)}><Text>test</Text></TouchableOpacity>
-          {test &&
-            <Modal>
-              <TestScreen testScreenHandler={() => setTest(false)}></TestScreen></Modal>}
 
 
-        </View>
-        {!isOnATrip &&
+        </View> */}
+        {/* {!isOnATrip &&
           <>
             <Text style={s.tripName}>No active Trip Add One?</Text>
             <TouchableOpacity style={[s.iconBtn, s.iconBtnPrimary]} onPress={() => setShowCreateTrip(true)} activeOpacity={0.7}>
               <Text style={s.iconBtnTextPrimary}>+</Text>
             </TouchableOpacity>
 
-          </>}
+          </>} */}
         {/* ── trip title ── */}
         {isOnATrip &&
           <>
@@ -131,7 +123,7 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
 
                 <View style={s.statusRow}>
                   <View style={s.statusDot} />
-                  <Text style={s.statusText}>Day 3 of 6 · Heading south</Text>
+                  {/* <Text style={s.statusText}>Day 3 of 6 · Heading south</Text> */}
                 </View>
               </View>
               <View style={s.endTripCover}>
@@ -153,25 +145,19 @@ export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }
 
             {/* ── memory cards ── */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.memoriesScroll}>
+              <PolaroidGallery></PolaroidGallery>
               {/* map memories here */}
             </ScrollView>
           </>}
       </BottomSheetScrollView>
 
-      {showCreateTrip && (
-        <Modal>
-          <NewTripFiller
-            set_show_create_trip_filler={setShowCreateTrip}
-            request_new_trip={handleCreateTrip}
-          />
-        </Modal>
-      )}
+
     </BottomSheet>
   )
 }
 
 const s = StyleSheet.create({
-  sheetBg: { backgroundColor: '#1a1917' },
+  sheetBg: { backgroundColor: 'rgba(255, 252, 245, 0.95)' },
   sheetHandle: { backgroundColor: '#3a3830', width: 40 },
   container: { paddingHorizontal: 16, paddingBottom: 40 },
 
@@ -181,12 +167,12 @@ const s = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     padding: 14,
-    backgroundColor: '#242220',
+    // backgroundColor: '#f9e5d3',
     borderRadius: 14,
     marginBottom: 16,
     marginTop: 8,
     borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: 'rgba(255, 255, 255, 0.67)',
   },
   avatarWrap: { position: 'relative' },
   avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#3a3830' },
@@ -198,7 +184,7 @@ const s = StyleSheet.create({
   },
   avatarEditText: { fontSize: 9, color: '#1a1a1a' },
   userInfo: { flex: 1, gap: 2 },
-  displayName: { fontSize: 15, color: '#f0f0ec', fontFamily: 'DMMono' },
+  displayName: { fontSize: 15, color: '#000000', fontFamily: 'DMMono' },
   displaySub: { fontSize: 10, color: '#5a5550', fontFamily: 'DMMono', fontStyle: 'italic' },
   iconBtn: {
     width: 32, height: 32, borderRadius: 8,
@@ -217,14 +203,14 @@ const s = StyleSheet.create({
     justifyContent: 'space-between', marginBottom: 16,
   },
   titleBlock: { flex: 1 },
-  tripName: { fontSize: 22, color: '#f0f0ec', fontFamily: 'DMMono', marginBottom: 4 },
+  tripName: { fontSize: 22, color: '#000000', fontFamily: 'DMMono', marginBottom: 4 },
   statusRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   statusDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#4caf50' },
   statusText: { fontSize: 12, color: '#a08060', fontFamily: 'DMMono', fontStyle: 'italic' },
   upBtn: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#f0f0ec',
+    color: '#000000',
     fontFamily: 'DMMono',
     letterSpacing: 0.08,
   },

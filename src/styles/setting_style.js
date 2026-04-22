@@ -1,31 +1,22 @@
-import {  StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 export const settingStyle = StyleSheet.create({
-  topBar: {
-    width: '100%',              // full width
-    flexDirection: 'row',       // horizontal layout
-    alignItems: 'center',       // vertical center
-    justifyContent: 'flex-start', // items stick to left
-    paddingHorizontal: 15,      // space from left/right
-    paddingVertical: 10,        // top/bottom padding inside bar
-    marginTop: 50,              // drop down a bit from top
-    borderBottomWidth: 1,       // optional separator
-  },
-  buttonContainer: {
-    // optional: can add extra spacing for button here if needed
-    backgroundColor: '#ffffffff',    // bar color
-    right:170,
-    width: 40,
-    height: 40,
-    borderRadius: 40, // Half of width/height
-    justifyContent: 'center',
-    alignItems: 'center',       // vertical center
-
-
-  },
-  closeText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000',              // visible X
-  },
-
+  container: { flex: 1, backgroundColor: '#fffcf5' },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 52, paddingHorizontal: 20, paddingBottom: 16, backgroundColor: '#e5d7bc' },
+  closeBtn: { backgroundColor: 'rgba(255,252,245,0.85)', borderWidth: 0.5, borderColor: 'rgba(180,120,60,0.3)', borderRadius: 4, paddingHorizontal: 10, paddingVertical: 5 },
+  closeText: { color: '#8a5a2a', fontSize: 12, fontFamily: 'Georgia' },
+  screenTitle: { color: '#3a2a18', fontSize: 16, fontFamily: 'Georgia' },
+  profileSection: { alignItems: 'center', paddingVertical: 24, backgroundColor: '#e5d7bc' },
+  avatarEmoji: { fontSize: 40, marginBottom: 6 },
+  username: { color: '#3a2a18', fontSize: 15, fontFamily: 'Georgia', fontStyle: 'italic' },
+  email: { color: '#a08060', fontSize: 10, fontFamily: 'Georgia', fontStyle: 'italic', marginTop: 2 },
+  sectionLabel: { color: '#c0a880', fontSize: 9, fontFamily: 'Georgia', letterSpacing: 2, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 6 },
+  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 11, borderBottomWidth: 0.5, borderBottomColor: '#f0e8d8' },
+  rowLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  iconBox: { width: 36, height: 36, borderRadius: 10, backgroundColor: '#fef3e2', alignItems: 'center', justifyContent: 'center' },
+  iconText: { fontSize: 18 },
+  rowLabel: { color: '#3a2a18', fontSize: 13, fontFamily: 'Georgia' },
+  rowSub: { color: '#a08060', fontSize: 10, fontFamily: 'Georgia', fontStyle: 'italic', marginTop: 2 },
+  arrow: { color: '#c0a880', fontSize: 20 },
+  logoutRow: { flexDirection: 'row', alignItems: 'center', gap: 12, margin: 20, backgroundColor: '#fff5ef', borderWidth: 0.5, borderColor: 'rgba(224,122,58,0.35)', borderRadius: 10, padding: 13 },
+  logoutText: { color: '#e07a3a', fontSize: 13, fontFamily: 'Georgia', fontStyle: 'italic' },
 });

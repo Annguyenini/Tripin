@@ -155,11 +155,18 @@ const ImageLabel = ({ trip_id, zoomLevel, ready }) => {
   return (
     <View key={mapKey}>
       <RenderImageLable clusters={currentCluster} mapKey={mapKey} onClick={labelDisplayHandler}></RenderImageLable>
-      {visible && <MediaViewCard title={'test'} uri={currentAsset.library_media_path ? currentAsset.library_media_path : currentAsset.media_path} type={currentAsset.media_type} visible={visible} onClose={() => setVisible(false)} AssetArray={isDisplayAllMedia ? currentAssetsArray : currentDisplayCluster} isBottomList={true}
-        propButton={
-          < TouchableOpacity style={imageLabelStyle.clusterMode} onPress={() => setIsDisplayAllMedia((prev) => !prev)}>
-            <Text style={{ color: 'white' }} > {isDisplayAllMedia ? 'All Medias' : 'Save point'} </Text>
-          </TouchableOpacity>}
+      {visible && <MediaViewCard
+        title={'test'}
+        uri={currentAsset.library_media_path ? currentAsset.library_media_path : currentAsset.media_path}
+        type={currentAsset.media_type}
+        visible={visible}
+        onClose={() => setVisible(false)}
+        AssetArray={currentAssetsArray}
+        isBottomList={true}
+      // propButton={
+      //   < TouchableOpacity style={imageLabelStyle.clusterMode} onPress={() => setIsDisplayAllMedia((prev) => !prev)}>
+      //     <Text style={{ color: 'white' }} > {isDisplayAllMedia ? 'All Medias' : 'Save point'} </Text>
+      //   </TouchableOpacity>}
       />}
 
     </View>

@@ -1,11 +1,11 @@
-import {  StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 export const mainScreenStyle = StyleSheet.create({
-    container: {
+  container: {
     flex: 1,              // fill the screen
   },
-   scrollView: {
+  scrollView: {
     flex: 1,            // makes the ScrollView itself take the whole screen
   },
   scrollContent: {
@@ -23,7 +23,7 @@ export const mainScreenStyle = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-   logo: {
+  logo: {
     width: width * 0.20,  // 15% of screen width
     height: width * 0.20, // keep it square
     resizeMode: 'contain',
@@ -31,33 +31,33 @@ export const mainScreenStyle = StyleSheet.create({
     top: 20,
     right: 20,
   },
-curentTripZone: {
-  width: '100%',
-  alignItems: 'center',   // centers children horizontally
-  // marginTop: 12,
-},
+  curentTripZone: {
+    width: '100%',
+    alignItems: 'center',   // centers children horizontally
+    // marginTop: 12,
+  },
 
-row: {
- flexDirection: 'row',
-  alignItems: 'center',
-  paddingBottom:20,
-  width: '90%',
-  alignSelf: 'center',
-  justifyContent: 'space-between',
-},
-userRow:{
-  flexDirection: 'row',
-  alignItems: 'center',   // vertical alignment
-  paddingBottom:20,
-  gap: 20,  
-},
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: 20,
+    width: '90%',
+    alignSelf: 'center',
+    justifyContent: 'space-between',
+  },
+  userRow: {
+    flexDirection: 'row',
+    alignItems: 'center',   // vertical alignment
+    paddingBottom: 20,
+    gap: 20,
+  },
   alltrip: {
     flex: 4,                  // fill screen
     justifyContent: 'top', // vertical center
     alignItems: 'center',     // horizontal center
     backgroundColor: '#fffffff',  // optional, makes white text visible
   },
-  allTripTitle:{
+  allTripTitle: {
     fontSize: 25,
     fontFamily: 'mainfont',
     textDecorationLine: 'underline',
@@ -65,13 +65,13 @@ userRow:{
     fontWeight: 'bold',
     textAlign: 'left',
   },
-   
+
   title: {
     color: '#ffffffff',
     fontSize: 35,
     fontFamily: 'mainfont',
-      position: 'relative', 
-      // top:-80,
+    position: 'relative',
+    // top:-80,
     marginBottom: 20,
     fontWeight: 'bold',
     textDecorationLine: 'underline',
@@ -83,27 +83,27 @@ userRow:{
     backgroundColor: '#fff', // button color
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative', 
+    position: 'relative',
     // top:-80,
   },
   buttonText: {
     fontSize: 32,
     color: '#000', // text inside button
     fontWeight: 'bold',
-    position: 'relative', 
-    
+    position: 'relative',
+
   },
-  displayname:{
+  displayname: {
     fontSize: 25,
-    color:'#ffff',
+    color: '#ffff',
     fontFamily: 'mainfont',
-    position: 'relative', 
-    top:10,
-    right:-15,
+    position: 'relative',
+    top: 10,
+    right: -15,
     textDecorationLine: 'underline',
 
   },
-  profilePic:{
+  profilePic: {
     width: 60,
     height: 60,
     borderRadius: 40, // Half of width/height
@@ -117,13 +117,13 @@ userRow:{
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3, 
+    elevation: 3,
   },
   settingsContainer: {
-    right:-170,
+    right: -170,
     justifyContent: 'center',
-        borderRadius: 40, // Half of width/height
-        
+    borderRadius: 40, // Half of width/height
+
 
 
   },
@@ -131,7 +131,7 @@ userRow:{
     width: 40,  // adjust size
     height: 40, // adjust size
   },
-   overlay: {
+  overlay: {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -146,21 +146,21 @@ userRow:{
 
 
 export const footer = StyleSheet.create({
-   footerContainer: {
+  footerContainer: {
     position: 'absolute', // key for fixed
     bottom: 0,
     left: 0,
     right: 0,
     height: 60,
-    backgroundColor: '#ffffffff',
+    backgroundColor: 'rgba(255,252,245,0.85)',
     flexDirection: 'row',
     justifyContent: 'space-around',
     zIndex: 999,
-    borderRadius:20,
+    borderRadius: 20,
   },
   footerText: {
-    color: '#fff',
-    fontSize: 16,
+    color: '#000000',
+    fontSize: 10,
   },
   fotterbutton: {
     padding: 10,             // touchable area
@@ -173,14 +173,42 @@ export const footer = StyleSheet.create({
     resizeMode: 'contain',
   },
   fotterrow: {
-    flexDirection: 'row',      // horizontal layout
-  justifyContent: 'space-between', // push items to edges
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    width: '80%',                // span full width
+    flex: 1,
+    paddingHorizontal: 12,
+    gap: 20,
   },
   settingIcon: {
     width: 30,  // adjust size
     height: 30, // adjust size
+  },
+  heroGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 20,
+
+  },
+  heroItem: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  heroButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#e8c97e',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: '#ffffff',
+  },
+  heroText: {
+    color: '#f0f0ec',
+    fontSize: 9,
+    fontWeight: '500',
   },
 })
 

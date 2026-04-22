@@ -14,6 +14,11 @@ import { _registerNetworkCallback } from "./sync/network_observer"
 class AppFlow {
     constructor() {
         this.LocalStorage = new LocalStorage()
+        _registerNetworkCallback(this.networkCallback.bind(this))
+    }
+    networkCallback(state) {
+        console.log('network', state)
+        if (state) this.syncCurrentTripContents()
     }
     async tokenAuthorization() {
         const loginViaToken = await AuthHandler.loginWithTokenHandler()
@@ -42,6 +47,7 @@ class AppFlow {
     async initDBs() {
         try {
             await safeRun(() => Albumdb.initUserAlbum(), 'failed_at_create_album_database')
+            await safeRun(() => Albumdb.migration(), 'failed_at_migration_album')
             await safeRun(() => TripDatabaseService.initTripTable(), 'failed_at_create_trips_database')
         }
         catch (err) {
@@ -60,13 +66,7 @@ class AppFlow {
         return true
 
     }
-    // request current trip-id
-    async onRenderMapSuccess() {
-        // const currentTripIdAndVersion = await TripHandler.requestCurrentTripHandler()      
-        // await safeRun(()=>this.syncCurrentTripContents(),'failed_at_sync_trip_media')
 
-        // return
-    }
     async onRenderUserData() {
         const trips = await TripHandler.requestAllTripHandler()
         return

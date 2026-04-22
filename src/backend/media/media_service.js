@@ -26,15 +26,21 @@ class MediaService {
         let time_stamp = Date.now()
         const trip_id = CurrentTripDataService.getCurrentTripId()
         // get coordinate for image
-        const { coords: location_data } = await safeRun(() => LocationData.getCurrentCoor(), 'failed_at_get_location')
+        const location_data = await safeRun(() => LocationData.getCurrentCoor(), 'failed_at_get_location')
+
         if (!location_data) {
             return
         }
         const longitude = location_data.longitude
         const latitude = location_data.latitude
+        const city = location_data.city
+        const region = location_data.region
+        const country = location_data.country
+        const iso_country_code = location_data.isoCountryCode
         try {
             // save to camera roll, gallery
             local_uri = await safeRun(() => this.saveMediaToLocalAlbum(media_uri, type), 'failed_at_save_media_to_gallery')
+            console.log('uri', local_uri)
             if (!local_uri) {
                 throw new Error('Failed to generate asset!')
             }
@@ -42,10 +48,10 @@ class MediaService {
             media_id = this.GENERATE_MEDIA_ID(type, local_uri)
             coordinate_id = Crypto.randomUUID()
             // get object ready to insert into album 
-            asset_object = Albumdb.getAlbumAssetObjectReady(local_uri, media_id, type, latitude, longitude, coordinate_id)
+            asset_object = Albumdb.getAlbumAssetObjectReady(local_uri, media_id, type, latitude, longitude, coordinate_id, city, region, country, iso_country_code)
 
             // add media into sqlite 3
-            await safeRun(() => Albumdb.addMediaIntoDB(type, local_uri, time_stamp, media_id, longitude, latitude, coordinate_id), 'failed_at_save_image_to_sqlite3')
+            await safeRun(() => Albumdb.addMediaIntoDB(type, local_uri, time_stamp, media_id, longitude, latitude, coordinate_id, city, region, country, iso_country_code), 'failed_at_save_image_to_sqlite3')
 
             // insert into album 
             Albumdb.addToAlbumArray(asset_object)
@@ -58,7 +64,7 @@ class MediaService {
         if (trip_id) {
             try {
 
-                TripContentHandler.uploadTripMediaHandler(media_id, trip_id, media_uri, longitude, latitude, coordinate_id, type, time_stamp)
+                TripContentHandler.uploadTripMediaHandler(media_id, trip_id, media_uri, longitude, latitude, coordinate_id, type, time_stamp, city, region, country, iso_country_code)
                 // generate a location object
                 const coordinate_object = CurrentTripCoordinateService.generateCoordinatePayload(location_data, coordinate_id, time_stamp)
                 // add the coordinate obejct to service
@@ -130,12 +136,10 @@ class MediaService {
             const albumPermission = await safeRun(() => AlbumPermission.getAlbumPermission())
             if (albumPermission.accessPrivileges === 'all') {
                 const assetUri = await this._saveMediaToCameraroll(uri)
-                return assetUri
             }
-            else if (albumPermission.accessPrivileges === 'limited') {
-                const localUri = await this._saveMediaToLocalStorage(uri, type)
-                return localUri
-            }
+            const localUri = await this._saveMediaToLocalStorage(uri, type)
+            return localUri
+
         }
         catch (error) {
             console.error(error)
