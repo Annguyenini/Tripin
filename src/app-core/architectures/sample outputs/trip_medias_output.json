@@ -1,0 +1,32 @@
+{
+  "hash": "125a37bf061a9fcd864bd48dd49c56a9",
+  "medias": [
+    {
+      "coordinate_id": null,
+      "event": "add",
+      "id": 677,
+      "latitude": 111.11,
+      "longitude": -111.11,
+      "media_id": "photo:...",
+      "media_path": "https://tripin-trips-media....",
+      "media_type": "image",
+      "modified_time": 1774197995222,
+      "time_stamp": 1774197995222,
+      "trip_id": 227
+    },
+    {
+      "coordinate_id": null,
+      "event": "add",
+      "id": 679,
+      "latitude": 111.11,
+      "longitude": -111.11,
+      "media_id": "photo:...",
+      "media_path": "https://tripin-trips-media...",
+      "media_type": "image",
+      "modified_time": 1774197995317,
+      "time_stamp": 1774197995317,
+      "trip_id": 227
+    }
+  ],
+  "message": "Successfully"
+}

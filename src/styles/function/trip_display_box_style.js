@@ -5,25 +5,23 @@ export const currentTripDisplayBoxStyle = StyleSheet.create({
 
   wrapper: {
     position: 'absolute',
-    right: 140,
-    top: 250,
+    right: 230,
+    top: 230,
   },
 
   card: {
-    width: width * 0.65,
-    height: height * 0.15,
-    backgroundColor: '#1a1917',
-    borderRadius: 20,
+    width: width * 0.40,
+    backgroundColor: '#f5f0e8',
+    borderRadius: 2,
     top: 250,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    padding: 10,
+    paddingBottom: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 4, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 0,
+    shadowOffset: { width: 3, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
     elevation: 8,
+    transform: [{ rotate: '-2deg' }],
   },
 
   // ── TOP ──
@@ -31,41 +29,34 @@ export const currentTripDisplayBoxStyle = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 6,
   },
 
   arrowButton: {
-    backgroundColor: '#2a2826',
-    borderRadius: 8,
-    width: 30, height: 30,
+    width: 24, height: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
   },
 
   arrowText: {
-    fontSize: 16,
-    color: '#f0f0ec',
+    fontSize: 14,
+    color: '#2a2018',
   },
 
   tripName: {
     flex: 1,
     textAlign: 'center',
     fontSize: 15,
-    fontFamily: 'PermanentMarker',
-    color: '#f0f0ec',
-    letterSpacing: 0.04,
+    fontFamily: 'DMMono',
+    color: '#2a2018',
+    letterSpacing: 0.5,
+    marginTop: 8,
   },
 
   closeButton: {
-    backgroundColor: '#2a2826',
-    borderRadius: 8,
-    width: 30, height: 30,
+    width: 24, height: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
   },
 
   closeText: {
@@ -76,39 +67,38 @@ export const currentTripDisplayBoxStyle = StyleSheet.create({
 
   // ── BOTTOM ──
   bottomSection: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     flex: 1,
   },
 
   imageContainer: {
-    width: '40%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: '100%',
+    aspectRatio: 1,
+    marginBottom: 8,
   },
 
   image: {
-    width: '90%',
-    height: '90%',
-    borderRadius: 10,
-    backgroundColor: '#242220',
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#c8d4b8',
   },
 
   infoContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingLeft: 15,
-    gap: 6,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 4,
+    marginBottom: 0,
   },
 
   infoRow: {
-    marginVertical: 2,
+    alignItems: 'center',
   },
 
   infoLabel: {
-    fontSize: 9,
-    color: '#5a5550',
+    fontSize: 6,
+    color: '#888070',
     fontFamily: 'DMMono',
     letterSpacing: 0.12,
     textTransform: 'uppercase',
@@ -116,8 +106,8 @@ export const currentTripDisplayBoxStyle = StyleSheet.create({
   },
 
   infoValue: {
-    fontSize: 13,
-    color: '#f0f0ec',
+    fontSize: 11,
+    color: '#2a2018',
     fontFamily: 'DMMono',
     fontWeight: '500',
   },
@@ -128,16 +118,15 @@ export const currentTripDisplayBoxStyle = StyleSheet.create({
     height: height * 0.05,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#1a1917',
-    borderRadius: 12,
+    backgroundColor: '#f5f0e8',
+    borderRadius: 2,
     top: 250,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
     shadowColor: '#000',
-    shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 0,
+    shadowOffset: { width: 2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
     elevation: 5,
+    transform: [{ rotate: '-2deg' }],
   },
 
   minimizeImage: {
@@ -147,7 +136,7 @@ export const currentTripDisplayBoxStyle = StyleSheet.create({
 
   minimizeTripName: {
     fontSize: 14,
-    color: '#f0f0ec',
+    color: '#2a2018',
     fontFamily: 'DMMono',
   },
 
@@ -164,7 +153,7 @@ export const currentTripDisplayBoxStyle = StyleSheet.create({
   liveBadge: {
     position: 'absolute',
     top: 8, left: 8,
-    backgroundColor: '#c03030',
+    backgroundColor: '#c97a6a',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -172,7 +161,7 @@ export const currentTripDisplayBoxStyle = StyleSheet.create({
   },
 
   liveText: {
-    color: '#f0f0ec',
+    color: '#f5f0e8',
     fontSize: 9,
     fontWeight: 'bold',
     letterSpacing: 0.1,

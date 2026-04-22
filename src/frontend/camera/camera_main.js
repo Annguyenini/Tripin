@@ -1,7 +1,7 @@
-import React, { useState, useRef, useCallback, useEffect,useMemo } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { View, Dimensions } from 'react-native';
-import { Camera, useCameraDevice,useCameraFormat } from 'react-native-vision-camera'
-import Animated, { useSharedValue, clamp,useDerivedValue } from "react-native-reanimated"
+import { Camera, useCameraDevice, useCameraFormat } from 'react-native-vision-camera'
+import Animated, { useSharedValue, clamp, useDerivedValue } from "react-native-reanimated"
 import { useCameraPermissions } from 'expo-camera';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -30,7 +30,7 @@ const { width, height } = Dimensions.get('window');
 
 const exitCamera = () => navigate('Main');
 
-export const CameraApp = () => {
+export const CameraApp = ({ onClose }) => {
     const cameraRef = useRef(null);
 
     // permissions
@@ -48,25 +48,25 @@ export const CameraApp = () => {
     const [image_icon, setImage_icon] = useState(null)
     const [imageIconType, setImageIconType] = useState(null)
     // capture
-    const {currentMode, toggleCameraMode, recording,shutterButtonAction} = useCameraCapture(cameraRef,isCameraReady,flash)
+    const { currentMode, toggleCameraMode, recording, shutterButtonAction } = useCameraCapture(cameraRef, isCameraReady, flash)
     // zoom
-    const {onZoom,onZoomEnd,zoom,zoomText} = useCameraZoom(device)
+    const { onZoom, onZoomEnd, zoom, zoomText } = useCameraZoom(device)
 
     // exposure
-    const [exposure,setExposure]= useState(0)
+    const [exposure, setExposure] = useState(0)
     // format
-    const format = useCameraFormat(device,[
-        {fps:60}
+    const format = useCameraFormat(device, [
+        { fps: 60 }
     ])
     // active filter
-    const [filter,setFilter]= useState(null)
+    const [filter, setFilter] = useState(null)
 
     // filter intensity 
-    const[filterIntensity,setFilterIntensity] =useState(1) 
+    const [filterIntensity, setFilterIntensity] = useState(1)
     // frame filter
     // const frameProcessor = useFrameFilter(filter,filterIntensity)
     useEffect(() => {
-      const fetchImages = async () => {
+        const fetchImages = async () => {
             const recentImageAsset = AlbumService.AlbumsArray[0];
             if (!recentImageAsset) return;
 
@@ -76,7 +76,7 @@ export const CameraApp = () => {
             } else {
                 setImage_icon(recentImageAsset.media_path);
             }
-            
+
             setImageIconType(recentImageAsset.media_type);
         };
         const updateImages = {
@@ -90,7 +90,7 @@ export const CameraApp = () => {
                 } else {
                     setImage_icon(recentImageAsset.media_path);
                 }
-                
+
                 setImageIconType(recentImageAsset.media_type);
             }
         }
@@ -135,24 +135,24 @@ export const CameraApp = () => {
                         video={true}
                         audio={true}
                         exposure={exposure}
-                        // frameProcessor={frameProcessor}
+                    // frameProcessor={frameProcessor}
                     />
                 </View>
             </GestureDetector>
 
             <TopBarCamera
-               
-                exitCamera={exitCamera}
+
+                exitCamera={onClose}
             />
-            <CameraSetting 
+            <CameraSetting
                 flash={flash}
                 setFlash={setFlash}
                 facing={facing}
-                setFacing={setFacing}/>
+                setFacing={setFacing} />
             <View style={cameraStyle.middleBar}>
-                <ZoomText zoom={zoomText/10} />
+                <ZoomText zoom={zoomText / 10} />
             </View>
-            <HorizontalSlider value={exposure} onChange={setExposure} min={device.minExposure} max={device.maxExposure} label={'exposure'}/>
+            <HorizontalSlider value={exposure} onChange={setExposure} min={device.minExposure} max={device.maxExposure} label={'exposure'} />
 
             <View>
                 <BotBarControl

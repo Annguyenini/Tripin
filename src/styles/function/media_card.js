@@ -3,28 +3,26 @@ const { width, height } = Dimensions.get('window');
 
 export const mediaCardStyle = StyleSheet.create({
 
-  // ── OVERLAY BACKDROP ──
   overlayContainer: {
     position: 'absolute',
     top: 0, left: 0,
     width: '100%', height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.75)',
+    backgroundColor: 'rgba(44,44,42,0.85)',
   },
 
-  // ── MAIN CARD ──
   card: {
     width: width * 0.90,
     height: height * 0.90,
     padding: 2,
-    backgroundColor: '#1a1917',
+    backgroundColor: '#e8c9a0',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-    shadowColor: '#000',
+    borderColor: 'rgba(59,109,17,0.2)',
+    shadowColor: '#2C2C2A',
     shadowOffset: { width: 6, height: 6 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.3,
     shadowRadius: 0,
     elevation: 8,
     alignContent: 'center',
@@ -32,16 +30,15 @@ export const mediaCardStyle = StyleSheet.create({
     flexDirection: 'row',
   },
 
-  // ── FULL CARD ──
   fullCard: {
     width: width,
     height: height,
     padding: 2,
-    backgroundColor: '#0d0c0a',
+    backgroundColor: '#e8c9a0',
     borderRadius: 0,
-    shadowColor: '#000',
+    shadowColor: '#2C2C2A',
     shadowOffset: { width: 6, height: 6 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.3,
     shadowRadius: 0,
     elevation: 8,
     alignContent: 'center',
@@ -49,7 +46,6 @@ export const mediaCardStyle = StyleSheet.create({
     flexDirection: 'row',
   },
 
-  // ── BUTTONS ROW ──
   buttons: {
     position: 'absolute',
     top: 10,
@@ -63,17 +59,17 @@ export const mediaCardStyle = StyleSheet.create({
     position: 'absolute',
     top: 40,
     right: 10,
-    backgroundColor: '#242220',
+    backgroundColor: '#000000',
     width: 32, height: 32,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    shadowColor: '#000',
+    borderColor: 'rgba(255,255,255,0.15)',
+    shadowColor: '#2C2C2A',
     shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.3,
     shadowRadius: 0,
     elevation: 3,
   },
@@ -82,59 +78,61 @@ export const mediaCardStyle = StyleSheet.create({
     position: 'absolute',
     top: 80,
     right: 10,
-    backgroundColor: '#242220',
+    backgroundColor: '#000000',
     width: 32, height: 32,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    shadowColor: '#000',
+    borderColor: 'rgba(255,255,255,0.15)',
+    shadowColor: '#2C2C2A',
     shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.3,
     shadowRadius: 0,
     elevation: 3,
   },
-   deleteButton: {
+
+  deleteButton: {
     position: 'absolute',
     top: 120,
     right: 10,
-    backgroundColor: '#242220',
+    backgroundColor: '#ffffff',
     width: 32, height: 32,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    shadowColor: '#000',
+    borderColor: 'rgba(255,255,255,0.15)',
+    shadowColor: '#2C2C2A',
     shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.3,
     shadowRadius: 0,
     elevation: 3,
   },
+
   fullscreenButton: {
     position: 'absolute',
     top: 40,
     right: 50,
-    backgroundColor: '#242220',
+    backgroundColor: '#000000',
     width: 32, height: 32,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    shadowColor: '#000',
+    borderColor: 'rgba(255,255,255,0.15)',
+    shadowColor: '#2C2C2A',
     shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.3,
     shadowRadius: 0,
     elevation: 3,
   },
 
   exitText: {
-    color: '#f0f0ec',
+    color: '#f5f0e8',
     fontWeight: 'bold',
     fontSize: 16,
   },
@@ -142,13 +140,12 @@ export const mediaCardStyle = StyleSheet.create({
   title: {
     fontFamily: 'PermanentMarker',
     fontSize: 24,
-    color: '#f0f0ec',
+    color: '#2C2C2A',
     marginBottom: 20,
     textAlign: 'center',
     letterSpacing: 0.04,
   },
 
-  // ── MEDIA ──
   image: {
     width: '100%',
     height: '100%',
@@ -173,17 +170,16 @@ export const mediaCardStyle = StyleSheet.create({
     borderRadius: 0,
   },
 
-  // ── CLUSTER CARD ──
   clusterCard: {
     width: width * 0.15,
-    backgroundColor: '#1a1917',
+    backgroundColor: '#e8c9a0',
     borderRadius: 10,
     padding: 2,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-    shadowColor: '#000',
+    borderColor: 'rgba(59,109,17,0.25)',
+    shadowColor: '#2C2C2A',
     shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.2,
     shadowRadius: 0,
     elevation: 4,
   },
@@ -198,12 +194,11 @@ export const mediaCardStyle = StyleSheet.create({
     marginTop: 6,
     fontSize: 11,
     fontWeight: '500',
-    color: '#f0f0ec',
+    color: '#2C2C2A',
     fontFamily: 'DMMono',
     letterSpacing: 0.06,
   },
 
-  // ── BOTTOM LIST ──
   bottomListContainer: {
     position: 'absolute',
     alignContent: 'center',
@@ -215,20 +210,68 @@ export const mediaCardStyle = StyleSheet.create({
     zIndex: 20,
   },
 
-  // ── IMAGE LIST OVERLAY ──
   ImageListOverlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
   },
-playButton:{
-  fontSize: 25,
-    color: '#f0f0ec',
-},
+
+  playButton: {
+    fontSize: 25,
+    color: '#f5f0e8',
+  },
+
   overlayImage: {
     width: 100,
     height: 100,
-    tintColor: '#f0f0ec',
+    tintColor: '#f5f0e8',
   },
+})
+
+export const deleteCardStyle = StyleSheet.create({
+
+  iconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#c97a6a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+
+  title: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#2C2C2A',
+    marginBottom: 20,
+  },
+
+  buttons: {
+    flexDirection: 'row',
+    gap: 10,
+    width: '100%',
+  },
+
+  cancelBtn: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 0.5,
+    borderColor: '#000000',
+    alignItems: 'center',
+  },
+
+  cancelText: { fontSize: 13, color: '#3B6D11' },
+
+  confirmBtn: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#c97a6a',
+    alignItems: 'center',
+  },
+
+  confirmText: { fontSize: 13, color: '#f5f0e8' },
 })

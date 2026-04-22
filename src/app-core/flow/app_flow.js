@@ -10,14 +10,19 @@ import TripContentsSync from "./sync/trip_contents_sync"
 import LocalStorage from "../../backend/storage/base/localStorage"
 import TripContentSyncManager from "./sync/trip_contents_sync_manager"
 import safeRun from "../helpers/safe_run"
-import {_registerNetworkCallback} from "./sync/network_observer"
-class AppFlow{
-    constructor(){
+import { _registerNetworkCallback } from "./sync/network_observer"
+class AppFlow {
+    constructor() {
         this.LocalStorage = new LocalStorage()
+        _registerNetworkCallback(this.networkCallback.bind(this))
     }
-    async tokenAuthorization(){
-        const loginViaToken  = await AuthHandler.loginWithTokenHandler()
-        if(!loginViaToken){
+    networkCallback(state) {
+        console.log('network', state)
+        if (state) this.syncCurrentTripContents()
+    }
+    async tokenAuthorization() {
+        const loginViaToken = await AuthHandler.loginWithTokenHandler()
+        if (!loginViaToken) {
             await this.LocalStorage.clearAllStorage()
             return false
         }
@@ -25,50 +30,45 @@ class AppFlow{
 
         return true
     }
-    
-    async onAuthSuccess(){
-        await safeRun(()=>UserDataHandler.GetUserDataHandler(),'failed_at_get_user_data')
+
+    async onAuthSuccess() {
+        await safeRun(() => UserDataHandler.GetUserDataHandler(), 'failed_at_get_user_data')
         // if (!requestUserData){ return false}
         // console.log('main')
         navigate('Permission')
-        
+
         return true
     }
-    async onPermissionReady (){
+    async onPermissionReady() {
         await this.initDBs()
         navigate('Main')
 
     }
-    async initDBs(){
-        try{
-            await safeRun(()=>Albumdb.initUserAlbum(),'failed_at_create_album_database')
-            await safeRun(()=>TripDatabaseService.initTripTable(),'failed_at_create_trips_database')
+    async initDBs() {
+        try {
+            await safeRun(() => Albumdb.initUserAlbum(), 'failed_at_create_album_database')
+            await safeRun(() => Albumdb.migration(), 'failed_at_migration_album')
+            await safeRun(() => TripDatabaseService.initTripTable(), 'failed_at_create_trips_database')
         }
-        catch(err){
+        catch (err) {
             console.error(err)
         }
     }
-    async onAppReady(){
-        try{
-            const currentTripIdAndVersion = await TripHandler.requestCurrentTripHandler()      
-            await safeRun(()=>this.syncCurrentTripContents(),'failed_at_sync_trip_media')
+    async onAppReady() {
+        try {
+            const currentTripIdAndVersion = await TripHandler.requestCurrentTripHandler()
+            await safeRun(() => this.syncCurrentTripContents(), 'failed_at_sync_trip_media')
 
         }
-        catch(err){
+        catch (err) {
             console.error('Failed too get current trip data')
         }
         return true
 
     }
-    // request current trip-id
-    async onRenderMapSuccess(){
-        // const currentTripIdAndVersion = await TripHandler.requestCurrentTripHandler()      
-        // await safeRun(()=>this.syncCurrentTripContents(),'failed_at_sync_trip_media')
-  
-        // return
-    }
-    async onRenderUserData(){
-        const trips = await TripHandler.requestAllTripHandler() 
+
+    async onRenderUserData() {
+        const trips = await TripHandler.requestAllTripHandler()
         return
     }
 
@@ -78,17 +78,17 @@ class AppFlow{
     //     const currentlocationCon = await TripContentsHandler.requestLocationConditionsHandler()
     //     return
     // }
-    async syncCurrentTripContents(){
+    async syncCurrentTripContents() {
         const trip_id = CurrentTripDataService.getCurrentTripId()
         if (trip_id) {
             console.log('sync')
-            await safeRun (()=>TripContentSyncManager.tripCoordinateSync(trip_id),'faild_at_sync_trip_media')
-            await safeRun (()=>TripContentSyncManager.tripCoordinateSync(trip_id),'faild_at_sync_trip_coordinate')
+            await safeRun(() => TripContentSyncManager.tripMediaSyncHandler(trip_id), 'faild_at_sync_trip_media')
+            await safeRun(() => TripContentSyncManager.tripCoordinateSync(trip_id), 'faild_at_sync_trip_coordinate')
             console.log('sync complete')
         }
         // await TripContentsSync.currentTripContentsSync(CurrentTripDataService.getCurrentTripId())
         // return
     }
-    
+
 }
 export default new AppFlow()

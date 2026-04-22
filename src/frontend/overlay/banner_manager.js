@@ -6,6 +6,8 @@ import network_observer from "../../app-core/flow/sync/network_observer";
 import { _registerNetworkCallback } from "../../app-core/flow/sync/network_observer";
 import { _registerSyncingCallback } from "../../app-core/flow/sync/trip_contents_sync_manager";
 import { SyncBanner } from "./syncing_banner";
+import { SatelliteOffIcon, SatelliteOnIcon } from "../../styles/icons/satellite";
+import { LocationOnIcon, LocationOffIcon } from "../../styles/icons/navigation";
 // individual banner types
 
 const OfflineBanner = () => (
@@ -21,9 +23,10 @@ const OfflineBanner = () => (
             <Text style={styles.bannerSub}>
                 Not from the world —{' '}
                 <Text style={styles.bannerSubAccent}>just the server.</Text>
+
             </Text>
-            <TouchableOpacity style={styles.retryBtn} onPress={()=>network_observer.callServer()}>
-                <Text style={styles.retryText}>Alo Server</Text>
+            <TouchableOpacity style={styles.retryBtn} onPress={() => network_observer.callServer()}>
+                <Text style={styles.retryText}>Wake them up</Text>
             </TouchableOpacity>
         </View>
     </View>
@@ -36,7 +39,7 @@ const LocationBanner = ({ text }) => (
             style={({ pressed }) => [styles.button, pressed && { opacity: 0.7 }]}
             onPress={() => Linking.openSettings()}
         >
-            <Text style={styles.buttonText}>Fix</Text>
+            <Text style={styles.buttonText}>Enable</Text>
         </Pressable>
     </View>
 );
@@ -45,8 +48,8 @@ const LocationBanner = ({ text }) => (
 export const BannerManager = () => {
     const [foregroundGranted, setForegroundGranted] = useState(false);
     const [backgroundGranted, setBackgroundGranted] = useState(false);
-    const [isOffline,setIsOffline]=useState(network_observer.isReachable)
-    const [sync,setSync]=useState(false)
+    const [isOffline, setIsOffline] = useState(network_observer.isReachable)
+    const [sync, setSync] = useState(false)
     useEffect(() => {
         const init = async () => {
             const fg = await Location.requestForegroundPermissionsAsync();
@@ -67,13 +70,26 @@ export const BannerManager = () => {
 
     return (
         <View style={styles.wrapper} pointerEvents="box-none">
-            {!isOffline&&<OfflineBanner />}
+            {!isOffline && <OfflineBanner />}
             {!foregroundGranted && (
-                <LocationBanner text="📍 Foreground location off" />
+                <View style={styles.banner}>
+                    <LocationOffIcon></LocationOffIcon>
+                    <Text style={styles.text}>I mean how the map suppost to work with out Location?</Text>
+                </View>
             )}
-            {foregroundGranted && !backgroundGranted && (
-                <LocationBanner text="🛰️ Background location off" />
+            {!backgroundGranted && (
+                <View style={styles.banner}>
+                    <SatelliteOffIcon></SatelliteOffIcon>
+                </View>
             )}
+            {backgroundGranted && (
+                <View style={styles.banner}>
+                    <SatelliteOnIcon></SatelliteOnIcon>
+                </View>
+            )}
+            {
+
+            }
             <SyncBanner visible={sync}></SyncBanner>
         </View>
     );
@@ -99,19 +115,19 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     retryText: {
-    fontFamily: 'DMMono', fontSize: 10,
-    color: '#a09e99', marginTop: 4,
-},
-retryBtn: {
-    marginTop: 6,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#2e2c29',
-    alignSelf: 'flex-start',
-    backgroundColor:'#ffffff00'
-},
+        fontFamily: 'DMMono', fontSize: 10,
+        color: '#a09e99', marginTop: 4,
+    },
+    retryBtn: {
+        marginTop: 6,
+        paddingVertical: 4,
+        paddingHorizontal: 10,
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: '#2e2c29',
+        alignSelf: 'flex-start',
+        backgroundColor: '#ffffff00'
+    },
     // offline wifi icon
     wifiIcon: {
         width: 16, height: 14,

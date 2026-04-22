@@ -2,34 +2,36 @@ import LocalStorage from "../../storage/base/localStorage";
 import safeRun from "../../../app-core/helpers/safe_run";
 import * as Crypto from 'expo-crypto';
 import Albumdb from "../../album/albumdb";
-class HashService extends LocalStorage{
-    GENERATE_TRIP_HASH_KEY(trip_id,type){
+class HashService extends LocalStorage {
+    GENERATE_TRIP_HASH_KEY(trip_id, type) {
         return `trip_${trip_id}:${type}:hash`
 
     }
-    async _generateLocalTripMediaHash(mediaList) {
-        if (!mediaList || mediaList.length === 0) return null;
+    async _generateLocalTripMediaHash(max_modified_time) {
+        // if (!mediaList || mediaList.length === 0) return null;
+        // mediaList = mediaList.filter((asset) => {
+        //     return asset.event !== 'remove'
+        // })
+        // const sorted = [...mediaList]
+        //     .sort((a, b) => a.media_id.localeCompare(b.media_id))
 
-        const sorted = [...mediaList]
-            .sort((a, b) => a.media_id.localeCompare(b.media_id))
 
-
-        const idsString = sorted.map(item => String(item.media_id)).join(',')
+        // const idsString = sorted.map(item => String(item.media_id)).join(',')
 
         const hash = await Crypto.digestStringAsync(
             Crypto.CryptoDigestAlgorithm.MD5,
-            idsString
+            max_modified_time
         )
 
         return hash
     }
-    
-    async saveHashToLocalStorage(trip_id,type,hash){
-        await safeRun(()=>this.saveToLocal(this.GENERATE_TRIP_HASH_KEY(trip_id,type),hash),'failed_at_save_hash_to_local')
+
+    async saveHashToLocalStorage(trip_id, type, hash) {
+        await safeRun(() => this.saveToLocal(this.GENERATE_TRIP_HASH_KEY(trip_id, type), hash), 'failed_at_save_hash_to_local')
     }
 
-    async getHashFromLocalStorage(trip_id,type){
-        return await safeRun(()=>this.getDataFromLocal(this.GENERATE_TRIP_HASH_KEY(trip_id,type)),'failed_at_get_hash_from_local')
+    async getHashFromLocalStorage(trip_id, type) {
+        return await safeRun(() => this.getDataFromLocal(this.GENERATE_TRIP_HASH_KEY(trip_id, type)), 'failed_at_get_hash_from_local')
     }
     // 
     /**
@@ -37,19 +39,19 @@ class HashService extends LocalStorage{
      * @param {*} trip_id 
      * @returns 
      */
-    async generateAndSaveTripMediaHash(trip_id){        
-        const media_metadata = await safeRun(()=>Albumdb.getAssestsFromTripId(trip_id))
-        const local_hash = await safeRun(()=>this._generateLocalTripMediaHash(media_metadata),'failed_at_generate_trip_media_hash')
-        if(local_hash){
-            await safeRun(()=>this.saveHashToLocalStorage(trip_id,'trip_media',local_hash),'failed_at_save_hash_to_local')
+    async generateAndSaveTripMediaHash(trip_id) {
+        const media_metadata = await safeRun(() => Albumdb.getAssestsFromTripId(trip_id))
+        const local_hash = await safeRun(() => this._generateLocalTripMediaHash(media_metadata), 'failed_at_generate_trip_media_hash')
+        if (local_hash) {
+            await safeRun(() => this.saveHashToLocalStorage(trip_id, 'trip_media', local_hash), 'failed_at_save_hash_to_local')
         }
         return local_hash
     }
-    async generateTripMediaHash(trip_id){
-        const media_metadata = await safeRun(()=>Albumdb.getAssestsFromTripId(trip_id))
-        const local_hash = await safeRun(()=>this._generateLocalTripMediaHash(media_metadata),'failed_at_generate_trip_media_hash')
-        if(local_hash){
-            await safeRun(()=>this.saveHashToLocalStorage(trip_id,'trip_media',local_hash),'failed_at_save_hash_to_local')
+    async generateTripMediaHash(trip_id) {
+        const media_metadata = await safeRun(() => Albumdb.getAssestsFromTripId(trip_id))
+        const local_hash = await safeRun(() => this._generateLocalTripMediaHash(media_metadata), 'failed_at_generate_trip_media_hash')
+        if (local_hash) {
+            await safeRun(() => this.saveHashToLocalStorage(trip_id, 'trip_media', local_hash), 'failed_at_save_hash_to_local')
         }
         return local_hash
     }

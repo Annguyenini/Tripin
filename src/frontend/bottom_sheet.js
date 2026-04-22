@@ -1,293 +1,264 @@
-import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import TripHandler from "../app-core/flow/trip_handler.js";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
-import { TouchableOpacity, Text, StyleSheet, View, Modal } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, View, ScrollView, Modal } from "react-native";
 import { Image } from "expo-image";
-import { NewTripFiller } from "./functions/add_new_trip.js";
-import TripDataService from "../backend/storage/trips.js";
 import UserDataService from "../backend/storage/user.js";
 import { DATA_KEYS } from "../backend/storage/keys/storage_keys.js";
-import { TripCard } from "./custom_components/trip_label.js";
-import { tripCardsStyle } from "../styles/function/tripcards.js";
 import AppFlow from "../app-core/flow/app_flow.js";
 import { UseOverlay } from "./overlay/overlay_main.js";
 import TripDisplayObserver from "./map_box/functions/trip_display_observer.js";
+import CurrentTripDataService from '../backend/storage/current_trip.js'
 import { TestScreen } from "../test_screen.js";
-import { OfflineBanner } from "./overlay/banner_manager.js";
+import { TripStatCards } from "./map_box/functions/trip_stat.js";
+import PolaroidGallery from "./albums/memories.js";
 const default_user_image = require('../../assets/image/profile_icon.png')
+const default_image = require('../../assets/icon.png')
 
-export const UserDataBottomSheet = ({ set_show_profile_picker, userDisplayName }) => {
+export const UserDataBottomSheet = ({ userDisplayName }) => {
   const bottomSheetRef = useRef(null)
-  const snapPoints     = useMemo(() => ['20%', '95%'], [])
-
-  const [snapIndex,            setSnapIndex]            = useState(0)
-  const [showCreateTrip,       setShowCreateTrip]       = useState(false)
-  const [trips,                setTrips]                = useState(null)
-  const [userProfileImage,     setUserProfileImage]     = useState(UserDataService.getProfileImageUri())
-  const [loadingText,          setLoadingText]          = useState(null)
-  const [dataKey,              setDataKey]              = useState(0)
-  const [test,setTest]=useState(false)
+  const [test, setTest] = useState(false)
+  const [snapIndex, setSnapIndex] = useState(0)
+  const [userProfileImage, setUserProfileImage] = useState(UserDataService.getProfileImageUri())
+  const [tripImageCover, setTripImageCover] = useState(CurrentTripDataService.getCurrentTripImageUri())
+  const [tripName, setTripName] = useState(CurrentTripDataService.getCurrentTripName())
+  const [dataKey, setDataKey] = useState(0)
   const { showLoading, hideLoading, showErrorBox } = UseOverlay()
+  const [isOnATrip, setIsOnATrip] = useState(false)
 
-  // ── observers ──
   useEffect(() => {
-    const onTripsUpdate    = { update: (trips) => setTrips(trips) }
-    const onAvatarUpdate   = { update: (uri)   => { setUserProfileImage(uri); setDataKey(k => k + 1) } }
-    const onSnapPointReset = { update: ()      => { setSnapIndex(0);          setDataKey(k => k + 1) } }
+    const onAvatarUpdate = { update: (uri) => { setUserProfileImage(uri); setDataKey(k => k + 1) } }
+    const onSnapPointReset = { update: () => { setSnapIndex(0); setDataKey(k => k + 1) } }
 
-    TripDataService.attach(onTripsUpdate,    DATA_KEYS.TRIP.ALL_TRIP_LIST)
-    UserDataService.attach(onAvatarUpdate,   DATA_KEYS.USER.USER_AVATAR)
+    UserDataService.attach(onAvatarUpdate, DATA_KEYS.USER.USER_AVATAR)
     TripDisplayObserver.attach(onSnapPointReset, TripDisplayObserver.EVENTS)
-
     AppFlow.onRenderUserData()
 
     return () => {
-      TripDataService.detach(onTripsUpdate,    DATA_KEYS.TRIP.ALL_TRIP_LIST)
-      UserDataService.detach(onAvatarUpdate,   DATA_KEYS.USER.USER_AVATAR)
+      UserDataService.detach(onAvatarUpdate, DATA_KEYS.USER.USER_AVATAR)
       TripDisplayObserver.detach(onSnapPointReset, TripDisplayObserver.EVENTS)
     }
   }, [])
-
-  // ── handlers ──
-  const handleRefresh = useCallback(async () => {
-    setLoadingText("pulling your trips...")
-    await TripHandler.refreshAllTripsData()
-    setLoadingText(null)
-  }, [])
-
-  const handleCreateTrip = useCallback(async (trip_name, imageUri) => {
-    showLoading()
-    const res = await TripHandler.requestNewTripHandler(trip_name, imageUri ?? null)
-    hideLoading()
-    if (!res || res.status !== 200) {
-      showErrorBox('Error Creating Trip', res.data.message, 6000)
+  useEffect(() => {
+    const updateTripData = {
+      update(newTripData) {
+        if (!newTripData) {
+          setIsOnATrip(false)
+          return
+        }
+        const newName = newTripData.trip_name
+        const newImage = newTripData.image
+        setTripName(newName)
+        setTripImageCover(newImage)
+        setIsOnATrip(true)
+      }
     }
-    setShowCreateTrip(false)
+    CurrentTripDataService.attach(updateTripData, DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA);
+    return () => CurrentTripDataService.detach(updateTripData, DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA);
+
   }, [])
 
-  // ── list header ──
-  const ListHeader = (
-    <>
-      {/* user card */}
-      <View style={s.userCard}>
-        <TouchableOpacity onPress={() => set_show_profile_picker(true)} activeOpacity={0.8}>
-          <Image
-            cachePolicy="memory-disk" 
-            key={dataKey}
-            source={userProfileImage ? { uri: userProfileImage } : default_user_image}
-            style={s.avatar}
-          />
-          <View style={s.avatarEditBadge}>
-            <Text style={s.avatarEditText}>✎</Text>
-          </View>
-        </TouchableOpacity>
+  const end_trip = async () => {
+    showLoading()
+    const status = await TripHandler.endTripHandler();
+    hideLoading()
+  }
 
-        <View style={s.userInfo}>
-          <Text style={s.displayName}>{userDisplayName}</Text>
-          <Text style={s.displaySub}>your journeys</Text>
-        </View>
-      </View> 
-
-      <TouchableOpacity onPress={()=>setTest(true)}>
-        <Text>test</Text>
-      </TouchableOpacity>
-      
-      {/* section header */}
-      <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>All Trips</Text>
-        <View style={s.sectionActions}>
-          <TouchableOpacity style={s.iconBtn} onPress={handleRefresh} activeOpacity={0.7}>
-            <Text style={s.iconBtnText}>↺</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[s.iconBtn, s.iconBtnPrimary]} onPress={() => setShowCreateTrip(true)} activeOpacity={0.7}>
-            <Text style={[s.iconBtnText, s.iconBtnTextPrimary]}>+</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* loading text */}
-      {loadingText && (
-        <View style={s.loadingRow}>
-          <Text style={s.loadingText}>{loadingText}</Text>
-        </View>
-      )}
-      {test&&<Modal>
-        <TestScreen testScreenHandler={()=>setTest(false)}></TestScreen>
-        </Modal>}
-    </>
-  )
 
   return (
     <BottomSheet
       key={dataKey}
       ref={bottomSheetRef}
+      snapPoints={['20%', '50%']}
       index={snapIndex}
-      snapPoints={snapPoints}
       backgroundStyle={s.sheetBg}
       handleIndicatorStyle={s.sheetHandle}
     >
-      <BottomSheetFlatList
-        data={trips ?? []}
-        keyExtractor={(item, index) => (item?.id ?? index).toString()}
-        numColumns={2}
-        columnWrapperStyle={tripCardsStyle.row}
-        renderItem={({ item }) => <TripCard trip={item} />}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={ListHeader}
-        contentContainerStyle={s.listContent}
-        ListEmptyComponent={
-          <View style={s.emptyState}>
-            <Text style={s.emptyIcon}>🗺️</Text>
-            <Text style={s.emptyText}>no trips yet</Text>
-            <Text style={s.emptySub}>tap + to start one</Text>
-          </View>
-        }
-      />
+      <BottomSheetScrollView contentContainerStyle={s.container}>
+        <TouchableOpacity onPress={() => setTest(true)}><Text>test</Text></TouchableOpacity>
+        {test &&
+          <Modal>
+            <TestScreen testScreenHandler={() => setTest(false)}></TestScreen></Modal>}
 
-      {showCreateTrip && (
-        <NewTripFiller
-          set_show_create_trip_filler={setShowCreateTrip}
-          request_new_trip={handleCreateTrip}
-        />
-      )}
+        {/* ── user card ── */}
+        {/* <View style={s.userCard}>
+          <TouchableOpacity activeOpacity={0.8} style={s.avatarWrap}>
+            <Image
+              cachePolicy="memory-disk"
+              key={dataKey}
+              source={userProfileImage ? { uri: userProfileImage } : default_user_image}
+              style={s.avatar}
+            />
+            <View style={s.avatarEditBadge}>
+              <Text style={s.avatarEditText}>✎</Text>
+            </View>
+          </TouchableOpacity>
+          <View style={s.userInfo}>
+            <Text style={s.displayName}>{userDisplayName}</Text>
+            <Text style={s.displaySub}>your journeys</Text>
+          </View>
+
+
+        </View> */}
+        {/* {!isOnATrip &&
+          <>
+            <Text style={s.tripName}>No active Trip Add One?</Text>
+            <TouchableOpacity style={[s.iconBtn, s.iconBtnPrimary]} onPress={() => setShowCreateTrip(true)} activeOpacity={0.7}>
+              <Text style={s.iconBtnTextPrimary}>+</Text>
+            </TouchableOpacity>
+
+          </>} */}
+        {/* ── trip title ── */}
+        {isOnATrip &&
+          <>
+            <View style={s.titleRow}>
+              <Image
+                cachePolicy='memory-disk'
+                source={tripImageCover ? { uri: tripImageCover } : default_image}
+                style={s.image}
+              />
+              <View style={s.titleBlock}>
+
+                <Text style={s.tripName}>{tripName}</Text>
+
+                <View style={s.statusRow}>
+                  <View style={s.statusDot} />
+                  {/* <Text style={s.statusText}>Day 3 of 6 · Heading south</Text> */}
+                </View>
+              </View>
+              <View style={s.endTripCover}>
+                <TouchableOpacity onPress={end_trip} style={s.upBtn} activeOpacity={0.8}>
+                  <Text style={s.upBtnText}>End trip</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* ── stat cards ── */}
+            <TripStatCards></TripStatCards>
+
+            {/* ── memories divider ── */}
+            <View style={s.dividerRow}>
+              <View style={s.dividerLine} />
+              <Text style={s.dividerLabel}>MEMORIES</Text>
+              <View style={s.dividerLine} />
+            </View>
+
+            {/* ── memory cards ── */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.memoriesScroll}>
+              <PolaroidGallery></PolaroidGallery>
+              {/* map memories here */}
+            </ScrollView>
+          </>}
+      </BottomSheetScrollView>
+
+
     </BottomSheet>
   )
 }
 
 const s = StyleSheet.create({
-  // ── sheet ──
-  sheetBg:     { backgroundColor: '#1a1917' },
+  sheetBg: { backgroundColor: 'rgba(255, 252, 245, 0.95)' },
   sheetHandle: { backgroundColor: '#3a3830', width: 40 },
-  listContent: { paddingBottom: 80, paddingHorizontal: 12 },
+  container: { paddingHorizontal: 16, paddingBottom: 40 },
 
   // ── user card ──
   userCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    padding: 16,
-    backgroundColor: '#242220',
-    borderRadius: 16,
-    marginBottom: 20,
+    gap: 10,
+    padding: 14,
+    // backgroundColor: '#f9e5d3',
+    borderRadius: 14,
+    marginBottom: 16,
     marginTop: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255, 255, 255, 0.67)',
   },
-
-  avatar: {
-    width: 58,
-    height: 58,
-    borderRadius: 29,
-    backgroundColor: '#333',
-  },
-
+  avatarWrap: { position: 'relative' },
+  avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#3a3830' },
   avatarEditBadge: {
-    position: 'absolute',
-    bottom: 0, right: 0,
-    width: 18, height: 18,
-    borderRadius: 9,
+    position: 'absolute', bottom: 0, right: 0,
+    width: 16, height: 16, borderRadius: 8,
     backgroundColor: '#f0f0ec',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center',
   },
-
-  avatarEditText: {
-    fontSize: 9,
-    color: '#1a1a1a',
-  },
-
-  userInfo: {
-    flex: 1,
-    gap: 3,
-  },
-
-  displayName: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#f0f0ec',
-    fontFamily: 'DMMono',
-  },
-
-  displaySub: {
-    fontSize: 10,
-    color: '#5a5550',
-    letterSpacing: 0.12,
-    fontFamily: 'DMMono',
-  },
-
-  // ── section header ──
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-    paddingHorizontal: 2,
-  },
-
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#f0f0ec',
-    fontFamily: 'DMMono',
-    letterSpacing: 0.04,
-  },
-
-  sectionActions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-
+  avatarEditText: { fontSize: 9, color: '#1a1a1a' },
+  userInfo: { flex: 1, gap: 2 },
+  displayName: { fontSize: 15, color: '#000000', fontFamily: 'DMMono' },
+  displaySub: { fontSize: 10, color: '#5a5550', fontFamily: 'DMMono', fontStyle: 'italic' },
   iconBtn: {
-    width: 32, height: 32,
-    borderRadius: 8,
+    width: 32, height: 32, borderRadius: 8,
     backgroundColor: '#2a2826',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.08)',
+    alignItems: 'center', justifyContent: 'center',
   },
+  iconBtnPrimary: { backgroundColor: '#f0f0ec', borderColor: 'transparent' },
+  iconBtnText: { fontSize: 16, color: '#888' },
+  iconBtnTextPrimary: { fontSize: 20, color: '#1a1a1a' },
+  loadingText: { fontSize: 9, color: '#5a5550', fontFamily: 'DMMono' },
 
-  iconBtnPrimary: {
-    backgroundColor: '#f0f0ec',
-    borderColor: 'transparent',
+  // ── title ──
+  titleRow: {
+    flexDirection: 'row', alignItems: 'flex-start',
+    justifyContent: 'space-between', marginBottom: 16,
+  },
+  titleBlock: { flex: 1 },
+  tripName: { fontSize: 22, color: '#000000', fontFamily: 'DMMono', marginBottom: 4 },
+  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  statusDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#4caf50' },
+  statusText: { fontSize: 12, color: '#a08060', fontFamily: 'DMMono', fontStyle: 'italic' },
+  upBtn: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#000000',
+    fontFamily: 'DMMono',
+    letterSpacing: 0.08,
+  },
+  endTripCover: {
+    backgroundColor: '#c03030',
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    alignItems: 'center',
+    marginVertical: 4,
+    minWidth: 70,
     shadowColor: '#000',
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.4,
     shadowRadius: 0,
     elevation: 3,
   },
+  upBtnText: { color: '#fff', fontSize: 16 },
 
-  iconBtnText:        { fontSize: 18, color: '#888' },
-  iconBtnTextPrimary: { color: '#1a1a1a' },
+  // ── stats ──
+  statsRow: { flexDirection: 'row', gap: 8, marginBottom: 20 },
+  statCard: { flex: 1, borderRadius: 12, borderWidth: 0.5, padding: 10 },
+  statEmoji: { fontSize: 18, marginBottom: 4 },
+  statLabel: { fontSize: 10, marginBottom: 2, fontFamily: 'DMMono', letterSpacing: 0.4 },
+  statValue: { fontSize: 22, color: '#3a2a18', fontFamily: 'DMMono' },
 
-  // ── loading ──
-  loadingRow: {
-    paddingHorizontal: 4,
+  // ── divider ──
+  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
+  dividerLine: { flex: 1, height: 0.5, backgroundColor: '#3a3830' },
+  dividerLabel: { fontSize: 9, color: '#5a5550', fontFamily: 'DMMono', letterSpacing: 2 },
+
+  // ── memories ──
+  memoriesScroll: { paddingBottom: 8, gap: 10 },
+  memCard: {
+    width: 110, backgroundColor: '#242220', borderRadius: 8,
+    paddingTop: 6, paddingHorizontal: 6, paddingBottom: 22,
+  },
+  memCardFaded: { opacity: 0.45 },
+  memThumb: { width: '100%', height: 70, borderRadius: 6, marginBottom: 6 },
+  memLabel: { fontSize: 10, color: '#f0f0ec', fontFamily: 'DMMono', fontStyle: 'italic', marginBottom: 2 },
+  memSub: { fontSize: 9, color: '#5a5550', fontFamily: 'DMMono' },
+  image: {
+    width: '14%',
+    height: '130%',
+    borderRadius: 25,
+    marginRight: 10,
     marginBottom: 10,
-  },
-  loadingText: {
-    fontSize: 11,
-    color: '#5a5550',
-    fontFamily: 'DMMono',
-    letterSpacing: 0.1,
-  },
 
-  // ── empty state ──
-  emptyState: {
-    alignItems: 'center',
-    paddingTop: 60,
-    gap: 8,
-  },
-  emptyIcon: { fontSize: 40 },
-  emptyText: {
-    fontSize: 15,
-    color: '#f0f0ec',
-    fontFamily: 'DMMono',
-  },
-  emptySub: {
-    fontSize: 11,
-    color: '#5a5550',
-    fontFamily: 'DMMono',
-    letterSpacing: 0.1,
+    backgroundColor: '#242220',
   },
 })

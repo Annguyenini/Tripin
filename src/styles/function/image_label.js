@@ -1,5 +1,23 @@
 import { StyleSheet } from "react-native";
 export const imageLabelStyle = StyleSheet.create({
+  clusterMode: {
+    position: 'absolute',
+    top: 20,
+    left: 10,
+    backgroundColor: '#242220',
+    width: 75, height: 32,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 0,
+    elevation: 3,
+  },
   badge: {
     position: "absolute",
     top: -4,
@@ -13,20 +31,20 @@ export const imageLabelStyle = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: "#fff",
   },
-   playButton:{
-  fontSize: 25,
+  playButton: {
+    fontSize: 25,
     color: '#f0f0ec',
-},
+  },
   badgeText: {
     color: "#fff",
     fontSize: 10,
     fontWeight: "700",
   },
-  videoOverlayCard :{
-        ...StyleSheet.absoluteFillObject,
+  videoOverlayCard: {
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-        borderRadius: 9,
+    borderRadius: 9,
 
   },
   overlayImage: {
@@ -36,7 +54,7 @@ export const imageLabelStyle = StyleSheet.create({
     borderRadius: 9,
 
   },
-  displayButton :{
+  displayButton: {
     backgroundColor: "#fff",
     width: 50,
     height: 50,
