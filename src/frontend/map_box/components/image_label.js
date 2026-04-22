@@ -76,6 +76,7 @@ const ImageLabel = ({ trip_id, zoomLevel, ready }) => {
 
         const finailizeArray = await Promise.all(
           albumArray.map(async (asset) => {
+            console.log(asset)
             if (asset.media_type !== 'video') return { ...asset }
             const thumbnail = await generateOrGetThumbnailFromMediaId(asset.media_id, asset.media_path)
             return { ...asset, thumb_nail: thumbnail }

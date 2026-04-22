@@ -81,8 +81,11 @@ class Album {
     async initUserAlbum() {
         const DB = await SqliteService.connectDB()
         try {
-            // await DB.execAsync(`DROP TABLE IF EXISTS "user_${UserDataService.getUserId()}_album";`)
-            await DB.execAsync(`
+            const exists = await DB.getFirstAsync(`SELECT name FROM sqlite_master WHERE type ='table' AND name ='user_${UserDataService.getUserId()}_album'`)
+            if (exists) {
+                return
+            }
+            await DB.execAsync(`                
                 CREATE TABLE IF NOT EXISTS 
                 "user_${UserDataService.getUserId()}_album"( 
                 id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -99,7 +102,9 @@ class Album {
                 event TEXT NOT NULL DEFAULT 'add',
                 modified_time TEXT NOT NULL
                 );`)
-            await DB.execAsync('PRAGMA user_verison = 0;')
+
+            await DB.execAsync('PRAGMA user_version = 0;')
+
         }
         catch (err) {
             console.error('faild to created album db', err)
@@ -117,19 +122,17 @@ class Album {
         const user_id = UserDataService.getUserId()
         try {
             if (user_version < 1) {
-                await DB.execAsync(`ALTER TABLE "user_${user_id}_album"
-                                    ADD COLUMN city TEXT DEFAULT NULL;
-                                    ALTER TABLE "user_${user_id}_album"
-                                    ADD COLUMN region TEXT DEFAULT NULL;
-                                    ALTER TABLE "user_${user_id}_album"
-                                    ADD COLUMN country TEXT DEFAULT NULL;
-                                    ALTER TABLE "user_${user_id}_album"
-                                    ADD COLUMN iso_country_code TEXT DEFAULT NULL;`);
-                await DB.execAsync(`PRAGMA user_version =1;`)
+                console.log('migration', 111)
+                await DB.execAsync(`ALTER TABLE "user_${user_id}_album" ADD COLUMN city TEXT DEFAULT NULL;`)
+                await DB.execAsync(`ALTER TABLE "user_${user_id}_album" ADD COLUMN region TEXT DEFAULT NULL;`)
+                await DB.execAsync(`ALTER TABLE "user_${user_id}_album" ADD COLUMN country TEXT DEFAULT NULL;`)
+                await DB.execAsync(`ALTER TABLE "user_${user_id}_album" ADD COLUMN iso_country_code TEXT DEFAULT NULL;`)
+                await DB.execAsync('PRAGMA user_version = 1;')
+
             }
         }
         catch (err) {
-            throw new Error('FAILED TO UPGRADE TABLE')
+            throw new Error('FAILED TO UPGRADE TABLE', err)
         }
     }
     async addMediaIntoDB(media_type, media_path, time, media_id, longitude, latitude, coordinate_id, city, region, country, iso_country_code) {

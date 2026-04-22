@@ -40,18 +40,21 @@ class AppFlow {
         return true
     }
     async onPermissionReady() {
-        await this.initDBs()
-        navigate('Main')
+        if (await this.initDBs()) navigate('Main')
 
     }
     async initDBs() {
+        console.log('migration')
         try {
             await safeRun(() => Albumdb.initUserAlbum(), 'failed_at_create_album_database')
             await safeRun(() => Albumdb.migration(), 'failed_at_migration_album')
             await safeRun(() => TripDatabaseService.initTripTable(), 'failed_at_create_trips_database')
+            return true
         }
         catch (err) {
             console.error(err)
+            return false
+
         }
     }
     async onAppReady() {
