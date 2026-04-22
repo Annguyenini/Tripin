@@ -76,9 +76,9 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
     >
       <BottomSheetScrollView contentContainerStyle={s.container}>
         <TouchableOpacity onPress={() => setTest(true)}><Text>test</Text></TouchableOpacity>
-        {test &&
+        {/* {test &&
           <Modal>
-            <TestScreen testScreenHandler={() => setTest(false)}></TestScreen></Modal>}
+            <TestScreen testScreenHandler={() => setTest(false)}></TestScreen></Modal>} */}
 
         {/* ── user card ── */}
         {/* <View style={s.userCard}>

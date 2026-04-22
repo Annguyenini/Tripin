@@ -162,7 +162,7 @@ function PhotoSheet({ location, onClose }) {
             <View style={styles.sheet}>
                 <View style={styles.sheetHandle} />
                 <View style={styles.sheetHeader}>
-                    <Text style={styles.sheetCity}>{location.city}</Text>
+                    <Text style={styles.sheetCity}>{location.city} - {location.region} - {_getFlag(location.iso_country_code)}</Text>
                     <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
                         <Text style={styles.closeTxt}>✕</Text>
                     </TouchableOpacity>
@@ -185,6 +185,7 @@ function PhotoSheet({ location, onClose }) {
                                             source={{ uri: media.media_path }}
                                             style={styles.photoArea}
                                             repeat={true}
+                                            muted={true}
                                         />) :
                                         (<Image
                                             cachePolicy="memory-disk"
@@ -216,7 +217,6 @@ export default function PolaroidGallery() {
     useEffect(() => {
         const observer = {
             update(newImages) {
-                console.log('nana', newImages);
                 setDisplayMedias([...newImages]);
             }
         };
@@ -225,7 +225,6 @@ export default function PolaroidGallery() {
         return () => CurrentDisplayTripMediaObserver.detach(observer, key);
     }, []);
     useEffect(() => {
-        console.log('nana', 11)
 
         const loc = () => {
             if (!displayMedias) return [];
