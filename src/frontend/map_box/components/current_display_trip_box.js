@@ -45,7 +45,6 @@ export const DisplayTripBox = ({ isFullDisplay, onHide }) => {
 
     }
   }, [])
-  console.log('newTripData', tripData)
 
   useEffect(() => {
     if (!tripData) return

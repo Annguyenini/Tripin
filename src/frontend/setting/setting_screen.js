@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image, PanResponder, Modal } from 'react-native';
 import AuthService from '../../backend/services/auth.js'
-import { navigate } from '../custom_function/navigationService.js'
+import { navigate, navigateToAuth } from '../custom_function/navigationService.js'
 import { settingStyle } from '../../styles/setting_style.js'
 import CurrentTripDataService from '../../backend/storage/current_trip.js'
 import UserDataService from '../../backend/storage/user.js'
@@ -18,6 +18,7 @@ export const SettingScreen = ({ onclose }) => {
 
     const callLogout = async () => {
         // await AuthService.requestLogout();
+        navigateToAuth()
         console.log('signout')
         await safeRun(() => TokenService.deleteToken("access_token"), 'failed_at_delete_access_token')
         await safeRun(() => TokenService.deleteToken("refresh_token"), 'failed_at_delete_refresh_token')
@@ -27,7 +28,7 @@ export const SettingScreen = ({ onclose }) => {
         await safeRun(() => Localstorage.clearAllStorage(), 'failed_at_clear_storage')
         console.log('signout1')
 
-        navigate("auth")
+
     }
     return (
         <View style={settingStyle.container}>

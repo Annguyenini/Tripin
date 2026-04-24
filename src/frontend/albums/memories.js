@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import CurrentDisplayTripMediaObserver from '../map_box/functions/current_display_media_observer';
-import CurrentTripDataService from '../../backend/storage/current_trip';
 import {
     View,
     Text,
@@ -205,22 +204,23 @@ function PhotoSheet({ location, onClose }) {
     );
 }
 
-export default function PolaroidGallery() {
+export default function PolaroidGallery({ trip_id }) {
+    console.log('trip_stat', trip_id)
     const [selectedCity, setSelectedCity] = useState(null);
     const [locationArray, setLocationArray] = useState([])
     const [displayMedias, setDisplayMedias] = useState(
         CurrentDisplayTripMediaObserver.watchArray[
-        CurrentDisplayTripMediaObserver.GENERATE_KEY(CurrentTripDataService.getCurrentTripId())
+        CurrentDisplayTripMediaObserver.GENERATE_KEY(trip_id)
         ]
     );
-
+    console.log('trip_stat', displayMedias)
     useEffect(() => {
         const observer = {
             update(newImages) {
                 setDisplayMedias([...newImages]);
             }
         };
-        const key = CurrentDisplayTripMediaObserver.GENERATE_KEY(CurrentTripDataService.getCurrentTripId());
+        const key = CurrentDisplayTripMediaObserver.GENERATE_KEY(trip_id);
         CurrentDisplayTripMediaObserver.attach(observer, key);
         return () => CurrentDisplayTripMediaObserver.detach(observer, key);
     }, []);

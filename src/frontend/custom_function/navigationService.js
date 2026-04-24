@@ -7,10 +7,18 @@ export function navigate(name, params) {
   if (navigationRef.isReady()) {
     navigationRef.navigate(name, params);
   } else {
-    console.warn(name,'not ready')
+    console.warn(name, 'not ready')
     // if not ready, delay slightly
     setTimeout(() => {
       if (navigationRef.isReady()) navigationRef.navigate(name, params);
     }, 100);
+  }
+}
+export function navigateToAuth() {
+  if (navigationRef.isReady()) {
+    navigationRef.reset({
+      index: 0,
+      routes: [{ name: 'auth' }],
+    })
   }
 }

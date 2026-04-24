@@ -1,4 +1,4 @@
-import { TouchableOpacity, View,Image,Text,StyleSheet,AppState } from "react-native"
+import { TouchableOpacity, View, Image, Text, StyleSheet, AppState } from "react-native"
 import { use, useEffect, useMemo, useState } from "react";
 // import TripDataService from "../../../backend/storage/trip";
 import CurrentTripDataService from '../../../backend/storage/current_trip'
@@ -6,72 +6,71 @@ import CurrentTripDataService from '../../../backend/storage/current_trip'
 import TripHandler from "../../../app-core/flow/trip_handler";
 import LocationDataService from "../../../backend/storage/current_location_data_service";
 import { DATA_KEYS } from "../../../backend/storage/keys/storage_keys";
-import TripDisplayObserver from "../functions/trip_display_observer";
 import OfflineSyncManager from "../../../app-core/flow/sync/offline_sync_manager";
 import { UseOverlay } from "../../overlay/overlay_main";
-export const CurrentTripBar=()=>{
+export const CurrentTripBar = () => {
 
-  const[onFullMode, setOnFullMode]=useState(true)
+  const [onFullMode, setOnFullMode] = useState(true)
 
-  const[duration,setDuration] = useState({hours:0,minutes:0})
-  const [temp,setTemp] = useState(null)
-  const[aqi,setAqi] = useState(null)
-  const[city,setCity] = useState(null)
-  const[currentState,setCurrentState] =useState(AppState.currentState);
-  const[createdTime,setCreatedTime] = useState(null)
-  const {showLoading,hideLoading} =UseOverlay()
-  const end_trip =async()=>{
+  const [duration, setDuration] = useState({ hours: 0, minutes: 0 })
+  const [temp, setTemp] = useState(null)
+  const [aqi, setAqi] = useState(null)
+  const [city, setCity] = useState(null)
+  const [currentState, setCurrentState] = useState(AppState.currentState);
+  const [createdTime, setCreatedTime] = useState(null)
+  const { showLoading, hideLoading } = UseOverlay()
+  const end_trip = async () => {
     showLoading()
-    const status =await TripHandler.endTripHandler();
-    hideLoading ()
+    const status = await TripHandler.endTripHandler();
+    hideLoading()
   }
 
-  useEffect(()=>{
-    const fetch = async()=>{
+  useEffect(() => {
+    const fetch = async () => {
       setCreatedTime(CurrentTripDataService.getCurrentCreatedTime())
     }
     fetch()
 
-    const update_location_condition ={
-      update(condition){
+    const update_location_condition = {
+      update(condition) {
         setAqi(condition.aqi)
         setTemp(condition.tempature)
       }
     }
-    const update_city={
-      update(city){
+    const update_city = {
+      update(city) {
         setCity(city)
       }
     }
-    LocationDataService.attach(update_location_condition,DATA_KEYS.LOCATION.CONDITIONS)
-    LocationDataService.attach(update_city,DATA_KEYS.LOCATION.CITY)
-    return ()=>{
-      LocationDataService.detach(update_location_condition,DATA_KEYS.LOCATION.CONDITIONS)
-      LocationDataService.detach(update_city,DATA_KEYS.LOCATION.CITY)
+    LocationDataService.attach(update_location_condition, DATA_KEYS.LOCATION.CONDITIONS)
+    LocationDataService.attach(update_city, DATA_KEYS.LOCATION.CITY)
+    return () => {
+      LocationDataService.detach(update_location_condition, DATA_KEYS.LOCATION.CONDITIONS)
+      LocationDataService.detach(update_city, DATA_KEYS.LOCATION.CITY)
     }
-  },[createdTime])
+  }, [createdTime])
 
-  useEffect(()=>{
+  useEffect(() => {
 
     if (!createdTime) {
-       return;
+      return;
     }
-    const interval = setInterval(()=>{
+    const interval = setInterval(() => {
       const dur = Date.now() - createdTime
-      const hour = dur/3600000
+      const hour = dur / 3600000
       const hours_floor = Math.floor(hour)
       const minutes = Math.floor((hour - hours_floor) * 60);
-      setDuration({hours:hours_floor,minutes: minutes})
-    },1000)
-    return ()=> clearInterval(interval)
-  },[createdTime])
+      setDuration({ hours: hours_floor, minutes: minutes })
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [createdTime])
 
 
-  const callSetFullMode = () =>{
-    setOnFullMode(last=> last === false? true:false)
+  const callSetFullMode = () => {
+    setOnFullMode(last => last === false ? true : false)
   }
-  const Minimize =()=>{
-    return(
+  const Minimize = () => {
+    return (
       <View style={styles.container}>
         <TouchableOpacity onPress={callSetFullMode} style={styles.arrow} activeOpacity={0.7}>
           <Text>↓</Text>
@@ -79,10 +78,10 @@ export const CurrentTripBar=()=>{
       </View>
     )
   }
-  const Full =()=>{
-      return(<View style={styles.container}>
-        <Pill>
-          {duration.hours !== 0 && (
+  const Full = () => {
+    return (<View style={styles.container}>
+      <Pill>
+        {duration.hours !== 0 && (
           <>
             <Text style={styles.time_hr}>{duration.hours}</Text>
             <Text style={styles.sub_hr}>Hour</Text>
@@ -91,39 +90,39 @@ export const CurrentTripBar=()=>{
 
         {duration.minutes !== 0 && (
           <>
-          <Text style={styles.time_min}>{duration.minutes}</Text>
-          <Text style={styles.sub_min}>Min</Text>
-        </>
+            <Text style={styles.time_min}>{duration.minutes}</Text>
+            <Text style={styles.sub_min}>Min</Text>
+          </>
         )}
 
-        </Pill>
+      </Pill>
 
-        {/* <Pill>
+      {/* <Pill>
           <Text style={styles.text}>{temp} C</Text>
         </Pill> */}
 
-        <Pill>
-          <Text style={styles.text}>{city}</Text>
-        </Pill>
+      <Pill>
+        <Text style={styles.text}>{city}</Text>
+      </Pill>
 
-        {/* <Pill>
+      {/* <Pill>
           <Text style={styles.text}>AQI: {aqi}</Text>
         </Pill> */}
-        <RedPill>
-          <TouchableOpacity onPress={end_trip}>
+      <RedPill>
+        <TouchableOpacity onPress={end_trip}>
           <Text style={styles.end_trip}>End trip</Text>
-          </TouchableOpacity>
-        </RedPill>
-        <TouchableOpacity onPress ={callSetFullMode} style={styles.arrow} activeOpacity={0.7}>
-          <Text>↑</Text>
         </TouchableOpacity>
-      </View>)
+      </RedPill>
+      <TouchableOpacity onPress={callSetFullMode} style={styles.arrow} activeOpacity={0.7}>
+        <Text>↑</Text>
+      </TouchableOpacity>
+    </View>)
   }
-   return (
+  return (
     <View style={styles.wrapper}>
-      {!onFullMode && <Minimize/>}
-      {onFullMode &&<Full/>}
-      </View>
+      {!onFullMode && <Minimize />}
+      {onFullMode && <Full />}
+    </View>
   );
 }
 

@@ -32,7 +32,6 @@ const CoordinatesPointsLayout = ({ trip_id, ready }) => {
       update(newCoords) {
         newCoords = newCoords.filter((asset) => asset.event !== 'remove')
 
-        console.log('update new coords', newCoords)
         setAssestsObjectsArray(newCoords ? [...newCoords] : [])
       }
     }

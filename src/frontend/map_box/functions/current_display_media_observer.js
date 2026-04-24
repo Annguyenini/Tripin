@@ -17,6 +17,10 @@ class CurrentDisplayTripMediaObserver extends (LocalStorage) {
         this.notify(this.GENERATE_KEY(trip_id), data_array)
         return
     }
+    getAssetArray(trip_id) {
+        if (!this.watchArray[trip_id]) return []
+        return this.watchArray[trip_id]
+    }
     addAssetIntoArray(trip_id, data_object) {
         if (!this.watchArray[trip_id]) {
             this.watchArray[trip_id] = []

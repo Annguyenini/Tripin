@@ -89,10 +89,10 @@ export const HelpBarMap = ({ isFollowingUser, setIsFollowingUser, setMapStyle })
 
                 </>
             }
-            {
+            {/* {
                 isTripSelected &&
                 <DisplayTripBox onHide={() => setIsTripBoxDisplay(false)} isFullDisplay={isTripBoxDisplay} />
-            }
+            } */}
             <TouchableOpacity style={helpBarMapStyle.recenterButton} onPress={() => {
                 setIsFollowingUser(true)
             }}

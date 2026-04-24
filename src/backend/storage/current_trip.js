@@ -20,6 +20,7 @@ class CurrentTripDataService extends TripLocalDataStorage {
     }
 
     _init_values() {
+        console.log('init')
         this.item = {
             [DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA]: null,
             [DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_ID]: null,
@@ -155,8 +156,8 @@ class CurrentTripDataService extends TripLocalDataStorage {
     async endCurrentTrip() {
         try {
             await this.deleteTripImageCoverFromLocal()
-            await TripDatabaseService.updateValueInDatabase('active', false, 'trip_id', this.getCurrentTripId())
-            await TripDatabaseService.updateValueInDatabase('ended_time', Date.now(), 'trip_id', this.getCurrentTripId())
+            await safeRun(() => TripDatabaseService.updateValueInDatabase('active', false, 'trip_id', this.getCurrentTripId()), 'failed_at_set_trip_active')
+            await safeRun(() => TripDatabaseService.updateValueInDatabase('ended_time', Date.now(), 'trip_id', this.getCurrentTripId()), 'failed_at_set_ended_time')
 
         }
         catch (err) {

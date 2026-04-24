@@ -3,15 +3,14 @@ import TripHandler from "../app-core/flow/trip_handler.js";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import { TouchableOpacity, Text, StyleSheet, View, ScrollView, Modal } from "react-native";
 import { Image } from "expo-image";
-import UserDataService from "../backend/storage/user.js";
 import { DATA_KEYS } from "../backend/storage/keys/storage_keys.js";
 import AppFlow from "../app-core/flow/app_flow.js";
 import { UseOverlay } from "./overlay/overlay_main.js";
-import TripDisplayObserver from "./map_box/functions/trip_display_observer.js";
 import CurrentTripDataService from '../backend/storage/current_trip.js'
 import { TestScreen } from "../test_screen.js";
 import { TripStatCards } from "./map_box/functions/trip_stat.js";
 import PolaroidGallery from "./albums/memories.js";
+import TripDisplayObserver from "./map_box/functions/trip_display_observer.js";
 const default_user_image = require('../../assets/image/profile_icon.png')
 const default_image = require('../../assets/icon.png')
 
@@ -19,48 +18,73 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
   const bottomSheetRef = useRef(null)
   const [test, setTest] = useState(false)
   const [snapIndex, setSnapIndex] = useState(0)
-  const [userProfileImage, setUserProfileImage] = useState(UserDataService.getProfileImageUri())
   const [tripImageCover, setTripImageCover] = useState(CurrentTripDataService.getCurrentTripImageUri())
   const [tripName, setTripName] = useState(CurrentTripDataService.getCurrentTripName())
+  const [tripId, setTripId] = useState(CurrentTripDataService.getCurrentTripId())
   const [dataKey, setDataKey] = useState(0)
+
   const { showLoading, hideLoading, showErrorBox } = UseOverlay()
-  const [isOnATrip, setIsOnATrip] = useState(false)
+  const [displayTrip, setDisplayTrip] = useState(CurrentTripDataService.getCurrentTripStatus())
+  const [secondTripDisplay, setSecondTripDisplay] = useState(null)
+  const [status, setStatus] = useState('Current')
+  const goBack = async () => {
+    const current_trip = await CurrentTripDataService.getCurrentTripDataFromLocal()
+    console.log('trip_stat', current_trip)
+    // if (!current_trip) {
+    //   TripDisplayObserver.deleteTripSelected()
+    // }
+    // else {
+    //   TripDisplayObserver.setTripSelected(current_trip)
 
+    // }
+    TripDisplayObserver.deleteTripSelected()
+
+    console.log('trip_stat', current_trip)
+
+  }
   useEffect(() => {
-    const onAvatarUpdate = { update: (uri) => { setUserProfileImage(uri); setDataKey(k => k + 1) } }
-    const onSnapPointReset = { update: () => { setSnapIndex(0); setDataKey(k => k + 1) } }
+    const updateTripData = {
+      update(new_data) {
+        if (!new_data) {
+          setDisplayTrip(false)
+          return
+        }
+        if (new_data.trip_id === CurrentTripDataService.getCurrentTripId()) {
+          setTripName(CurrentTripDataService.getCurrentTripName())
+          setTripImageCover(CurrentTripDataService.getCurrentTripImageUri())
+          setTripId(new_data.trip_id)
+          setSecondTripDisplay(false)
+          setStatus('Current')
 
-    UserDataService.attach(onAvatarUpdate, DATA_KEYS.USER.USER_AVATAR)
-    TripDisplayObserver.attach(onSnapPointReset, TripDisplayObserver.EVENTS)
+        }
+        else {
+          setTripName(new_data.trip_name)
+          setTripImageCover(new_data.image)
+          setTripId(new_data.trip_id)
+          const created_timestamp = new Date(Number(new_data.created_time)).toISOString().split('T')[0]
+          const ended_timestamp = new Date(Number(new_data.ended_time)).toISOString().split('T')[0]
+          setStatus(`${created_timestamp} - ${ended_timestamp} UTC`)
+          setSecondTripDisplay(true)
+        }
+        setDisplayTrip(true)
+        setSnapIndex(0); setDataKey(k => k + 1)
+      }
+
+    }
+    TripDisplayObserver.attach(updateTripData, TripDisplayObserver.EVENTS)
     AppFlow.onRenderUserData()
 
     return () => {
-      UserDataService.detach(onAvatarUpdate, DATA_KEYS.USER.USER_AVATAR)
-      TripDisplayObserver.detach(onSnapPointReset, TripDisplayObserver.EVENTS)
+      TripDisplayObserver.detach(updateTripData, TripDisplayObserver.EVENTS)
     }
   }, [])
-  useEffect(() => {
-    const updateTripData = {
-      update(newTripData) {
-        if (!newTripData) {
-          setIsOnATrip(false)
-          return
-        }
-        const newName = newTripData.trip_name
-        const newImage = newTripData.image
-        setTripName(newName)
-        setTripImageCover(newImage)
-        setIsOnATrip(true)
-      }
-    }
-    CurrentTripDataService.attach(updateTripData, DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA);
-    return () => CurrentTripDataService.detach(updateTripData, DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA);
-
-  }, [])
+  // r
 
   const end_trip = async () => {
     showLoading()
     const status = await TripHandler.endTripHandler();
+    console.log('ended_trip', status)
+    await goBack()
     hideLoading()
   }
 
@@ -75,61 +99,50 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
       handleIndicatorStyle={s.sheetHandle}
     >
       <BottomSheetScrollView contentContainerStyle={s.container}>
-        <TouchableOpacity onPress={() => setTest(true)}><Text>test</Text></TouchableOpacity>
+        {/* <TouchableOpacity onPress={() => setTest(true)}><Text>test</Text></TouchableOpacity>
         {test &&
           <Modal>
-            <TestScreen testScreenHandler={() => setTest(false)}></TestScreen></Modal>}
+            <TestScreen testScreenHandler={() => setTest(false)}></TestScreen></Modal>} */}
 
-        {/* ── user card ── */}
-        {/* <View style={s.userCard}>
-          <TouchableOpacity activeOpacity={0.8} style={s.avatarWrap}>
-            <Image
-              cachePolicy="memory-disk"
-              key={dataKey}
-              source={userProfileImage ? { uri: userProfileImage } : default_user_image}
-              style={s.avatar}
-            />
-            <View style={s.avatarEditBadge}>
-              <Text style={s.avatarEditText}>✎</Text>
-            </View>
-          </TouchableOpacity>
-          <View style={s.userInfo}>
-            <Text style={s.displayName}>{userDisplayName}</Text>
-            <Text style={s.displaySub}>your journeys</Text>
-          </View>
-
-
-        </View> */}
-        {/* {!isOnATrip &&
-          <>
-            <Text style={s.tripName}>No active Trip Add One?</Text>
-            <TouchableOpacity style={[s.iconBtn, s.iconBtnPrimary]} onPress={() => setShowCreateTrip(true)} activeOpacity={0.7}>
-              <Text style={s.iconBtnTextPrimary}>+</Text>
-            </TouchableOpacity>
-
-          </>} */}
         {/* ── trip title ── */}
-        {isOnATrip &&
+        {displayTrip &&
           <>
+
             <View style={s.titleRow}>
               <Image
                 cachePolicy='memory-disk'
                 source={tripImageCover ? { uri: tripImageCover } : default_image}
                 style={s.image}
               />
+
               <View style={s.titleBlock}>
 
                 <Text style={s.tripName}>{tripName}</Text>
 
                 <View style={s.statusRow}>
                   <View style={s.statusDot} />
-                  {/* <Text style={s.statusText}>Day 3 of 6 · Heading south</Text> */}
+
+                  <Text style={s.statusText}>{status}</Text>
                 </View>
               </View>
-              <View style={s.endTripCover}>
-                <TouchableOpacity onPress={end_trip} style={s.upBtn} activeOpacity={0.8}>
-                  <Text style={s.upBtnText}>End trip</Text>
-                </TouchableOpacity>
+              <View style={[s.endTripCover, secondTripDisplay && { backgroundColor: '#2a2826' }]}>
+
+                {secondTripDisplay ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSecondTripDisplay(null)
+                      // re-show current trip — call whatever triggers updateTripData for the current trip
+                      goBack()
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={s.upBtnText}>← GoBack</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity onPress={end_trip} activeOpacity={0.8}>
+                    <Text style={s.upBtnText}>End trip</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
 
@@ -145,7 +158,7 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
 
             {/* ── memory cards ── */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.memoriesScroll}>
-              <PolaroidGallery></PolaroidGallery>
+              <PolaroidGallery trip_id={tripId}></PolaroidGallery>
               {/* map memories here */}
             </ScrollView>
           </>}
@@ -173,6 +186,18 @@ const s = StyleSheet.create({
     marginTop: 8,
     borderWidth: 0.5,
     borderColor: 'rgba(255, 255, 255, 0.67)',
+  },
+  currentTripBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginBottom: 4,
+  },
+  currentTripLabel: {
+    fontSize: 9,
+    color: '#4caf50',
+    fontFamily: 'DMMono',
+    letterSpacing: 1.5,
   },
   avatarWrap: { position: 'relative' },
   avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#3a3830' },
