@@ -8,7 +8,7 @@ export default {
     userInterfaceStyle: "light",
     newArchEnabled: true,
     splash: {
-      image: "./assets/splash-icon.png",
+      image: "./assets/icon.png",
       resizeMode: "contain",
       backgroundColor: "#ffffff"
     },
@@ -72,10 +72,10 @@ export default {
       ],
       "expo-sqlite",
       [
-      "react-native-vision-camera",
-      {
-        "cameraPermissionText": "Allow $(PRODUCT_NAME) access to camera"
-      }
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "Allow $(PRODUCT_NAME) access to camera"
+        }
       ],
       [
         "expo-audio",
