@@ -2,6 +2,7 @@ export default {
   expo: {
     name: "tripping",
     slug: "tripin",
+    scheme: 'tripping',
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
@@ -46,6 +47,8 @@ export default {
     },
     plugins: [
       "expo-secure-store",
+      "expo-web-browser",
+
       [
         "@rnmapbox/maps",
         {
