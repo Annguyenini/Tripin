@@ -1,44 +1,51 @@
 // export const BASE_API = 'https://tripping.live'
-export const BASE_API = 'http://192.168.0.111:8000'
-export const HEALTH = BASE_API + '/health'
-export const LOGIN_API = BASE_API + '/auth/login';
-export const SIGN_UP_API = BASE_API + '/auth/signup';
-export const LOGIN_TOKEN_API = BASE_API + '/auth/login-via-token'
-export const REQUEST_NEW_ACCESS_TOKEN_API = BASE_API + '/auth/request-access-token'
-export const REQUEST_VERIFICATION_API = BASE_API + '/auth/verify-code'
-export const REQUEST_PROVIDER_VERIFY = BASE_API + '/auth/provider'
-export const COMPLETE_SIGNUP_PROVIDER_API = BASE_API + '/auth/provider/complete-signup'
-
+export const BASE_API = "http://192.168.0.111:8000";
+export const HEALTH = BASE_API + "/health";
+export const LOGIN_API = BASE_API + "/auth/login";
+export const SIGN_UP_API = BASE_API + "/auth/signup";
+export const LOGIN_TOKEN_API = BASE_API + "/auth/login-via-token";
+export const REQUEST_NEW_ACCESS_TOKEN_API =
+  BASE_API + "/auth/request-access-token";
+export const REQUEST_VERIFICATION_API = BASE_API + "/auth/verify-code";
+export const REQUEST_PROVIDER_VERIFY = BASE_API + "/auth/provider";
+export const COMPLETE_SIGNUP_PROVIDER_API =
+  BASE_API + "/auth/provider/complete-signup";
+export const REQUEST_RESET_PASSWORD = BASE_API + "/auth/reset-password";
+export const REQUEST_RESET_PASSWORD_VERIFY =
+  BASE_API + "/auth/reset-password/verify";
+export const REQUEST_RESET_PASSWORD_COMPLETE =
+  BASE_API + "/auth/reset-password/reset";
 
 export const BASE_TRIP_API = "/trip";
-export const REQUEST_NEW_TRIP_API = BASE_API + BASE_TRIP_API + "/request-new-trip"
-export const END_TRIP = BASE_API + BASE_TRIP_API + "/end-trip"
-export const REQUEST_TRIPS_DATA = BASE_API + BASE_TRIP_API + '/trips'
-export const REQUEST_TRIP_DATA = BASE_API + BASE_TRIP_API + '/trip'
-export const REQUEST_CURRENT_TRIP_ID = BASE_API + BASE_TRIP_API + '/current-trip-id'
-export const MODIFY_TRIP_DATA = BASE_API + BASE_TRIP_API + '/modify-trip-data'
-
-
+export const REQUEST_NEW_TRIP_API =
+  BASE_API + BASE_TRIP_API + "/request-new-trip";
+export const END_TRIP = BASE_API + BASE_TRIP_API + "/end-trip";
+export const REQUEST_TRIPS_DATA = BASE_API + BASE_TRIP_API + "/trips";
+export const REQUEST_TRIP_DATA = BASE_API + BASE_TRIP_API + "/trip";
+export const REQUEST_CURRENT_TRIP_ID =
+  BASE_API + BASE_TRIP_API + "/current-trip-id";
+export const MODIFY_TRIP_DATA = BASE_API + BASE_TRIP_API + "/modify-trip-data";
 
 export const BASE_TRIP_VIEW_API = "/trip-view";
-export const REQUEST_SHARED_TRIP_LINK = BASE_API + BASE_TRIP_VIEW_API + '/generate-trip-view-link'
+export const REQUEST_SHARED_TRIP_LINK =
+  BASE_API + BASE_TRIP_VIEW_API + "/generate-trip-view-link";
 
+export const BASE_TRIP_CONTENTS_API = "/trip-contents";
+export const SEND_COORDINATES = BASE_API + BASE_TRIP_CONTENTS_API;
+export const SEND_MEDIAS_BASE = BASE_API + BASE_TRIP_CONTENTS_API;
+export const REQUEST_LOCATION_CONDITIONS =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/location-conditions";
+export const REQUEST_TRIP_COORDINATES = BASE_API + BASE_TRIP_CONTENTS_API;
+export const REQUEST_TRIP_MEDIAS = BASE_API + BASE_TRIP_CONTENTS_API;
+export const DELETE_TRIP_MEDIA =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/delete-media";
+export const DELETE_TRIP_COORDINATE =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/delete-coordinate";
+export const BASE_USER_API = "/user";
+export const UPDATE_PROFILE_IMAGE = BASE_API + BASE_USER_API + "/update-avatar";
+export const GET_USER_DATA = BASE_API + BASE_USER_API + "/get-user-data";
 
-export const BASE_TRIP_CONTENTS_API = '/trip-contents'
-export const SEND_COORDINATES = BASE_API + BASE_TRIP_CONTENTS_API
-export const SEND_MEDIAS_BASE = BASE_API + BASE_TRIP_CONTENTS_API
-export const REQUEST_LOCATION_CONDITIONS = BASE_API + BASE_TRIP_CONTENTS_API + '/location-conditions'
-export const REQUEST_TRIP_COORDINATES = BASE_API + BASE_TRIP_CONTENTS_API
-export const REQUEST_TRIP_MEDIAS = BASE_API + BASE_TRIP_CONTENTS_API
-export const DELETE_TRIP_MEDIA = BASE_API + BASE_TRIP_CONTENTS_API + '/delete-media'
-export const DELETE_TRIP_COORDINATE = BASE_API + BASE_TRIP_CONTENTS_API + '/delete-coordinate'
-export const BASE_USER_API = '/user'
-export const UPDATE_PROFILE_IMAGE = BASE_API + BASE_USER_API + '/update-avatar'
-export const GET_USER_DATA = BASE_API + BASE_USER_API + '/get-user-data'
-
-
-export const SYNC = BASE_API + '/sync'
-export const TRIP_COORDINATE_HASH = SYNC + '/trip-coordinate-hash'
-export const TRIP_MEDIAS_HASH = SYNC + '/trip-medias-hash'
-export const TRIP_MEDIAS_METADATA = SYNC + '/trip-medias-metadata'
-
+export const SYNC = BASE_API + "/sync";
+export const TRIP_COORDINATE_HASH = SYNC + "/trip-coordinate-hash";
+export const TRIP_MEDIAS_HASH = SYNC + "/trip-medias-hash";
+export const TRIP_MEDIAS_METADATA = SYNC + "/trip-medias-metadata";
