@@ -2,7 +2,7 @@ export default {
   expo: {
     name: "tripping",
     slug: "tripin",
-    scheme: 'tripping',
+    scheme: "tripping",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
@@ -11,25 +11,30 @@ export default {
     splash: {
       image: "./assets/icon.png",
       resizeMode: "contain",
-      backgroundColor: "#ffffff"
+      backgroundColor: "#ffffff",
     },
     ios: {
       supportsTablet: true,
       infoPlist: {
         UIBackgroundModes: ["location"],
-        NSLocationWhenInUseUsageDescription: "This app needs your location to track your trips while you're using the app.",
-        NSLocationAlwaysAndWhenInUseUsageDescription: "This app needs your location to track your trips even when the app is in the background.",
-        NSLocationAlwaysUsageDescription: "This app needs your location to track your trips.",
-        NSPhotoLibraryUsageDescription: "We need access to delete trip media from your library.",
-        NSPhotoLibraryAddUsageDescription: "We need access to save trip media to your library.",
-        ITSAppUsesNonExemptEncryption: false
+        NSLocationWhenInUseUsageDescription:
+          "This app needs your location to track your trips while you're using the app.",
+        NSLocationAlwaysAndWhenInUseUsageDescription:
+          "This app needs your location to track your trips even when the app is in the background.",
+        NSLocationAlwaysUsageDescription:
+          "This app needs your location to track your trips.",
+        NSPhotoLibraryUsageDescription:
+          "We need access to delete trip media from your library.",
+        NSPhotoLibraryAddUsageDescription:
+          "We need access to save trip media to your library.",
+        ITSAppUsesNonExemptEncryption: false,
       },
-      bundleIdentifier: "com.anonymous.tripin"
+      bundleIdentifier: "com.anonymous.tripin",
     },
     android: {
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
-        backgroundColor: "#ffffff"
+        backgroundColor: "#ffffff",
       },
       package: "com.anonymous.tripin",
       permissions: [
@@ -37,66 +42,80 @@ export default {
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_BACKGROUND_LOCATION",
         "android.permission.FOREGROUND_SERVICE",
-        "android.permission.FOREGROUND_SERVICE_LOCATION"
-      ]
+        "android.permission.FOREGROUND_SERVICE_LOCATION",
+      ],
     },
     web: {
       bundler: "metro",
       output: "single",
-      favicon: "./assets/favicon.png"
+      favicon: "./assets/favicon.png",
     },
     plugins: [
       "expo-secure-store",
       "expo-web-browser",
-
+      [
+        "expo-splash-screen",
+        {
+          backgroundColor: "#232323",
+          image: "./assets/splash-light-icon.png",
+          dark: {
+            image: "./assets/splash-dark-icon.png",
+            backgroundColor: "#000000",
+          },
+          imageWidth: 200,
+        },
+      ],
       [
         "@rnmapbox/maps",
         {
-          RNMapboxMapsDownloadToken: process.env.EXPO_MAPBOX_DOWNLOAD_TOKEN
-        }
+          RNMapboxMapsDownloadToken: process.env.EXPO_MAPBOX_DOWNLOAD_TOKEN,
+        },
       ],
       [
         "expo-location",
         {
-          locationAlwaysAndWhenInUsePermission: "Allow $(PRODUCT_NAME) to track your trips.",
-          locationAlwaysPermission: "Allow $(PRODUCT_NAME) to track your trips in the background.",
-          locationWhenInUsePermission: "Allow $(PRODUCT_NAME) to track your trips while using the app.",
+          locationAlwaysAndWhenInUsePermission:
+            "Allow $(PRODUCT_NAME) to track your trips.",
+          locationAlwaysPermission:
+            "Allow $(PRODUCT_NAME) to track your trips in the background.",
+          locationWhenInUsePermission:
+            "Allow $(PRODUCT_NAME) to track your trips while using the app.",
           isIosBackgroundLocationEnabled: true,
-          isAndroidBackgroundLocationEnabled: true
-        }
+          isAndroidBackgroundLocationEnabled: true,
+        },
       ],
       [
         "expo-media-library",
         {
           photosPermission: "Allow $(PRODUCT_NAME) to access your photos.",
           savePhotosPermission: "Allow $(PRODUCT_NAME) to save photos.",
-          isAccessMediaLocationEnabled: true
-        }
+          isAccessMediaLocationEnabled: true,
+        },
       ],
       "expo-sqlite",
       [
         "react-native-vision-camera",
         {
-          "cameraPermissionText": "Allow $(PRODUCT_NAME) access to camera"
-        }
+          cameraPermissionText: "Allow $(PRODUCT_NAME) access to camera",
+        },
       ],
       [
         "expo-audio",
         {
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone.",
-          "enableBackgroundPlayback": true,
-          "enableBackgroundRecording": false
-        }
+          microphonePermission:
+            "Allow $(PRODUCT_NAME) to access your microphone.",
+          enableBackgroundPlayback: true,
+          enableBackgroundRecording: false,
+        },
       ],
       "expo-av",
-      "expo-asset"
-
+      "expo-asset",
     ],
     extra: {
       eas: {
-        projectId: "2e3446d3-9978-4cea-8294-a1166b269f3f"
+        projectId: "2e3446d3-9978-4cea-8294-a1166b269f3f",
       },
       mapboxToken: process.env.EXPO_MAPBOX_PUBLIC_TOKEN,
-    }
-  }
-}
+    },
+  },
+};

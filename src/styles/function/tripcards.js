@@ -1,57 +1,60 @@
 import { StyleSheet } from "react-native";
 export const tripCardsStyle = StyleSheet.create({
   row: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: 12,
     marginBottom: 16,
   },
 
   tripCard: {
-    width: '48%',          // 2 per row
+    width: "48%", // 2 per row
     borderRadius: 16,
-    overflow: 'hidden',
-    backgroundColor: '#111',
+    overflow: "hidden",
+    backgroundColor: "#111",
   },
-
+  tripImageView: {
+    width: "100%",
+    height: 170,
+  },
   tripImage: {
-    width: '100%',
-    height: 120,
+    width: "100%",
+    height: 140,
   },
 
   tripTitle: {
     paddingVertical: 8,
-    textAlign: 'center',
-    color: '#fff',
-    fontWeight: '600',
+    textAlign: "center",
+    color: "#fff",
+    fontWeight: "600",
     fontSize: 14,
   },
-    tripCardMenu: {
-    position: 'absolute',
+  tripCardMenu: {
+    position: "absolute",
     top: 8,
     right: 8,
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(0,0,0,0.45)",
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 10,
   },
   sharedCardMenu: {
-    position: 'absolute',
+    position: "absolute",
     top: 8,
     left: 8,
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(0,0,0,0.45)",
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 10,
   },
 
   tripCardMenuText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 14,
     letterSpacing: 1,
     lineHeight: 14,

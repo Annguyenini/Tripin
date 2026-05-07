@@ -1,104 +1,108 @@
-import Auth from '../../backend/services/auth'
-import TokenService from '../../backend/services/token_service';
-import { navigate } from '../../frontend/custom_function/navigationService';
-import UserDataService from '../../backend/storage/user'
-import { ETAG_KEY } from '../../backend/services/etag/etag_keys';
-import Etag_Service from '../../backend/services/etag/etag_service';
+import Auth from "../../backend/services/auth";
+import TokenService from "../../backend/services/token_service";
+import { navigate } from "../../frontend/custom_function/navigationService";
+import UserDataService from "../../backend/storage/user";
+import { ETAG_KEY } from "../../backend/services/etag/etag_keys";
+import Etag_Service from "../../backend/services/etag/etag_service";
 class AuthHandler {
-    async loginHandler(username, password) {
-        const respond = await Auth.requestLogin(username, password)
+  async loginHandler(username, email, password) {
+    const respond = await Auth.requestLogin(username, email, password);
 
-        if (!respond.ok || respond.status != 200) return respond;
-        const data = respond.data
-        const token = data.tokens
+    if (!respond.ok || respond.status != 200) return respond;
+    const data = respond.data;
+    const token = data.tokens;
+    await TokenService.deleteToken("access_token");
+    await TokenService.deleteToken("refresh_token");
+    await TokenService.setToken("refresh_token", token.refresh_token);
+    await TokenService.setToken("access_token", token.access_token);
+    await UserDataService.setUserAuthToLocal(data.user_data);
+
+    return respond;
+  }
+  async providerVerifyHandler(idToken, provider) {
+    const respond = await Auth.providerVerify(idToken, provider);
+    if (!respond.ok || respond.status != 200) return respond;
+    const data = respond.data;
+    const token = data.tokens;
+    await TokenService.deleteToken("access_token");
+    await TokenService.deleteToken("refresh_token");
+    await TokenService.setToken("refresh_token", token.refresh_token);
+    await TokenService.setToken("access_token", token.access_token);
+    await UserDataService.setUserAuthToLocal(data.user_data);
+    return respond;
+  }
+  async loginWithTokenHandler() {
+    const userdata_etag = await Etag_Service.getEtagFromLocal(
+      ETAG_KEY.USERDATA,
+    );
+
+    const res = await Auth.authenticateToken("access_token", userdata_etag);
+    // if(!res.ok )return false
+    const data = await res.data;
+    if (!res.ok) {
+      return await this._offlineAuthHandler();
+    }
+    if (res.status === 401) {
+      if (data.code === "token_expired") {
+        const tokendata = await Auth.authenticateToken("refresh_token");
+
+        if (tokendata.status === 401) {
+          await TokenService.deleteToken("access_token");
+          await TokenService.deleteToken("refresh_token");
+          return false;
+        } else if (tokendata.status === 200) {
+          await TokenService.deleteToken("access_token");
+          await Auth.requestNewAccessToken();
+          return await this.loginWithTokenHandler();
+        } else if (!tokendata.ok || tokendata.code === "network_error") {
+          return await this._offlineAuthHandler();
+        }
+      } else if (data.code === "token_invalid") {
         await TokenService.deleteToken("access_token");
         await TokenService.deleteToken("refresh_token");
-        await TokenService.setToken("refresh_token", token.refresh_token);
-        await TokenService.setToken("access_token", token.access_token);
-        await UserDataService.setUserAuthToLocal(data.user_data)
-
-        return respond;
+        return false;
+      }
     }
-    async providerVerifyHandler(idToken, provider) {
-        const respond = await Auth.providerVerify(idToken, provider)
-        if (!respond.ok || respond.status != 200) return respond;
-        const data = respond.data
-        const token = data.tokens
-        await TokenService.deleteToken("access_token");
-        await TokenService.deleteToken("refresh_token");
-        await TokenService.setToken("refresh_token", token.refresh_token);
-        await TokenService.setToken("access_token", token.access_token);
-        await UserDataService.setUserAuthToLocal(data.user_data)
-        return respond;
-
+    if (res.status === 429) {
+      return false;
     }
-    async loginWithTokenHandler() {
-        const userdata_etag = await Etag_Service.getEtagFromLocal(ETAG_KEY.USERDATA)
+    console.log(data.user_data);
+    await UserDataService.setUserAuthToLocal(data.user_data);
 
-        const res = await Auth.authenticateToken("access_token", userdata_etag);
-        // if(!res.ok )return false
-        const data = await res.data
-        console.log('via token', data)
-        if (!res.ok) {
-            return await this._offlineAuthHandler()
-        }
-        if (res.status === 401) {
-            if (data.code === "token_expired") {
-                const tokendata = await Auth.authenticateToken("refresh_token");
+    return true;
+  }
 
-                if (tokendata.status === 401) {
-
-                    await TokenService.deleteToken("access_token");
-                    await TokenService.deleteToken("refresh_token");
-                    return false;
-                }
-                else if (tokendata.status === 200) {
-                    await TokenService.deleteToken("access_token");
-                    await Auth.requestNewAccessToken();
-                    return await this.loginWithTokenHandler();
-                }
-                else if (!tokendata.ok || tokendata.code === 'network_error') {
-                    return await this._offlineAuthHandler()
-                }
-
-            }
-
-            else if (data.code === "token_invalid") {
-                await TokenService.deleteToken("access_token");
-                await TokenService.deleteToken("refresh_token");
-                return false;
-            }
-        }
-        if (res.status === 429) {
-            return false
-        }
-        console.log(data.user_data)
-        await UserDataService.setUserAuthToLocal(data.user_data)
-
-        return true;
-
-    };
-
-    async signUpHandler(email, displayName, username, password) {
-        const respond = await Auth.requestSignup(email, displayName, username, password);
-        return (respond)
-    }
-    async signUpProviderHandler(pending_token, displayName, username, password) {
-        console.log(pending_token)
-        const respond = await Auth.providerSignupComplete(pending_token, username, displayName, password);
-        return (respond)
-    }
-    async emailVerificationHandler(email, code) {
-        const respond = await Auth.requestVerification(email, code)
-        return respond
-    }
-    async _offlineAuthHandler() {
-        const { status } = await TokenService.verifyTokenOffline(await TokenService.getToken('refresh_token'))
-        if (!status) return false
-        await UserDataService.usingStoredUserAuth()
-        return true
-    }
-
+  async signUpHandler(email, displayName, username, password) {
+    const respond = await Auth.requestSignup(
+      email,
+      displayName,
+      username,
+      password,
+    );
+    return respond;
+  }
+  async signUpProviderHandler(pending_token, displayName, username, password) {
+    console.log(pending_token);
+    const respond = await Auth.providerSignupComplete(
+      pending_token,
+      username,
+      displayName,
+      password,
+    );
+    return respond;
+  }
+  async emailVerificationHandler(email, code) {
+    const respond = await Auth.requestVerification(email, code);
+    return respond;
+  }
+  async _offlineAuthHandler() {
+    const { status } = await TokenService.verifyTokenOffline(
+      await TokenService.getToken("refresh_token"),
+    );
+    if (!status) return false;
+    await UserDataService.usingStoredUserAuth();
+    return true;
+  }
 }
 
-export default new AuthHandler()
+export default new AuthHandler();

@@ -71,7 +71,7 @@ class Auth {
     }
   }
 
-  async requestLogin(username, password) {
+  async requestLogin(username, email, password) {
     try {
       const respond = await fetch(API.LOGIN_API, {
         method: "POST",
@@ -79,6 +79,7 @@ class Auth {
         body: JSON.stringify({
           username: username,
           password: password,
+          email: email,
         }),
       });
       const data = await respond.json();

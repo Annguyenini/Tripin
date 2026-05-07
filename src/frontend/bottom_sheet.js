@@ -1,122 +1,131 @@
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import TripHandler from "../app-core/flow/trip_handler.js";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
-import { TouchableOpacity, Text, StyleSheet, View, ScrollView, Modal } from "react-native";
-import { Image } from "expo-image";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  View,
+  ScrollView,
+  Modal,
+  Image,
+} from "react-native";
+// import { Image } from "expo-image";
 import { DATA_KEYS } from "../backend/storage/keys/storage_keys.js";
 import AppFlow from "../app-core/flow/app_flow.js";
 import { UseOverlay } from "./overlay/overlay_main.js";
-import CurrentTripDataService from '../backend/storage/current_trip.js'
+import CurrentTripDataService from "../backend/storage/current_trip.js";
 import { TestScreen } from "../test_screen.js";
 import { TripStatCards } from "./map_box/functions/trip_stat.js";
 import PolaroidGallery from "./albums/memories.js";
 import TripDisplayObserver from "./map_box/functions/trip_display_observer.js";
-const default_user_image = require('../../assets/image/profile_icon.png')
-const default_image = require('../../assets/icon.png')
+const default_user_image = require("../../assets/image/profile_icon.png");
+const default_image = require("../../assets/icon.png");
 
 export const UserDataBottomSheet = ({ userDisplayName }) => {
-  const bottomSheetRef = useRef(null)
-  const [test, setTest] = useState(false)
-  const [snapIndex, setSnapIndex] = useState(0)
-  const [tripImageCover, setTripImageCover] = useState(CurrentTripDataService.getCurrentTripImageUri())
-  const [tripName, setTripName] = useState(CurrentTripDataService.getCurrentTripName())
-  const [tripId, setTripId] = useState(CurrentTripDataService.getCurrentTripId())
-  const [dataKey, setDataKey] = useState(0)
+  const bottomSheetRef = useRef(null);
+  const [test, setTest] = useState(false);
+  const [snapIndex, setSnapIndex] = useState(0);
+  const [tripImageCover, setTripImageCover] = useState(
+    CurrentTripDataService.getCurrentTripImageUri(),
+  );
+  const [tripName, setTripName] = useState(
+    CurrentTripDataService.getCurrentTripName(),
+  );
+  const [tripId, setTripId] = useState(
+    CurrentTripDataService.getCurrentTripId(),
+  );
+  const [dataKey, setDataKey] = useState(0);
 
-  const { showLoading, hideLoading, showErrorBox } = UseOverlay()
-  const [displayTrip, setDisplayTrip] = useState(CurrentTripDataService.getCurrentTripStatus())
-  const [secondTripDisplay, setSecondTripDisplay] = useState(null)
-  const [status, setStatus] = useState('Current')
-  const goBack = async () => {
-    const current_trip = await CurrentTripDataService.getCurrentTripDataFromLocal()
-    console.log('trip_stat', current_trip)
-    // if (!current_trip) {
-    //   TripDisplayObserver.deleteTripSelected()
-    // }
-    // else {
-    //   TripDisplayObserver.setTripSelected(current_trip)
-
-    // }
-    TripDisplayObserver.deleteTripSelected()
-
-    console.log('trip_stat', current_trip)
-
-  }
+  const { showLoading, hideLoading, showErrorBox } = UseOverlay();
+  const [displayTrip, setDisplayTrip] = useState(
+    CurrentTripDataService.getCurrentTripStatus(),
+  );
+  const [secondTripDisplay, setSecondTripDisplay] = useState(null);
+  const [status, setStatus] = useState("Current");
+  const goBack = () => {
+    TripDisplayObserver.deleteTripSelected();
+  };
   useEffect(() => {
     const updateTripData = {
       update(new_data) {
         if (!new_data) {
-          setDisplayTrip(false)
-          return
+          setDisplayTrip(false);
+          return;
         }
         if (new_data.trip_id === CurrentTripDataService.getCurrentTripId()) {
-          setTripName(CurrentTripDataService.getCurrentTripName())
-          setTripImageCover(CurrentTripDataService.getCurrentTripImageUri())
-          setTripId(new_data.trip_id)
-          setSecondTripDisplay(false)
-          setStatus('Current')
-
+          setTripName(CurrentTripDataService.getCurrentTripName());
+          setTripImageCover(CurrentTripDataService.getCurrentTripImageUri());
+          setTripId(new_data.trip_id);
+          setSecondTripDisplay(false);
+          setStatus("Current");
+        } else {
+          setTripName(new_data.trip_name);
+          setTripImageCover(new_data.image);
+          setTripId(new_data.trip_id);
+          const created_timestamp = new Date(Number(new_data.created_time))
+            .toISOString()
+            .split("T")[0];
+          const ended_timestamp = new Date(Number(new_data.ended_time))
+            .toISOString()
+            .split("T")[0];
+          setStatus(`${created_timestamp} - ${ended_timestamp} UTC`);
+          setSecondTripDisplay(true);
         }
-        else {
-          setTripName(new_data.trip_name)
-          setTripImageCover(new_data.image)
-          setTripId(new_data.trip_id)
-          const created_timestamp = new Date(Number(new_data.created_time)).toISOString().split('T')[0]
-          const ended_timestamp = new Date(Number(new_data.ended_time)).toISOString().split('T')[0]
-          setStatus(`${created_timestamp} - ${ended_timestamp} UTC`)
-          setSecondTripDisplay(true)
-        }
-        setDisplayTrip(true)
-        setSnapIndex(0); setDataKey(k => k + 1)
-      }
-
-    }
-    TripDisplayObserver.attach(updateTripData, TripDisplayObserver.EVENTS)
-    AppFlow.onRenderUserData()
+        setDisplayTrip(true);
+        setSnapIndex(0);
+        setDataKey((k) => k + 1);
+      },
+    };
+    TripDisplayObserver.attach(updateTripData, TripDisplayObserver.EVENTS);
+    AppFlow.onRenderUserData();
 
     return () => {
-      TripDisplayObserver.detach(updateTripData, TripDisplayObserver.EVENTS)
-    }
-  }, [])
+      TripDisplayObserver.detach(updateTripData, TripDisplayObserver.EVENTS);
+    };
+  }, []);
   // r
 
   const end_trip = async () => {
-    showLoading()
+    showLoading();
     const status = await TripHandler.endTripHandler();
-    console.log('ended_trip', status)
-    await goBack()
-    hideLoading()
-  }
+    console.log("ended_trip", status);
+    hideLoading();
 
+    await goBack();
+  };
 
   return (
     <BottomSheet
       key={dataKey}
       ref={bottomSheetRef}
-      snapPoints={['20%', '50%']}
+      snapPoints={["20%", "50%"]}
       index={snapIndex}
       backgroundStyle={s.sheetBg}
       handleIndicatorStyle={s.sheetHandle}
     >
       <BottomSheetScrollView contentContainerStyle={s.container}>
-        {/* <TouchableOpacity onPress={() => setTest(true)}><Text>test</Text></TouchableOpacity>
-        {test &&
+        <TouchableOpacity onPress={() => setTest(true)}>
+          <Text>test</Text>
+        </TouchableOpacity>
+        {test && (
           <Modal>
-            <TestScreen testScreenHandler={() => setTest(false)}></TestScreen></Modal>} */}
+            <TestScreen testScreenHandler={() => setTest(false)}></TestScreen>
+          </Modal>
+        )}
 
         {/* ── trip title ── */}
-        {displayTrip &&
+        {displayTrip && (
           <>
-
             <View style={s.titleRow}>
               <Image
-                cachePolicy='memory-disk'
-                source={tripImageCover ? { uri: tripImageCover } : default_image}
+                source={
+                  tripImageCover ? { uri: tripImageCover } : default_image
+                }
                 style={s.image}
               />
 
               <View style={s.titleBlock}>
-
                 <Text style={s.tripName}>{tripName}</Text>
 
                 <View style={s.statusRow}>
@@ -125,14 +134,18 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
                   <Text style={s.statusText}>{status}</Text>
                 </View>
               </View>
-              <View style={[s.endTripCover, secondTripDisplay && { backgroundColor: '#2a2826' }]}>
-
+              <View
+                style={[
+                  s.endTripCover,
+                  secondTripDisplay && { backgroundColor: "#2a2826" },
+                ]}
+              >
                 {secondTripDisplay ? (
                   <TouchableOpacity
                     onPress={() => {
-                      setSecondTripDisplay(null)
+                      setSecondTripDisplay(null);
                       // re-show current trip — call whatever triggers updateTripData for the current trip
-                      goBack()
+                      goBack();
                     }}
                     activeOpacity={0.8}
                   >
@@ -157,27 +170,30 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
             </View>
 
             {/* ── memory cards ── */}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.memoriesScroll}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={s.memoriesScroll}
+            >
               <PolaroidGallery trip_id={tripId}></PolaroidGallery>
               {/* map memories here */}
             </ScrollView>
-          </>}
+          </>
+        )}
       </BottomSheetScrollView>
-
-
     </BottomSheet>
-  )
-}
+  );
+};
 
 const s = StyleSheet.create({
-  sheetBg: { backgroundColor: 'rgba(255, 252, 245, 0.95)' },
-  sheetHandle: { backgroundColor: '#3a3830', width: 40 },
+  sheetBg: { backgroundColor: "rgba(255, 252, 245, 0.95)" },
+  sheetHandle: { backgroundColor: "#3a3830", width: 40 },
   container: { paddingHorizontal: 16, paddingBottom: 40 },
 
   // ── user card ──
   userCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     padding: 14,
     // backgroundColor: '#f9e5d3',
@@ -185,105 +201,166 @@ const s = StyleSheet.create({
     marginBottom: 16,
     marginTop: 8,
     borderWidth: 0.5,
-    borderColor: 'rgba(255, 255, 255, 0.67)',
+    borderColor: "rgba(255, 255, 255, 0.67)",
   },
   currentTripBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 5,
     marginBottom: 4,
   },
   currentTripLabel: {
     fontSize: 9,
-    color: '#4caf50',
-    fontFamily: 'DMMono',
+    color: "#4caf50",
+    fontFamily: "DMMono",
     letterSpacing: 1.5,
   },
-  avatarWrap: { position: 'relative' },
-  avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#3a3830' },
+  avatarWrap: { position: "relative" },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#3a3830",
+  },
   avatarEditBadge: {
-    position: 'absolute', bottom: 0, right: 0,
-    width: 16, height: 16, borderRadius: 8,
-    backgroundColor: '#f0f0ec',
-    alignItems: 'center', justifyContent: 'center',
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: "#f0f0ec",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  avatarEditText: { fontSize: 9, color: '#1a1a1a' },
+  avatarEditText: { fontSize: 9, color: "#1a1a1a" },
   userInfo: { flex: 1, gap: 2 },
-  displayName: { fontSize: 15, color: '#000000', fontFamily: 'DMMono' },
-  displaySub: { fontSize: 10, color: '#5a5550', fontFamily: 'DMMono', fontStyle: 'italic' },
-  iconBtn: {
-    width: 32, height: 32, borderRadius: 8,
-    backgroundColor: '#2a2826',
-    borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.08)',
-    alignItems: 'center', justifyContent: 'center',
+  displayName: { fontSize: 15, color: "#000000", fontFamily: "DMMono" },
+  displaySub: {
+    fontSize: 10,
+    color: "#5a5550",
+    fontFamily: "DMMono",
+    fontStyle: "italic",
   },
-  iconBtnPrimary: { backgroundColor: '#f0f0ec', borderColor: 'transparent' },
-  iconBtnText: { fontSize: 16, color: '#888' },
-  iconBtnTextPrimary: { fontSize: 20, color: '#1a1a1a' },
-  loadingText: { fontSize: 9, color: '#5a5550', fontFamily: 'DMMono' },
+  iconBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: "#2a2826",
+    borderWidth: 0.5,
+    borderColor: "rgba(255,255,255,0.08)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconBtnPrimary: { backgroundColor: "#f0f0ec", borderColor: "transparent" },
+  iconBtnText: { fontSize: 16, color: "#888" },
+  iconBtnTextPrimary: { fontSize: 20, color: "#1a1a1a" },
+  loadingText: { fontSize: 9, color: "#5a5550", fontFamily: "DMMono" },
 
   // ── title ──
   titleRow: {
-    flexDirection: 'row', alignItems: 'flex-start',
-    justifyContent: 'space-between', marginBottom: 16,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: 16,
   },
   titleBlock: { flex: 1 },
-  tripName: { fontSize: 22, color: '#000000', fontFamily: 'DMMono', marginBottom: 4 },
-  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  statusDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#4caf50' },
-  statusText: { fontSize: 12, color: '#a08060', fontFamily: 'DMMono', fontStyle: 'italic' },
+  tripName: {
+    fontSize: 22,
+    color: "#000000",
+    fontFamily: "DMMono",
+    marginBottom: 4,
+  },
+  statusRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#4caf50",
+  },
+  statusText: {
+    fontSize: 12,
+    color: "#a08060",
+    fontFamily: "DMMono",
+    fontStyle: "italic",
+  },
   upBtn: {
     fontSize: 10,
-    fontWeight: '700',
-    color: '#000000',
-    fontFamily: 'DMMono',
+    fontWeight: "700",
+    color: "#000000",
+    fontFamily: "DMMono",
     letterSpacing: 0.08,
   },
   endTripCover: {
-    backgroundColor: '#c03030',
+    backgroundColor: "#c03030",
     borderRadius: 10,
     paddingVertical: 8,
     paddingHorizontal: 14,
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 4,
     minWidth: 70,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.4,
     shadowRadius: 0,
     elevation: 3,
   },
-  upBtnText: { color: '#fff', fontSize: 16 },
+  upBtnText: { color: "#fff", fontSize: 16 },
 
   // ── stats ──
-  statsRow: { flexDirection: 'row', gap: 8, marginBottom: 20 },
+  statsRow: { flexDirection: "row", gap: 8, marginBottom: 20 },
   statCard: { flex: 1, borderRadius: 12, borderWidth: 0.5, padding: 10 },
   statEmoji: { fontSize: 18, marginBottom: 4 },
-  statLabel: { fontSize: 10, marginBottom: 2, fontFamily: 'DMMono', letterSpacing: 0.4 },
-  statValue: { fontSize: 22, color: '#3a2a18', fontFamily: 'DMMono' },
+  statLabel: {
+    fontSize: 10,
+    marginBottom: 2,
+    fontFamily: "DMMono",
+    letterSpacing: 0.4,
+  },
+  statValue: { fontSize: 22, color: "#3a2a18", fontFamily: "DMMono" },
 
   // ── divider ──
-  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
-  dividerLine: { flex: 1, height: 0.5, backgroundColor: '#3a3830' },
-  dividerLabel: { fontSize: 9, color: '#5a5550', fontFamily: 'DMMono', letterSpacing: 2 },
+  dividerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 16,
+  },
+  dividerLine: { flex: 1, height: 0.5, backgroundColor: "#3a3830" },
+  dividerLabel: {
+    fontSize: 9,
+    color: "#5a5550",
+    fontFamily: "DMMono",
+    letterSpacing: 2,
+  },
 
   // ── memories ──
   memoriesScroll: { paddingBottom: 8, gap: 10 },
   memCard: {
-    width: 110, backgroundColor: '#242220', borderRadius: 8,
-    paddingTop: 6, paddingHorizontal: 6, paddingBottom: 22,
+    width: 110,
+    backgroundColor: "#242220",
+    borderRadius: 8,
+    paddingTop: 6,
+    paddingHorizontal: 6,
+    paddingBottom: 22,
   },
   memCardFaded: { opacity: 0.45 },
-  memThumb: { width: '100%', height: 70, borderRadius: 6, marginBottom: 6 },
-  memLabel: { fontSize: 10, color: '#f0f0ec', fontFamily: 'DMMono', fontStyle: 'italic', marginBottom: 2 },
-  memSub: { fontSize: 9, color: '#5a5550', fontFamily: 'DMMono' },
+  memThumb: { width: "100%", height: 70, borderRadius: 6, marginBottom: 6 },
+  memLabel: {
+    fontSize: 10,
+    color: "#f0f0ec",
+    fontFamily: "DMMono",
+    fontStyle: "italic",
+    marginBottom: 2,
+  },
+  memSub: { fontSize: 9, color: "#5a5550", fontFamily: "DMMono" },
   image: {
-    width: '14%',
-    height: '130%',
+    width: "14%",
+    height: "130%",
     borderRadius: 25,
     marginRight: 10,
     marginBottom: 10,
 
-    backgroundColor: '#242220',
+    backgroundColor: "#242220",
   },
-})
+});

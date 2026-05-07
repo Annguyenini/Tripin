@@ -34,7 +34,6 @@ class TripSync {
         this.syncing = true
         while (this.pennding.length !== 0) {
             const item = this.pennding[0]
-            console.log(item)
 
             switch (item.itemType) {
                 case 'coordinate':
@@ -65,7 +64,6 @@ class TripSync {
         const response = await safeRun(() => TripContentsService.requestTripCoordinates(trip_id))
         const server_coordinate = response.data.coordinates
         const local_coordinate = await safeRun(() => this.TripCoordinateDatabase.getAllCoordinatesFromTripId(trip_id))
-        console.log('arrayserver_coordinate', server_coordinate, local_coordinate)
 
         const delete_array = server_coordinate?.filter((server) => {
             return local_coordinate?.find((local) => local.coordinate_id === server.coordinate_id && local.event === 'remove' && server.event !== 'remove')
@@ -76,7 +74,6 @@ class TripSync {
         const download_array = server_coordinate?.filter((server) => {
             return !local_coordinate?.find((local) => local.coordinate_id === server.coordinate_id)
         }) || []
-        console.log('array', server_coordinate, local_coordinate, delete_array, upload_array, download_array)
         this.coordinatesSyncing = true
         if (download_array) await this._processDownloadCoordinate(download_array, trip_id)
 
@@ -87,7 +84,6 @@ class TripSync {
             this.addIntoQueue('coordinate', null, element)
         });
         await safeRun(() => this.process(), 'failed_at_process_sync_trip_coordinate')
-        console.log('after process')
     }
     async _processDownloadCoordinate(localArray, trip_id) {
         await safeRun(() => this.TripCoordinateDatabase.handlerCoordinateFromServer(localArray, trip_id))

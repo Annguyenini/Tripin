@@ -1,0 +1,33 @@
+// Folder-specific settings
+//
+// For a full list of overridable settings, and general information on folder-specific settings,
+// see the documentation: https://zed.dev/docs/configuring-zed#settings-files
+
+{
+  "lsp": {
+    "typescript-language-server": {
+      "settings": {
+        "typescript": {
+          "suggest": {
+            "autoImports": false,
+          },
+          "preferences": {
+            "importModuleSpecifier": "relative",
+          },
+          "tsserver": {
+            "maxTsServerMemory": 2048,
+            "watchOptions": {
+              "watchFile": "fixedPollingInterval",
+              "watchDirectory": "fixedPollingInterval",
+            },
+          },
+        },
+        "javascript": {
+          "suggest": {
+            "autoImports": false,
+          },
+        },
+      },
+    },
+  },
+}

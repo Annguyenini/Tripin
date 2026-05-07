@@ -22,6 +22,7 @@ import {
   validateOAuthComplete,
 } from "./input_validations/auth_validation.js"; // ← adjust path to match your project
 import ResetPassword from "./auth/reset_password.js";
+import { styles } from "../styles/function/error_box_style.js";
 
 const { width, height } = Dimensions.get("window");
 
@@ -134,7 +135,7 @@ export const AuthScreen = () => {
   const [showVerification, setShowVerification] = useState(false);
   const [showCompleteForm, setShowCompleteForm] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
-
+  const [loginWithEmail, setLoginWithEmail] = useState(false);
   const [idtoken, setIdToken] = useState(null);
   const [pendingtoken, setPendingToken] = useState(null);
   const [provider, setProvider] = useState(null);
@@ -171,7 +172,14 @@ export const AuthScreen = () => {
     setShowCompleteForm(false);
     setErrors([]);
   };
-
+  const clearAllDataFields = () => {
+    setUsername("");
+    setPassword("");
+    setDisplayName("");
+    setConfirmPassword("");
+    setEmail("");
+    setConfirmPassword("");
+  };
   useEffect(() => {
     (async () => {
       showLoading();
@@ -233,14 +241,14 @@ export const AuthScreen = () => {
   };
   const handleLogin = async () => {
     setErrors([]);
-    const errs = validateLogin({ username, password });
+    const errs = validateLogin({ username, password, email });
     if (errs.length) {
       setErrors(errs);
       return;
     }
 
     showLoading();
-    const res = await AuthHandler.loginHandler(username, password);
+    const res = await AuthHandler.loginHandler(username, email, password);
     hideLoading();
 
     if (res.status === 200) {
@@ -409,19 +417,66 @@ export const AuthScreen = () => {
       {showLogin && (
         <OverlayCard title="LOGIN" onClose={closeAll}>
           <ValidationErrors errors={errors} />
-          <TextInput
-            style={authStyle.input}
-            placeholder="Username"
-            value={username}
-            onChangeText={setUsername}
-            autoCapitalize="none"
-          />
+          {/* Toggle button */}
+          <View style={fr.loginToggleRow}>
+            <TouchableOpacity
+              style={[fr.toggleOption, !loginWithEmail && fr.toggleActive]}
+              onPress={() => {
+                setLoginWithEmail(false);
+                clearAllDataFields();
+              }}
+            >
+              <Text
+                style={
+                  !loginWithEmail ? fr.toggleTextActive : fr.toggleTextInactive
+                }
+              >
+                USERNAME
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[fr.toggleOption, loginWithEmail && fr.toggleActive]}
+              onPress={() => setLoginWithEmail(true)}
+            >
+              <Text
+                style={
+                  loginWithEmail ? fr.toggleTextActive : fr.toggleTextInactive
+                }
+              >
+                EMAIL
+              </Text>
+            </TouchableOpacity>
+          </View>
+          {loginWithEmail ? (
+            <TextInput
+              style={authStyle.input}
+              placeholder="Email"
+              autoComplete="email"
+              textContentType="emailAddress"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+          ) : (
+            <TextInput
+              style={authStyle.input}
+              placeholder="Username"
+              autoComplete="username"
+              textContentType="username"
+              value={username}
+              onChangeText={setUsername}
+              autoCapitalize="none"
+            />
+          )}
           <TextInput
             style={authStyle.input}
             placeholder="Password"
+            autoComplete="password"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            returnKeyType="done"
           />
           <TouchableOpacity
             style={authStyle.submitButton}
@@ -526,6 +581,43 @@ const FRAME_H = height * 0.9;
 const PHOTO_H = FRAME_H * 0.68;
 
 const fr = StyleSheet.create({
+  loginToggleRow: {
+    flexDirection: "row",
+    backgroundColor: "#e8e3d8",
+    borderRadius: 0,
+    padding: 3,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 0,
+  },
+  toggleOption: {
+    flex: 1,
+    paddingVertical: 8,
+    alignItems: "center",
+  },
+  toggleActive: {
+    backgroundColor: "#1a1a1a",
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 0,
+    elevation: 3,
+  },
+  toggleTextActive: {
+    color: "#f5f0e8",
+    fontFamily: "mainfont",
+    fontSize: 13,
+    letterSpacing: 1.2,
+  },
+  toggleTextInactive: {
+    color: "#1a1a1a",
+    fontFamily: "mainfont",
+    fontSize: 13,
+    letterSpacing: 1.2,
+    opacity: 0.4,
+  },
   outerFrame: {
     position: "absolute",
     top: (height - FRAME_H) / 2,
