@@ -43,21 +43,13 @@ class CurrentTripDataService extends TripLocalDataStorage {
 
   // ===================== LOAD / SAVE =====================
   async saveCurrentTripDataToLocal(trip_data) {
-    console.log('trip_data', trip_data)
-    // if (
-    //   !trip_data ||
-    //   typeof trip_data !== "object" ||
-    //   Array.isArray(trip_data)
-    // ) {
-    //   console.log("trip_data must be object");
-    //   return false;
-    // }
+
     try {
       this.item = trip_data;
       this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA, trip_data);
       return true;
     } catch (err) {
-      throw new Error("Failed at save current trip data to local", err);
+      throw new Error("Failed at save current trip data to hot data ", err.message);
     }
   }
 

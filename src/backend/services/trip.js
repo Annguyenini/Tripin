@@ -7,7 +7,7 @@ import { ETAG_KEY, GENERATE_TRIP_ETAG_KEY } from "../services/etag/etag_keys";
 // mport NetworkObserver from '../../app-core/flow/sync/network_observer';
 import fetchFunction from "./fetch_function";
 class Trip {
-  constructor() {}
+  constructor() { }
   async requestNewTrip(trip_name, created_time, imageUri = null) {
     /**
      * request to create new trip
@@ -64,9 +64,9 @@ class Trip {
     const headers = {
       "Content-Type": "application/json",
     };
-    // if (etag) {
-    //   headers["If-None-Match"] = etag;
-    // }
+    if (etag) {
+      headers["If-None-Match"] = etag;
+    }
     const respond = await fetchFunction(API.REQUEST_TRIP_DATA, {
       method: "POST",
       headers: headers,
@@ -83,16 +83,32 @@ class Trip {
     const headers = {
       "Content-Type": "application/json",
     };
-    // if (etag) {
-    //   headers["If-None-Match"] = etag;
-    // }
+    if (etag) {
+      headers["If-None-Match"] = etag;
+    }
     const respond = await fetchFunction(API.REQUEST_TRIPS_DATA, {
       method: "GET",
       headers: headers,
     });
     return respond;
   }
-  async requestTripDataChange(trip_id, trip_name, image_uri) {
+
+  async requestTripsMetadata() {
+    const etag = await EtagService.getEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST);
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    // if (etag) {
+    //   headers["If-None-Match"] = etag;
+    // }
+    const respond = await fetchFunction(API.REQUEST_TRIPS_METADATA, {
+      method: "GET",
+      headers: headers,
+    });
+    return respond;
+  }
+  async requestTripDataChange(trip_id, trip_name, image_uri, modified_time) {
+    console.log(modified_time)
     const data = new FormData();
     if (image_uri) {
       data.append("image", {
@@ -103,6 +119,8 @@ class Trip {
     }
     data.append("trip_id", trip_id ?? "");
     data.append("trip_name", trip_name ?? "");
+    data.append("modified_time", modified_time ?? "");
+
     const respond = await fetchFunction(API.MODIFY_TRIP_DATA, {
       method: "POST",
       body: data,

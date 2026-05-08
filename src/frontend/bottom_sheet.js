@@ -78,7 +78,6 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
       },
     };
     TripDisplayObserver.attach(updateTripData, TripDisplayObserver.EVENTS);
-    AppFlow.onRenderUserData();
 
     return () => {
       TripDisplayObserver.detach(updateTripData, TripDisplayObserver.EVENTS);

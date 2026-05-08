@@ -35,7 +35,7 @@ class TripDataBaseService {
       await DB.closeAsync();
     }
   }
-  async tripDatabaseMigration() {}
+  async tripDatabaseMigration() { }
   // -------------------------
   // Helpers
   // -------------------------

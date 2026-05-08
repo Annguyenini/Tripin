@@ -58,13 +58,13 @@ class TripHandler {
         trip_image_uri,
         true,
       );
-      // save tripdata to local 
+      // save tripdata to local
       // hot data
       await safeRun(
         () => CurrentTripDataService.saveCurrentTripDataToLocal(trip_data),
         "current_trip_save_failed",
       );
-      // database 
+      // database
       await safeRun(
         () => TripDataService.saveTripDataToLocal(trip_data),
         "failed_at_save_to_database",
@@ -87,11 +87,14 @@ class TripHandler {
       return null;
     }
   }
+
   /**
    * request information of all trips and pass it to a handle class
    * @returns boolean of status
    */
   async requestAllTripHandler() {
+
+
     const respond = await safeRun(
       () => Trip.requestTripsData(),
       "fetch_trips_failed",
@@ -218,7 +221,7 @@ class TripHandler {
           () => CurrentTripDataService.saveCurrentTripDataToLocal(trip_data),
           "current_trip_save_failed",
         );
-        // database 
+        // database
         await safeRun(
           () => TripDataService.saveTripDataToLocal(trip_data),
           "failed_at_save_to_database",
@@ -242,63 +245,79 @@ class TripHandler {
    * request trip data base on trip_id
    * @returns
    */
-  // async requestTripDataHandler(trip_id) {
-  //   // return the process status not the data status meaning if the data is none, it will also return true
-  //   const user_id = UserDataService.getUserId();
-  //   const respond = await Trip.requestTripData(trip_id);
-  //   if (!respond.ok || respond.status === 304) {
-  //     return await TripDataService.getTripDataFromLocal(user_id, trip_id);
-  //   }
-  //   if (respond.status !== 200) return null;
-  //   const data = respond.data;
-  //   const trip_data = data.trip_data;
-  //   const etag = data.etag;
-  //   if (
-  //     await TripDataService.saveTripDataToLocal(user_id, trip_id, trip_data)
-  //   ) {
-  //     const etag_key = GENERATE_TRIP_ETAG_KEY(trip_id);
-  //     await EtagService.saveEtagToLocal(etag_key, etag);
-  //   }
-  //   return trip_data;
-  // }
+  async requestTripDataHandler(trip_id) {
+    // return the process status not the data status meaning if the data is none, it will also return true
+    const user_id = UserDataService.getUserId();
+    const respond = await Trip.requestTripData(trip_id);
+    if (!respond.ok || respond.status === 304) {
+      return await TripDataService.getTripDataFromLocal(user_id, trip_id);
+    }
+    if (respond.status !== 200) return null;
+    const data = respond.data;
+    const trip_data = data.trip_data;
+    // const etag = data.etag;
+    // if (
+    //   await TripDataService.saveTripDataToLocal(user_id, trip_id, trip_data)
+    // ) {
+    //   const etag_key = GENERATE_TRIP_ETAG_KEY(trip_id);
+    //   await EtagService.saveEtagToLocal(etag_key, etag);
+    // }
+    return trip_data;
+  }
 
   async modifyTripDataHandler(trip_id, trip_name = null, image_uri = null) {
-    const respond = await Trip.requestTripDataChange(
-      trip_id,
-      trip_name,
-      image_uri,
-    );
-    if (respond.status !== 200) {
-      console.error("failed to save change in server", respond);
-      return { status: false, message: respond.message };
-    }
-    // modify trip_name and image
-
-    // save to
-    let old_trip_data = CurrentTripDataService.getCurrentTripData()
-
-    if (trip_name) {
-      await safeRun(() => TripDataService.updateTripName(trip_name, trip_id), 'failed_to_save_to_local_storage')
-      if (trip_id === CurrentTripDataService.getCurrentTripId()) {
-        old_trip_data['trip_name'] = trip_name
-      }
-    }
-    if (image_uri) {
-      const trip_image_uri = await safeRun(
-        () =>
-          CurrentTripDataService.setCurrentTripImageCoverToLocal(
-            image_uri,
-            trip_id,
-          ),
-        "trip_image_save_failed",
+    const modified_time = Date.now()
+    try {
+      const respond = await Trip.requestTripDataChange(
+        trip_id,
+        trip_name,
+        image_uri,
+        modified_time
       );
-      await safeRun(() =>
-        TripDataService.updateTripImage(trip_image_uri, trip_id), 'failed_at_save_new_image_to_local')
-      if (trip_id === CurrentTripDataService.getCurrentTripId()) {
-        old_trip_data['image'] = trip_image_uri
+
+      if (respond.status !== 200) {
+        console.error("failed to save change in server", respond);
+        return { status: false, message: respond.message };
       }
+      // modify trip_name and image
+
+      // save to
+      let old_trip_data = CurrentTripDataService.getCurrentTripData();
+
+      if (trip_name) {
+        await safeRun(
+          () => TripDataService.updateTripName(trip_name, trip_id),
+          "failed_to_save_to_local_storage",
+        );
+        if (trip_id === CurrentTripDataService.getCurrentTripId()) {
+          old_trip_data["trip_name"] = trip_name;
+        }
+      }
+      if (image_uri) {
+        const trip_image_uri = await safeRun(
+          () =>
+            CurrentTripDataService.setCurrentTripImageCoverToLocal(
+              image_uri,
+              trip_id,
+            ),
+          "trip_image_save_failed",
+        );
+        await safeRun(
+          () => TripDataService.updateTripImage(trip_image_uri, trip_id),
+          "failed_at_save_new_image_to_local",
+        );
+        if (trip_id === CurrentTripDataService.getCurrentTripId()) {
+          old_trip_data["image"] = trip_image_uri;
+        }
+      }
+      if (trip_id === CurrentTripDataService.getCurrentTripId()) {
+        CurrentTripDataService.saveCurrentTripDataToLocal(old_trip_data);
+      }
+      await TripDataService.updateTripDataModifiedTime(modified_time, trip_id)
     }
-    CurrentTripDataService.saveCurrentTripDataToLocal(old_trip_data)
+    catch (err) {
+      throw new Error('Failed ata request modify trip data')
+    }
     return { status: true, message: "Success!" };
   }
 

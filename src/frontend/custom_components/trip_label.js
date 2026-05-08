@@ -24,9 +24,11 @@ export const TripCard = ({ trip, navigateMain }) => {
   const [optionVisible, setOptionVisible] = useState(false);
   const pressHandler = async (trip) => {
     navigateMain();
-    if (trip.id === CurrentTripDataService.getCurrentTripId()) return;
+    console.log(trip, CurrentTripDataService.getCurrentTripId())
+    if (trip.trip_id === CurrentTripDataService.getCurrentTripId()) return;
     // await trip_contents_handler.requestTripCoordinatesHandler(trip.id)
-    TripDisplayObserver.setTripSelected(trip);
+    const trip_data = await TripHandler.requestTripDataHandler(trip.trip_id)
+    TripDisplayObserver.setTripSelected(trip_data);
     return;
   };
   const requestTripLink = async () => {

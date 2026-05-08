@@ -31,36 +31,60 @@ class TripDataService extends TripLocalDataStorage {
    */
   async handleAllTripsList(trips_list, local = false) {
     let status = true;
+    let MAXCONCURRENCY = 5;
     // save detail data for each trip
     // we use batch so we can update to ui by 10
-    let batches = [];
-    for (const trip of trips_list) {
-      // generate key for each trip
-      // const key = this.getTripKeyReady(trip.user_id,trip.id)
-      // store image if exist
-      if (trip.image && !local) {
-        // console.log(trip.image)
-        trip.image = await this.saveTripImageToLocal(
-          trip.image,
-          `${trip.id}_cover.jpg`,
-          "aws",
-        );
+    try {
+      this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, trips_list);
+      for (const trip of trips_list) {
+        status = await TripDatabaseService.addTripToDatabase(trip);
       }
-      // save to async storage
-      // status = await this.saveDataObjectToLocal(key,trip)
-      // add to bd
-      status = await TripDatabaseService.addTripToDatabase(trip);
-      batches.push(trip);
-      if (batches.length % 10 === 0) {
-        this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, batches);
-      }
-    }
-    // save array to local
-    // status = await this.saveArrayToLocal(DATA_KEYS.TRIP.ALL_TRIP_LIST,trips_list)
-    this.item.set(DATA_KEYS.TRIP.ALL_TRIP_LIST, batches);
-    this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, batches);
 
-    return status;
+      let trip_process_queue = [...trips_list.filter((trip) => trip.image)];
+      let result = [...trips_list];
+      const worker = async () => {
+        while (trip_process_queue.length > 0) {
+          let trip = trip_process_queue.shift();
+          trip.image = await this.saveTripImageToLocal(
+            trip.image,
+            `${trip.id}_cover.jpg`,
+            "aws",
+          );
+          const image_update = await this.updateTripImage(trip.image, trip.id);
+          const idx = result.findIndex((r) => r.id === trip.id);
+          if (idx !== -1) {
+            result[idx].image = trip.image;
+          }
+          this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, result);
+        }
+      };
+      if (!local) {
+        console.log('begin worker')
+        await Promise.all(Array.from({ length: MAXCONCURRENCY }, worker));
+        console.log('end worker')
+
+      }
+      this.item.set(DATA_KEYS.TRIP.ALL_TRIP_LIST, result);
+      this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, result);
+
+      return status;
+    } catch (err) {
+      console.error("failed_at_handle_all_trip");
+      return false;
+    }
+  }
+
+  async FilterAllTripsLocalNeed(server_trip_data) {
+    const user_id = UserDataService.getUserId();
+    const local_trip_data =
+      await TripDatabaseService.getAllUserTripDataFromDB(user_id);
+
+    let result =
+      server_trip_data?.filter(
+        (server) =>
+          !local_trip_data.find((local) => local.trip_id === server.trip_id),
+      ) ?? [];
+    return result;
   }
 
   async getTripDataFromLocal(user_id, trip_id) {
@@ -85,6 +109,15 @@ class TripDataService extends TripLocalDataStorage {
     const status = await TripDatabaseService.updateValueInDatabase(
       "image",
       image_uri,
+      "trip_id",
+      trip_id,
+    );
+    return status;
+  }
+  async updateTripDataModifiedTime(modified_time, trip_id) {
+    const status = await TripDatabaseService.updateValueInDatabase(
+      "modified_time",
+      modified_time,
       "trip_id",
       trip_id,
     );
