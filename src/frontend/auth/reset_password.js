@@ -9,7 +9,7 @@ import {
   Platform,
 } from "react-native";
 import { validate } from "../input_validations/auth_validation";
-import { OverlayCard } from "../custom_function/overlay_card";
+import { OverlayCard } from "../overlay/overlay_card";
 import { colors } from "../../styles/function/overlay_card.js";
 import AuthService from "../../backend/services/auth";
 

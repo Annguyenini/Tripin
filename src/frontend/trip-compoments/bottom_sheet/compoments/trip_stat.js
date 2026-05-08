@@ -1,12 +1,12 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useMemo } from "react";
-import CurrentDisplayTripMedia from "./current_display_media_observer";
+import CurrentDisplayTripMedia from "../../observers/current_display_media_observer";
 import { useEffect, useState } from "react";
-import LocationDataService from "../../../backend/storage/current_location_data_service";
-import { DATA_KEYS } from "../../../backend/storage/keys/storage_keys";
-import TripDisplayObserver from "./trip_display_observer";
-import CurrentDisplayCoordinateObserver from "./current_display_coordinates_observer";
-import * as CoordinatesCal from "../../../backend/coordinates/coordinates_cal";
+import LocationDataService from "../../../../backend/storage/current_location_data_service";
+import { DATA_KEYS } from "../../../../backend/storage/keys/storage_keys";
+import TripDisplayObserver from "../../observers/trip_display_observer";
+import CurrentDisplayCoordinateObserver from "../../observers/current_display_coordinates_observer";
+import * as CoordinatesCal from "../../../../backend/coordinates/coordinates_cal";
 export const TripStatCards = () => {
   const [createdTime, setCreatedTime] = useState(null);
   const [endedTime, setEndedTime] = useState(null);
@@ -42,8 +42,8 @@ export const TripStatCards = () => {
           currentTripDisplay.trip_id
         ]
           ? CurrentDisplayCoordinateObserver.CoordsArray[
-          currentTripDisplay.trip_id
-          ]
+              currentTripDisplay.trip_id
+            ]
           : [];
       }
       setCoordinates(trip_coordinates);
@@ -72,7 +72,7 @@ export const TripStatCards = () => {
     };
     const update_trip_display = {
       update(new_trip) {
-        console.log('new_trip', new_trip);
+        console.log("new_trip", new_trip);
         setCurrentTripDisplay(new_trip);
       },
     };

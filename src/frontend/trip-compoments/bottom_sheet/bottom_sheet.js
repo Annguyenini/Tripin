@@ -1,5 +1,5 @@
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import TripHandler from "../app-core/flow/trip_handler.js";
+import TripHandler from "../../../app-core/flow/trip_handler.js";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import {
   TouchableOpacity,
@@ -11,16 +11,13 @@ import {
   Image,
 } from "react-native";
 // import { Image } from "expo-image";
-import { DATA_KEYS } from "../backend/storage/keys/storage_keys.js";
-import AppFlow from "../app-core/flow/app_flow.js";
-import { UseOverlay } from "./overlay/overlay_main.js";
-import CurrentTripDataService from "../backend/storage/current_trip.js";
-import { TestScreen } from "../test_screen.js";
-import { TripStatCards } from "./map_box/functions/trip_stat.js";
-import PolaroidGallery from "./albums/memories.js";
-import TripDisplayObserver from "./map_box/functions/trip_display_observer.js";
-const default_user_image = require("../../assets/image/profile_icon.png");
-const default_image = require("../../assets/icon.png");
+import { UseOverlay } from "../../overlay/overlay_main.js";
+import CurrentTripDataService from "../../../backend/storage/current_trip.js";
+import { TestScreen } from "../../../test_screen.js";
+import { TripStatCards } from "./compoments/trip_stat.js";
+import PolaroidGallery from "./compoments/memories.js";
+import TripDisplayObserver from "../observers/trip_display_observer.js";
+const default_image = require("../../../../assets/icon.png");
 
 export const UserDataBottomSheet = ({ userDisplayName }) => {
   const bottomSheetRef = useRef(null);

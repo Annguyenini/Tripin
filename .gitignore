@@ -113,3 +113,7 @@ test2.py/ios
 /android
 /android
 /ios
+
+
+/visuals
+.dependency-cruiser.js

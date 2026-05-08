@@ -8,21 +8,21 @@ import {
   Dimensions,
   Animated,
 } from "react-native";
-import { authStyle } from "../styles/auth_style.js";
-import AuthHandler from "../app-core/flow/auth_handler.js";
-import AppFlow from "../app-core/flow/app_flow.js";
-import { navigate } from "./custom_function/navigationService.js";
-import { OverlayCard } from "./custom_function/overlay_card.js";
-import { UseOverlay } from "./overlay/overlay_main.js";
-import GoogleAuth from "./provider_auth/google.js";
+import { authStyle } from "../../styles/auth_style.js";
+import AuthHandler from "../../app-core/flow/auth_handler.js";
+import AppFlow from "../../app-core/flow/app_flow.js";
+import { navigate } from "../navigation/navigationService.js";
+import { OverlayCard } from "../overlay/overlay_card.js";
+import { UseOverlay } from "../overlay/overlay_main.js";
+import GoogleAuth from "../provider_auth/google.js";
 import {
   validateLogin,
   validateSignup,
   validateVerification,
   validateOAuthComplete,
-} from "./input_validations/auth_validation.js"; // ← adjust path to match your project
-import ResetPassword from "./auth/reset_password.js";
-import { styles } from "../styles/function/error_box_style.js";
+} from "../input_validations/auth_validation.js"; // ← adjust path to match your project
+import ResetPassword from "./reset_password.js";
+import { styles } from "../../styles/function/error_box_style.js";
 
 const { width, height } = Dimensions.get("window");
 

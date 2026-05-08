@@ -1,4 +1,4 @@
-import { navigate } from "../../frontend/custom_function/navigationService";
+import { navigate } from "../../frontend/navigation/navigationService";
 import AuthHandler from "./auth_handler";
 import TripHandler from "./trip_handler";
 import TripContentsHandler from "./trip_contents_handler";

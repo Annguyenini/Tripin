@@ -63,6 +63,7 @@
   "devDependencies": {
     "@expo/cli": "^54.0.14",
     "@types/react": "~19.1.10",
+    "dependency-cruiser": "^17.4.0",
     "react-native-dotenv": "^3.4.11",
     "typescript": "~5.9.2"
   },
