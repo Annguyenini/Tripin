@@ -1,4 +1,4 @@
-import {  StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 const { width, height } = Dimensions.get('window');
 
 export const authStyle = StyleSheet.create({
@@ -11,6 +11,25 @@ export const authStyle = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  button: {
+    marginTop: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#1a1917',   // your dark warm bg
+    borderWidth: 0.5,
+    borderColor: '#3a3835',
+    borderRadius: 8,
+  },
+  label: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#f0f0ec',
+    fontFamily: 'DMMono',         // your body font
   },
   card: {
     width: width * 0.85,

@@ -2,10 +2,9 @@ import { StyleSheet } from "react-native";
 export const helpBarMapStyle = StyleSheet.create({
   container: {
     position: "absolute",
-    top: 110,        // distance from top
-    right: 5,      // distance from right
+    top: 110, // distance from top
+    right: 5, // distance from right
     alignItems: "center",
-
   },
   zoomContainer: {
     backgroundColor: "rgba(0,0,0,0.4)",
@@ -26,7 +25,6 @@ export const helpBarMapStyle = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 3,
     elevation: 3,
-
   },
   text: {
     fontSize: 22,
@@ -46,7 +44,7 @@ export const helpBarMapStyle = StyleSheet.create({
     elevation: 3,
   },
   styleSelection: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     width: 50,
     height: 150,
     borderRadius: 25,
@@ -55,5 +53,19 @@ export const helpBarMapStyle = StyleSheet.create({
     width: 25,
     height: 25,
     tintColor: "#000",
+  },
+  // in help_bar_map.js
+  btn: {
+    backgroundColor: "#fff",
+    width: 45,
+    height: 45,
+    borderRadius: 23,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
   },
 });

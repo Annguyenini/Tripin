@@ -1,56 +1,77 @@
-import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
-import * as ScreenOrientation from 'expo-screen-orientation';
-import { Image } from 'expo-image'
-import { View, TouchableOpacity, Text, Button, TextInput, Alert, StyleSheet, Dimensions, Modal } from 'react-native';
-import { mainScreenStyle, footer } from '../styles/main_screen_styles.js'
-import { navigate } from './custom_function/navigationService.js';
-import { UserDataBottomSheet } from './bottom_sheet.js';
-import UserDataService from '../../src/backend/storage/user.js'
-import { ProfileImagePicker } from './custom_components/profile_image_picker.js'
-import { AppState } from 'react-native';
-import { startForegroundGPSTracker, endForegroundGPSTracker } from '../backend/gps_logic/foreground_gps_logic.js';
-import GPSLogic from '../backend/gps_logic/gps_logic.js';
-import { MapBoxLayout } from './map_box/map_box_layout.js';
-import { DATA_KEYS } from '../backend/storage/keys/storage_keys.js';
-import Setting from '../app-core/setting.js';
-import AppFlow from '../app-core/flow/app_flow.js'
-import LoadingScreen from './map_box/components/fetching_loading_screen.js';
-import { Ionicons } from '@expo/vector-icons';
-import * as FileSystem from 'expo-file-system/legacy';
-import { BannerManager } from './overlay/banner_manager.js';
-import { CameraApp } from './camera/camera_main.js';
-import { TripsList } from './trips_list.js';
-import { SettingScreen } from './setting/setting_screen.js';
-import CurrentTripDataService from '../backend/storage/current_trip.js';
-import { NewTripFiller } from './functions/add_new_trip.js';
-import PolaroidGallery from './albums/memories.js';
+import React, {
+  useMemo,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
+import * as ScreenOrientation from "expo-screen-orientation";
+import { Image } from "expo-image";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  Button,
+  TextInput,
+  Alert,
+  StyleSheet,
+  Dimensions,
+  Modal,
+} from "react-native";
+import { mainScreenStyle, footer } from "../styles/main_screen_styles.js";
+import { navigate } from "./navigation/navigationService.js";
+import { UserDataBottomSheet } from "./trip-compoments/bottom_sheet/bottom_sheet.js";
+import UserDataService from "../backend/storage/database/user.js";
+import { AppState } from "react-native";
+import {
+  startForegroundGPSTracker,
+  endForegroundGPSTracker,
+} from "../backend/gps_logic/foreground_gps_logic.js";
+import GPSLogic from "../backend/gps_logic/gps_logic.js";
+import { MapBoxLayout } from "./trip-compoments/map_box_layout.js";
+import { DATA_KEYS } from "../backend/storage/hot_data/keys/storage_keys.js";
+import Setting from "../app-core/setting.js";
+import AppFlow from "../app-core/flow/app_flow.js";
+import LoadingScreen from "./overlay/fetching_loading_screen.js";
+import { Ionicons } from "@expo/vector-icons";
+import * as FileSystem from "expo-file-system/legacy";
+import { BannerManager } from "./overlay/banner_manager.js";
+import { CameraApp } from "./camera/camera_main.js";
+import { TripsList } from "./trips_list.js";
+import { SettingScreen } from "./setting/setting_screen.js";
+import CurrentTripDataService from "../backend/storage/hot_data/current_trip.js";
+import { NewTripFiller } from "./trip-compoments/components/helpers/add_new_trip.js";
 export const MainScreen = () => {
   // user profile state from local storage
-  const [user_id, setUserId] = useState(UserDataService.getUserId())
-  const [user_name, setUsername] = useState(UserDataService.getUserName())
-  const [display_name, setDisplayName] = useState(UserDataService.getDisplayName())
-  const [cameraVisible, setCameraVisible] = useState(false)
-  const [tripsListVisible, setTripsListVisible] = useState(false)
-  const [settingVisible, setSettingVisible] = useState(false)
+  const [user_id, setUserId] = useState(UserDataService.getUserId());
+  const [user_name, setUsername] = useState(UserDataService.getUserName());
+  const [display_name, setDisplayName] = useState(
+    UserDataService.getDisplayName(),
+  );
+  const [cameraVisible, setCameraVisible] = useState(false);
+  const [tripsListVisible, setTripsListVisible] = useState(false);
+  const [settingVisible, setSettingVisible] = useState(false);
   // controls whether map renders — waits for trip data to be ready
-  const [tripDataSuccess, setTripDataSuccess] = useState(false)
-  const isUserDataReady = useRef(false)
-  const [isOnATrip, setIsOnATrip] = useState(CurrentTripDataService.getCurrentTripStatus())
+  const [tripDataSuccess, setTripDataSuccess] = useState(false);
+  const isUserDataReady = useRef(false);
+  const [isOnATrip, setIsOnATrip] = useState(
+    CurrentTripDataService.getCurrentTripStatus(),
+  );
   // const [show_profile_picker, set_show_profile_picker] = useState(false)
-  const [state, setState] = useState(AppState.currentState)
-  const [createTripScreen, setCreateTripScreen] = useState(false)
-  const gpsTask = useRef(null)
+  const [state, setState] = useState(AppState.currentState);
+  const [createTripScreen, setCreateTripScreen] = useState(false);
+  const gpsTask = useRef(null);
 
   // lock orientation, init settings, and fetch trip data on mount
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
     const initSetting = async () => {
-      await Setting.init()
-      GPSLogic.syncGPSTask()
-      const isTripDataReady = await AppFlow.onAppReady()
-      setTripDataSuccess(isTripDataReady)
-    }
-    initSetting()
+      await Setting.init();
+      GPSLogic.syncGPSTask();
+      const isTripDataReady = await AppFlow.onAppReady();
+      setTripDataSuccess(isTripDataReady);
+    };
+    initSetting();
   }, []);
 
   // clear expo-image disk cache on mount if device storage is low
@@ -62,84 +83,89 @@ export const MainScreen = () => {
         await Image.clearDiskCache();
       }
     };
-    checkAndClearCache()
-  }, [])
+    checkAndClearCache();
+  }, []);
 
   // start GPS tracker on mount, pause/resume based on app state, clean up on unmount
   useEffect(() => {
     const initGps = async () => {
-      gpsTask.current = await startForegroundGPSTracker()
-    }
-    initGps()
+      gpsTask.current = await startForegroundGPSTracker();
+    };
+    initGps();
 
-    const getState = AppState.addEventListener('change', nextState => {
-      setState(nextState)
-      if (nextState === 'active') {
+    const getState = AppState.addEventListener("change", (nextState) => {
+      setState(nextState);
+      if (nextState === "active") {
         if (!gpsTask.current) {
-          gpsTask.current = startForegroundGPSTracker()
+          gpsTask.current = startForegroundGPSTracker();
         }
       } else {
-        endForegroundGPSTracker()
-        gpsTask.current = null
+        endForegroundGPSTracker();
+        gpsTask.current = null;
       }
-      GPSLogic.syncGPSTask()
+      GPSLogic.syncGPSTask();
     });
 
     return () => {
-      getState.remove()
-      gpsTask.current = null
-      endForegroundGPSTracker()
-    }
-  }, [])
+      getState.remove();
+      gpsTask.current = null;
+      endForegroundGPSTracker();
+    };
+  }, []);
 
   useEffect(() => {
     const updateTripStatus = {
       update(newTripData) {
         if (newTripData) {
-          setIsOnATrip(true)
-          return
+          setIsOnATrip(true);
+          return;
         }
-        setIsOnATrip(false)
-      }
-    }
-    CurrentTripDataService.attach(updateTripStatus, DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA);
-    return () => CurrentTripDataService.detach(updateTripStatus, DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA);
-
-  }, [])
-  const callAlbum = () => navigate('Album')
-
-
+        setIsOnATrip(false);
+      },
+    };
+    CurrentTripDataService.attach(
+      updateTripStatus,
+      DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,
+    );
+    return () =>
+      CurrentTripDataService.detach(
+        updateTripStatus,
+        DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA,
+      );
+  }, []);
+  const callAlbum = () => navigate("Album");
 
   // memoized to prevent map re-mounting on unrelated state changes
   const RenderMap = useCallback(() => {
-    return <MapBoxLayout />
-  }, [])
+    return <MapBoxLayout />;
+  }, []);
 
+  const hideAllScreen = () => {
+    setCameraVisible(false);
+    setSettingVisible(false);
+    setTripsListVisible(false);
+  };
   return (
-
     <View style={styles.container}>
-
-
-      {
-        cameraVisible &&
-        <Modal>
-          <CameraApp onClose={() => setCameraVisible(false)} ></CameraApp>
-        </Modal>
-      }
-      {
-        tripsListVisible &&
-        <Modal>
-          <TripsList onClose={() => setTripsListVisible(false)}></TripsList>
-        </Modal>
-      }
-      {
-        settingVisible &&
-        <Modal>
-          <SettingScreen onclose={() => setSettingVisible(false)}></SettingScreen>
-        </Modal>
-      }
-
       <BannerManager />
+      {cameraVisible && (
+        <Modal>
+          <CameraApp onClose={() => setCameraVisible(false)}></CameraApp>
+        </Modal>
+      )}
+      {tripsListVisible && (
+        <View style={styles.tripsOverlay}>
+          <TripsList onClose={() => setTripsListVisible(false)} />
+        </View>
+      )}
+      {settingVisible && (
+        <Modal>
+          <SettingScreen
+            onclose={() => setSettingVisible(false)}
+          ></SettingScreen>
+        </Modal>
+      )}
+
       {/* show map once trip data is ready, otherwise show loading */}
       {tripDataSuccess && RenderMap()}
       {!tripDataSuccess && <LoadingScreen />}
@@ -148,18 +174,24 @@ export const MainScreen = () => {
       <UserDataBottomSheet
         userId={user_id}
         userDisplayName={display_name}
-      // set_show_profile_picker={set_show_profile_picker}
+        // set_show_profile_picker={set_show_profile_picker}
       />
 
       {/* bottom nav bar */}
       {/* bottom nav bar */}
       <View style={footer.footerContainer}>
         <View style={footer.fotterrow}>
-          <TouchableOpacity style={footer.fotterbutton}>
+          <TouchableOpacity
+            style={footer.fotterbutton}
+            onPress={() => hideAllScreen()}
+          >
             <Ionicons name="home-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Home</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={footer.fotterbutton} onPress={() => setTripsListVisible(true)}>
+          <TouchableOpacity
+            style={footer.fotterbutton}
+            onPress={() => setTripsListVisible((prev) => !prev)}
+          >
             <Ionicons name="map-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Trips</Text>
           </TouchableOpacity>
@@ -167,36 +199,47 @@ export const MainScreen = () => {
           {/* hero buttons */}
           <View style={footer.heroGroup}>
             <View style={footer.heroItem}>
-              <TouchableOpacity style={footer.heroButton} onPress={() => setCameraVisible(true)}>
+              <TouchableOpacity
+                style={footer.heroButton}
+                onPress={() => setCameraVisible(true)}
+              >
                 <Ionicons name="camera-outline" size={24} color="#0d0c0a" />
               </TouchableOpacity>
               <Text style={footer.heroText}>Camera</Text>
             </View>
-            {!isOnATrip &&
+            {!isOnATrip && (
               <View style={footer.heroItem}>
-                <TouchableOpacity style={footer.heroButton} onPress={() => setCreateTripScreen(true)}>
+                <TouchableOpacity
+                  style={footer.heroButton}
+                  onPress={() => setCreateTripScreen(true)}
+                >
                   <Ionicons name="add" size={26} color="#0d0c0a" />
                 </TouchableOpacity>
                 <Text style={footer.heroText}>New Trip</Text>
               </View>
-            }
+            )}
           </View>
 
           <TouchableOpacity style={footer.fotterbutton} onPress={callAlbum}>
             <Ionicons name="images-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Gallery</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={footer.fotterbutton} onPress={() => setSettingVisible(true)}>
+          <TouchableOpacity
+            style={footer.fotterbutton}
+            onPress={() => setSettingVisible(true)}
+          >
             <Ionicons name="settings-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Setting</Text>
           </TouchableOpacity>
         </View>
       </View>
-      {createTripScreen &&
+      {createTripScreen && (
         <Modal>
-          <NewTripFiller set_show_create_trip_filler={() => setCreateTripScreen(false)}></NewTripFiller>
+          <NewTripFiller
+            set_show_create_trip_filler={() => setCreateTripScreen(false)}
+          ></NewTripFiller>
         </Modal>
-      }
+      )}
       {/* profile image picker overlay */}
       {/* {show_profile_picker && (
         <View style={mainScreenStyle.overlay}>
@@ -204,14 +247,14 @@ export const MainScreen = () => {
         </View>
       )} */}
     </View>
-  )
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    width: '100%',
+    justifyContent: "center",
+    width: "100%",
   },
   title: {
     fontSize: 22,
@@ -219,14 +262,23 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 30,
-    flexDirection: 'row',
-    backgroundColor: '#3d3b3bff',
-    borderRadius: 20
+    flexDirection: "row",
+    backgroundColor: "#3d3b3bff",
+    borderRadius: 20,
   },
   overlay: {
-    position: 'absolute',
+    position: "absolute",
     left: 10,
     right: 10,
     zIndex: 10,
+  },
+  tripsOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: Dimensions.get("window").height * 0.01, // adjust to clear your bottom sheet + bottom nav height
+    zIndex: 500,
+    backgroundColor: "#1a1917",
   },
 });

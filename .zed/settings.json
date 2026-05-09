@@ -1,0 +1,39 @@
+// {
+//   "lsp": {
+//     "typescript-language-server": {
+//       "settings": {
+//         "typescript": {
+//           "suggest": {
+//             "autoImports": false,
+//             "enabled": false,
+//           },
+//           "preferences": {
+//             "importModuleSpecifier": "relative",
+//           },
+//           "tsserver": {
+//             "maxTsServerMemory": 2048,
+//             "watchOptions": {
+//               "watchFile": "fixedPollingInterval",
+//               "watchDirectory": "fixedPollingInterval",
+//             },
+//           },
+//           "inlayHints": {
+//             "enabled": "off",
+//           },
+//         },
+//         "javascript": {
+//           "suggest": {
+//             "autoImports": false,
+//             "enabled": false,
+//           },
+//           "inlayHints": {
+//             "enabled": "off",
+//           },
+//         },
+//       },
+//     },
+//   },
+// }
+{
+  "lsp": {},
+}

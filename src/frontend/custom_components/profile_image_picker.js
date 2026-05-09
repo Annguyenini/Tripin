@@ -1,37 +1,41 @@
-import { View, Image, TouchableOpacity, Text } from "react-native"
-import { OverlayCard } from "../custom_function/overlay_card"
-import { profileImagePicker } from '../../styles/function/profile_image_picker_style'
-import { imagePicker, takePicture } from "../functions/image_picker"
-import { useState } from "react"
-import UserDataService from '../../backend/storage/user'
-import UserService from '../../backend/services/user'
-import { UseOverlay } from "../overlay/overlay_main"
+import { View, Image, TouchableOpacity, Text } from "react-native";
+import { OverlayCard } from "../overlay/overlay_card";
+import { profileImagePicker } from "../../styles/function/profile_image_picker_style";
+import { imagePicker, takePicture } from "./image_picker";
+import { useState } from "react";
+import UserDataService from "../../backend/storage/database/user";
+import UserService from "../../backend/services/user";
+import { UseOverlay } from "../overlay/overlay_main";
 export const ProfileImagePicker = ({ onClose }) => {
-  const { showLoading, hideLoading, showErrorBox } = UseOverlay()
-  const [imageUri, setImageUri] = useState(UserDataService.getProfileImageUri())
+  const { showLoading, hideLoading, showErrorBox } = UseOverlay();
+  const [imageUri, setImageUri] = useState(
+    UserDataService.getProfileImageUri(),
+  );
   const callImagePicker = async () => {
-    const pic = await imagePicker()
-    setImageUri(pic.assets[0].uri)
-  }
+    const pic = await imagePicker();
+    setImageUri(pic.assets[0].uri);
+  };
   const callCamera = async () => {
-    const pic = await takePicture()
-    setImageUri(pic.assets[0].uri)
-  }
+    const pic = await takePicture();
+    setImageUri(pic.assets[0].uri);
+  };
   const updateUserProfileImage = async () => {
-    showLoading()
-    const respond = await UserService.updateUserProfileImage(imageUri)
-    hideLoading()
+    showLoading();
+    const respond = await UserService.updateUserProfileImage(imageUri);
+    hideLoading();
     if (!respond.ok) {
-      showErrorBox('Error', 'Error with update avartar, please try again shortly', 6000)
-    }
-    else {
+      showErrorBox(
+        "Error",
+        "Error with update avartar, please try again shortly",
+        6000,
+      );
+    } else {
       await UserDataService.setProfileImageUriToLocal(imageUri);
     }
-    onClose(false)
-
-  }
+    onClose(false);
+  };
   return (
-    <OverlayCard title={'Choose you profile'} onClose={() => onClose(false)}>
+    <OverlayCard title={"Choose you profile"} onClose={() => onClose(false)}>
       <View style={profileImagePicker.imageFrame}>
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={profileImagePicker.image} />
@@ -41,18 +45,31 @@ export const ProfileImagePicker = ({ onClose }) => {
       </View>
 
       <View style={profileImagePicker.imageButtons}>
-        <TouchableOpacity style={profileImagePicker.secondaryButton} onPress={callImagePicker}>
-          <Text style={profileImagePicker.secondaryButtonText}>Choose Image</Text>
+        <TouchableOpacity
+          style={profileImagePicker.secondaryButton}
+          onPress={callImagePicker}
+        >
+          <Text style={profileImagePicker.secondaryButtonText}>
+            Choose Image
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={profileImagePicker.secondaryButton} onPress={callCamera}>
-          <Text style={profileImagePicker.secondaryButtonText}>Take Picture</Text>
+        <TouchableOpacity
+          style={profileImagePicker.secondaryButton}
+          onPress={callCamera}
+        >
+          <Text style={profileImagePicker.secondaryButtonText}>
+            Take Picture
+          </Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={profileImagePicker.submitButton} onPress={updateUserProfileImage}>
+      <TouchableOpacity
+        style={profileImagePicker.submitButton}
+        onPress={updateUserProfileImage}
+      >
         <Text style={profileImagePicker.submitButtonText}>Submit</Text>
       </TouchableOpacity>
     </OverlayCard>
-  )
-}
+  );
+};

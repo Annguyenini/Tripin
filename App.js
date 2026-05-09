@@ -1,11 +1,10 @@
-
-import React, { useState, useEffect, useRef } from 'react';
-import { AuthScreen } from './src/frontend/auth.js';
-import { MainScreen } from './src/frontend/mainscreen.js'
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { navigationRef } from './src/frontend/custom_function/navigationService.js';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import React, { useState, useEffect, useRef } from "react";
+import { AuthScreen } from "./src/frontend/auth/auth.js";
+import { MainScreen } from "./src/frontend/mainscreen.js";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { navigationRef } from "./src/frontend/navigation/navigationService.js";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   TouchableOpacity,
   StyleSheet,
@@ -15,31 +14,30 @@ import {
   ImageBackground,
   TextInput,
   Dimensions,
-  ScrollView
-} from 'react-native';
+  ScrollView,
+} from "react-native";
 
-import { useFonts } from 'expo-font';
-import { styles } from './src/styles/style.js'
-import { mainScreenStyle } from './src/styles/main_screen_styles.js'
-import { CameraApp } from './src/frontend/camera/camera_main.js'
-import { SettingScreen } from './src/frontend/setting/setting_screen.js';
-import AppFlow from './src/app-core/flow/app_flow.js'
-import AlbumScreen from './src/frontend/albums/album.js';
-import { OverLayProvider } from './src/frontend/overlay/overlay_main.js';
-import PermissionsScreen from './src/frontend/permissions.js';
-const backgroundImage = require('./assets/image/main_background.png');
-const logo = require('./assets/image/main_logo.png');
-const { width, height } = Dimensions.get('window');
+import { useFonts } from "expo-font";
+import { styles } from "./src/styles/style.js";
+import { mainScreenStyle } from "./src/styles/main_screen_styles.js";
+import { CameraApp } from "./src/frontend/camera/camera_main.js";
+import { SettingScreen } from "./src/frontend/setting/setting_screen.js";
+import AppFlow from "./src/app-core/flow/app_flow.js";
+import AlbumScreen from "./src/frontend/albums/album.js";
+import { OverLayProvider } from "./src/frontend/overlay/overlay_main.js";
+import PermissionsScreen from "./src/frontend/setting/permissions.js";
+const backgroundImage = require("./assets/image/main_background.png");
+const logo = require("./assets/image/main_logo.png");
+const { width, height } = Dimensions.get("window");
 const Stack = createStackNavigator();
 
 export default function App() {
-  const [authentication, setAuthentication] = useState(false)
+  const [authentication, setAuthentication] = useState(false);
   const [font] = useFonts({
-    mainfont: require('./assets/fonts/Permanent_Marker/PermanentMarker-Regular.ttf'),
+    mainfont: require("./assets/fonts/Permanent_Marker/PermanentMarker-Regular.ttf"),
   });
 
   if (!font) return null;
-
 
   return (
     <OverLayProvider>
@@ -48,7 +46,7 @@ export default function App() {
         {/* <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
           <Image source={logo} style={styles.logo} />
-      
+
         <NavigationContainer>
           <Stack.Navigator>
             <Stack.Screen name="Auth" component={AuthScreen} />
@@ -57,18 +55,53 @@ export default function App() {
         {/* {!authentication&&<AuthLayout setAuthentication ={setAuthentication}></AuthLayout>} */}
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator>
-            <Stack.Screen name="auth" component={AuthLayout} options={{ headerShown: false }} />
-            <Stack.Screen name="Permission" component={PermissionLayout} options={{ headerShown: false, gestureEnabled: false, presentation: 'card', animation: 'none' }} /// ← hides the "Auth" tet
+            <Stack.Screen
+              name="auth"
+              component={AuthLayout}
+              options={{ headerShown: false }}
             />
-            <Stack.Screen name="Main" component={MainLayout} options={{ headerShown: false, gestureEnabled: false, presentation: 'card', animation: 'none' }} // ← hides the "Auth" tet
+            <Stack.Screen
+              name="Permission"
+              component={PermissionLayout}
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+                presentation: "card",
+                animation: "none",
+              }} /// ← hides the "Auth" tet
             />
-            <Stack.Screen name="Setting" component={SettingLayout} options={{ headerShown: false, gestureEnabled: false, presentation: 'card', animation: 'none' }} // ← hides the "Auth" text
+            <Stack.Screen
+              name="Main"
+              component={MainLayout}
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+                presentation: "card",
+                animation: "none",
+              }} // ← hides the "Auth" tet
             />
-            <Stack.Screen name="Camera" component={CameraLayout} options={{ headerShown: false }} />
-            <Stack.Screen name='Album' component={AlbumLayout} options={{ headerShown: false }} />
+            <Stack.Screen
+              name="Setting"
+              component={SettingLayout}
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+                presentation: "card",
+                animation: "none",
+              }} // ← hides the "Auth" text
+            />
+            <Stack.Screen
+              name="Camera"
+              component={CameraLayout}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Album"
+              component={AlbumLayout}
+              options={{ headerShown: false }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
-
 
         {/* <AuthScreen/> */}
         {/* </ImageBackground>sas
@@ -88,28 +121,23 @@ function AuthLayout() {
   );
 }
 function PermissionLayout() {
-  return (
-
-    <PermissionsScreen />
-  );
+  return <PermissionsScreen />;
 }
 const MainLayout = () => {
-  console.log('render1')
+  console.log("render1");
   return (
     <View style={styles.backgroundImage}>
       <Image source={logo} style={mainScreenStyle.logo} />
       <MainScreen />
     </View>
   );
-}
+};
 function CameraLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-
       <CameraApp />
     </GestureHandlerRootView>
-
-  )
+  );
 }
 
 function SettingLayout() {
@@ -118,7 +146,7 @@ function SettingLayout() {
       <Image source={logo} style={mainScreenStyle.logo} />
       <SettingScreen />
     </View>
-  )
+  );
 }
 function AlbumLayout() {
   return (
@@ -126,5 +154,5 @@ function AlbumLayout() {
       <Image source={logo} style={mainScreenStyle.logo} />
       <AlbumScreen />
     </View>
-  )
+  );
 }

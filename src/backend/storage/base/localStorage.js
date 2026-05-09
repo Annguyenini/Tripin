@@ -1,176 +1,177 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { copyAsync, deleteAsync, documentDirectory, downloadAsync }  from 'expo-file-system/legacy';
+import { copyAsync, deleteAsync, documentDirectory, downloadAsync } from 'expo-file-system/legacy';
 
 class LocalStorage {
-    constructor(){
-        this.observers ={}
+    constructor() {
+        this.observers = {}
     }
 
-    attach(observer,key){
-        if(!this.observers[key]){
+    attach(observer, key) {
+        if (!this.observers[key]) {
             this.observers[key] = []
         }
         this.observers[key].push(observer)
     }
-    detach (observer,key){
-        if(!this.observers[key])return
-        this.observers[key]= this.observers[key].filter(obs => obs!==observer)
+    detach(observer, key) {
+        if (!this.observers[key]) return
+        this.observers[key] = this.observers[key].filter(obs => obs !== observer)
     }
-    notify(key,data){
-        if(!this.observers[key])return
-        for (const obs of this.observers[key]){
+    notify(key, data) {
+        if (!this.observers[key]) return
+        for (const obs of this.observers[key]) {
             obs.update(data)
         }
 
     }
 
-    async saveDataObjectToLocal(key,data_object){
+    async saveDataObjectToLocal(key, data_object) {
         // if(!data_object||typeof(data_object)!=='object'){
         //     console.log('data must be object')
         //     return false
         // }
-        try{
+        try {
             // await SecureStore.setItemAsync(STORAGE_KEYS.TRIPDATA,JSON.stringify(tripdata))
-            await AsyncStorage.setItem(key,JSON.stringify(data_object))
+            await AsyncStorage.setItem(key, JSON.stringify(data_object))
             return true
         }
-        catch(asyncError){
+        catch (asyncError) {
             console.error(`Error at save ${key} data to local: ${asyncError}`)
             return false
         }
     }
-    async getDataObjectFromLocal(key){
-        try{
+    async getDataObjectFromLocal(key) {
+        try {
             const object_data = await AsyncStorage.getItem(key)
- 
-            if(object_data){
+
+            if (object_data) {
                 return JSON.parse(object_data)
             }
-            else{
+            else {
                 return null
             }
         }
-        catch(asyncError){
+        catch (asyncError) {
             console.error`Error at getting ${key} ${asyncError}`
             return null
         }
     }
-    async saveArrayToLocal(key,data_array){
-        try{
-            await AsyncStorage.setItem(key,JSON.stringify(data_array))
+    async saveArrayToLocal(key, data_array) {
+        try {
+            await AsyncStorage.setItem(key, JSON.stringify(data_array))
             return true
         }
-        catch(err){
-            console.error(`Failed to save array data: `,err)
+        catch (err) {
+            console.error(`Failed to save array data: `, err)
             return false
         }
     }
 
-    async getArrayFromLocal(key){
-        if(typeof(key)!='string') {
+    async getArrayFromLocal(key) {
+        if (typeof (key) != 'string') {
             return []
         }
 
-        try{
+        try {
             const array = await AsyncStorage.getItem(key)
-            return array ? JSON.parse(array)  :[]
+            return array ? JSON.parse(array) : []
         }
-        catch(err){
-            console.error('Error at get array from local: ',err)
+        catch (err) {
+            console.error('Error at get array from local: ', err)
             return []
         }
     }
 
-    async saveToLocal(key,data){
+    async saveToLocal(key, data) {
         if (typeof data !== 'string' || typeof key !== 'string') {
-            console.error('AsyncStorage only allow string',data,key)
+            console.error('AsyncStorage only allow string', data, key)
             throw new Error('saveToLocal only allow string')
         }
         try {
-            await AsyncStorage.setItem(key,data)
+            await AsyncStorage.setItem(key, data)
             return true
         }
-        catch(asyncError){
+        catch (asyncError) {
             console.error(`Error at save ${key} data to local: ${asyncError}`)
             return false
         }
     }
-    async getDataFromLocal(key){
-        if ( typeof(key)!=='string'){
-            console.error('AsyncStorage only allow string',key)
-            throw new Error('AsyncStorage only allow string') 
+    async getDataFromLocal(key) {
+        if (typeof (key) !== 'string') {
+            console.error('AsyncStorage only allow string', key)
+            throw new Error('AsyncStorage only allow string')
         }
-        try{
+        try {
             const data = await AsyncStorage.getItem(key)
-            return data 
-            
+            return data
+
         }
-        catch(asyncError){
+        catch (asyncError) {
             console.error`Error at getting ${key} ${asyncError}`
             return null
         }
     }
 
-    async deleteDataFromLocal(key){
-        if ( typeof(key)!=='string'){
+    async deleteDataFromLocal(key) {
+        if (typeof (key) !== 'string') {
             console.error('AsyncStorage only allow string')
-            return false 
+            return false
         }
-        try{
+        try {
             await AsyncStorage.removeItem(key)
             return true
         }
-        catch(asyncError){
+        catch (asyncError) {
             console.error`Error at getting ${key} ${asyncError}`
             return false
         }
     }
 
-    async downloadImageToLocal (imageuri,filename){
+    async downloadImageToLocal(imageuri, filename) {
         if (!imageuri) {
             console.error("imageuri is nil or invalid")
             return null
-        }        
-        const destination = documentDirectory+filename
-        try{
-            await downloadAsync(imageuri,destination)
+        }
+        const destination = documentDirectory + filename
+        try {
+            await downloadAsync(imageuri, destination)
             return destination
         }
-        catch(err){
-            console.error('fail',err)
+        catch (err) {
+            console.error('fail', err)
             return null
         }
     }
-    
-    async saveImageToLocal (imageUri,filename){
+
+    async saveImageToLocal(imageUri, filename) {
         if (!imageUri) {
-            console.error("imageuri is nil or invalid")
-        return null
+            console.warn("imageuri is nil or invalid")
+            return null
         }
-        const destination = documentDirectory+filename
-        try{
-            await copyAsync({from : imageUri,
-                to:destination})
+        const destination = documentDirectory + filename
+        try {
+            await copyAsync({
+                from: imageUri,
+                to: destination
+            })
             return destination
         }
-        catch(err){
+        catch (err) {
             console.error(err)
             return null
         }
     }
-    async deleteImageFromLocal(filename){
+    async deleteImageFromLocal(filename) {
         if (!filename) return
-        const destination = documentDirectory+filename
-        try{
-            await deleteAsync(destination)
-            return destination
+        try {
+            await deleteAsync(filename)
+            return filename
         }
-        catch(err){
-            console.error(err)
+        catch (err) {
+            console.error(err, filename)
             return null
         }
     }
-    async clearAllStorage (){
+    async clearAllStorage() {
         try {
             await AsyncStorage.clear();
             console.log('AsyncStorage cleared!');

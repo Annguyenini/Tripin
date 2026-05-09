@@ -1,8 +1,10 @@
 import safeRun from '../../app-core/helpers/safe_run';
-import { copyAsync, documentDirectory, cacheDirectory, deleteAsync, getInfoAsync, makeDirectoryAsync } from 'expo-file-system/legacy';
+import { copyAsync, documentDirectory, cacheDirectory, deleteAsync, getInfoAsync, makeDirectoryAsync, downloadAsync } from 'expo-file-system/legacy';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 
 export const generateOrGetThumbnailFromMediaId = async (media_id, media_path) => {
+    let outsource = false
+    if (media_path.includes('https')) outsource = true
     const uuid = media_id.split('/').pop().replace(/\.[^.]+$/, '')
     const dest = `${documentDirectory}thumbnails/${uuid}.jpg`
 
@@ -12,8 +14,12 @@ export const generateOrGetThumbnailFromMediaId = async (media_id, media_path) =>
 
     // Copy to cacheDirectory so AVAssetImageGenerator can open it
     const cached_path = `${cacheDirectory}thumb_src_${Date.now()}.mov`
-    await copyAsync({ from: media_path, to: cached_path })
 
+    if (outsource) {
+        await downloadAsync(media_path, cached_path)
+    } else {
+        await copyAsync({ from: media_path, to: cached_path })
+    }
     try {
         console.log('gen', cached_path)
         const { uri: thumbnailUri } = await safeRun(
