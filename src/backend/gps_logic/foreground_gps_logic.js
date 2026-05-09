@@ -32,5 +32,5 @@ const getCityData = async (location) => {
     latitude: location.coords.latitude,
     longitude: location.coords.longitude,
   });
-  locationDataService.setCurrentCity(city_object[0].city);
+  locationDataService.setCurrentLocationObject(city_object[0]);
 };

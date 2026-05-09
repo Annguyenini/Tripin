@@ -77,7 +77,7 @@ export const TripsList = ({ onClose }) => {
     try {
       await TripHandler.refreshAllTripsData();
     } catch (err) {
-      console.error("failed at refrsh trips");
+      console.error("failed at refresh trips");
     } finally {
       hideTripLoading();
     }

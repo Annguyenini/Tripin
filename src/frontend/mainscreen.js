@@ -140,6 +140,11 @@ export const MainScreen = () => {
     return <MapBoxLayout />;
   }, []);
 
+  const hideAllScreen = () => {
+    setCameraVisible(false);
+    setSettingVisible(false);
+    setTripsListVisible(false);
+  };
   return (
     <View style={styles.container}>
       <BannerManager />
@@ -176,7 +181,10 @@ export const MainScreen = () => {
       {/* bottom nav bar */}
       <View style={footer.footerContainer}>
         <View style={footer.fotterrow}>
-          <TouchableOpacity style={footer.fotterbutton}>
+          <TouchableOpacity
+            style={footer.fotterbutton}
+            onPress={() => hideAllScreen()}
+          >
             <Ionicons name="home-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Home</Text>
           </TouchableOpacity>
@@ -269,7 +277,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    bottom: Dimensions.get("window").height * 0.07, // adjust to clear your bottom sheet + bottom nav height
+    bottom: Dimensions.get("window").height * 0.01, // adjust to clear your bottom sheet + bottom nav height
     zIndex: 500,
     backgroundColor: "#1a1917",
   },

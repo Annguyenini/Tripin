@@ -31,10 +31,7 @@ export const TripStatCards = () => {
 
       setMedias(totalMedias.length ?? 0);
     };
-    const fetchCurrentCity = async () => {
-      let currentCity = await LocationDataService.getCurrentCityFormLocal();
-      setCity(currentCity);
-    };
+
     const fetchCoordinate = () => {
       let trip_coordinates = [];
       if (currentTripDisplay) {
@@ -50,7 +47,6 @@ export const TripStatCards = () => {
     };
     fetchTotalMedia();
     fetchDurration();
-    fetchCurrentCity();
     fetchCoordinate();
   }, []);
   useEffect(() => {
@@ -60,11 +56,7 @@ export const TripStatCards = () => {
         setMedias(newAssets.length ?? 0);
       },
     };
-    const updateCity = {
-      update(newcity) {
-        setCity(newcity);
-      },
-    };
+
     const update_trip_coords_array = {
       update(newArray) {
         setCoordinates(newArray ? newArray : []);
@@ -85,13 +77,12 @@ export const TripStatCards = () => {
       updateDisplayList,
       CurrentDisplayTripMedia.GENERATE_KEY(currentTripDisplay.trip_id),
     );
-    LocationDataService.attach(updateCity, DATA_KEYS.LOCATION.CITY);
+
     return () => {
       CurrentDisplayTripMedia.detach(
         updateDisplayList,
         CurrentDisplayTripMedia.GENERATE_KEY(currentTripDisplay.trip_id),
       );
-      LocationDataService.detach(updateCity, DATA_KEYS.LOCATION.CITY);
       CurrentDisplayCoordinateObserver.detach(
         update_trip_coords_array,
         CurrentDisplayCoordinateObserver.GENERATE_KEY(

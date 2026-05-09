@@ -25,28 +25,6 @@ class TripContentHandler {
     return respond.ok;
   }
 
-  async requestLocationConditionsHandler() {
-    const coors = await LocationService.getCurrentCoor();
-    if (!coors) {
-      return false;
-    }
-    const longitude = coors.coords.longitude;
-    const latitude = coors.coords.latitude;
-    const respond = await TripContents.request_location_conditions(
-      longitude,
-      latitude,
-    );
-    if (!respond.ok || respond.status !== 200) return false;
-    const data = respond.data;
-    if (data.geo_data) {
-      await locationDataService.setCurrentLocationConditionToLocal(
-        data.geo_data,
-      );
-      return true;
-    }
-    return false;
-  }
-
   async getTripCoordinatesHandler(trip_id) {
     let coordinates = null;
     let version = null;

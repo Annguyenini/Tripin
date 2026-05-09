@@ -57,7 +57,10 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
           setTripImageCover(CurrentTripDataService.getCurrentTripImageUri());
           setTripId(new_data.trip_id);
           setSecondTripDisplay(false);
-          setStatus("Current");
+          const created_timestamp = new Date(Number(new_data.created_time))
+            .toISOString()
+            .split("T")[0];
+          setStatus(`${created_timestamp} -> Current`);
         } else {
           setTripName(new_data.trip_name);
           setTripImageCover(new_data.image);
