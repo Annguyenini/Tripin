@@ -25,7 +25,7 @@ class TripDisplayObserver extends LocalStorage {
 
       this.notify(this.EVENTS, this.getTripNeedRender());
     } catch (err) {
-      console.error(err, this.getTripNeedRender());
+      console.error(err.message, this.getTripNeedRender());
     }
   }
   /**

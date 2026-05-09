@@ -142,15 +142,16 @@ export const MainScreen = () => {
 
   return (
     <View style={styles.container}>
+      <BannerManager />
       {cameraVisible && (
         <Modal>
           <CameraApp onClose={() => setCameraVisible(false)}></CameraApp>
         </Modal>
       )}
       {tripsListVisible && (
-        <Modal>
-          <TripsList onClose={() => setTripsListVisible(false)}></TripsList>
-        </Modal>
+        <View style={styles.tripsOverlay}>
+          <TripsList onClose={() => setTripsListVisible(false)} />
+        </View>
       )}
       {settingVisible && (
         <Modal>
@@ -160,7 +161,6 @@ export const MainScreen = () => {
         </Modal>
       )}
 
-      <BannerManager />
       {/* show map once trip data is ready, otherwise show loading */}
       {tripDataSuccess && RenderMap()}
       {!tripDataSuccess && <LoadingScreen />}
@@ -182,7 +182,7 @@ export const MainScreen = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={footer.fotterbutton}
-            onPress={() => setTripsListVisible(true)}
+            onPress={() => setTripsListVisible((prev) => !prev)}
           >
             <Ionicons name="map-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Trips</Text>
@@ -263,5 +263,14 @@ const styles = StyleSheet.create({
     left: 10,
     right: 10,
     zIndex: 10,
+  },
+  tripsOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: Dimensions.get("window").height * 0.07, // adjust to clear your bottom sheet + bottom nav height
+    zIndex: 500,
+    backgroundColor: "#1a1917",
   },
 });

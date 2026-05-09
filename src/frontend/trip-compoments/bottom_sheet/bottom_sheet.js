@@ -17,6 +17,7 @@ import { TestScreen } from "../../../test_screen.js";
 import { TripStatCards } from "./compoments/trip_stat.js";
 import PolaroidGallery from "./compoments/memories.js";
 import TripDisplayObserver from "../observers/trip_display_observer.js";
+import TripCustomCard from "./trips_card/trip_custom_card.js";
 const default_image = require("../../../../assets/icon.png");
 
 export const UserDataBottomSheet = ({ userDisplayName }) => {
@@ -32,8 +33,9 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
   const [tripId, setTripId] = useState(
     CurrentTripDataService.getCurrentTripId(),
   );
+  const [trip, setTrip] = useState(CurrentTripDataService.getCurrentTripData());
   const [dataKey, setDataKey] = useState(0);
-
+  const [showEdit, setShowEdit] = useState(false);
   const { showLoading, hideLoading, showErrorBox } = UseOverlay();
   const [displayTrip, setDisplayTrip] = useState(
     CurrentTripDataService.getCurrentTripStatus(),
@@ -69,6 +71,7 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
           setStatus(`${created_timestamp} - ${ended_timestamp} UTC`);
           setSecondTripDisplay(true);
         }
+        setTrip(new_data);
         setDisplayTrip(true);
         setSnapIndex(0);
         setDataKey((k) => k + 1);
@@ -122,14 +125,22 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
               />
 
               <View style={s.titleBlock}>
-                <Text style={s.tripName}>{tripName}</Text>
-
+                <View style={s.tripNameRow}>
+                  <Text style={s.tripName}>{tripName}</Text>
+                  <TouchableOpacity
+                    style={s.moreBtn}
+                    onPress={() => setShowEdit(true)}
+                  >
+                    <Text style={s.moreBtnText}>•••</Text>
+                  </TouchableOpacity>
+                </View>
                 <View style={s.statusRow}>
                   <View style={s.statusDot} />
 
                   <Text style={s.statusText}>{status}</Text>
                 </View>
               </View>
+
               <View
                 style={[
                   s.endTripCover,
@@ -177,6 +188,12 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
           </>
         )}
       </BottomSheetScrollView>
+      <Modal visible={showEdit}>
+        <TripCustomCard
+          trip={trip}
+          onClose={() => setShowEdit(false)}
+        ></TripCustomCard>
+      </Modal>
     </BottomSheet>
   );
 };
@@ -352,11 +369,25 @@ const s = StyleSheet.create({
   memSub: { fontSize: 9, color: "#5a5550", fontFamily: "DMMono" },
   image: {
     width: "14%",
-    height: "130%",
-    borderRadius: 25,
+    height: "100%",
+    borderRadius: 10,
     marginRight: 10,
     marginBottom: 10,
 
     backgroundColor: "#242220",
+  },
+  tripNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 4,
+  },
+  moreBtn: {
+    paddingHorizontal: 4,
+  },
+  moreBtnText: {
+    fontSize: 16,
+    color: "#3a3830",
+    letterSpacing: 2,
   },
 });

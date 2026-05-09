@@ -126,6 +126,18 @@ class Trip {
     });
     return respond;
   }
+  async requestRemoveTrip(trip_id, deleted_time) {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    console.log("delete");
+    const respond = await fetchFunction(API.REMOVE_TRIP_DATA, {
+      method: "DELETE",
+      headers: headers,
+      body: JSON.stringify({ trip_id: trip_id, deleted_time: deleted_time }),
+    });
+    return respond;
+  }
   async requestSharedTripLink(trip_id) {
     const headers = {
       "Content-Type": "application/json",

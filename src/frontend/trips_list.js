@@ -19,49 +19,74 @@ import { UseOverlay } from "./overlay/overlay_main.js";
 import TripDisplayObserver from "./trip-compoments/observers/trip_display_observer.js";
 import { TestScreen } from "../test_screen.js";
 const default_user_image = require("../../assets/image/profile_icon.png");
-
+import { TripSkeleton } from "./custom_components/skeleton.js";
 export const TripsList = ({ onClose }) => {
   const [trips, setTrips] = useState(null);
   const [loadingText, setLoadingText] = useState(null);
   const [test, setTest] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(false);
   const { showLoading, hideLoading, showErrorBox } = UseOverlay();
-
+  const tripLoading = () => {
+    return showLoading([
+      "Getting your trips...",
+      "Unpacking the memories...",
+      "Dusting off the map...",
+      "Almost there...",
+    ]);
+  };
+  const hideTripLoading = () => {
+    return hideLoading();
+  };
+  useEffect(() => {
+    const initLoad = () => {
+      tripLoading();
+      setTimeout(() => hideTripLoading(), 7000);
+    };
+    initLoad();
+  }, []);
   // ── observers ──
   useEffect(() => {
-    const onTripsUpdate = { update: (trips) => setTrips(trips) };
+    const onTripsUpdate = {
+      update(trips) {
+        setTrips(trips);
+        hideTripLoading();
+      },
+    };
     const onAvatarUpdate = {
       update: (uri) => {
         setUserProfileImage(uri);
         setDataKey((k) => k + 1);
       },
     };
-    const onSnapPointReset = {
-      update: () => {
-        setSnapIndex(0);
-        setDataKey((k) => k + 1);
-      },
-    };
 
     TripDataService.attach(onTripsUpdate, DATA_KEYS.TRIP.ALL_TRIP_LIST);
     UserDataService.attach(onAvatarUpdate, DATA_KEYS.USER.USER_AVATAR);
-    TripDisplayObserver.attach(onSnapPointReset, TripDisplayObserver.EVENTS);
 
     AppFlow.onRenderUserData();
 
     return () => {
       TripDataService.detach(onTripsUpdate, DATA_KEYS.TRIP.ALL_TRIP_LIST);
       UserDataService.detach(onAvatarUpdate, DATA_KEYS.USER.USER_AVATAR);
-      TripDisplayObserver.detach(onSnapPointReset, TripDisplayObserver.EVENTS);
     };
   }, []);
 
   // ── handlers ──
   const handleRefresh = useCallback(async () => {
+    tripLoading();
     setLoadingText("pulling your trips...");
-    await TripHandler.refreshAllTripsData();
+    try {
+      await TripHandler.refreshAllTripsData();
+    } catch (err) {
+      console.error("failed at refrsh trips");
+    } finally {
+      hideTripLoading();
+    }
     setLoadingText(null);
   }, []);
-
+  const removeTripHandler = (trip_needed_delete) => {
+    trips =
+      trips.filter((trip) => trip.trip_id !== trip_needed_delete.trip_id) ?? [];
+  };
   // ── list header ──
   const ListHeader = (
     <View style={s.sectionHeader}>
@@ -69,8 +94,8 @@ export const TripsList = ({ onClose }) => {
         <Text style={s.iconBtnText}>←</Text>
       </TouchableOpacity>
       <Text style={s.sectionTitle}>All Trips</Text>
+
       <View style={s.sectionActions}>
-        {loadingText && <Text style={s.loadingText}>{loadingText}</Text>}
         <TouchableOpacity
           style={s.iconBtn}
           onPress={handleRefresh}
@@ -81,7 +106,13 @@ export const TripsList = ({ onClose }) => {
       </View>
     </View>
   );
-
+  const ErrorScreen = ({ title, message }) => (
+    <View style={e.container}>
+      <Text style={e.icon}>✕</Text>
+      <Text style={e.title}>{title}</Text>
+      {message && <Text style={e.message}>{message}</Text>}
+    </View>
+  );
   return (
     <FlatList
       style={s.background}
@@ -89,16 +120,26 @@ export const TripsList = ({ onClose }) => {
       keyExtractor={(item, index) => (item?.id ?? index).toString()}
       numColumns={2}
       columnWrapperStyle={tripCardsStyle.row}
-      renderItem={({ item }) => <TripCard trip={item} navigateMain={onClose} />}
+      renderItem={({ item }) => (
+        <TripCard
+          trip={item}
+          navigateMain={onClose}
+          removeTripLabel={removeTripHandler}
+        />
+      )}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={s.listContent}
       ListHeaderComponent={ListHeader}
       ListEmptyComponent={
-        <View style={s.emptyState}>
-          <Text style={s.emptyIcon}>🗺️</Text>
-          <Text style={s.emptyText}>no trips yet</Text>
-          <Text style={s.emptySub}>tap + to start one</Text>
-        </View>
+        initialLoad ? (
+          <TripSkeleton></TripSkeleton>
+        ) : (
+          <View style={s.emptyState}>
+            <Text style={s.emptyIcon}>🗺️</Text>
+            <Text style={s.emptyText}>no trips yet</Text>
+            <Text style={s.emptySub}>tap + to start one</Text>
+          </View>
+        )
       }
     />
   );

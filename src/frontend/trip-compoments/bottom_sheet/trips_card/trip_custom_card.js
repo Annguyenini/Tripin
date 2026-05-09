@@ -14,7 +14,7 @@ import {
 } from "../../../custom_components/image_picker";
 import { UseOverlay } from "../../../overlay/overlay_main";
 import TripHandler from "../../../../app-core/flow/trip_handler";
-const TripCustomCard = ({ trip, setOptionVisible }) => {
+const TripCustomCard = ({ trip, onClose }) => {
   const [tripName, setTripName] = useState(trip.trip_name);
   const [tripImage, setTripImage] = useState(trip.image);
   let _imageChanged = useRef(false);
@@ -33,7 +33,7 @@ const TripCustomCard = ({ trip, setOptionVisible }) => {
   };
   const requestTripModify = async () => {
     showLoading();
-    setOptionVisible(false);
+    onClose(false);
     let new_name = null;
     if (trip.trip_name != tripName) new_name = tripName;
     const update = await TripHandler.modifyTripDataHandler(
@@ -41,15 +41,16 @@ const TripCustomCard = ({ trip, setOptionVisible }) => {
       new_name,
       _imageChanged.current ? tripImage : null,
     );
-    if (!update.status) {
-      showErrorBox("Failed to update trip data", update.message, 3600);
-    }
     hideLoading();
+
+    if (!update.status) {
+      showErrorBox("Failed", "failed to update trip data", 3600);
+    }
   };
   return (
     <OverlayCard
       title={trip.trip_name + " — edit"}
-      onClose={() => setOptionVisible(false)}
+      onClose={() => onClose(false)}
     >
       {/* cover image */}
       <TouchableOpacity

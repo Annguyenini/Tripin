@@ -3,6 +3,7 @@ import UserDataService from "../user";
 export default async function migration() {
   const DB = await SqliteService.connectDB();
   let { user_version } = (await DB.getFirstAsync("PRAGMA user_version")) ?? 0;
+
   let user_id = UserDataService.getUserId();
   try {
     if (user_version < 1) {
@@ -32,6 +33,14 @@ export default async function migration() {
       );
       await DB.execAsync("PRAGMA user_version = 2;");
       user_version = 2;
+    }
+    if (user_version < 3) {
+      console.log("migration", 3);
+      await DB.execAsync(
+        `ALTER TABLE "trips" ADD COLUMN event TEXT DEFAULT 'add'`,
+      );
+      await DB.execAsync("PRAGMA user_version = 3;");
+      user_version = 3;
     }
   } catch (err) {
     throw new Error(`FAILED TO UPGRADE TABLE  ${err.message}`);

@@ -14,6 +14,8 @@ import OfflineSyncManager from "./sync/offline_sync_manager";
 import GPSLogic from "../../backend/gps_logic/gps_logic";
 import safeRun from "../helpers/safe_run";
 import trips from "../../backend/storage/database/trips";
+import fetchFunction from "../../backend/services/fetch_function";
+import { REMOVE_TRIP_DATA } from "../../config/config_api";
 class TripHandler {
   /**
    *
@@ -317,7 +319,31 @@ class TripHandler {
     }
     return { status: true, message: "Success!" };
   }
+  async requestRemoveTrip(trip_id) {
+    console.log("dete");
+    const deleted_time = Date.now();
+    let respond;
+    try {
+      respond = await Trip.requestRemoveTrip(trip_id, deleted_time);
+      if (respond.status !== 200) {
+        console.error("failed to remove trip in server", respond);
 
+        return { status: false, message: respond.data.code };
+      }
+      await safeRun(
+        () => TripDataService.removeTrip(trip_id),
+        "failed to remove trip from local",
+      );
+      await safeRun(
+        () => TripDataService.loadAllTripsListFromLocal(),
+        "failed to load trip from local",
+      );
+      return { status: true, message: respond.data.code };
+    } catch (err) {
+      console.error("failed to remove trip");
+      return { status: false, message: respond.code };
+    }
+  }
   async requestSharedTripLink(trip_id) {
     const res = await Trip.requestSharedTripLink(trip_id);
     if (res.status !== 200) return { status: false, message: res.message };

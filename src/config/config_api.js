@@ -17,15 +17,16 @@ export const REQUEST_RESET_PASSWORD_COMPLETE =
   BASE_API + "/auth/reset-password/reset";
 
 export const BASE_TRIP_API = "/trip";
-export const REQUEST_NEW_TRIP_API =
-  BASE_API + BASE_TRIP_API + "/new-trip";
+export const REQUEST_NEW_TRIP_API = BASE_API + BASE_TRIP_API + "/new-trip";
 export const END_TRIP = BASE_API + BASE_TRIP_API + "/end-trip";
 export const REQUEST_TRIPS_DATA = BASE_API + BASE_TRIP_API + "/all-trips/full";
-export const REQUEST_TRIPS_METADATA = BASE_API + BASE_TRIP_API + "/all-trips/sync";
+export const REQUEST_TRIPS_METADATA =
+  BASE_API + BASE_TRIP_API + "/all-trips/sync";
 export const REQUEST_TRIP_DATA = BASE_API + BASE_TRIP_API + "/trip";
 export const REQUEST_CURRENT_TRIP_ID =
   BASE_API + BASE_TRIP_API + "/current-trip-id";
 export const MODIFY_TRIP_DATA = BASE_API + BASE_TRIP_API + "/modify-trip-data";
+export const REMOVE_TRIP_DATA = BASE_API + BASE_TRIP_API + "/trip";
 
 export const BASE_TRIP_VIEW_API = "/trip-view";
 export const REQUEST_SHARED_TRIP_LINK =

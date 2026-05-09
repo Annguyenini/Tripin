@@ -3,6 +3,7 @@ import { STORAGE_KEYS, DATA_KEYS } from "../hot_data/keys/storage_keys";
 import TripDatabaseService from "./protected/TripDatabaseService";
 import TripLocalDataStorage from "../base/trip_base";
 import UserDataService from "./user";
+import trip from "../../../app-core/state_control/trip_states";
 class TripDataService extends TripLocalDataStorage {
   /**
      * trip data service, use to store trip_name...
@@ -35,6 +36,9 @@ class TripDataService extends TripLocalDataStorage {
     // save detail data for each trip
     // we use batch so we can update to ui by 10
     try {
+      // guard
+
+      trips_list = trips_list.filter((trip) => trip.event !== "remove");
       this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, trips_list);
       for (const trip of trips_list) {
         status = await TripDatabaseService.addTripToDatabase(trip);
@@ -122,6 +126,15 @@ class TripDataService extends TripLocalDataStorage {
     );
     return status;
   }
+  async removeTrip(trip_id) {
+    const status = await TripDatabaseService.updateValueInDatabase(
+      "event",
+      "remove",
+      "trip_id",
+      trip_id,
+    );
+    return status;
+  }
   async setTripEnd(end_time, trip_id) {
     try {
       const end_time_status = await TripDatabaseService.updateValueInDatabase(
@@ -143,11 +156,11 @@ class TripDataService extends TripLocalDataStorage {
   }
   async loadAllTripsListFromLocal() {
     const user_id = UserDataService.getUserId();
-    const trips_list =
+    let trips_list =
       await TripDatabaseService.getAllUserTripDataFromDB(user_id);
     // const trips_list = await this.getArrayFromLocal(DATA_KEYS.TRIP.ALL_TRIP_LIST)
-    console.log("trip list ", trips_list, user_id);
     if (trips_list) {
+      trips_list = trips_list.filter((trip) => trip.event !== "remove");
       this.item.set(DATA_KEYS.TRIP.ALL_TRIP_LIST, trips_list);
       this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, trips_list);
     }
