@@ -1,16 +1,16 @@
 import TripContents from "../../backend/services/trip_contents";
 import LocationService from "../local_data/local_location_data";
-import locationDataService from "../../backend/storage/current_location_data_service";
+import locationDataService from "../../backend/storage/hot_data/current_location_data_service";
 import TripSync from "./sync/trip_contents_sync";
-import TripDatabaseService from "../../backend/database/TripDatabaseService";
-import TripCoordinateDatabase from "../../backend/database/trip_coordinate_database";
-import Albumdb from "../../backend/album/albumdb";
+import TripDatabaseService from "../../backend/storage/database/protected/TripDatabaseService";
+import TripCoordinateDatabase from "../../backend/storage/database/protected/trip_coordinate_database";
+import Albumdb from "../../backend/storage/database/protected/albumdb";
 import safeRun from "../helpers/safe_run";
 import CurrentDisplayTripMediaObserver from "../../frontend/trip-compoments/observers/current_display_media_observer";
 import HashService from "../../backend/services/hash_service/hash_service";
 import TripContentSyncManager from "./sync/trip_contents_sync_manager";
 import MediaService from "../../backend/media/media_service";
-import CurrentTripDataService from "../../backend/storage/current_trip";
+import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
 import CurrentDisplayCoordinateObserver from "../../frontend/trip-compoments/observers/current_display_coordinates_observer";
 class TripContentHandler {
   constructor() {

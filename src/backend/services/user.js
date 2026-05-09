@@ -1,10 +1,10 @@
 import * as API from "../../config/config_api";
 // import UserData from '../../app-core/local_data/local_user_data'
-import UserDataService from "../storage/user";
-import TokenService from "./token_service";
+import UserDataService from "../storage/database/user";
+import TokenService from "../storage/tokens/token_service";
 import AuthService from "./auth";
-import EtagService from "./etag/etag_service";
-import { ETAG_KEY } from "./etag/etag_keys";
+import EtagService from "../storage/etag/etag_service";
+import { ETAG_KEY } from "../storage/etag/etag_keys";
 import fetchFunction from "./fetch_function";
 class UserService {
   async updateUserProfileImage(uri) {

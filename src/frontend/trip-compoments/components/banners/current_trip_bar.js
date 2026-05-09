@@ -7,10 +7,10 @@ import {
   AppState,
 } from "react-native";
 import { use, useEffect, useMemo, useState } from "react";
-import CurrentTripDataService from "../../../../backend/storage/current_trip";
+import CurrentTripDataService from "../../../../backend/storage/hot_data/current_trip";
 import TripHandler from "../../../../app-core/flow/trip_handler";
-import LocationDataService from "../../../../backend/storage/current_location_data_service";
-import { DATA_KEYS } from "../../../../backend/storage/keys/storage_keys";
+import LocationDataService from "../../../../backend/storage/hot_data/current_location_data_service";
+import { DATA_KEYS } from "../../../../backend/storage/hot_data/keys/storage_keys";
 import { UseOverlay } from "../../../overlay/overlay_main";
 export const CurrentTripBar = () => {
   const [onFullMode, setOnFullMode] = useState(true);

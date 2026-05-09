@@ -1,5 +1,5 @@
-import SqliteService from "../database/sqlite/sqlite";
-import UserDataService from "../storage/user";
+import SqliteService from "../sqlite/sqlite";
+import UserDataService from "../user";
 export default async function migration() {
   const DB = await SqliteService.connectDB();
   let { user_version } = (await DB.getFirstAsync("PRAGMA user_version")) ?? 0;

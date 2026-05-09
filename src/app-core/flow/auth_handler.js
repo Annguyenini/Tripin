@@ -1,8 +1,8 @@
 import Auth from "../../backend/services/auth";
-import TokenService from "../../backend/services/token_service";
-import UserDataService from "../../backend/storage/user";
-import { ETAG_KEY } from "../../backend/services/etag/etag_keys";
-import Etag_Service from "../../backend/services/etag/etag_service";
+import TokenService from "../../backend/storage/tokens/token_service";
+import UserDataService from "../../backend/storage/database/user";
+import { ETAG_KEY } from "../../backend/storage/etag/etag_keys";
+import Etag_Service from "../../backend/storage/etag/etag_service";
 class AuthHandler {
   async loginHandler(username, email, password) {
     const respond = await Auth.requestLogin(username, email, password);

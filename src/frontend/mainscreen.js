@@ -21,7 +21,7 @@ import {
 import { mainScreenStyle, footer } from "../styles/main_screen_styles.js";
 import { navigate } from "./navigation/navigationService.js";
 import { UserDataBottomSheet } from "./trip-compoments/bottom_sheet/bottom_sheet.js";
-import UserDataService from "../../src/backend/storage/user.js";
+import UserDataService from "../backend/storage/database/user.js";
 import { AppState } from "react-native";
 import {
   startForegroundGPSTracker,
@@ -29,7 +29,7 @@ import {
 } from "../backend/gps_logic/foreground_gps_logic.js";
 import GPSLogic from "../backend/gps_logic/gps_logic.js";
 import { MapBoxLayout } from "./trip-compoments/map_box_layout.js";
-import { DATA_KEYS } from "../backend/storage/keys/storage_keys.js";
+import { DATA_KEYS } from "../backend/storage/hot_data/keys/storage_keys.js";
 import Setting from "../app-core/setting.js";
 import AppFlow from "../app-core/flow/app_flow.js";
 import LoadingScreen from "./overlay/fetching_loading_screen.js";
@@ -39,7 +39,7 @@ import { BannerManager } from "./overlay/banner_manager.js";
 import { CameraApp } from "./camera/camera_main.js";
 import { TripsList } from "./trips_list.js";
 import { SettingScreen } from "./setting/setting_screen.js";
-import CurrentTripDataService from "../backend/storage/current_trip.js";
+import CurrentTripDataService from "../backend/storage/hot_data/current_trip.js";
 import { NewTripFiller } from "./trip-compoments/components/helpers/add_new_trip.js";
 export const MainScreen = () => {
   // user profile state from local storage

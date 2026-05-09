@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { DATA_KEYS } from "../../backend/storage/keys/storage_keys";
+import { DATA_KEYS } from "../../backend/storage/hot_data/keys/storage_keys";
 import CurrentDisplayCoordinateObserver from "./observers/current_display_coordinates_observer";
 import * as CoordinateCal from "../../backend/coordinates/coordinates_cal";
 import TripDisplayObserver from "./observers/trip_display_observer";

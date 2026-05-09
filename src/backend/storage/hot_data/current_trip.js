@@ -1,8 +1,8 @@
 import { DATA_KEYS } from "./keys/storage_keys";
 
-import TripLocalDataStorage from "./base/trip_base";
-import TripDatabaseService from "../database/TripDatabaseService";
-import safeRun from "../../app-core/helpers/safe_run";
+import TripLocalDataStorage from "../base/trip_base";
+import TripDatabaseService from "../database/protected/TripDatabaseService";
+import safeRun from "../../../app-core/helpers/safe_run";
 class CurrentTripDataService extends TripLocalDataStorage {
   constructor() {
     super();
@@ -11,7 +11,7 @@ class CurrentTripDataService extends TripLocalDataStorage {
 
   // ===================== GETTERS =====================
   getCurrentTripData() {
-    return this.item
+    return this.item;
   }
   getCurrentTripId() {
     return this.item?.trip_id;
@@ -43,13 +43,15 @@ class CurrentTripDataService extends TripLocalDataStorage {
 
   // ===================== LOAD / SAVE =====================
   async saveCurrentTripDataToLocal(trip_data) {
-
     try {
       this.item = trip_data;
       this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA, trip_data);
       return true;
     } catch (err) {
-      throw new Error("Failed at save current trip data to hot data ", err.message);
+      throw new Error(
+        "Failed at save current trip data to hot data ",
+        err.message,
+      );
     }
   }
 

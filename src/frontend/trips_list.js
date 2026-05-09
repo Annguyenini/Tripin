@@ -9,9 +9,9 @@ import {
   FlatList,
 } from "react-native";
 import { Image } from "expo-image";
-import TripDataService from "../backend/storage/trips.js";
-import UserDataService from "../backend/storage/user.js";
-import { DATA_KEYS } from "../backend/storage/keys/storage_keys.js";
+import TripDataService from "../backend/storage/database/trips.js";
+import UserDataService from "../backend/storage/database/user.js";
+import { DATA_KEYS } from "../backend/storage/hot_data/keys/storage_keys.js";
 import { TripCard } from "./trip-compoments/bottom_sheet/trips_card/trip_label.js";
 import { tripCardsStyle } from "../styles/function/tripcards.js";
 import AppFlow from "../app-core/flow/app_flow.js";

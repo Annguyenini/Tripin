@@ -7,8 +7,8 @@ import {
 } from "react-native";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
-import CurrentTripDataService from "../../../../backend/storage/current_trip";
-import { DATA_KEYS } from "../../../../backend/storage/keys/storage_keys";
+import CurrentTripDataService from "../../../../backend/storage/hot_data/current_trip";
+import { DATA_KEYS } from "../../../../backend/storage/hot_data/keys/storage_keys";
 import { currentTripBoxStyle } from "../../../../styles/function/current_trip_box_style";
 const default_image = require("../../../../../assets/icon.png");
 export const CurrentTripBox = ({ isMinimize }) => {

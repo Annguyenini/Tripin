@@ -1,5 +1,5 @@
-import SqliteService from "./sqlite/sqlite";
-import UserDataService from "../storage/user";
+import SqliteService from "../sqlite/sqlite";
+import UserDataService from "../user";
 
 const VERSION_TYPES = {
   COORDINATE: "coordinate_version",
@@ -35,7 +35,7 @@ class TripDataBaseService {
       await DB.closeAsync();
     }
   }
-  async tripDatabaseMigration() { }
+  async tripDatabaseMigration() {}
   // -------------------------
   // Helpers
   // -------------------------

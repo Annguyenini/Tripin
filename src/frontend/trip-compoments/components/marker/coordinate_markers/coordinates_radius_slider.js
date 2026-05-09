@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import radius_selector_style from "../../../../../styles/function/radius_selector_style";
-import eventBus from "../../../../../backend/services/UI_event_bus";
+import eventBus from "../../../../../backend/bridge/UI_event_bus";
 const values = [0, 20, 40, 60, 80, 100];
 
 const RadiusSelector = () => {

@@ -1,8 +1,8 @@
 import { Alert } from "react-native";
-import { STORAGE_KEYS, DATA_KEYS } from "./keys/storage_keys";
-import TripDatabaseService from "../database/TripDatabaseService";
-import TripLocalDataStorage from "./base/trip_base";
-import UserDataService from "../../backend/storage/user";
+import { STORAGE_KEYS, DATA_KEYS } from "../hot_data/keys/storage_keys";
+import TripDatabaseService from "./protected/TripDatabaseService";
+import TripLocalDataStorage from "../base/trip_base";
+import UserDataService from "./user";
 class TripDataService extends TripLocalDataStorage {
   /**
      * trip data service, use to store trip_name...
@@ -59,10 +59,9 @@ class TripDataService extends TripLocalDataStorage {
         }
       };
       if (!local) {
-        console.log('begin worker')
+        console.log("begin worker");
         await Promise.all(Array.from({ length: MAXCONCURRENCY }, worker));
-        console.log('end worker')
-
+        console.log("end worker");
       }
       this.item.set(DATA_KEYS.TRIP.ALL_TRIP_LIST, result);
       this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, result);

@@ -1,12 +1,12 @@
 import { View, TouchableOpacity, Text, Image } from "react-native";
 import { useState, useEffect } from "react";
 import { helpBarMapStyle } from "../../styles/function/help_bar_map";
-import CurrentTripDataService from "../../backend/storage/current_trip.js";
+import CurrentTripDataService from "../../backend/storage/hot_data/current_trip.js";
 // import TripDataService from '../../backend/storage/trip.js'
 // import {subject} from '../logics/observer.js';
 // import TripData from '../../app-core/local_data/local_trip_data.js'
 import TripDisplayObserver from "./observers/trip_display_observer";
-import { DATA_KEYS } from "../../backend/storage/keys/storage_keys";
+import { DATA_KEYS } from "../../backend/storage/hot_data/keys/storage_keys";
 import { Ionicons } from "@expo/vector-icons"; /**
  * help decide waht trip to display
  * @param {*} param

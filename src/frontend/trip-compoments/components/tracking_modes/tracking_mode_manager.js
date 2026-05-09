@@ -5,13 +5,13 @@ import { OverlayCard } from "../../../overlay/overlay_card";
 // import trip_album_subject from "../../../backend/trip_album/trip_album_subject";
 import TripSelectedObserver from "../../observers/trip_display_observer";
 import RadiusSelector from "./coordinate_markers/coordinates_radius_slider";
-import event_bus from "../../../../backend/services/UI_event_bus";
+import event_bus from "../../../../backend/bridge/UI_event_bus";
 import Setting from "../../../../app-core/setting";
 const image = require("../../../../assets/image/gallery_icon.png");
 import { TrackingModePicker } from "./tracking_mode_picker";
 import { TRACKING_MODE } from "../../../../backend/tracking/tracking_mode";
 import GPSLogic from "../../../../backend/gps_logic/gps_logic";
-import CurrentTripDataService from "../../../../backend/storage/current_trip";
+import CurrentTripDataService from "../../../../backend/storage/hot_data/current_trip";
 export default function TrackingModeManager() {
   const [mode, setMode] = useState(Setting.getTrackingMode());
   const [visible, setVisible] = useState(false);

@@ -1,12 +1,12 @@
-import SqliteService from "../database/sqlite/sqlite";
-import UserDataService from "../storage/user";
-import LocationData from "../../app-core/local_data/local_location_data";
-import timestamp from "../addition_functions/get_current_time";
+import SqliteService from "../sqlite/sqlite";
+import UserDataService from "../user";
+import LocationData from "../../../../app-core/local_data/local_location_data";
+import timestamp from "../../../addition_functions/get_current_time";
 import * as MediaLibrary from "expo-media-library";
-import CurrentTripDataService from "../../backend/storage/current_trip";
-import * as MediaPermission from "./album_permission";
+import CurrentTripDataService from "../../hot_data/current_trip";
+import * as MediaPermission from "../../../album/album_permission";
 import * as FileSystem from "expo-file-system/legacy";
-import TripDatabase from "../database/TripDatabaseService";
+import TripDatabase from "./TripDatabaseService";
 import { RectButton } from "react-native-gesture-handler";
 const GENERATE_MEDIA_ID = (media_type, id) => {
   // return `${trip_id ? `trip_${trip_id}`:''}:${media_type}:${time_stamp}`

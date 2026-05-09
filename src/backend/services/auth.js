@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 import * as API from "../../config/config_api";
 // import { setSurfaceProps } from 'react-native/types_generated/Libraries/ReactNative/AppRegistryImpl';
-import TokenService from "./token_service";
+import TokenService from "../storage/tokens/token_service";
 import NetworkObserver from "../../app-core/flow/sync/network_observer";
 class Auth {
   async authenticateToken(type, etag = null) {

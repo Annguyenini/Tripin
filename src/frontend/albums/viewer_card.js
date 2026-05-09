@@ -15,11 +15,11 @@ import { Image } from "expo-image";
 import Video from "react-native-video";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useEffect, useState, useRef } from "react";
-import AlbumService from "../../backend/album/albumdb";
+// import AlbumService from "../../backend/album/albumdb";
 import { scheduleOnRN } from "react-native-worklets";
 import MediaViewDataCard from "./viewer_data_card";
-import GenerateThumbnail from "../../backend/album/generate_thumbnail";
-const videoPauseIcon = require("../../../assets/image/video_pause_icon.png");
+// import GenerateThumbnail from "../../backend/album/generate_thumbnail";
+// const videoPauseIcon = require("../../../assets/image/video_pause_icon.png");
 
 import { MaterialIcons } from "@expo/vector-icons";
 import TripContentHandler from "../../app-core/flow/trip_contents_handler";

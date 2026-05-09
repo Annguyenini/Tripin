@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { OverlayCard } from "../../../overlay/overlay_card";
 // import trip_album_subject from "../../../backend/trip_album/trip_album_subject";
 import RadiusSelector from "./coordinate_markers/coordinates_radius_slider";
-import event_bus from "../../../../backend/services/UI_event_bus";
+import event_bus from "../../../../backend/bridge/UI_event_bus";
 
 export default function MarkerManager({
   imageMarkerDisplay,

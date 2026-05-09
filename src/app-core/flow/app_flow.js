@@ -3,15 +3,15 @@ import AuthHandler from "./auth_handler";
 import TripHandler from "./trip_handler";
 import TripContentsHandler from "./trip_contents_handler";
 import UserDataHandler from "./user_handler";
-import Albumdb from "../../backend/album/albumdb";
-import CurrentTripDataService from "../../backend/storage/current_trip";
-import TripDatabaseService from "../../backend/database/TripDatabaseService";
+import Albumdb from "../../backend/storage/database/protected/albumdb";
+import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
+import TripDatabaseService from "../../backend/storage/database/protected/TripDatabaseService";
 import TripContentsSync from "./sync/trip_contents_sync";
 import LocalStorage from "../../backend/storage/base/localStorage";
 import TripContentSyncManager from "./sync/trip_contents_sync_manager";
 import safeRun from "../helpers/safe_run";
 import { _registerNetworkCallback } from "./sync/network_observer";
-import migration from "../../backend/database/migration";
+import migration from "../../backend/storage/database/migrations/migration";
 class AppFlow {
   constructor() {
     this.LocalStorage = new LocalStorage();

@@ -12,7 +12,7 @@ import {
 } from "react-native";
 // import { Image } from "expo-image";
 import { UseOverlay } from "../../overlay/overlay_main.js";
-import CurrentTripDataService from "../../../backend/storage/current_trip.js";
+import CurrentTripDataService from "../../../backend/storage/hot_data/current_trip.js";
 import { TestScreen } from "../../../test_screen.js";
 import { TripStatCards } from "./compoments/trip_stat.js";
 import PolaroidGallery from "./compoments/memories.js";

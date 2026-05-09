@@ -1,6 +1,6 @@
 import LocalStorage from "../../../backend/storage/base/localStorage";
-import CurrentTripDataService from "../../../backend/storage/current_trip";
-import { DATA_KEYS } from "../../../backend/storage/keys/storage_keys";
+import CurrentTripDataService from "../../../backend/storage/hot_data/current_trip";
+import { DATA_KEYS } from "../../../backend/storage/hot_data/keys/storage_keys";
 /**
  * Observer class use to keep track of current display trip
  */
@@ -62,7 +62,7 @@ class TripDisplayObserver extends LocalStorage {
    */
   update(newTripData) {
     // if (!newTripData) return
-    console.log('newTripData', newTripData)
+    console.log("newTripData", newTripData);
     this.CurrentActiveTripData = newTripData;
     this.notify(this.EVENTS, this.getTripNeedRender());
   }

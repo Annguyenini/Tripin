@@ -1,13 +1,13 @@
-import TokenService from "../services/token_service";
+import TokenService from "../storage/tokens/token_service";
 import AuthService from "../services/auth";
 import * as API from "../../config/config_api";
-import CurrentTripDataService from "../../backend/storage/current_trip";
-import EtagService from "../services/etag/etag_service";
-import { ETAG_KEY, GENERATE_TRIP_ETAG_KEY } from "../services/etag/etag_keys";
+import CurrentTripDataService from "../storage/hot_data/current_trip";
+import EtagService from "../storage/etag/etag_service";
+import { ETAG_KEY, GENERATE_TRIP_ETAG_KEY } from "../storage/etag/etag_keys";
 // mport NetworkObserver from '../../app-core/flow/sync/network_observer';
 import fetchFunction from "./fetch_function";
 class Trip {
-  constructor() { }
+  constructor() {}
   async requestNewTrip(trip_name, created_time, imageUri = null) {
     /**
      * request to create new trip
@@ -79,7 +79,6 @@ class Trip {
 
   async requestTripsData() {
     const etag = await EtagService.getEtagFromLocal(ETAG_KEY.ALL_TRIPS_LIST);
-    console.log(etag);
     const headers = {
       "Content-Type": "application/json",
     };
@@ -108,7 +107,7 @@ class Trip {
     return respond;
   }
   async requestTripDataChange(trip_id, trip_name, image_uri, modified_time) {
-    console.log(modified_time)
+    console.log(modified_time);
     const data = new FormData();
     if (image_uri) {
       data.append("image", {

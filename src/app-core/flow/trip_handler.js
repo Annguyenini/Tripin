@@ -1,19 +1,19 @@
 import Trip from "../../backend/services/trip";
 import TripService from "../../backend/gps_logic/gps_logic";
-import TripDataService from "../../backend/storage/trips";
+import TripDataService from "../../backend/storage/database/trips";
 import TripDataStorage from "../../backend/trip_coordinates/current_trip_coordinate_service";
-import CurrentTripDataService from "../../backend/storage/current_trip";
-import UserDataService from "../../backend/storage/user";
-import EtagService from "../../backend/services/etag/etag_service";
+import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
+import UserDataService from "../../backend/storage/database/user";
+import EtagService from "../../backend/storage/etag/etag_service";
 import {
   ETAG_KEY,
   GENERATE_TRIP_ETAG_KEY,
-} from "../../backend/services/etag/etag_keys";
-import TripDatabaseService from "../../backend/database/TripDatabaseService";
+} from "../../backend/storage/etag/etag_keys";
+import TripDatabaseService from "../../backend/storage/database/protected/TripDatabaseService";
 import OfflineSyncManager from "./sync/offline_sync_manager";
 import GPSLogic from "../../backend/gps_logic/gps_logic";
 import safeRun from "../helpers/safe_run";
-import trips from "../../backend/storage/trips";
+import trips from "../../backend/storage/database/trips";
 class TripHandler {
   /**
    *
@@ -93,8 +93,6 @@ class TripHandler {
    * @returns boolean of status
    */
   async requestAllTripHandler() {
-
-
     const respond = await safeRun(
       () => Trip.requestTripsData(),
       "fetch_trips_failed",
@@ -266,13 +264,13 @@ class TripHandler {
   }
 
   async modifyTripDataHandler(trip_id, trip_name = null, image_uri = null) {
-    const modified_time = Date.now()
+    const modified_time = Date.now();
     try {
       const respond = await Trip.requestTripDataChange(
         trip_id,
         trip_name,
         image_uri,
-        modified_time
+        modified_time,
       );
 
       if (respond.status !== 200) {
@@ -313,10 +311,9 @@ class TripHandler {
       if (trip_id === CurrentTripDataService.getCurrentTripId()) {
         CurrentTripDataService.saveCurrentTripDataToLocal(old_trip_data);
       }
-      await TripDataService.updateTripDataModifiedTime(modified_time, trip_id)
-    }
-    catch (err) {
-      throw new Error('Failed ata request modify trip data')
+      await TripDataService.updateTripDataModifiedTime(modified_time, trip_id);
+    } catch (err) {
+      throw new Error("Failed ata request modify trip data");
     }
     return { status: true, message: "Success!" };
   }
