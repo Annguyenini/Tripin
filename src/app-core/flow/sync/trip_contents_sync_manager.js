@@ -1,13 +1,13 @@
 import TripContentsSyncService from "../../../backend/services/sync/trip_contents_sync";
 import HashService from "../../../backend/services/hash_service/hash_service";
-import Albumdb from "../../../backend/storage/database/protected/albumdb";
+import Albumdb from "../../../backend/storage/database/protected/legacy/albumdb";
 import safeRun from "../../helpers/safe_run";
 import TripContentsSync from "./trip_contents_sync";
 import TripDatabaseService from "../../../backend/storage/database/protected/TripDatabaseService";
 import { UseOverlay } from "../../../frontend/overlay/overlay_main";
-import TripContents from "../../../backend/services/trip_contents";
-import MediaService from "../../../backend/media/media_service";
-import TripCoordinateDatabase from "../../../backend/storage/database/protected/trip_coordinate_database";
+import TripContents from "../../../backend/services/lagacy/trip_contents";
+import MediaService from "../../../backend/media/legacy/media_service";
+import TripCoordinateDatabase from "../../../backend/storage/database/protected/legacy/trip_coordinate_database";
 
 let _onCallBack = null;
 

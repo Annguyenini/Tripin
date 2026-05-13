@@ -6,80 +6,41 @@ import getTimestamp from "../addition_functions/get_current_time";
 import * as FileSystem from "expo-file-system/legacy";
 import fetchFunction from "./fetch_function";
 class TripContentService {
-  async send_coordinates(coor_object, version) {
-    console.log("after send", coor_object);
-    const respond = await fetchFunction(
-      API.SEND_COORDINATES +
-        `/${CurrentTripDataService.getCurrentTripId()}/coordinates`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          id: coor_object.coordinate_id,
-        },
-        body: JSON.stringify({
-          coordinates: coor_object,
-          version: version,
-        }),
-      },
-    );
-    return respond;
-  }
-  async deleteCoordinate(trip_id, coordinate_id, modified_time) {
-    const respond = await fetchFunction(API.DELETE_TRIP_COORDINATE, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json", id: coordinate_id },
-      body: JSON.stringify({
-        trip_id: trip_id,
-        coordinate_id: coordinate_id,
-        modified_time: modified_time,
-      }),
+  async requestUploadPresignUrl(content_cards, trip_id) {
+    const headers = { "Content-Type": "application/json" };
+    const respond = await fetchFunction(API.REQUEST_PRESIGN_URLS, {
+      method: "POST",
+      body: JSON.stringify({ content_cards: content_cards, trip_id: trip_id }),
+      headers: headers,
     });
     return respond;
   }
 
-  async requestTripCoordinates(trip_id, coordinateHash) {
-    if (!trip_id) return;
+  async putMediaObjectWithPresignUrl(url, media_object) {
+    const fileRes = await fetch(media_object.media_path);
+    const blob = await fileRes.blob();
+    headers = {
+      "Content-Type": `${media_object.media_type === "video" ? "video/mp4" : "image/jpeg"}`,
+    };
+    const respond = await fetchFunction(url, {
+      method: "PUT",
+      headers: headers,
+      body: blob,
+    });
+    return respond;
+  }
+
+  async requestSync(content_cards, trip_id) {
     const headers = {};
-    if (coordinateHash) {
-      headers["If-None-Match"] = coordinateHash;
-    }
-    const respond = await fetchFunction(
-      API.REQUEST_TRIP_COORDINATES + `/${trip_id}/coordinates`,
-      {
-        method: "GET",
-        headers: headers,
-      },
-    );
-
-    return respond;
-  }
-  async request_location_conditions(longitude, latitude) {
-    const respond = await fetchFunction(
-      API.REQUEST_LOCATION_CONDITIONS +
-        `?longitude=${longitude}&latitude=${latitude}`,
-      {
-        methods: "GET",
-        headers: { "Content-Type": "application/json" },
-      },
-    );
+    const respond = await fetchFunction(API.REQUEST_CONTENT_CARDS_SYNC, {
+      method: "POST",
+      body: JSON.stringify({ content_cards: content_cards, trip_id: trip_id }),
+      headers: headers,
+    });
     return respond;
   }
 
-  async sendTripMedia(
-    media_id,
-    trip_id,
-    mediaUri,
-    longitude,
-    latitude,
-    mediaType,
-    coordinate_id,
-    time_stamp,
-    city,
-    region,
-    country,
-    iso_country_code,
-  ) {
+  async uploadTripMediaToCloud(card_data) {
     const form = new FormData();
     const path = `trip${trip_id}_${time_stamp}`;
     const isVideo = mediaType === "video";
@@ -130,19 +91,6 @@ class TripContentService {
         headers: headers,
       },
     );
-    return respond;
-  }
-
-  async deleteMedias(trip_id, media_id, modified_time) {
-    const respond = await fetchFunction(API.DELETE_TRIP_MEDIA, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        trip_id: trip_id,
-        media_id: media_id,
-        modified_time: modified_time,
-      }),
-    });
     return respond;
   }
 }

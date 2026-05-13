@@ -7,7 +7,7 @@ import CurrentDisplayTripMediaObserver from "../../../observers/current_display_
 import MediaViewCard from "../../../../albums/viewer_card";
 import { computeCluster } from "../../../../../backend/addition_functions/compute_cluster";
 import { imageLabelStyle } from "../../../../../styles/function/image_label";
-import TripContentHandler from "../../../../../app-core/flow/trip_contents_handler";
+import TripContentHandler from "../../../../../app-core/flow/legacy/trip_contents_handler";
 import { generateOrGetThumbnailFromMediaId } from "../../../../../backend/media/generate_thumbnail";
 const RenderImageLable = ({ clusters, mapKey, onClick }) => {
   console.log("render image", clusters);

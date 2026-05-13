@@ -1,12 +1,13 @@
 import { navigate } from "../../frontend/navigation/navigationService";
 import AuthHandler from "./auth_handler";
 import TripHandler from "./trip_handler";
-import TripContentsHandler from "./trip_contents_handler";
+import TripContentsHandler from "./legacy/trip_contents_handler";
 import UserDataHandler from "./user_handler";
-import Albumdb from "../../backend/storage/database/protected/albumdb";
+import Albumdb from "../../backend/storage/database/protected/legacy/albumdb";
 import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
 import TripDatabaseService from "../../backend/storage/database/protected/TripDatabaseService";
 import TripContentsSync from "./sync/trip_contents_sync";
+import TripContentsDatabase from "../../backend/storage/database/protected/trip_contents";
 import LocalStorage from "../../backend/storage/base/localStorage";
 import TripContentSyncManager from "./sync/trip_contents_sync_manager";
 import safeRun from "../helpers/safe_run";
@@ -56,6 +57,10 @@ class AppFlow {
       await safeRun(
         () => TripDatabaseService.initTripTable(),
         "failed_at_create_trips_database",
+      );
+      await safeRun(
+        () => TripContentsDatabase.initTable(),
+        "failed_at_create_trip_contents_database",
       );
       await safeRun(() => migration(), "failed_at_migration");
 

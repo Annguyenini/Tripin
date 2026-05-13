@@ -26,7 +26,7 @@ const AnimatedCamera = Animated.createAnimatedComponent(Camera);
 import { cameraStyle } from "../../styles/camera_style.js";
 import CameraService from "../../backend/camera/camera_functions.js";
 import { navigate } from "../navigation/navigationService.js";
-import AlbumService from "../../backend/storage/database/protected/albumdb.js";
+import AlbumService from "../../backend/storage/database/protected/legacy/albumdb.js";
 
 import TopBarCamera from "./layout/top_bar.js";
 import PermissionLayout from "./layout/permission.js";

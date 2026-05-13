@@ -46,7 +46,9 @@ export const DELETE_TRIP_COORDINATE =
 export const BASE_USER_API = "/user";
 export const UPDATE_PROFILE_IMAGE = BASE_API + BASE_USER_API + "/update-avatar";
 export const GET_USER_DATA = BASE_API + BASE_USER_API + "/get-user-data";
-
+export const REQUEST_PRESIGN_URLS =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/request-presign-urls";
+export const REQUEST_CONTENT_CARDS_SYNC = BASE_TRIP_CONTENTS_API + "/sync";
 export const SYNC = BASE_API + "/sync";
 export const TRIP_COORDINATE_HASH = SYNC + "/trip-coordinate-hash";
 export const TRIP_MEDIAS_HASH = SYNC + "/trip-medias-hash";

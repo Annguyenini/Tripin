@@ -1,7 +1,7 @@
 import LocalStorage from "../../storage/base/localStorage";
 import safeRun from "../../../app-core/helpers/safe_run";
 import * as Crypto from "expo-crypto";
-import Albumdb from "../../storage/database/protected/albumdb";
+import Albumdb from "../../storage/database/protected/legacy/albumdb";
 class HashService extends LocalStorage {
   GENERATE_TRIP_HASH_KEY(trip_id, type) {
     return `trip_${trip_id}:${type}:hash`;

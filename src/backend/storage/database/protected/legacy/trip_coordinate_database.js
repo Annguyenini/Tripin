@@ -1,9 +1,9 @@
 import { documentDirectory } from "expo-file-system/legacy";
-import { SQLITEDBNAME } from "../../../../config/config_db";
-import SqliteService from "../sqlite/sqlite";
+import { SQLITEDBNAME } from "../../../../../config/config_db";
+import SqliteService from "../../sqlite/sqlite";
 import * as SQLite from "expo-sqlite";
-import * as DBCONFIG from "../../../../config/config_db";
-import TripDatabaseService from "./TripDatabaseService";
+import * as DBCONFIG from "../../../../../config/config_db";
+import TripDatabaseService from "../TripDatabaseService";
 
 class TripCoordinateDatabase {
   async create_trip(trip_id) {

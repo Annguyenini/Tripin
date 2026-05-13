@@ -3,8 +3,8 @@ import * as DBCONFIG from "../../config/config_db";
 import CurrentTripDataService from "../storage/hot_data/current_trip";
 import * as Location from "expo-location";
 import SqliteService from "../storage/database/sqlite/sqlite";
-import TripContentsHandler from "../../app-core/flow/trip_contents_handler";
-import TripCoordinateDatabase from "../storage/database/protected/trip_coordinate_database";
+import TripContentsHandler from "../../app-core/flow/legacy/trip_contents_handler";
+import TripCoordinateDatabase from "../storage/database/protected/legacy/trip_coordinate_database";
 import TripDatabase from "../storage/database/protected/TripDatabaseService";
 import CurrentDisplayCoordinateObserver from "../../frontend/trip-compoments/observers/current_display_coordinates_observer";
 class CurrentTripCoordinateService extends TripCoordinateDatabase {

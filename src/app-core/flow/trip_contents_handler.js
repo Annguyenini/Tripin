@@ -1,229 +1,142 @@
 import TripContents from "../../backend/services/trip_contents";
-import LocationService from "../local_data/local_location_data";
-import locationDataService from "../../backend/storage/hot_data/current_location_data_service";
-import TripSync from "./sync/trip_contents_sync";
-import TripDatabaseService from "../../backend/storage/database/protected/TripDatabaseService";
-import TripCoordinateDatabase from "../../backend/storage/database/protected/trip_coordinate_database";
-import Albumdb from "../../backend/storage/database/protected/albumdb";
+import TripCoordinateDatabase from "../../backend/storage/database/protected/legacy/trip_coordinate_database";
 import safeRun from "../helpers/safe_run";
-import CurrentDisplayTripMediaObserver from "../../frontend/trip-compoments/observers/current_display_media_observer";
-import HashService from "../../backend/services/hash_service/hash_service";
-import TripContentSyncManager from "./sync/trip_contents_sync_manager";
-import MediaService from "../../backend/media/media_service";
-import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
-import CurrentDisplayCoordinateObserver from "../../frontend/trip-compoments/observers/current_display_coordinates_observer";
+import TripContentsDatabase from "../../backend/storage/database/protected/trip_contents";
 class TripContentHandler {
   constructor() {
     this.TripCoordinateDatabaseService = new TripCoordinateDatabase();
-    this._uploadPending = 0;
+    this._pending = null;
+    this._bucket = [];
   }
 
-  async sendCoordinatesHandler(coors_object, version = null) {
-    const respond = await TripContents.send_coordinates(coors_object, version);
-    ///
-
-    return respond.ok;
-  }
-
-  async getTripCoordinatesHandler(trip_id) {
-    let coordinates = null;
-    let version = null;
-    const coordinateHash = await safeRun(() =>
-      this.TripCoordinateDatabaseService.getTripCoordinateHash(trip_id),
-    );
-    coordinates =
-      await this.TripCoordinateDatabaseService.getAllCoordinatesFromTripId(
-        trip_id,
-      );
-    if (coordinates?.length) {
-      version = await TripDatabaseService.getTripCoordinateVersion(trip_id);
-    }
-
-    const respond = await safeRun(
-      () => TripContents.requestTripCoordinates(trip_id, coordinateHash),
-      "fetch_coordinates_failed",
-    );
-    console.log(respond);
-    if (!respond.ok || respond.status !== 200) {
-      return coordinates ? coordinates : null;
-    }
-
-    const data = respond.data;
-    if (!data.coordinates) return null;
-
-    coordinates = data.coordinates;
-    console.log("coordinate", coordinates);
-    // if (data.user_id === UserDataService.getUserId()) {
-
-    // skip save not save trip to local
-    // if (await safeRun(
-    //     () => this.TripCoordinateDatabaseService.handlerCoordinateFromServer(coordinates, trip_id),
-    //     'save_coordinates_failed'
-    // )) {
-    //     await safeRun(
-    //         () => TripDatabaseService.updateTripCorrdinateVersion(trip_id, data.newest_version),
-    //         'update_version_failed'
-    //     )
-    // }
-    // }
-
-    return coordinates;
-  }
-  async requestTripMediasHandler(trip_id) {
-    const current_trip_id = CurrentTripDataService.getCurrentTripId();
-    const trip_media_hash = await safeRun(() => Albumdb.getMediaHash(trip_id));
-    const respond = await TripContents.requestTripMedias(
+  async _requestPresignUrl(content_cards, trip_id) {
+    /*
+    return a list of object that mapped with the url
+    */
+    const respond = await TripContents.requestUploadPresignUrl(
+      content_cards,
       trip_id,
-      trip_media_hash,
     );
-    let assests = [];
     if (!respond.ok || respond.status !== 200) {
-      console.log(respond);
-      assests = await Albumdb.getAssestsFromTripId(trip_id);
-      return assests;
+      return null;
     }
-    // else if (respond.status !== 200) return []
-    const hash = respond.data.hash;
-    if (hash && current_trip_id === trip_id) {
-      const sync = await safeRun(
-        () => TripContentSyncManager.checkTripMediaHash(hash, trip_id),
-        "failed_at_sync_trip_merdia",
-      );
-      // return await this.requestTripMediasHandler(trip_id)
-      if (sync.ok && sync.code === "sync_complete") {
-        assests = await Albumdb.getAssestsFromTripId(trip_id);
-        return assests;
-      } else if (sync.ok && sync.code === "fresh") {
-      }
-    } else return respond.data.medias;
+    console.log("add", respond);
+    return respond?.data?.presign_urls;
+    // handler
   }
-  async uploadTripMediaHandler(
-    media_id,
-    trip_id,
-    media_uri,
-    longitude,
-    latitude,
-    coordinate_id,
-    type,
-    time_stamp,
-    city,
-    region,
-    country,
-    iso_country_code,
-  ) {
-    if (!media_uri) return;
-    this._uploadPending = (this._uploadPending || 0) + 1;
+  async _processUpload(content_cards, trip_id) {
     try {
-      // pending count to prevent spam lead to loop sync
-      // send to server
-      const respond = await safeRun(
-        () =>
-          TripContents.sendTripMedia(
-            media_id,
-            trip_id,
-            media_uri,
-            longitude,
-            latitude,
-            type,
-            coordinate_id,
-            time_stamp,
-            city,
-            region,
-            country,
-            iso_country_code,
+      const cards = await this._requestPresignUrl(content_cards, trip_id);
+      const mapped_cards = cards.filter((card) => card.presign_url);
+      const unmapped_card = cards.filter((card) => !card.presign_url);
+      if (!cards) return false;
+      let failed_cards = [];
+      let MAX_RETRY = 2;
+      const uploader = async () => {
+        while (mapped_cards.length >= 1) {
+          const card = mapped_cards.shift();
+          const respond = await TripContents.uploadTripMediaToCloud(card);
+          if (!respond.ok || respond.status !== 200) {
+            failed_cards.append(card);
+          }
+        }
+      };
+      await Promise.all(Array.from({ length: 3 }, uploader));
+      // for now let the failed,unmapped beside, that can be resolve in sync
+      return mapped_cards.filter(
+        (mapped_card) =>
+          !failed_cards.find(
+            (failed_card) => failed_card.uuid === mapped_card.uuid,
           ),
-        "failed_at_send_media_to_server",
       );
-
-      if (!respond.ok || respond.status !== 200) return;
-
-      const data = respond.data;
-
-      // sync leave for later
-      const hash = data.hash;
-      // after process all request, check hash and sync
-      if (hash && this._uploadPending === 1) {
-        TripContentSyncManager.checkTripMediaHash(hash, trip_id);
-      }
-      return respond;
     } catch (err) {
-      console.error(err);
-    } finally {
-      this._uploadPending--;
+      throw new Error("Failed to process upload");
     }
   }
-
-  async deleteMediaHandler(trip_id, media_id, media_path) {
-    const modified_time = Date.now();
-    // delete in database
-    await safeRun(
-      () => Albumdb.deleteMediaFromDB(media_id, trip_id, modified_time),
-      "failed_delete_media_from_db",
-    );
-    console.log("delete from database!");
-
-    await safeRun(
-      () => MediaService.deleteMediaToLocalAlbum(media_id),
-      "failed at delete media from album",
-    );
-    console.log("delete from local!");
-    // delete in album
-    Albumdb.deleteFromAlbumArray(media_id);
-
-    CurrentDisplayTripMediaObserver.deleteAssestFromArrayByUri(
-      trip_id,
-      media_path,
-    );
-    console.log("delete from observer!");
-
-    let respond = null;
-    if (trip_id) {
-      respond = await TripContents.deleteMedias(
-        trip_id,
-        media_id,
-        modified_time,
-      );
-    }
-    if (respond.status == 200) {
-      const data = respond.data;
-      const hash = data.hash;
-      if (hash) {
-        TripContentSyncManager.checkTripMediaHash(hash, trip_id);
+  async _processRequest(content_cards, trip_id) {
+    try {
+      const respond = await TripContents.requestSync(content_cards, trip_id);
+      if (!respond.ok || respond.status !== 200) {
+        //request sync
       }
+      return true;
+    } catch (err) {
+      throw new Error("Failed at process requests");
     }
+  }
+  _processByTimeInterval(content_card, trip_id) {
+    try {
+      if (!this._bucket) this._bucket = [];
+      this._bucket.push(content_card);
+      console.log("add", this._bucket);
 
-    return;
-  }
-  async deleteCoordinateHandler(trip_id, coordinate_id) {
-    let modified_time = Date.now();
-    await safeRun(() =>
-      this.TripCoordinateDatabaseService.deleteCoordinateFromTripId(
-        trip_id,
-        coordinate_id,
-        modified_time,
-      ),
-    );
-    CurrentDisplayCoordinateObserver.deleteCoordinateFromArray(
-      trip_id,
-      coordinate_id,
-    );
-    let respond = null;
-    if (trip_id) {
-      respond = await TripContents.deleteCoordinate(
-        trip_id,
-        coordinate_id,
-        modified_time,
-      );
+      if (!this._pending) {
+        this._pending = setInterval(() => {
+          processRequest();
+        }, 5000);
+      }
+      const processRequest = async () => {
+        try {
+          const temp_bucket = this._bucket;
+          console.log("add", temp_bucket);
+
+          this._bucket = [];
+
+          clearInterval(this._pending);
+          this._pending = null;
+
+          const request_presign = temp_bucket.filter((object) => {
+            return object.event === "add";
+          });
+          let uploaded = null;
+          console.log("adddd", request_presign);
+
+          if (request_presign) {
+            uploaded = await this._processUpload(request_presign, trip_id);
+          }
+          // handle request_presign
+          const request_delete = temp_bucket.filter((object) => {
+            return object.event === "remove";
+          });
+          const requests = [...uploaded, ...request_delete];
+          await this._processRequest(requests, trip_id);
+        } catch (err) {
+          //request sync
+        }
+      };
+    } catch (err) {
+      console.error("failed to process request", err);
     }
-    return;
   }
-  // async requestSTripMedias (){
-  //     console.log(CurrentTripDataService.getCurrentTripId())
-  //     const respond = await TripContents.requestTripMedias(CurrentTripDataService.getCurrentTripId())
-  //     if(!respond.ok || respond.status !==200) return
-  //     const data = respond.data
-  //     await TripContentsDataService.setCurrentMedias(data.medias)
-  // }
+  async tripContentHandler(content_card, trip_id) {
+    try {
+      console.log("add", content_card, trip_id);
+      const event = content_card.event;
+      console.log("add", event);
+
+      switch (event) {
+        case "add":
+          await safeRun(
+            () => TripContentsDatabase.addCardIntoDB([content_card]),
+            "failed to save media to local databse ",
+          );
+          break;
+        case "remove":
+          await safeRun(
+            () => TripContentsDatabase.deleteCardFromDB(content_card),
+            "failed to delete media to local databse ",
+          );
+          break;
+        default:
+          throw new Error("undified event");
+      }
+      if (trip_id) {
+        console.log("add", trip_id);
+
+        this._processByTimeInterval(content_card, trip_id);
+      }
+    } catch (err) {}
+  }
 }
 
 export default new TripContentHandler();

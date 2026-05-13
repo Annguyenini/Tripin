@@ -1,11 +1,11 @@
 import SqliteService from "../../../backend/storage/database/sqlite/sqlite";
 import CurrentTripDataService from "../../../backend/storage/hot_data/current_trip";
-import TripContentsService from "../../../backend/services/trip_contents";
+import TripContentsService from "../../../backend/services/lagacy/trip_contents";
 import TripDatabaseService from "../../../backend/storage/database/protected/TripDatabaseService";
 import UserDataService from "../../../backend/storage/database/user";
 import { _registerNetworkCallback } from "./network_observer";
 import safeRun from "../../helpers/safe_run";
-import TripCoordinateDatabase from "../../../backend/storage/database/protected/trip_coordinate_database";
+import TripCoordinateDatabase from "../../../backend/storage/database/protected/legacy/trip_coordinate_database";
 class TripSync {
   constructor() {
     this.pennding = [];
