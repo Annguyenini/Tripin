@@ -2,6 +2,7 @@ import { navigate } from "../../frontend/navigation/navigationService";
 import AuthHandler from "./auth_handler";
 import TripHandler from "./trip_handler";
 import UserDataHandler from "./user_handler";
+import TripContentsHander from "./trip_contents_handler";
 import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
 import TripDatabaseService from "../../backend/storage/database/protected/TripDatabaseService";
 import TripContentsDatabase from "../../backend/storage/database/protected/trip_contents";
@@ -10,6 +11,7 @@ import LocalStorage from "../../backend/storage/base/localStorage";
 import safeRun from "../helpers/safe_run";
 import { _registerNetworkCallback } from "./sync/network_observer";
 import migration from "../../backend/storage/database/migrations/migration";
+import Album from "../../backend/storage/album/album";
 class AppFlow {
   constructor() {
     this.LocalStorage = new LocalStorage();
@@ -17,7 +19,8 @@ class AppFlow {
   }
   networkCallback(state) {
     console.log("network", state);
-    // if (state) this.syncCurrentTripContents();
+
+    if (state) this.syncCurrentTripContents();
   }
   async tokenAuthorization() {
     const loginViaToken = await AuthHandler.loginWithTokenHandler();
@@ -42,7 +45,23 @@ class AppFlow {
     return true;
   }
   async onPermissionReady() {
-    if (await this.initDBs()) navigate("Main");
+    try {
+      if ((await this.initDBs()) && (await this.initAlbum())) {
+        navigate("Main");
+      } else {
+        navigate("auth");
+      }
+    } catch (err) {
+      navigate("auth");
+    }
+  }
+  async initAlbum() {
+    try {
+      await safeRun(() => Album.mergeAlbum(), "failed init album");
+      return true;
+    } catch (error) {
+      throw new Error("failed to init user album");
+    }
   }
   async initDBs() {
     console.log("migration");
@@ -88,22 +107,21 @@ class AppFlow {
   //     const currentlocationCon = await TripContentsHandler.requestLocationConditionsHandler()
   //     return
   // }
-  // async syncCurrentTripContents() {
-  //   const trip_id = CurrentTripDataService.getCurrentTripId();
-  //   if (trip_id) {
-  //     console.log("sync");
-  //     await safeRun(
-  //       () => TripContentSyncManager.tripMediaSyncHandler(trip_id),
-  //       "faild_at_sync_trip_media",
-  //     );
-  //     await safeRun(
-  //       () => TripContentSyncManager.tripCoordinateSync(trip_id),
-  //       "faild_at_sync_trip_coordinate",
-  //     );
-  //     console.log("sync complete");
-  //   }
-  //   // await TripContentsSync.currentTripContentsSync(CurrentTripDataService.getCurrentTripId())
-  //   // return
-  // }
+  async syncCurrentTripContents() {
+    const trip_id = CurrentTripDataService.getCurrentTripId();
+    if (trip_id) {
+      console.log("sync");
+      await safeRun(
+        () => TripContentsHander._requestTripContentSync(trip_id),
+        "faild_at_sync_trip_contents",
+      );
+
+      console.log("sync complete");
+    }
+    await TripContentsSync.currentTripContentsSync(
+      CurrentTripDataService.getCurrentTripId(),
+    );
+    return;
+  }
 }
 export default new AppFlow();

@@ -1,9 +1,17 @@
 import TripContents from "../../../backend/services/trip_contents";
 import TripContentsDatabase from "../../../backend/storage/database/protected/trip_contents";
 import safeRun from "../../helpers/safe_run";
+let _onCallBack = null;
+
+export const _registerSyncingCallback = (callback) => {
+  _onCallBack = callback;
+};
 class TripContentsSync {
   async syncTripContentsHandler(trip_id) {
     try {
+      if (_onCallBack) {
+        _onCallBack(true);
+      }
       const local_hash =
         await TripContentsDatabase.getTripContentsHash(trip_id);
       const respond = await TripContents.requestTripContentsHash(trip_id);
@@ -13,6 +21,10 @@ class TripContentsSync {
       await this._getAndProcessTripContentsMetadata(trip_id);
     } catch (err) {
       console.error(err);
+    } finally {
+      if (_onCallBack) {
+        _onCallBack(false);
+      }
     }
     // request content hash
     // check contents hash

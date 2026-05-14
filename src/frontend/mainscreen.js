@@ -41,6 +41,7 @@ import { TripsList } from "./trips_list.js";
 import { SettingScreen } from "./setting/setting_screen.js";
 import CurrentTripDataService from "../backend/storage/hot_data/current_trip.js";
 import { NewTripFiller } from "./trip-compoments/components/helpers/add_new_trip.js";
+import AlbumScreen from "./albums/album.js";
 export const MainScreen = () => {
   // user profile state from local storage
   const [user_id, setUserId] = useState(UserDataService.getUserId());
@@ -51,6 +52,7 @@ export const MainScreen = () => {
   const [cameraVisible, setCameraVisible] = useState(false);
   const [tripsListVisible, setTripsListVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
+  const [albumVisible, setAlbumVisible] = useState(false);
   // controls whether map renders — waits for trip data to be ready
   const [tripDataSuccess, setTripDataSuccess] = useState(false);
   const isUserDataReady = useRef(false);
@@ -165,7 +167,11 @@ export const MainScreen = () => {
           ></SettingScreen>
         </Modal>
       )}
-
+      {albumVisible && (
+        <View style={styles.albumOverlay}>
+          <AlbumScreen onClose={() => setAlbumVisible(false)}></AlbumScreen>
+        </View>
+      )}
       {/* show map once trip data is ready, otherwise show loading */}
       {tripDataSuccess && RenderMap()}
       {!tripDataSuccess && <LoadingScreen />}
@@ -220,7 +226,10 @@ export const MainScreen = () => {
             )}
           </View>
 
-          <TouchableOpacity style={footer.fotterbutton} onPress={callAlbum}>
+          <TouchableOpacity
+            style={footer.fotterbutton}
+            onPress={() => setAlbumVisible((prev) => !prev)}
+          >
             <Ionicons name="images-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Gallery</Text>
           </TouchableOpacity>
@@ -273,6 +282,15 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   tripsOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: Dimensions.get("window").height * 0.01, // adjust to clear your bottom sheet + bottom nav height
+    zIndex: 500,
+    backgroundColor: "#1a1917",
+  },
+  albumOverlay: {
     position: "absolute",
     top: 0,
     left: 0,

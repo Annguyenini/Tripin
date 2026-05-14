@@ -14,8 +14,7 @@ import OfflineSyncManager from "./sync/offline_sync_manager";
 import GPSLogic from "../../backend/gps_logic/gps_logic";
 import safeRun from "../helpers/safe_run";
 import trips from "../../backend/storage/database/trips";
-import fetchFunction from "../../backend/services/fetch_function";
-import { REMOVE_TRIP_DATA } from "../../config/config_api";
+import TripContentsHandler from "./trip_contents_handler";
 class TripHandler {
   /**
    *
@@ -358,7 +357,10 @@ class TripHandler {
     try {
       const current_time = Date.now();
       const trip_id = CurrentTripDataService.getCurrentTripId();
-
+      await safeRun(
+        () => TripContentsHandler._requestTripContentSync(trip_id),
+        "failed_at_request_last_trip_sync_trip_data",
+      );
       const respond = await Trip.end_trip(current_time);
       if (!respond.ok || respond.status !== 200) {
         OfflineSyncManager.pushEventToQueue(

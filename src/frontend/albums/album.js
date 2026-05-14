@@ -28,7 +28,7 @@ import {
 import safeRun from "../../app-core/helpers/safe_run";
 import { generateOrGetThumbnailFromMediaId } from "../../backend/media/generate_thumbnail";
 const videoPauseIcon = require("../../../assets/image/video_pause_icon.png");
-export default function AlbumScreen() {
+export default function AlbumScreen({ onClose }) {
   const [Images, setImages] = useState([]);
   const [imageVisible, setImageVisible] = useState(false);
   const [currentMedia, setCurrentMedia] = useState(null);
@@ -37,9 +37,7 @@ export default function AlbumScreen() {
   const [finalImagesArray, setFinalImagesArray] = useState(null);
   useEffect(() => {
     const fetchImages = async () => {
-      const assets = await AlbumService.getMergedMediasArray();
-
-      setImages(assets);
+      setImages([...AlbumService.AlbumsArray]);
     };
     const getalbumPermission = async () => {
       const permission = await getAlbumPermission();
@@ -62,22 +60,25 @@ export default function AlbumScreen() {
 
   useEffect(() => {
     // get thumbnail or get it from cache
+    let unsolve = [...Images];
     const generateThumbnails = async () => {
-      const result = await Promise.all(
-        Images.map(async (asset) => {
-          if (asset.media_type !== "video") return asset;
-          const dest = await generateOrGetThumbnailFromMediaId(
-            asset.media_id,
-            asset.media_path,
-          );
-          return { ...asset, thumb_nail: dest };
-        }),
-      );
-      console.log(result);
-      setFinalImagesArray(result);
+      while (unsolve.length > 0) {
+        const image = unsolve.shift();
+        const thumbnail = await generateOrGetThumbnailFromMediaId(
+          image.media_id,
+          image.media_path,
+        );
+        const idx = Images.findIndex((imgs) => imgs.uuid === image.uuid);
+        Images[idx] = { ...image, thumb_nail: thumbnail };
+      }
     };
-    generateThumbnails();
-    console.log(finalImagesArray);
+    const final = Promise.all(
+      Array.from({ length: 3 }, () => generateThumbnails),
+    );
+    final.then(() => {
+      setFinalImagesArray(Images);
+      console.log(finalImagesArray);
+    });
   }, [Images]);
 
   const onCallMainScreen = () => {
@@ -93,7 +94,7 @@ export default function AlbumScreen() {
 
   return (
     <View style={Albumstyles.container}>
-      <TouchableOpacity onPress={onCallMainScreen}>
+      <TouchableOpacity onPress={onClose}>
         <Text style={{ color: "white", fontSize: 40 }}>←</Text>
       </TouchableOpacity>
       {!fullAlbumPermission && (

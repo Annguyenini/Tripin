@@ -13,7 +13,7 @@ import * as Location from "expo-location";
 import Permission from "../../backend/storage/settings/permissions";
 import network_observer from "../../app-core/flow/sync/network_observer";
 import { _registerNetworkCallback } from "../../app-core/flow/sync/network_observer";
-import { _registerSyncingCallback } from "../../app-core/flow/sync/legacy/trip_contents_sync_manager";
+import { _registerSyncingCallback } from "../../app-core/flow/sync/trip_content_sync";
 import { SyncBanner } from "./syncing_banner";
 import {
   SatelliteOffIcon,
@@ -91,10 +91,20 @@ const OfflineBanner = () => {
         <Animated.View
           style={[styles.arc, styles.arc2, { opacity: arcOpacity }]}
         />
-        <Animated.View style={[styles.wifiDot, { opacity: dotOpacity }]} />
-        <Animated.View style={[styles.slash, { opacity: slashOpacity }]} />
+        <Animated.View
+          style={[
+            styles.wifiDot,
+            { opacity: dotOpacity, backgroundColor: "#1a1917" },
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.slash,
+            { opacity: slashOpacity, backgroundColor: "#1a1917" },
+          ]}
+        />
       </View>
-      <View>
+      <View style={styles.offlineBanner}>
         <Text style={styles.bannerTitle}>Offline</Text>
         <Text style={styles.bannerSub}>
           Not from the world —{" "}
@@ -495,6 +505,17 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     // paddingHorizontal: 12,
     gap: 10,
+  },
+  offlineBanner: {
+    // flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1a1917",
+    borderWidth: 1,
+    borderColor: "#2e2c29",
+    borderRadius: 10,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    // gap: ,
   },
   bannerTitle: {
     fontFamily: "DMMono",

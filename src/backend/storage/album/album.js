@@ -100,18 +100,29 @@ class Album {
 
     return result;
   }
-
+  async mergeAlbum() {
+    const assets = await this.getMergedMediasArray();
+    this.AlbumsArray = [...assets];
+  }
   async getMergedMediasArray() {
-    const db_medias = await this.getAllMediasFromDb();
-    const album_medias = await this.getAllMediasFromAlbum();
-    if (!album_medias || album_medias.length === 0) {
-      return db_medias;
+    console.log("init album");
+    try {
+      const db_medias = await this.getAllMediasFromDb();
+      const album_medias = await this.getAllMediasFromAlbum();
+
+      if (!album_medias || album_medias.length === 0) {
+        return db_medias;
+      }
+      const result = await this.mergeMediasFromAlbumAndDB(
+        db_medias,
+        album_medias,
+      );
+      console.log("init album", result);
+      return result;
+    } catch (err) {
+      console.error(err);
+      return null;
     }
-    const result = await this.mergeMediasFromAlbumAndDB(
-      db_medias,
-      album_medias,
-    );
-    return result;
   }
 }
 

@@ -47,7 +47,7 @@ export const Marker = ({
   useEffect(() => {
     const updateDisplayTripData = {
       update(new_data) {
-        if (new_data?.trip_id === currentDisplayTripData?.trip_id) return;
+        // if (new_data?.trip_id === currentDisplayTripData?.trip_id) return;
         setCurrentDisplayTripData(new_data ?? null);
       },
     };

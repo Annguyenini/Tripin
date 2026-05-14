@@ -4,6 +4,7 @@ import safeRun from "../helpers/safe_run";
 import TripContentsDatabase from "../../backend/storage/database/protected/trip_contents";
 import TripContentsSync from "./sync/trip_content_sync";
 import CurrentDisplayContentsObserver from "../../frontend/trip-compoments/observers/current_display_contents_observer";
+import Album from "../../backend/storage/album/album";
 // in ms
 const BUCKET_TIME_INTERVAL = 10000;
 
@@ -126,6 +127,7 @@ class TripContentHandler {
             trip_id,
             content_card,
           );
+          Album.addToAlbumArray(content_card);
           break;
         case "remove":
           await safeRun(
@@ -136,7 +138,7 @@ class TripContentHandler {
             trip_id,
             content_card,
           );
-
+          Album.deleteFromAlbumArray(content_card);
           break;
         default:
           throw new Error("undified event");
