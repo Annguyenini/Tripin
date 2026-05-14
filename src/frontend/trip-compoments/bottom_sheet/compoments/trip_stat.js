@@ -1,11 +1,11 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useMemo } from "react";
-import CurrentDisplayTripMedia from "../../observers/current_display_media_observer";
+import CurrentDisplayTripMedia from "../../observers/legacy/current_display_media_observer";
 import { useEffect, useState } from "react";
 import LocationDataService from "../../../../backend/storage/hot_data/current_location_data_service";
 import { DATA_KEYS } from "../../../../backend/storage/hot_data/keys/storage_keys";
 import TripDisplayObserver from "../../observers/trip_display_observer";
-import CurrentDisplayCoordinateObserver from "../../observers/current_display_coordinates_observer";
+import CurrentDisplayCoordinateObserver from "../../observers/legacy/current_display_coordinates_observer";
 import * as CoordinatesCal from "../../../../backend/coordinates/coordinates_cal";
 export const TripStatCards = () => {
   const [createdTime, setCreatedTime] = useState(null);

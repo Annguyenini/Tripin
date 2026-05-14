@@ -13,7 +13,7 @@ import { Image } from "expo-image";
 import { Albumstyles } from "../../styles/album";
 import { FlatList } from "react-native-gesture-handler";
 const FILTERS = ["All", "Trips", "Photos", "Videos"];
-import AlbumService from "../../backend/storage/database/protected/legacy/albumdb";
+import AlbumService from "../../backend/storage/album/album";
 import { navigate } from "../navigation/navigationService";
 import MediaViewCard from "./viewer_card";
 import Permission from "../../backend/storage/settings/permissions";

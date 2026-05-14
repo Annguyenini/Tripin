@@ -39,6 +39,12 @@ export const REQUEST_LOCATION_CONDITIONS =
   BASE_API + BASE_TRIP_CONTENTS_API + "/location-conditions";
 export const REQUEST_TRIP_COORDINATES = BASE_API + BASE_TRIP_CONTENTS_API;
 export const REQUEST_TRIP_MEDIAS = BASE_API + BASE_TRIP_CONTENTS_API;
+export const REQUEST_TRIP_CONTENTS =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/get-all-contents";
+export const REQUEST_TRIP_CONTENTS_HASH =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/request-trip-contents-hash";
+export const REQUEST_TRIP_CONTENTS_METADATA =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/request-trip-contents-metadata";
 export const DELETE_TRIP_MEDIA =
   BASE_API + BASE_TRIP_CONTENTS_API + "/delete-media";
 export const DELETE_TRIP_COORDINATE =
@@ -48,7 +54,8 @@ export const UPDATE_PROFILE_IMAGE = BASE_API + BASE_USER_API + "/update-avatar";
 export const GET_USER_DATA = BASE_API + BASE_USER_API + "/get-user-data";
 export const REQUEST_PRESIGN_URLS =
   BASE_API + BASE_TRIP_CONTENTS_API + "/request-presign-urls";
-export const REQUEST_CONTENT_CARDS_SYNC = BASE_TRIP_CONTENTS_API + "/sync";
+export const REQUEST_CONTENT_CARDS_SYNC =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/sync";
 export const SYNC = BASE_API + "/sync";
 export const TRIP_COORDINATE_HASH = SYNC + "/trip-coordinate-hash";
 export const TRIP_MEDIAS_HASH = SYNC + "/trip-medias-hash";

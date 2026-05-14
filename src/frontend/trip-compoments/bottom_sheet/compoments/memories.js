@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import CurrentDisplayTripMediaObserver from "../../observers/current_display_media_observer";
+import CurrentDisplayTripMediaObserver from "../../observers/legacy/current_display_media_observer";
+import CurrentDisplayContentsObserver from "../../observers/current_display_contents_observer";
 import {
   View,
   Text,
@@ -245,25 +246,24 @@ function PhotoSheet({ location, onClose }) {
 }
 
 export default function PolaroidGallery({ trip_id }) {
-  console.log("trip_stat", trip_id);
   const [selectedCity, setSelectedCity] = useState(null);
   const [locationArray, setLocationArray] = useState([]);
   const [displayMedias, setDisplayMedias] = useState(
-    CurrentDisplayTripMediaObserver.watchArray[
-      CurrentDisplayTripMediaObserver.GENERATE_KEY(trip_id)
+    CurrentDisplayContentsObserver.watchArray[
+      CurrentDisplayContentsObserver.GENERATE_KEY(trip_id)
     ],
   );
-  console.log("trip_stat", displayMedias);
   useEffect(() => {
     const observer = {
-      update(newImages) {
-        setDisplayMedias([...newImages]);
+      update(newdata) {
+        setDisplayMedias([...newdata]);
       },
     };
-    const key = CurrentDisplayTripMediaObserver.GENERATE_KEY(trip_id);
-    CurrentDisplayTripMediaObserver.attach(observer, key);
-    return () => CurrentDisplayTripMediaObserver.detach(observer, key);
+    const key = CurrentDisplayContentsObserver.GENERATE_KEY(trip_id);
+    CurrentDisplayContentsObserver.attach(observer, key);
+    return () => CurrentDisplayContentsObserver.detach(observer, key);
   }, []);
+  console.log("trip_stat", displayMedias);
   useEffect(() => {
     const loc = () => {
       if (!displayMedias) return [];

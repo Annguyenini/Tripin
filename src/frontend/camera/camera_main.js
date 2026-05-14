@@ -24,9 +24,8 @@ import * as MediaLibrary from "expo-media-library";
 const AnimatedCamera = Animated.createAnimatedComponent(Camera);
 
 import { cameraStyle } from "../../styles/camera_style.js";
-import CameraService from "../../backend/camera/camera_functions.js";
 import { navigate } from "../navigation/navigationService.js";
-import AlbumService from "../../backend/storage/database/protected/legacy/albumdb.js";
+import AlbumService from "../../backend/storage/album/album.js";
 
 import TopBarCamera from "./layout/top_bar.js";
 import PermissionLayout from "./layout/permission.js";
@@ -38,7 +37,6 @@ import CameraSetting from "./layout/camera_setting_bar.js";
 // import {microphonePermission} from 'expo-audio'
 import { Audio } from "expo-av";
 import HorizontalSlider from "./layout/vertical_slider.js";
-import useFrameFilter from "./fillter/use_frame_filter.js";
 import { generateOrGetThumbnailFromMediaId } from "../../backend/media/generate_thumbnail.js";
 const { width, height } = Dimensions.get("window");
 

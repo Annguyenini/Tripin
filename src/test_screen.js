@@ -7,6 +7,7 @@ import TripService from "./backend/gps_logic/gps_logic";
 import TripDataStorage from "./backend/trip_coordinates/current_trip_coordinate_service";
 import Albumn from "./backend/storage/database/protected/legacy/albumdb";
 import TripDatabaseService from "./backend/storage/database/protected/TripDatabaseService";
+import TripContentsDatabase from "./backend/storage/database/protected/trip_contents";
 import * as Location from "expo-location";
 import GPSLocgic from "./backend/gps_logic/gps_logic";
 import LocalStorage from "./backend/storage/base/localStorage";
@@ -24,7 +25,7 @@ export const TestScreen = ({ testScreenHandler }) => {
     console.log(data);
   };
   const onGetAlbumPress = async () => {
-    console.log(await Albumn.getAllMediasFromDbTest());
+    console.log(await TripContentsDatabase.getAllMediasFromDb());
   };
   const onGetUserDb = async () => {
     console.log(await TripDatabaseService.getAllTrip());

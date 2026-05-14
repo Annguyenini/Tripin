@@ -1,10 +1,13 @@
 import { TouchableOpacity, View, Image } from "react-native";
 import React, { useRef } from "react";
 import { useState, useEffect, useCallback } from "react";
-import CoordinatesPointsLayout from "./coordinate_markers/points";
-import ImageLabel from "./image_markers/image_label";
+
 import TripDisplayObserver from "../../observers/trip_display_observer";
 import { UseOverlay } from "../../../overlay/overlay_main";
+import TripContentsHandler from "../../../../app-core/flow/trip_contents_handler";
+import CurrentDisplayContentsObserver from "../../observers/current_display_contents_observer";
+import MediaMarkers from "./image_markers/media_markers";
+import CoordinateMarkers from "./coordinate_markers/coordinate_markers";
 const image_icon = require("../../../../../assets/image/gallery_icon.png");
 
 export const Marker = ({
@@ -15,34 +18,71 @@ export const Marker = ({
   const [currentDisplayTripData, setCurrentDisplayTripData] = useState(
     TripDisplayObserver.getTripNeedRender(),
   );
+  const [contentCards, setContentCards] = useState(null);
   const lastDisplayTripId = useRef(currentDisplayTripData?.trip_id ?? null);
   const { showLoading, hideLoading } = UseOverlay();
   const [coordReady, setCoordReady] = useState(true);
   const [imagesReady, setImageReady] = useState(true);
 
+  const filterCards = (content_cards) => {
+    return content_cards.filter((card) => card.event !== "remove");
+  };
+
+  // initial
   useEffect(() => {
-    const update_current_display_trip = {
+    const initContentCards = async () => {
+      const content_cards = await TripContentsHandler.getTripContents(
+        currentDisplayTripData?.trip_id,
+      );
+      setContentCards(filterCards(content_cards));
+      CurrentDisplayContentsObserver.setDefaultArray(
+        currentDisplayTripData?.trip_id,
+        filterCards(content_cards),
+      );
+    };
+    initContentCards();
+  }, [currentDisplayTripData]);
+
+  // call back for display trip change
+  useEffect(() => {
+    const updateDisplayTripData = {
       update(new_data) {
-        setCurrentDisplayTripData(new_data);
-        if (new_data?.trip_id === lastDisplayTripId.current) return;
-        lastDisplayTripId.current = new_data?.trip_id;
-        setCoordReady(new_data ? false : true);
-        setImageReady(new_data ? false : true);
+        if (new_data?.trip_id === currentDisplayTripData?.trip_id) return;
+        setCurrentDisplayTripData(new_data ?? null);
       },
     };
     TripDisplayObserver.attach(
-      update_current_display_trip,
+      updateDisplayTripData,
       TripDisplayObserver.EVENTS,
     );
-
-    return () => {
+    return () =>
       TripDisplayObserver.detach(
-        update_current_display_trip,
+        updateDisplayTripData,
         TripDisplayObserver.EVENTS,
       );
-    };
   }, []);
 
+  // call back for contents update
+  useEffect(() => {
+    const updateContentCards = {
+      update(newAsset) {
+        setContentCards(filterCards(newAsset));
+      },
+    };
+    CurrentDisplayContentsObserver.attach(
+      updateContentCards,
+      CurrentDisplayContentsObserver.GENERATE_KEY(
+        currentDisplayTripData?.trip_id,
+      ),
+    );
+    return () =>
+      CurrentDisplayContentsObserver.detach(
+        updateContentCards,
+        CurrentDisplayContentsObserver.GENERATE_KEY(
+          currentDisplayTripData?.trip_id,
+        ),
+      );
+  }, [currentDisplayTripData]);
   useEffect(() => {
     console.log(imagesReady, coordReady);
     if (!imagesReady || !coordReady) {
@@ -51,28 +91,21 @@ export const Marker = ({
       hideLoading();
     }
   }, [coordReady, imagesReady]);
+  if (!contentCards) return;
   return (
     <View>
       {currentDisplayTripData && isCoordsMarkerDisplay && (
-        <CoordinatesPointsLayout
-          trip_id={
-            currentDisplayTripData.trip_id
-              ? currentDisplayTripData.trip_id
-              : currentDisplayTripData.id
-          }
+        <CoordinateMarkers
+          content_cards={contentCards}
           ready={() => setCoordReady(true)}
-        ></CoordinatesPointsLayout>
+        ></CoordinateMarkers>
       )}
       {currentDisplayTripData && isDisplayImageMaker && (
-        <ImageLabel
-          trip_id={
-            currentDisplayTripData.trip_id
-              ? currentDisplayTripData.trip_id
-              : currentDisplayTripData.id
-          }
+        <MediaMarkers
+          content_cards={contentCards}
           zoomLevel={zoomLevel}
           ready={() => setImageReady(true)}
-        ></ImageLabel>
+        ></MediaMarkers>
       )}
       {/* <Image source ={{uri:image_icon}}>
             </Image> */}

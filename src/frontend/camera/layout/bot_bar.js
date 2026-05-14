@@ -3,7 +3,7 @@ import { Image } from "expo-image";
 import { cameraStyle, camera_zoom } from "../../../styles/camera_style.js";
 import MediaViewCard from "../../albums/viewer_card.js";
 import { useRef, useState } from "react";
-import AlbumService from "../../../backend/storage/database/protected/legacy/albumdb.js";
+import AlbumService from "../../../backend/storage/album/album.js";
 const cameraSetting_icon = require("../../../../assets/image/camera_setting.png");
 
 const BotBarControl = ({

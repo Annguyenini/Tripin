@@ -31,6 +31,7 @@ class BaseDatabase {
 
   async findItems(column, value) {
     try {
+      console.log(column, value, this.tableName());
       const DB = await SqliteService.connectDB();
       return await DB.getAllAsync(
         `SELECT * FROM ${this.tableName()} WHERE ${column} = ?`,

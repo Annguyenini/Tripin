@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { View, Image, Text, TouchableOpacity, Share } from "react-native";
 import { currentTripDisplayBoxStyle } from "../../../../styles/function/trip_display_box_style";
 import CurrentTripDataService from "../../../../backend/storage/hot_data/current_trip";
-import CurrentDisplayCoordinateObserver from "../../observers/current_display_coordinates_observer";
+import CurrentDisplayCoordinateObserver from "../../observers/legacy/current_display_coordinates_observer";
 import TripDisplayObserver from "../../observers/trip_display_observer";
 import * as CoordinatesCal from "../../../../backend/coordinates/coordinates_cal";
 import TripHandler from "../../../../app-core/flow/trip_handler";

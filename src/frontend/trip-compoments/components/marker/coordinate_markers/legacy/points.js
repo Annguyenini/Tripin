@@ -1,9 +1,9 @@
 import MapboxGL from "@rnmapbox/maps";
 import { useEffect, useMemo, useRef, useState } from "react";
-import CurrentDisplayCoordinateObserver from "../../../observers/current_display_coordinates_observer";
-import { computeCluster } from "../../../../../backend/addition_functions/compute_cluster";
-import eventBus from "../../../../../backend/bridge/UI_event_bus";
-import TripContentHandler from "../../../../../app-core/flow/legacy/trip_contents_handler";
+import CurrentDisplayCoordinateObserver from "../../../../observers/legacy/current_display_coordinates_observer";
+import { computeCluster } from "../../../../../../backend/addition_functions/compute_cluster";
+import eventBus from "../../../../../../backend/bridge/UI_event_bus";
+import TripContentHandler from "../../../../../../app-core/flow/legacy/trip_contents_handler";
 const CoordinatesPointsLayout = ({ trip_id, ready }) => {
   const [assestsObjectsArray, setAssestsObjectsArray] = useState([]);
   const [radiusForGrouping, setRadiusForGrouping] = useState(0);

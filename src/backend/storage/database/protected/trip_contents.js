@@ -5,13 +5,12 @@ const GENERATE_MEDIA_ID = (media_type, id) => {
   return `${media_type}:${id}`;
 };
 class TripContents extends BaseDatabase {
-  tableName() {
-    return { name: "trip_contents" };
-  }
   constructor() {
     super();
   }
-
+  tableName() {
+    return "content_cards";
+  }
   async initTable() {
     const DB = await SqliteService.connectDB();
     try {
@@ -55,9 +54,9 @@ class TripContents extends BaseDatabase {
         await DB.runAsync(
           `INSERT INTO content_cards
             (trip_id, media_type, media_path, time_stamp, modified_time,
-             media_id, uuid, event, latitude, longitude,
+             media_id, uuid, event, altitude,latitude, longitude,speed,heading,
              city, region, country, iso_country_code)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
           [
             card.trip_id,
             card.media_type,
@@ -67,8 +66,11 @@ class TripContents extends BaseDatabase {
             card.media_id,
             card.uuid,
             "add",
+            card.altitude,
             card.latitude,
             card.longitude,
+            card.speed,
+            card.heading,
             card.city,
             card.region,
             card.country,
@@ -121,7 +123,7 @@ class TripContents extends BaseDatabase {
       return null;
     }
   }
-  async getMediaHash(trip_id) {
+  async getTripContentsHash(trip_id) {
     try {
       const DB = await SqliteService.connectDB();
       const row = await DB.getFirstAsync(

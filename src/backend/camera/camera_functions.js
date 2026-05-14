@@ -7,7 +7,6 @@ import * as VideoThumbnails from "expo-video-thumbnails";
 import Albumdb from "../storage/database/protected/legacy/albumdb";
 import trip_album_subject from "../trip_album/trip_album_subject";
 // import TripDatabaseService from '../database/TripDatabaseService';
-import CurrentDisplayTripMediaObserver from "../../frontend/trip-compoments/observers/current_display_media_observer";
 import MediaService from "../media/media_service";
 import safeRun from "../../app-core/helpers/safe_run";
 class CameraService {

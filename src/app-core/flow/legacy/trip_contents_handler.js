@@ -3,11 +3,11 @@ import TripDatabaseService from "../../../backend/storage/database/protected/Tri
 import TripCoordinateDatabase from "../../../backend/storage/database/protected/legacy/trip_coordinate_database";
 import Albumdb from "../../../backend/storage/database/protected/legacy/albumdb";
 import safeRun from "../../helpers/safe_run";
-import CurrentDisplayTripMediaObserver from "../../../frontend/trip-compoments/observers/current_display_media_observer";
-import TripContentSyncManager from "../sync/trip_contents_sync_manager";
+import CurrentDisplayTripMediaObserver from "../../../frontend/trip-compoments/observers/legacy/current_display_media_observer";
+import TripContentSyncManager from "../sync/legacy/trip_contents_sync_manager";
 import MediaService from "../../../backend/media/legacy/media_service";
 import CurrentTripDataService from "../../../backend/storage/hot_data/current_trip";
-import CurrentDisplayCoordinateObserver from "../../../frontend/trip-compoments/observers/current_display_coordinates_observer";
+import CurrentDisplayCoordinateObserver from "../../../frontend/trip-compoments/observers/legacy/current_display_coordinates_observer";
 class TripContentHandler {
   constructor() {
     this.TripCoordinateDatabaseService = new TripCoordinateDatabase();

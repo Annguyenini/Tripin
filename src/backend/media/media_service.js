@@ -65,7 +65,7 @@ class MediaService {
         region: location_data.region,
         country: location_data.country,
         iso_country_code: location_data.isoCountryCode,
-        filename: `trip${trip_id}_${time_stamp}.${type === "video" ? "video/mp4" : "image/jpeg"}`,
+        filename: `trip${trip_id}_${time_stamp}.${type === "video" ? "mp4" : "jpeg"}`,
         minetype: `${type === "video" ? "video/mp4" : "image/jpeg"}`,
       });
     } catch (err) {

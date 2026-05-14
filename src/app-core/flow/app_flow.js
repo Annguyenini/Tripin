@@ -51,10 +51,6 @@ class AppFlow {
     console.log("migration");
     try {
       await safeRun(
-        () => Albumdb.initUserAlbum(),
-        "failed_at_create_album_database",
-      );
-      await safeRun(
         () => TripDatabaseService.initTripTable(),
         "failed_at_create_trips_database",
       );

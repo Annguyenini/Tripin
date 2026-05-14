@@ -2,7 +2,7 @@ import Albumdb from "../../storage/database/protected/legacy/albumdb";
 import TripContentHandler from "../../../app-core/flow/legacy/trip_contents_handler";
 import CurrentTripCoordinateService from "../../trip_coordinates/current_trip_coordinate_service";
 import CurrentTripDataService from "../../storage/hot_data/current_trip";
-import CurrentDisplayTripMediaObserver from "../../../frontend/trip-compoments/observers/current_display_media_observer";
+import CurrentDisplayTripMediaObserver from "../../../frontend/trip-compoments/observers/legacy/current_display_media_observer";
 import LocationData from "../../../app-core/local_data/local_location_data";
 import safeRun from "../../../app-core/helpers/safe_run";
 import * as MediaLibrary from "expo-media-library";

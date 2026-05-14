@@ -3,11 +3,9 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { View, TouchableOpacity, Text } from "react-native";
 import { Image } from "expo-image";
 // import TripAlbumSubject from '../../../backend/trip_album/trip_album_subject';
-import CurrentDisplayTripMediaObserver from "../../../observers/current_display_media_observer";
 import MediaViewCard from "../../../../albums/viewer_card";
 import { computeCluster } from "../../../../../backend/addition_functions/compute_cluster";
 import { imageLabelStyle } from "../../../../../styles/function/image_label";
-import TripContentHandler from "../../../../../app-core/flow/legacy/trip_contents_handler";
 import { generateOrGetThumbnailFromMediaId } from "../../../../../backend/media/generate_thumbnail";
 const RenderImageLable = ({ clusters, mapKey, onClick }) => {
   console.log("render image", clusters);
@@ -51,35 +49,18 @@ const RenderImageLable = ({ clusters, mapKey, onClick }) => {
   ));
 };
 
-const ImageLabel = ({ trip_id, zoomLevel, ready }) => {
+const MediaMarkers = ({ content_cards, zoomLevel, ready }) => {
   const [currentAssetsArray, setCurrentAssetsArray] = useState([]);
   const [mapKey, setMapKey] = useState(0);
   const [visible, setVisible] = useState(false);
   const [currentAsset, setCurrentAsset] = useState(null);
-  const [currentDisplayCluster, setCurrentDisplayCluster] = useState([]);
-  const [displayImage, setDisplayImage] = useState(null);
-  const [isDisplayAllMedia, setIsDisplayAllMedia] = useState(false);
   // const clusters = new Map()
 
   useEffect(() => {
     const initArray = async () => {
       try {
-        const respond =
-          await TripContentHandler.requestTripMediasHandler(trip_id);
-        let albumArray = [
-          ...respond.map((item) => {
-            return { uri: item.media_path, ...item };
-          }),
-        ];
-        albumArray = albumArray.filter((asset) => {
-          return asset.event != "remove";
-        });
-        CurrentDisplayTripMediaObserver.setDefaultArray(trip_id, albumArray); // TripAlbumSubject.initAlbumArray(albumArray)
-        // get thumbnail
-
-        const finailizeArray = await Promise.all(
-          albumArray.map(async (asset) => {
-            console.log(asset);
+        const finalArray = await Promise.all(
+          content_cards.map(async (asset) => {
             if (asset.media_type !== "video") return { ...asset };
             const thumbnail = await generateOrGetThumbnailFromMediaId(
               asset.media_id,
@@ -88,8 +69,8 @@ const ImageLabel = ({ trip_id, zoomLevel, ready }) => {
             return { ...asset, thumb_nail: thumbnail };
           }),
         );
-        console.log(finailizeArray);
-        setCurrentAssetsArray([...finailizeArray]);
+        console.log(finalArray);
+        setCurrentAssetsArray([...finalArray]);
       } catch (err) {
         console.error(err);
       } finally {
@@ -97,39 +78,8 @@ const ImageLabel = ({ trip_id, zoomLevel, ready }) => {
       }
     };
 
-    const updateAssetsArray = {
-      async update(newArray) {
-        // get thumbnail
-        let finailizeArray = await Promise.all(
-          newArray.map(async (asset) => {
-            if (asset.media_type !== "video") return { ...asset };
-            const thumbnail = await generateOrGetThumbnailFromMediaId(
-              asset.media_id,
-              asset.media_path,
-            );
-            return { ...asset, thumb_nail: thumbnail };
-          }),
-        );
-        finailizeArray = finailizeArray.filter((asset) => {
-          return asset.event !== "remove";
-        });
-        console.log(finailizeArray);
-        setCurrentAssetsArray([...finailizeArray]);
-        setMapKey((prev) => prev + 1);
-        console.log(mapKey);
-      },
-    };
-    CurrentDisplayTripMediaObserver.attach(
-      updateAssetsArray,
-      CurrentDisplayTripMediaObserver.GENERATE_KEY(trip_id),
-    );
     initArray();
-    return () =>
-      CurrentDisplayTripMediaObserver.detach(
-        updateAssetsArray,
-        CurrentDisplayTripMediaObserver.GENERATE_KEY(trip_id),
-      );
-  }, [trip_id]);
+  }, [content_cards]);
 
   const clusters = useMemo(() => {
     return new Map([
@@ -163,7 +113,7 @@ const ImageLabel = ({ trip_id, zoomLevel, ready }) => {
     setCurrentAsset(media);
     console.log("assest", currentAsset);
     setVisible(true);
-    setCurrentDisplayCluster(currentCluster[cluster_id].members);
+    // setCurrentDisplayCluster(currentCluster[cluster_id].members);
   };
 
   return (
@@ -195,4 +145,4 @@ const ImageLabel = ({ trip_id, zoomLevel, ready }) => {
     </View>
   );
 };
-export default ImageLabel;
+export default MediaMarkers;

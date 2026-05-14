@@ -6,7 +6,7 @@ import SqliteService from "../storage/database/sqlite/sqlite";
 import TripContentsHandler from "../../app-core/flow/legacy/trip_contents_handler";
 import TripCoordinateDatabase from "../storage/database/protected/legacy/trip_coordinate_database";
 import TripDatabase from "../storage/database/protected/TripDatabaseService";
-import CurrentDisplayCoordinateObserver from "../../frontend/trip-compoments/observers/current_display_coordinates_observer";
+import CurrentDisplayCoordinateObserver from "../../frontend/trip-compoments/observers/legacy/current_display_coordinates_observer";
 class CurrentTripCoordinateService extends TripCoordinateDatabase {
   // storing trip coordinate to db
 
