@@ -13,7 +13,7 @@ import * as Location from "expo-location";
 import Permission from "../../backend/storage/settings/permissions";
 import network_observer from "../../app-core/flow/sync/network_observer";
 import { _registerNetworkCallback } from "../../app-core/flow/sync/network_observer";
-import { _registerSyncingCallback } from "../../app-core/flow/sync/trip_contents_sync_manager";
+import { _registerSyncingCallback } from "../../app-core/flow/sync/legacy/trip_contents_sync_manager";
 import { SyncBanner } from "./syncing_banner";
 import {
   SatelliteOffIcon,

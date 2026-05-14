@@ -8,7 +8,7 @@ import { computeCluster } from "../../../../../backend/addition_functions/comput
 import { imageLabelStyle } from "../../../../../styles/function/image_label";
 import { generateOrGetThumbnailFromMediaId } from "../../../../../backend/media/generate_thumbnail";
 const RenderImageLable = ({ clusters, mapKey, onClick }) => {
-  console.log("render image", clusters);
+  // console.log("render image", clusters);
   if (!clusters) return null;
   return clusters.map((cluster) => (
     <View key={cluster.cluster_id}>
@@ -111,7 +111,7 @@ const MediaMarkers = ({ content_cards, zoomLevel, ready }) => {
 
   const labelDisplayHandler = (media, cluster_id) => {
     setCurrentAsset(media);
-    console.log("assest", currentAsset);
+    // console.log("assest", currentAsset);
     setVisible(true);
     // setCurrentDisplayCluster(currentCluster[cluster_id].members);
   };

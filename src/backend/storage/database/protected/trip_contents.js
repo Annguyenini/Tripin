@@ -52,7 +52,7 @@ class TripContents extends BaseDatabase {
       await DB.execAsync("BEGIN");
       for (const card of content_cards) {
         await DB.runAsync(
-          `INSERT INTO content_cards
+          `INSERT OR IGNORE INTO content_cards
             (trip_id, media_type, media_path, time_stamp, modified_time,
              media_id, uuid, event, altitude,latitude, longitude,speed,heading,
              city, region, country, iso_country_code)
@@ -141,8 +141,7 @@ class TripContents extends BaseDatabase {
     let result;
     try {
       result = await DB.getAllAsync(
-        `SELECT * FROM content_cards WHERE event = ? ORDER BY time_stamp DESC`,
-        "add",
+        `SELECT * FROM content_cards ORDER BY time_stamp DESC`,
       );
       return result;
     } catch (err) {

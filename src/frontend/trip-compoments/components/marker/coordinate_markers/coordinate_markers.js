@@ -83,7 +83,7 @@ const CoordinateMarkers = ({ content_cards, ready }) => {
     previousClusterKey.current = key;
     return key;
   }, [currentCluster]);
-  console.log(currentCluster);
+  // console.log(currentCluster);
   if (!currentCluster || currentCluster.length === 0) {
     return null;
   }

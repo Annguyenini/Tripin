@@ -28,12 +28,12 @@ class CurrentDisplayContentsObserver extends LocalStorage {
     this.watchArray[trip_id].push(data_object);
     this.notify(this.GENERATE_KEY(trip_id), this.watchArray[trip_id]);
   }
-  deleteAssestFromArrayByUri(trip_id, uri) {
+  deleteAssestFromArray(trip_id, data_object) {
     if (!this.watchArray[trip_id]) {
       return;
     }
     this.watchArray[trip_id] = this.watchArray[trip_id].filter(
-      (media) => media.media_path != uri,
+      (media) => media.uuid != data_object.uuid,
     );
 
     this.notify(this.GENERATE_KEY(trip_id), this.watchArray[trip_id]);

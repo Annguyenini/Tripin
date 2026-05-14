@@ -38,10 +38,10 @@ class Album {
     }
     this.notify();
   }
-  deleteFromAlbumArray(media_id) {
+  deleteFromAlbumArray(object) {
     try {
       this.AlbumsArray = this.AlbumsArray.filter((item) => {
-        return item.media_id !== media_id;
+        return item.uuid !== object.uuid;
       });
     } catch (err) {
       console.error("Failed to delete from Album array ", err);
@@ -114,5 +114,5 @@ class Album {
     return result;
   }
 }
-const Albumdb = new Album();
-export default Albumdb;
+
+export default new Album();

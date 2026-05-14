@@ -15,14 +15,14 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useEffect, useState, useRef } from "react";
 import { scheduleOnRN } from "react-native-worklets";
 import { MaterialIcons } from "@expo/vector-icons";
-import TripContentHandler from "../../app-core/flow/legacy/trip_contents_handler";
+import TripContentHandler from "../../app-core/flow/trip_contents_handler";
 import { OverlayCard } from "../overlay/overlay_card";
 import safeRun from "../../app-core/helpers/safe_run";
 
 const { width, height } = Dimensions.get("window");
 
 // ── Inline Detail Panel ──────────────────────────────────────────────────────
-function DetailPanel({ asset, onClose }) {
+function DetailPanel({ asset, onClose, onDelete }) {
   // Fake sync status for now
   const syncStatus = "synced"; // "synced" | "pending" | "error"
   const syncLabel = {
@@ -103,6 +103,15 @@ function DetailPanel({ asset, onClose }) {
         </Text>
         <Text style={detailStyle.syncSub}>· Server</Text>
       </View>
+      {/* Delete */}
+      <View style={detailStyle.divider} />
+      <TouchableOpacity
+        style={detailStyle.deleteBtn}
+        onPress={() => onDelete(asset)}
+      >
+        <MaterialIcons name="delete-outline" size={15} color="#c97a6a" />
+        <Text style={detailStyle.deleteText}>Delete Media</Text>
+      </TouchableOpacity>
     </Animated.View>
   );
 }
@@ -165,22 +174,31 @@ export default function MediaViewCard({
     }
   });
 
-  const deleteImageHandler = async () => {
-    const current_media = currentAssetsArray[currentIndex];
-    onClose();
-    await TripContentHandler.deleteMediaHandler(
-      current_media.trip_id,
-      current_media.media_id,
-      current_media.media_path,
-    );
-    if (current_media.coordinate_id) {
-      await safeRun(() =>
-        TripContentHandler.deleteCoordinateHandler(
-          current_media.trip_id,
-          current_media.coordinate_id,
-        ),
+  const deleteImageHandler = async (asset) => {
+    try {
+      let temp_asset = { ...asset, event: "remove", modified_time: Date.now() };
+      await TripContentHandler.tripContentHandler(
+        temp_asset,
+        temp_asset?.trip_id,
       );
+    } catch (err) {
+      console.error(err);
+    } finally {
+      onClose();
     }
+    // await TripContentHandler.deleteMediaHandler(
+    //   current_media.trip_id,
+    //   current_media.media_id,
+    //   current_media.media_path,
+    // );
+    // if (current_media.coordinate_id) {
+    //   await safeRun(() =>
+    //     TripContentHandler.deleteCoordinateHandler(
+    //       current_media.trip_id,
+    //       current_media.coordinate_id,
+    //     ),
+    //   );
+    // }
   };
 
   const currentAsset = currentAssetsArray[currentIndex];
@@ -267,6 +285,7 @@ export default function MediaViewCard({
               <DetailPanel
                 asset={currentAsset}
                 onClose={() => setDetailVisible(false)}
+                onDelete={deleteImageHandler}
               />
             )}
           </View>
@@ -432,6 +451,17 @@ const detailStyle = StyleSheet.create({
     fontFamily: "DMMono",
     fontSize: 12,
     color: "#888780",
+  },
+  deleteBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 6,
+  },
+  deleteText: {
+    fontFamily: "DMMono",
+    fontSize: 12,
+    color: "#c97a6a",
   },
 });
 

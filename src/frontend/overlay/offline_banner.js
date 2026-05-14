@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import network_observer from "../../app-core/flow/sync/network_observer";
 
-export const OfflineBanner = () => {
+const OfflineBanner = () => {
   const dotOpacity = useRef(new Animated.Value(0.4)).current;
   const slashOpacity = useRef(new Animated.Value(1)).current;
   const arcOpacity = useRef(new Animated.Value(1)).current;
