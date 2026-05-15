@@ -28,6 +28,8 @@ class MediaService {
     let uuid;
     let time_stamp = Date.now();
     const trip_id = CurrentTripDataService.getCurrentTripId();
+    const trip_name = CurrentTripDataService.getCurrentTripName();
+
     // get coordinate for image
     const location_data = await safeRun(
       () => LocationData.getCurrentCoor(),
@@ -67,6 +69,7 @@ class MediaService {
         iso_country_code: location_data.isoCountryCode,
         filename: `trip${trip_id}_${time_stamp}.${type === "video" ? "mp4" : "jpeg"}`,
         minetype: `${type === "video" ? "video/mp4" : "image/jpeg"}`,
+        trip_name: trip_name ?? "unkown",
       });
     } catch (err) {
       console.error("Failed to save media to local db", err);

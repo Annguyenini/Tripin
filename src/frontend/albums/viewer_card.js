@@ -65,15 +65,15 @@ function DetailPanel({ asset, onClose, onDelete }) {
       <View style={detailStyle.section}>
         <Text style={detailStyle.sectionLabel}>IMAGE DATA</Text>
         <View style={detailStyle.dataRow}>
-          <Text style={detailStyle.dataKey}>Lat</Text>
+          <Text style={detailStyle.dataKey}>City</Text>
           <Text style={detailStyle.dataValue}>
-            {asset.latitude != null ? Number(asset.latitude).toFixed(5) : "—"}
+            {asset.city != null ? asset.city : "Earth"}
           </Text>
         </View>
         <View style={detailStyle.dataRow}>
-          <Text style={detailStyle.dataKey}>Lng</Text>
+          <Text style={detailStyle.dataKey}>Country</Text>
           <Text style={detailStyle.dataValue}>
-            {asset.longitude != null ? Number(asset.longitude).toFixed(5) : "—"}
+            {asset.country != null ? asset.country : "Earth"}
           </Text>
         </View>
         <View style={detailStyle.dataRow}>
@@ -88,10 +88,10 @@ function DetailPanel({ asset, onClose, onDelete }) {
         </View>
       </View>
 
-      <View style={detailStyle.divider} />
+      {/* <View style={detailStyle.divider} />*/}
 
       {/* Sync Status */}
-      <View style={detailStyle.syncRow}>
+      {/* <View style={detailStyle.syncRow}>
         <View
           style={[
             detailStyle.syncDot,
@@ -102,7 +102,7 @@ function DetailPanel({ asset, onClose, onDelete }) {
           {syncLabel[syncStatus]}
         </Text>
         <Text style={detailStyle.syncSub}>· Server</Text>
-      </View>
+      </View>*/}
       {/* Delete */}
       <View style={detailStyle.divider} />
       <TouchableOpacity

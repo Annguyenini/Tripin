@@ -6,7 +6,7 @@ import TripContentsSync from "./sync/trip_content_sync";
 import CurrentDisplayContentsObserver from "../../frontend/trip-compoments/observers/current_display_contents_observer";
 import Album from "../../backend/storage/album/album";
 // in ms
-const BUCKET_TIME_INTERVAL = 10000;
+const BUCKET_TIME_INTERVAL = 5000;
 
 class TripContentHandler {
   constructor() {
@@ -110,8 +110,15 @@ class TripContentHandler {
     }
   }
   async _requestTripContentSync(trip_id) {
+    console.log("requestsync ", trip_id);
     if (this._pending) return;
     await TripContentsSync.syncTripContentsHandler(trip_id);
+  }
+  async _forceRequestTripContentSync(trip_id) {
+    console.log("requestsync ", trip_id);
+    if (this._pending) return false;
+    await TripContentsSync.forceSyncTripContentHander(trip_id);
+    return true;
   }
   async tripContentHandler(content_card, trip_id) {
     try {
@@ -152,8 +159,9 @@ class TripContentHandler {
 
   async getTripContents(trip_id) {
     try {
+      if (!trip_id) return [];
       const local_content =
-        await TripContentsDatabase.getAssestsFromTripId(trip_id);
+        await TripContentsDatabase.getAssestsFromTripIdJoinTripData(trip_id);
       this._requestTripContentSync(trip_id);
       if (local_content) {
         return local_content;

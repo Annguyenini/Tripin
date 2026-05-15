@@ -7,7 +7,33 @@ export const _registerSyncingCallback = (callback) => {
   _onCallBack = callback;
 };
 class TripContentsSync {
+  constructor() {
+    this._pending = false;
+  }
+  async forceSyncTripContentHander(trip_id) {
+    console.log("force sync");
+    if (this._pending) return;
+    this._pending = true;
+
+    try {
+      if (_onCallBack) {
+        _onCallBack(true);
+      }
+      await this._getAndProcessTripContentsMetadata(trip_id);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this._pending = false;
+      if (_onCallBack) {
+        _onCallBack(false);
+      }
+    }
+  }
   async syncTripContentsHandler(trip_id) {
+    if (this._pending) return;
+    this._pending = true;
+
+    console.log("sync handler", trip_id);
     try {
       if (_onCallBack) {
         _onCallBack(true);
@@ -22,6 +48,8 @@ class TripContentsSync {
     } catch (err) {
       console.error(err);
     } finally {
+      this._pending = false;
+
       if (_onCallBack) {
         _onCallBack(false);
       }
@@ -31,15 +59,7 @@ class TripContentsSync {
     // separate into each buckets
     // process to sync
   }
-  async _downloadMedias(trip_id, localArray) {
-    const response = await TripContents.requestTripMedias(trip_id);
-    if (!response.ok || response.status !== 200) return false;
-
-    const serverMedias = response?.data?.metadata;
-    if (!serverMedias) return;
-    const download_array = serverMedias.filter((server) => {
-      return !localArray.find((local) => local.uuid === server.uuid);
-    });
+  async _downloadMedias(trip_id, download_array) {
     if (!download_array) return;
 
     let savedArray;
@@ -64,7 +84,7 @@ class TripContentsSync {
         savedArray.map(async (asset) => {
           try {
             const content_cards = TripContentsDatabase.createContentCard({
-              uuid,
+              uuid: asset.uuid,
               trip_id: asset.trip_id,
               media_type: asset.media_type,
               media_path: asset.media_path,
@@ -106,8 +126,9 @@ class TripContentsSync {
         "failed_at_get_trip_media_metadata_from_server",
       );
       console.log(response);
-      const server_metadata = response.data.content_cards;
       if (!response.ok || response.status !== 200) return null;
+      const server_metadata = response.data.content_cards;
+
       const local_trip_content_assets = await safeRun(
         () => TripContentsDatabase.getAssestsFromTripId(trip_id),
         "failed_at_get_trip_media",

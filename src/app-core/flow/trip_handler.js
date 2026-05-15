@@ -5,6 +5,7 @@ import TripDataStorage from "../../backend/trip_coordinates/current_trip_coordin
 import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
 import UserDataService from "../../backend/storage/database/user";
 import EtagService from "../../backend/storage/etag/etag_service";
+import TripContentsSync from "./sync/trip_content_sync";
 import {
   ETAG_KEY,
   GENERATE_TRIP_ETAG_KEY,
@@ -357,23 +358,13 @@ class TripHandler {
     try {
       const current_time = Date.now();
       const trip_id = CurrentTripDataService.getCurrentTripId();
-      await safeRun(
-        () => TripContentsHandler._requestTripContentSync(trip_id),
+      console.log("endTrip", trip_id);
+      const forceSync = await safeRun(
+        () => TripContentsHandler._forceRequestTripContentSync(trip_id),
         "failed_at_request_last_trip_sync_trip_data",
       );
+      if (!forceSync) return false;
       const respond = await Trip.end_trip(current_time);
-      if (!respond.ok || respond.status !== 200) {
-        OfflineSyncManager.pushEventToQueue(
-          OfflineSyncManager.getSyncObjectReady(
-            OfflineSyncManager.EVENTS.END_TRIP,
-            {
-              trip_id: trip_id,
-            },
-            Date.now(),
-          ),
-        );
-        return true;
-      }
 
       await safeRun(
         () => CurrentTripDataService.endCurrentTrip(current_time),

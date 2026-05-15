@@ -25,7 +25,11 @@ export const TestScreen = ({ testScreenHandler }) => {
     console.log(data);
   };
   const onGetAlbumPress = async () => {
-    console.log(await TripContentsDatabase.getAllMediasFromDb());
+    console.log(
+      await TripContentsDatabase.getAssestsFromTripIdJoinTripData(
+        CurrentTripDataService.getCurrentTripId(),
+      ),
+    );
   };
   const onGetUserDb = async () => {
     console.log(await TripDatabaseService.getAllTrip());

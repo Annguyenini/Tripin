@@ -57,21 +57,27 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
           setTripImageCover(CurrentTripDataService.getCurrentTripImageUri());
           setTripId(new_data.trip_id);
           setSecondTripDisplay(false);
-          const created_timestamp = new Date(Number(new_data.created_time))
-            .toISOString()
-            .split("T")[0];
-          setStatus(`${created_timestamp} -> Current`);
+          const formatted = new_data.created_time
+            ? new Date(Math.floor(new_data.created_time)).toLocaleString()
+            : asset.creationTime
+              ? new Date(Math.floor(new_data.created_time)).toLocaleString()
+              : "—";
+          setStatus(`${formatted} -> Current`);
         } else {
           setTripName(new_data.trip_name);
           setTripImageCover(new_data.image);
           setTripId(new_data.trip_id);
-          const created_timestamp = new Date(Number(new_data.created_time))
-            .toISOString()
-            .split("T")[0];
-          const ended_timestamp = new Date(Number(new_data.ended_time))
-            .toISOString()
-            .split("T")[0];
-          setStatus(`${created_timestamp} - ${ended_timestamp} UTC`);
+          const formatted_created = new_data.created_time
+            ? new Date(Math.floor(new_data.created_time)).toLocaleString()
+            : asset.creationTime
+              ? new Date(Math.floor(new_data.created_time)).toLocaleString()
+              : "—";
+          const formatted_ended = new_data.ended_time
+            ? new Date(Math.floor(new_data.ended_time)).toLocaleString()
+            : asset.creationTime
+              ? new Date(Math.floor(new_data.ended_time)).toLocaleString()
+              : "—";
+          setStatus(`${formatted_created} - ${formatted_ended}`);
           setSecondTripDisplay(true);
         }
         setTrip(new_data);

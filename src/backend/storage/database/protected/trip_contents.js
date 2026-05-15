@@ -123,6 +123,20 @@ class TripContents extends BaseDatabase {
       return null;
     }
   }
+  async getAssestsFromTripIdJoinTripData(trip_id) {
+    try {
+      const DB = await SqliteService.connectDB();
+      const result = await DB.getAllAsync(
+        `SELECT c.*,t.trip_name FROM content_cards c JOIN trips t ON c.trip_id =t.trip_id WHERE c.trip_id =?`,
+        trip_id,
+      );
+      // const result = await this.findItems("trip_id", trip_id);
+      return result;
+    } catch (err) {
+      console.error("Failed to get all assets from album database: ", err);
+      return null;
+    }
+  }
   async getTripContentsHash(trip_id) {
     try {
       const DB = await SqliteService.connectDB();
@@ -167,6 +181,7 @@ class TripContents extends BaseDatabase {
     iso_country_code = null,
     filename = null,
     minetype = null,
+    trip_name = null,
   }) => ({
     uuid,
     trip_id,
@@ -187,6 +202,7 @@ class TripContents extends BaseDatabase {
     iso_country_code,
     filename,
     minetype,
+    trip_name,
   });
 }
 const TripContentsDatabase = new TripContents();
