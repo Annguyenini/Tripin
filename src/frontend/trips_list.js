@@ -16,8 +16,7 @@ import { TripCard } from "./trip-compoments/bottom_sheet/trips_card/trip_label.j
 import { tripCardsStyle } from "../styles/function/tripcards.js";
 import AppFlow from "../app-core/flow/app_flow.js";
 import { UseOverlay } from "./overlay/overlay_main.js";
-import TripDisplayObserver from "./trip-compoments/observers/trip_display_observer.js";
-import { TestScreen } from "../test_screen.js";
+
 const default_user_image = require("../../assets/image/profile_icon.png");
 import { TripSkeleton } from "./custom_components/skeleton.js";
 export const TripsList = ({ onClose }) => {
@@ -40,7 +39,7 @@ export const TripsList = ({ onClose }) => {
   useEffect(() => {
     const initLoad = () => {
       tripLoading();
-      setTimeout(() => hideTripLoading(), 7000);
+      setTimeout(() => hideTripLoading(), 4000);
     };
     initLoad();
   }, []);

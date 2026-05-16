@@ -3,15 +3,12 @@ import { useMemo } from "react";
 import CurrentDisplayContentsObserver from "../../observers/current_display_contents_observer";
 import { useEffect, useState } from "react";
 import TripDisplayObserver from "../../observers/trip_display_observer";
-import CurrentDisplayCoordinateObserver from "../../observers/legacy/current_display_coordinates_observer";
 import * as CoordinatesCal from "../../../../backend/coordinates/coordinates_cal";
 export const TripStatCards = () => {
   const [createdTime, setCreatedTime] = useState(null);
   const [endedTime, setEndedTime] = useState(null);
   const [duration, setDuration] = useState({ hours: 0, minutes: 0 });
-  const [coordinates, setCoordinates] = useState([]);
   const [contents, setContents] = useState([]);
-  const [city, setCity] = useState(null);
   const [currentTripDisplay, setCurrentTripDisplay] = useState(
     TripDisplayObserver.getTripNeedRender() ?? null,
   );
@@ -52,11 +49,9 @@ export const TripStatCards = () => {
     );
 
     return () => {
-      CurrentDisplayCoordinateObserver.detach(
+      CurrentDisplayContentsObserver.detach(
         updateContents,
-        CurrentDisplayCoordinateObserver.GENERATE_KEY(
-          currentTripDisplay.trip_id,
-        ),
+        CurrentDisplayContentsObserver.GENERATE_KEY(currentTripDisplay.trip_id),
       );
       TripDisplayObserver.detach(
         update_trip_display,

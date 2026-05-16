@@ -1,17 +1,13 @@
 import Trip from "../../backend/services/trip";
-import TripService from "../../backend/gps_logic/gps_logic";
 import TripDataService from "../../backend/storage/database/trips";
-import TripDataStorage from "../../backend/trip_coordinates/current_trip_coordinate_service";
 import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
 import UserDataService from "../../backend/storage/database/user";
 import EtagService from "../../backend/storage/etag/etag_service";
-import TripContentsSync from "./sync/trip_content_sync";
 import {
   ETAG_KEY,
   GENERATE_TRIP_ETAG_KEY,
 } from "../../backend/storage/etag/etag_keys";
 import TripDatabaseService from "../../backend/storage/database/protected/TripDatabaseService";
-import OfflineSyncManager from "./sync/offline_sync_manager";
 import GPSLogic from "../../backend/gps_logic/gps_logic";
 import safeRun from "../helpers/safe_run";
 import trips from "../../backend/storage/database/trips";
@@ -74,11 +70,7 @@ class TripHandler {
       // set current trip app state to true
       // await CurrentTripDataService.setTripStatusToLocal('true')
 
-      //create db sqlite for coordinates
-      await safeRun(
-        () => TripDataStorage.init_new_trip(trip_id),
-        "created_trip_coordinate_table_failed",
-      );
+      //create db sqlite for coordinat
 
       // const trip_object = TripDatabaseService.getObjectReady(UserDataService.getUserId(),trip_id,trip_name,imageUri)
       // await safeRun (()=>TripDatabaseService.addTripToDatabase(trip_object),'add_trip_to_table_failed')

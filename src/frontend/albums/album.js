@@ -14,18 +14,8 @@ import { Albumstyles } from "../../styles/album";
 import { FlatList } from "react-native-gesture-handler";
 const FILTERS = ["All", "Trips", "Photos", "Videos"];
 import AlbumService from "../../backend/storage/album/album";
-import { navigate } from "../navigation/navigationService";
 import MediaViewCard from "./viewer_card";
-import Permission from "../../backend/storage/settings/permissions";
 import { getAlbumPermission } from "../../backend/album/album_permission";
-import * as VideoThumbnails from "expo-video-thumbnails";
-import {
-  copyAsync,
-  documentDirectory,
-  getInfoAsync,
-  makeDirectoryAsync,
-} from "expo-file-system/legacy";
-import safeRun from "../../app-core/helpers/safe_run";
 import { generateOrGetThumbnailFromMediaId } from "../../backend/media/generate_thumbnail";
 const videoPauseIcon = require("../../../assets/image/video_pause_icon.png");
 export default function AlbumScreen({ onClose }) {
@@ -80,10 +70,6 @@ export default function AlbumScreen({ onClose }) {
       console.log(finalImagesArray);
     });
   }, [Images]);
-
-  const onCallMainScreen = () => {
-    navigate("Main");
-  };
 
   const handleImageClick = (item) => {
     setCurrentMedia(item.media_path);

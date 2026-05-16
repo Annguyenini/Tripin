@@ -11,12 +11,18 @@ import { TRACKING_MODE } from "../../../../backend/tracking/tracking_mode.js";
 import Setting from "../../../../app-core/setting.js";
 import { UseOverlay } from "../../../overlay/overlay_main.js";
 import TripHandler from "../../../../app-core/flow/trip_handler.js";
+
 export const NewTripFiller = ({ set_show_create_trip_filler }) => {
   const [tripName, setTripName] = useState(null);
   const [imageUri, setImageUri] = useState(null);
   const [alert, setAlert] = useState(null);
   const { showLoading, hideLoading, showErrorBox } = UseOverlay();
-
+  const CreateTripShowLoading = () => {
+    return showLoading(["Checking Trip Nameeeeee", "Almost there", "Nananana"]);
+  };
+  const CreateTripHideLoading = () => {
+    return hideLoading();
+  };
   const callImagePicker = async () => {
     const pic = await imagePicker();
     setImageUri(pic.assets[0].uri);
@@ -26,19 +32,26 @@ export const NewTripFiller = ({ set_show_create_trip_filler }) => {
     setImageUri(pic.assets[0].uri);
   };
   const requestHandler = async () => {
-    if (!tripName) {
-      setAlert("Trip name couldn't be empty!");
-      return;
+    let res = null;
+    try {
+      if (!tripName) {
+        setAlert("Trip name couldn't be empty!");
+        return;
+      }
+      set_show_create_trip_filler(false);
+
+      CreateTripShowLoading();
+      res = await TripHandler.requestNewTripHandler(tripName, imageUri ?? null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      CreateTripHideLoading();
     }
-    showLoading();
-    const res = await TripHandler.requestNewTripHandler(
-      tripName,
-      imageUri ?? null,
-    );
-    hideLoading();
-    if (!res || res.status !== 200)
+    if (!res) {
+      showErrorBox("Error Creating Trip", "failed", 6000);
+    } else if (res.status !== 200) {
       showErrorBox("Error Creating Trip", res.data.message, 6000);
-    set_show_create_trip_filler(false);
+    }
   };
   const trackingModeHandler = async (mode) => {
     if (mode === "normal") {

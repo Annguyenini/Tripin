@@ -2,7 +2,6 @@ import GPSTask, { _registerLocationCallback } from "./gps_task";
 // import GPSCallbackHandler from "./gps_callback_handler"
 import * as TrackingState from "./gps_states";
 import * as CoordinateCal from "../coordinates/coordinates_cal";
-import CurrentTripCoordinateService from "../trip_coordinates/current_trip_coordinate_service";
 import CurrentTripDataService from "../storage/hot_data/current_trip";
 import Setting from "../../app-core/setting";
 import { TRACKING_MODE } from "../tracking/tracking_mode";
@@ -73,7 +72,6 @@ class GPSLogic {
     payload["type"] = this.currentMode;
     if (distance <= 5) return;
 
-    CurrentTripCoordinateService.push(payload);
     // process new coords
     return;
   }

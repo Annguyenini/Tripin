@@ -3,12 +3,8 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { OverlayCard } from "./frontend/overlay/overlay_card";
 import UserDataService from "./backend/storage/database/user";
 import CurrentTripDataService from "./backend/storage/hot_data/current_trip";
-import TripService from "./backend/gps_logic/gps_logic";
-import TripDataStorage from "./backend/trip_coordinates/current_trip_coordinate_service";
-import Albumn from "./backend/storage/database/protected/legacy/albumdb";
 import TripDatabaseService from "./backend/storage/database/protected/TripDatabaseService";
 import TripContentsDatabase from "./backend/storage/database/protected/trip_contents";
-import * as Location from "expo-location";
 import GPSLocgic from "./backend/gps_logic/gps_logic";
 import LocalStorage from "./backend/storage/base/localStorage";
 const localStorage = new LocalStorage();
@@ -19,9 +15,6 @@ export const TestScreen = ({ testScreenHandler }) => {
   const [sqlText, setSqlText] = useState("No SQL data fetched");
 
   const onGetSQLPress = async () => {
-    const data = await TripDataStorage.getAllCoordinatesFromTripId(
-      CurrentTripDataService.getCurrentTripId(),
-    );
     console.log(data);
   };
   const onGetAlbumPress = async () => {

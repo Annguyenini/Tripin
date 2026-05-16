@@ -1,5 +1,4 @@
 import TripContents from "../../backend/services/trip_contents";
-import TripCoordinateDatabase from "../../backend/storage/database/protected/legacy/trip_coordinate_database";
 import safeRun from "../helpers/safe_run";
 import TripContentsDatabase from "../../backend/storage/database/protected/trip_contents";
 import TripContentsSync from "./sync/trip_content_sync";
@@ -10,7 +9,6 @@ const BUCKET_TIME_INTERVAL = 5000;
 
 class TripContentHandler {
   constructor() {
-    this.TripCoordinateDatabaseService = new TripCoordinateDatabase();
     this._pending = null;
     this._bucket = [];
   }

@@ -57,6 +57,7 @@ export const MapBoxLayout = ({}) => {
 
   // }
   const { centerCoords } = mapData();
+  console.log(centerCoords);
   useEffect(() => {
     const flyTo = async () => {
       if (centerCoords) {

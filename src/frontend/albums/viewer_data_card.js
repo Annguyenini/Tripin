@@ -1,10 +1,5 @@
 import { mediaDataCardStyle } from "../../styles/function/media_data_card";
 import { View, TouchableOpacity, Text, Modal, Image } from "react-native";
-import Video from "react-native-video";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { useEffect, useState, useRef } from "react";
-import AlbumService from "../../backend/storage/database/protected/legacy/albumdb";
-import { scheduleOnRN } from "react-native-worklets";
 
 export default function MediaViewDataCard({
   tripName,

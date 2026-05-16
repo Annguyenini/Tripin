@@ -1,66 +1,56 @@
-import { useEffect, useMemo, useState } from "react";
-import { DATA_KEYS } from "../../backend/storage/hot_data/keys/storage_keys";
-import CurrentDisplayCoordinateObserver from "./observers/legacy/current_display_coordinates_observer";
-import * as CoordinateCal from "../../backend/coordinates/coordinates_cal";
+import { useEffect, useState } from "react";
 import TripDisplayObserver from "./observers/trip_display_observer";
+import CurrentDisplayContentsObserver from "./observers/current_display_contents_observer";
 
 const mapData = () => {
   const [currentTripDisplayData, setCurrentTripDisplayData] = useState(
     TripDisplayObserver.getTripNeedRender(),
   );
-  const [tripSelectedCoordsArray, setTripSelectedCoordsArray] = useState([]);
-  // if (!currentTripDisplayData) return {centerCoords:undefined}
+  const [centerCoords, setCenterCoords] = useState(null);
+
+  const coordsFromArray = (arr) => {
+    const first = arr?.[0];
+    if (!first?.latitude || !first?.longitude) return null;
+    return [first.longitude, first.latitude];
+  };
+
   useEffect(() => {
-    const updateTripData = {
+    const observer = {
       update(newTripData) {
-        if (!newTripData) return setCurrentTripDisplayData(null);
-        setCurrentTripDisplayData({ ...newTripData });
+        setCurrentTripDisplayData(newTripData ? { ...newTripData } : null);
+      },
+    };
+    TripDisplayObserver.attach(observer, TripDisplayObserver.EVENTS);
+    return () =>
+      TripDisplayObserver.detach(observer, TripDisplayObserver.EVENTS);
+  }, []);
+
+  useEffect(() => {
+    if (!currentTripDisplayData) {
+      setCenterCoords(null);
+      return;
+    }
+
+    const key = CurrentDisplayContentsObserver.GENERATE_KEY(
+      currentTripDisplayData.trip_id,
+    );
+
+    const existing = CurrentDisplayContentsObserver.getAssetArray(
+      currentTripDisplayData.trip_id,
+    );
+    setCenterCoords(coordsFromArray(existing));
+
+    const observer = {
+      update(arr) {
+        setCenterCoords(coordsFromArray(arr));
       },
     };
 
-    TripDisplayObserver.attach(updateTripData, TripDisplayObserver.EVENTS);
-    return () => {
-      TripDisplayObserver.detach(updateTripData, TripDisplayObserver.EVENTS);
-    };
-  }, []);
-  useEffect(() => {
-    if (currentTripDisplayData) {
-      const existing = CurrentDisplayCoordinateObserver.getCoordArray(
-        currentTripDisplayData.trip_id,
-      );
-      if (existing?.length) setTripSelectedCoordsArray([...existing]);
-      const coordinate_array = {
-        update(new_coordinate_array) {
-          setTripSelectedCoordsArray([...new_coordinate_array]);
-        },
-      };
-      CurrentDisplayCoordinateObserver.attach(
-        coordinate_array,
-        CurrentDisplayCoordinateObserver.GENERATE_KEY(
-          currentTripDisplayData.trip_id,
-        ),
-      );
-      return () =>
-        CurrentDisplayCoordinateObserver.detach(
-          coordinate_array,
-          CurrentDisplayCoordinateObserver.GENERATE_KEY(
-            currentTripDisplayData.trip_id,
-          ),
-        );
-    } else {
-      setTripSelectedCoordsArray(null);
-    }
+    CurrentDisplayContentsObserver.attach(observer, key);
+    return () => CurrentDisplayContentsObserver.detach(observer, key);
   }, [currentTripDisplayData]);
-  // if(currentTripDisplayData && currentTripDisplayData.trip_id === CurrentTripDataService.getCurrentTripId()){
-  //     return{centerCoords:undefined}
-  // }
-  const centerCoords = useMemo(() => {
-    if (!tripSelectedCoordsArray?.[0]) return null;
-    const { latitude, longitude } = tripSelectedCoordsArray[0];
-    // if(!latitude||!longitude) return null
-    // const {latitude:new_lat,longitude:new_lon} = CoordinateCal.CoorFromDistance(latitude,longitude,130,270)
-    return [longitude, latitude];
-  }, [currentTripDisplayData, tripSelectedCoordsArray]);
+
   return { centerCoords };
 };
+
 export default mapData;

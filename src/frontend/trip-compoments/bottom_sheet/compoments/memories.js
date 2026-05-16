@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import CurrentDisplayTripMediaObserver from "../../observers/legacy/current_display_media_observer";
 import CurrentDisplayContentsObserver from "../../observers/current_display_contents_observer";
 import {
   View,

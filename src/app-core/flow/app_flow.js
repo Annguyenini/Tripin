@@ -7,7 +7,6 @@ import CurrentTripDataService from "../../backend/storage/hot_data/current_trip"
 import TripDatabaseService from "../../backend/storage/database/protected/TripDatabaseService";
 import TripContentsDatabase from "../../backend/storage/database/protected/trip_contents";
 import LocalStorage from "../../backend/storage/base/localStorage";
-// import TripContentSyncManager from "./sync/legacy/trip_contents_sync_manager";
 import safeRun from "../helpers/safe_run";
 import { _registerNetworkCallback } from "./sync/network_observer";
 import migration from "../../backend/storage/database/migrations/migration";

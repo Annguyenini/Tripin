@@ -1,12 +1,3 @@
-import * as MediaLibrary from "expo-media-library";
-// import TripData from '../../app-core/local_data/local_trip_data'
-import CurrentTripDataService from "../storage/hot_data/current_trip";
-import TripContentHandler from "../../app-core/flow/legacy/trip_contents_handler";
-import TripDataStorage from "../trip_coordinates/current_trip_coordinate_service";
-import * as VideoThumbnails from "expo-video-thumbnails";
-import Albumdb from "../storage/database/protected/legacy/albumdb";
-import trip_album_subject from "../trip_album/trip_album_subject";
-// import TripDatabaseService from '../database/TripDatabaseService';
 import MediaService from "../media/media_service";
 import safeRun from "../../app-core/helpers/safe_run";
 class CameraService {

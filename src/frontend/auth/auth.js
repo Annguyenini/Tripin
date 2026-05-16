@@ -8,10 +8,8 @@ import {
   Dimensions,
   Animated,
 } from "react-native";
-import { authStyle } from "../../styles/auth_style.js";
 import AuthHandler from "../../app-core/flow/auth_handler.js";
 import AppFlow from "../../app-core/flow/app_flow.js";
-import { navigate } from "../navigation/navigationService.js";
 import { OverlayCard } from "../overlay/overlay_card.js";
 import { UseOverlay } from "../overlay/overlay_main.js";
 import GoogleAuth from "../provider_auth/google.js";
@@ -20,21 +18,16 @@ import {
   validateSignup,
   validateVerification,
   validateOAuthComplete,
-} from "../input_validations/auth_validation.js"; // ← adjust path to match your project
+} from "../input_validations/auth_validation.js";
 import ResetPassword from "./reset_password.js";
-import { styles } from "../../styles/function/error_box_style.js";
 
 const { width, height } = Dimensions.get("window");
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const randCoord = () => {
   const lat = (Math.random() * 180 - 90).toFixed(4);
   const lng = (Math.random() * 360 - 180).toFixed(4);
   return `${lat > 0 ? "+" : ""}${lat}° / ${lng > 0 ? "+" : ""}${lng}°`;
 };
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function SnapLabel() {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -113,7 +106,6 @@ function CoordsLabel() {
   );
 }
 
-// Renders a list of validation error strings
 function ValidationErrors({ errors }) {
   if (!errors?.length) return null;
   return (
@@ -126,8 +118,6 @@ function ValidationErrors({ errors }) {
     </View>
   );
 }
-
-// ─── Main screen ──────────────────────────────────────────────────────────────
 
 export const AuthScreen = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -145,12 +135,10 @@ export const AuthScreen = () => {
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [verifyCode, setVerifyCode] = useState("");
-
   const [errors, setErrors] = useState([]);
 
   const { showLoading, hideLoading } = UseOverlay();
 
-  // ── clear errors + sensitive fields when switching panels ──
   const openLogin = () => {
     setShowSignup(false);
     setErrors([]);
@@ -178,8 +166,8 @@ export const AuthScreen = () => {
     setDisplayName("");
     setConfirmPassword("");
     setEmail("");
-    setConfirmPassword("");
   };
+
   useEffect(() => {
     (async () => {
       showLoading();
@@ -188,10 +176,8 @@ export const AuthScreen = () => {
     })();
   }, []);
 
-  // ── handlers ──────────────────────────────────────────────────────────────
   const completeForm = (pending_token, id_token, provider) => {
     setShowCompleteForm(true);
-
     setProvider(provider);
     setPendingToken(pending_token);
     setIdToken(id_token);
@@ -222,23 +208,20 @@ export const AuthScreen = () => {
     if (res.status === 200) {
       showLoading();
       const login = await AuthHandler.providerVerifyHandler(idtoken, provider);
-      if (login.status === 200) {
-        await AppFlow.onAuthSuccess();
-      }
+      if (login.status === 200) await AppFlow.onAuthSuccess();
       hideLoading();
       return;
     }
 
-    const msg =
+    setErrors([
       res.status === 500
         ? res.message
         : res.status === 429
           ? "Too many attempts — please try again shortly."
-          : "Server error. Please try again.";
-    // setPendingToken(null)
-    // setIdToken(null)
-    setErrors([msg]);
+          : "Server error. Please try again.",
+    ]);
   };
+
   const handleLogin = async () => {
     setErrors([]);
     const errs = validateLogin({ username, password, email });
@@ -258,13 +241,13 @@ export const AuthScreen = () => {
       return;
     }
 
-    const msg =
+    setErrors([
       res.status === 401
         ? res.message
         : res.status === 429
           ? "Too many attempts — please try again shortly."
-          : "Server error. Please try again.";
-    setErrors([msg]);
+          : "Server error. Please try again.",
+    ]);
   };
 
   const handleSignup = async () => {
@@ -308,7 +291,6 @@ export const AuthScreen = () => {
     }
 
     const res = await AuthHandler.emailVerificationHandler(email, verifyCode);
-
     if (!res.ok || res.status !== 200) {
       setErrors([res.message || "Verification failed."]);
       return;
@@ -318,11 +300,8 @@ export const AuthScreen = () => {
     openLogin();
   };
 
-  // ── render ────────────────────────────────────────────────────────────────
-
   return (
     <>
-      {/* ── Polaroid frame ── */}
       <View style={fr.outerFrame}>
         <View style={fr.topBar}>
           <SnapLabel />
@@ -333,7 +312,6 @@ export const AuthScreen = () => {
           <Text style={fr.brandText}>Tripping</Text>
         </View>
 
-        {/* S-curve route divider */}
         <View style={fr.routeRow} pointerEvents="none">
           <View style={fr.pin}>
             <View style={fr.pinHead}>
@@ -372,55 +350,64 @@ export const AuthScreen = () => {
               <Text style={[fr.btnText, fr.btnTextOutline]}>Sign Up</Text>
             </TouchableOpacity>
           </View>
-          <GoogleAuth pending={completeForm}></GoogleAuth>
+          <GoogleAuth pending={completeForm} />
         </View>
       </View>
+
       {showCompleteForm && (
         <OverlayCard title="Complete setup account" onClose={closeAll}>
           <ValidationErrors errors={errors} />
+          <Text style={fr.fieldLabel}>Display name</Text>
           <TextInput
-            style={authStyle.input}
-            placeholder="Display name"
+            style={fr.inp}
+            placeholder="Your Name"
+            placeholderTextColor="#a08060"
             value={displayName}
             onChangeText={setDisplayName}
           />
+          <Text style={fr.fieldLabel}>Username</Text>
           <TextInput
-            style={authStyle.input}
-            placeholder="Username"
+            style={fr.inp}
+            placeholder="your_username"
+            placeholderTextColor="#a08060"
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
           />
+          <Text style={fr.fieldLabel}>Password</Text>
           <TextInput
-            style={authStyle.input}
-            placeholder="Password"
+            style={fr.inp}
+            placeholder="••••••••"
+            placeholderTextColor="#a08060"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
           />
+          <Text style={fr.fieldLabel}>Confirm password</Text>
           <TextInput
-            style={authStyle.input}
-            placeholder="Confirm password"
+            style={fr.inp}
+            placeholder="••••••••"
+            placeholderTextColor="#a08060"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry
           />
           <TouchableOpacity
-            style={authStyle.submitButton}
+            style={fr.submitBtn}
             onPress={handleProviderSignup}
+            activeOpacity={0.8}
           >
-            <Text style={authStyle.submitButtonText}>Submit</Text>
+            <Text style={fr.submitBtnText}>Submit</Text>
           </TouchableOpacity>
         </OverlayCard>
       )}
-      {/* ── Login overlay ── */}
+
       {showLogin && (
         <OverlayCard title="LOGIN" onClose={closeAll}>
           <ValidationErrors errors={errors} />
-          {/* Toggle button */}
-          <View style={fr.loginToggleRow}>
+          <View style={fr.toggleRow}>
             <TouchableOpacity
-              style={[fr.toggleOption, !loginWithEmail && fr.toggleActive]}
+              style={[fr.toggleOpt, !loginWithEmail && fr.toggleActive]}
               onPress={() => {
                 setLoginWithEmail(false);
                 clearAllDataFields();
@@ -435,7 +422,7 @@ export const AuthScreen = () => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[fr.toggleOption, loginWithEmail && fr.toggleActive]}
+              style={[fr.toggleOpt, loginWithEmail && fr.toggleActive]}
               onPress={() => setLoginWithEmail(true)}
             >
               <Text
@@ -447,42 +434,44 @@ export const AuthScreen = () => {
               </Text>
             </TouchableOpacity>
           </View>
+          <Text style={fr.fieldLabel}>
+            {loginWithEmail ? "Email address" : "Username"}
+          </Text>
           {loginWithEmail ? (
             <TextInput
-              style={authStyle.input}
-              placeholder="Email"
-              autoComplete="email"
-              textContentType="emailAddress"
+              style={fr.inp}
+              placeholder="you@example.com"
+              placeholderTextColor="#a08060"
+              keyboardType="email-address"
+              autoCapitalize="none"
               value={email}
               onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
             />
           ) : (
             <TextInput
-              style={authStyle.input}
-              placeholder="Username"
-              autoComplete="username"
-              textContentType="username"
+              style={fr.inp}
+              placeholder="your_username"
+              placeholderTextColor="#a08060"
+              autoCapitalize="none"
               value={username}
               onChangeText={setUsername}
-              autoCapitalize="none"
             />
           )}
+          <Text style={fr.fieldLabel}>Password</Text>
           <TextInput
-            style={authStyle.input}
-            placeholder="Password"
-            autoComplete="password"
+            style={fr.inp}
+            placeholder="••••••••"
+            placeholderTextColor="#a08060"
+            secureTextEntry
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
-            returnKeyType="done"
           />
           <TouchableOpacity
-            style={authStyle.submitButton}
+            style={fr.submitBtn}
             onPress={handleLogin}
+            activeOpacity={0.8}
           >
-            <Text style={authStyle.submitButtonText}>Submit</Text>
+            <Text style={fr.submitBtnText}>Submit</Text>
           </TouchableOpacity>
           <GoogleAuth action="signin" />
           <TouchableOpacity onPress={openSignup}>
@@ -494,50 +483,60 @@ export const AuthScreen = () => {
         </OverlayCard>
       )}
 
-      {/* ── Signup overlay ── */}
       {showSignup && (
         <OverlayCard title="SIGN UP" onClose={closeAll}>
           <ValidationErrors errors={errors} />
+          <Text style={fr.fieldLabel}>Email</Text>
           <TextInput
-            style={authStyle.input}
-            placeholder="Email"
+            style={fr.inp}
+            placeholder="you@example.com"
+            placeholderTextColor="#a08060"
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
           />
+          <Text style={fr.fieldLabel}>Display name</Text>
           <TextInput
-            style={authStyle.input}
-            placeholder="Display name"
+            style={fr.inp}
+            placeholder="Your Name"
+            placeholderTextColor="#a08060"
             value={displayName}
             onChangeText={setDisplayName}
           />
+          <Text style={fr.fieldLabel}>Username</Text>
           <TextInput
-            style={authStyle.input}
-            placeholder="Username"
+            style={fr.inp}
+            placeholder="your_username"
+            placeholderTextColor="#a08060"
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
           />
+          <Text style={fr.fieldLabel}>Password</Text>
           <TextInput
-            style={authStyle.input}
-            placeholder="Password"
+            style={fr.inp}
+            placeholder="••••••••"
+            placeholderTextColor="#a08060"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
           />
+          <Text style={fr.fieldLabel}>Confirm password</Text>
           <TextInput
-            style={authStyle.input}
-            placeholder="Confirm password"
+            style={fr.inp}
+            placeholder="••••••••"
+            placeholderTextColor="#a08060"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry
           />
           <TouchableOpacity
-            style={authStyle.submitButton}
+            style={fr.submitBtn}
             onPress={handleSignup}
+            activeOpacity={0.8}
           >
-            <Text style={authStyle.submitButtonText}>Submit</Text>
+            <Text style={fr.submitBtnText}>Submit</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={openLogin}>
             <Text style={fr.linkText}>Already have an account?</Text>
@@ -545,79 +544,41 @@ export const AuthScreen = () => {
         </OverlayCard>
       )}
 
-      {/* ── Verification overlay ── */}
       {showVerification && (
         <OverlayCard title="Confirm Code" onClose={closeAll}>
           <ValidationErrors errors={errors} />
+          <Text style={fr.fieldLabel}>6-digit code</Text>
           <TextInput
-            style={authStyle.input}
-            placeholder="6-digit code"
+            style={fr.inp}
+            placeholder="000000"
+            placeholderTextColor="#a08060"
             value={verifyCode}
             onChangeText={setVerifyCode}
             inputMode="numeric"
             maxLength={6}
           />
           <TouchableOpacity
-            style={authStyle.submitButton}
+            style={fr.submitBtn}
             onPress={handleVerification}
+            activeOpacity={0.8}
           >
-            <Text style={authStyle.submitButtonText}>Verify</Text>
+            <Text style={fr.submitBtnText}>Verify</Text>
           </TouchableOpacity>
         </OverlayCard>
       )}
+
       {showResetPassword && (
-        <ResetPassword
-          onClose={() => setShowResetPassword(false)}
-        ></ResetPassword>
+        <ResetPassword onClose={() => setShowResetPassword(false)} />
       )}
     </>
   );
 };
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const FRAME_W = width * 0.9;
 const FRAME_H = height * 0.9;
 const PHOTO_H = FRAME_H * 0.68;
 
 const fr = StyleSheet.create({
-  loginToggleRow: {
-    flexDirection: "row",
-    backgroundColor: "#e8e3d8",
-    borderRadius: 0,
-    padding: 3,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 0,
-  },
-  toggleOption: {
-    flex: 1,
-    paddingVertical: 8,
-    alignItems: "center",
-  },
-  toggleActive: {
-    backgroundColor: "#1a1a1a",
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 0,
-    elevation: 3,
-  },
-  toggleTextActive: {
-    color: "#f5f0e8",
-    fontFamily: "mainfont",
-    fontSize: 13,
-    letterSpacing: 1.2,
-  },
-  toggleTextInactive: {
-    color: "#1a1a1a",
-    fontFamily: "mainfont",
-    fontSize: 13,
-    letterSpacing: 1.2,
-    opacity: 0.4,
-  },
   outerFrame: {
     position: "absolute",
     top: (height - FRAME_H) / 2,
@@ -752,11 +713,88 @@ const fr = StyleSheet.create({
     borderColor: "#1a1a1a",
   },
   btnTextOutline: { color: "#1a1a1a" },
+  toggleRow: {
+    flexDirection: "row",
+    backgroundColor: "#e8e3d8",
+    padding: 3,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 0,
+  },
+  toggleOpt: { flex: 1, paddingVertical: 8, alignItems: "center" },
+  toggleActive: {
+    backgroundColor: "#1a1a1a",
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 0,
+    elevation: 3,
+  },
+  toggleTextActive: {
+    color: "#f5f0e8",
+    fontFamily: "DMMono-Regular",
+    fontSize: 13,
+    letterSpacing: 1.2,
+  },
+  toggleTextInactive: {
+    color: "#1a1a1a",
+    fontFamily: "DMMono-Regular",
+    fontSize: 13,
+    letterSpacing: 1.2,
+    opacity: 0.4,
+  },
+  fieldLabel: {
+    fontFamily: "DMMono-Regular",
+    fontSize: 9,
+    color: "#5a5550",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    marginBottom: 4,
+  },
+  inp: {
+    backgroundColor: "#f0ebe0",
+    borderWidth: 1,
+    borderColor: "rgba(58,56,48,0.25)",
+    borderRadius: 0,
+    padding: 10,
+    fontFamily: "DMMono-Regular",
+    fontSize: 13,
+    color: "#1a1a1a",
+    marginBottom: 10,
+  },
+  submitBtn: {
+    backgroundColor: "#f4a97f",
+    paddingVertical: 11,
+    alignItems: "center",
+    marginTop: 4,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 0,
+    elevation: 4,
+  },
+  submitBtnText: {
+    fontFamily: "DMMono-Medium",
+    fontSize: 13,
+    color: "#7a3a10",
+    letterSpacing: 0.4,
+  },
+  linkText: {
+    fontFamily: "DMMono-Regular",
+    fontSize: 11,
+    color: "#a08060",
+    textAlign: "center",
+    marginTop: 6,
+    textDecorationLine: "underline",
+  },
   errorText: {
     textAlign: "center",
     marginTop: 6,
     color: "#CC3A2A",
     fontSize: 12,
+    fontFamily: "DMMono-Regular",
   },
-  linkText: { textAlign: "center", marginTop: 10, fontSize: 13, color: "#555" },
 });
