@@ -11,45 +11,61 @@ import safeRun from "../helpers/safe_run";
 import { _registerNetworkCallback } from "./sync/network_observer";
 import migration from "../../backend/storage/database/migrations/migration";
 import Album from "../../backend/storage/album/album";
+import TripContentsSync from "./sync/trip_content_sync";
+// Applow architecture could be found in /architecture
 class AppFlow {
   constructor() {
     this.LocalStorage = new LocalStorage();
     _registerNetworkCallback(this.networkCallback.bind(this));
+    this._fresh_start = true;
   }
   networkCallback(state) {
     console.log("network", state);
-
+    if (this._fresh_start) return;
     if (state) this.syncCurrentTripContents();
   }
   async tokenAuthorization() {
+    // this function call token verification and direct into next screen
+    console.log("token");
     const loginViaToken = await AuthHandler.loginWithTokenHandler();
+    // if not verrify, clear out LocalStorage asysnstorage (Not database)
     if (!loginViaToken) {
       await this.LocalStorage.clearAllStorage();
-      return false;
+      return;
     }
-    if (!(await this.onAuthSuccess())) return false;
+    // direct into next screen
+    if (!(await this.onAuthSuccess())) return;
 
-    return true;
+    return;
   }
 
   async onAuthSuccess() {
-    await safeRun(
-      () => UserDataHandler.GetUserDataHandler(),
-      "failed_at_get_user_data",
-    );
+    // on auth sucess, request userdata
+    if (
+      !(await safeRun(
+        () => UserDataHandler.GetUserDataHandler(),
+        "failed_at_get_user_data",
+      ))
+    ) {
+      return false;
+    }
+
     // if (!requestUserData){ return false}
     // console.log('main')
+    // direct to permission screen
     navigate("Permission");
 
     return true;
   }
   async onPermissionReady() {
     try {
-      if ((await this.initDBs()) && (await this.initAlbum())) {
-        navigate("Main");
-      } else {
+      if (!(await this.initDBs())) {
         navigate("auth");
       }
+      if (!(await this.initAlbum())) {
+        navigate("auth");
+      }
+      navigate("Main");
     } catch (err) {
       navigate("auth");
     }
@@ -78,34 +94,28 @@ class AppFlow {
       return true;
     } catch (err) {
       console.error(err);
-      return false;
+      throw new Error("failed to init database");
     }
   }
   async onAppReady() {
     try {
-      const currentTripIdAndVersion =
-        await TripHandler.requestCurrentTripHandler();
-      // await safeRun(
-      //   () => this.syncCurrentTripContents(),
-      //   "failed_at_sync_trip_media",
-      // );
+      await safeRun(
+        () => TripHandler.requestCurrentTripHandler(),
+        "failed to handler trip data",
+      );
+      await safeRun(
+        () => this.syncCurrentTripContents(),
+        "failed_at_sync_trip_media",
+      );
     } catch (err) {
       console.error("Failed too get current trip data");
     }
     return true;
   }
-
-  async onRenderUserData() {
+  async onRequestTrips() {
     const trips = await TripHandler.requestAllTripHandler();
     return;
   }
-
-  // async onRenderCurrentLayoutsSuccess(){
-  //     const currentTripCoors = await TripContentsHandler.requestCurrentTripCoordinatesHandler()
-  //     const currentTripImage = await TripContentsHandler.requestCurrentTripMedias()
-  //     const currentlocationCon = await TripContentsHandler.requestLocationConditionsHandler()
-  //     return
-  // }
   async syncCurrentTripContents() {
     const trip_id = CurrentTripDataService.getCurrentTripId();
     if (trip_id) {
@@ -117,9 +127,7 @@ class AppFlow {
 
       console.log("sync complete");
     }
-    await TripContentsSync.currentTripContentsSync(
-      CurrentTripDataService.getCurrentTripId(),
-    );
+
     return;
   }
 }

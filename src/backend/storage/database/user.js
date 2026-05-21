@@ -3,7 +3,6 @@ import { STORAGE_KEYS } from "../hot_data/keys/storage_keys";
 
 import LocalStorage from "../base/localStorage";
 import safeRun from "../../../app-core/helpers/safe_run";
-const USER_PROFILE_IMAGE_PATH = "user_profile.jpg";
 class UserDataService extends LocalStorage {
   constructor() {
     super();
@@ -41,6 +40,9 @@ class UserDataService extends LocalStorage {
     return user_data;
   }
 
+  getUserAvatarPath() {
+    return `user${this.getUserId()}_profile.jpg`;
+  }
   async getUserAuthFromLocal() {
     const user_data = await this.getDataObjectFromLocal(
       STORAGE_KEYS.USER.USER_ROLE,
@@ -60,11 +62,11 @@ class UserDataService extends LocalStorage {
     if (!uri) return;
     let destination;
     if (location === "local") {
-      destination = await this.saveImageToLocal(uri, USER_PROFILE_IMAGE_PATH);
+      destination = await this.saveImageToLocal(uri, this.getUserAvatarPath());
     } else {
       destination = await this.downloadImageToLocal(
         uri,
-        USER_PROFILE_IMAGE_PATH,
+        this.getUserAvatarPath(),
       );
     }
     const user_data = await this.getUserDataFromLocal();
@@ -128,7 +130,7 @@ class UserDataService extends LocalStorage {
   }
 
   async deleteProfileImage() {
-    await this.deleteImageFromLocal(USER_PROFILE_IMAGE_PATH);
+    await this.deleteImageFromLocal(this.getUserAvatarPath());
   }
 
   async deleteAllUserData() {

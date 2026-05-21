@@ -63,7 +63,7 @@ export default function ResetPassword({ onClose }) {
   const handleRequestReset = async () => {
     try {
       const respond = await AuthService.requestResetPassword(email);
-      if (respond.status != 200 || !respond.ok) {
+      if (respond.status != 201 || !respond.ok) {
         return false;
       }
       const data = respond?.data;
@@ -78,16 +78,16 @@ export default function ResetPassword({ onClose }) {
     try {
       const respond = await AuthService.requestResetPasswordVerify(
         code.join(""),
-        session_token,
+        email,
       );
-      if (respond.status != 200 || !respond.ok) {
+      if (respond.status != 201 || !respond.ok) {
         return false;
       }
       const data = respond?.data;
       set_session_token(data?.token);
       return true;
     } catch (err) {
-      console.error(err);
+      console.error(err.message);
       return false;
     }
   };
@@ -97,6 +97,7 @@ export default function ResetPassword({ onClose }) {
       const respond = await AuthService.requestResetPasswordReset(
         pw1,
         session_token,
+        email,
       );
       if (respond.status != 200 || !respond.ok) {
         return false;

@@ -28,6 +28,7 @@ export const TripsList = ({ onClose }) => {
   const tripLoading = () => {
     return showLoading([
       "Getting your trips...",
+      "Look like There are NOTHING",
       "Unpacking the memories...",
       "Dusting off the map...",
       "Almost there...",
@@ -61,7 +62,7 @@ export const TripsList = ({ onClose }) => {
     TripDataService.attach(onTripsUpdate, DATA_KEYS.TRIP.ALL_TRIP_LIST);
     UserDataService.attach(onAvatarUpdate, DATA_KEYS.USER.USER_AVATAR);
 
-    AppFlow.onRenderUserData();
+    AppFlow.onRequestTrips();
 
     return () => {
       TripDataService.detach(onTripsUpdate, DATA_KEYS.TRIP.ALL_TRIP_LIST);

@@ -8,18 +8,18 @@ export default async function migration() {
   try {
     if (user_version < 1) {
       console.log("migration", 1);
-      await DB.execAsync(
-        `ALTER TABLE "user_${user_id}_album" ADD COLUMN city TEXT DEFAULT NULL;`,
-      );
-      await DB.execAsync(
-        `ALTER TABLE "user_${user_id}_album" ADD COLUMN region TEXT DEFAULT NULL;`,
-      );
-      await DB.execAsync(
-        `ALTER TABLE "user_${user_id}_album" ADD COLUMN country TEXT DEFAULT NULL;`,
-      );
-      await DB.execAsync(
-        `ALTER TABLE "user_${user_id}_album" ADD COLUMN iso_country_code TEXT DEFAULT NULL;`,
-      );
+      // await DB.execAsync(
+      //   `ALTER TABLE "user_${user_id}_album" ADD COLUMN city TEXT DEFAULT NULL;`,
+      // );
+      // await DB.execAsync(
+      //   `ALTER TABLE "user_${user_id}_album" ADD COLUMN region TEXT DEFAULT NULL;`,
+      // );
+      // await DB.execAsync(
+      //   `ALTER TABLE "user_${user_id}_album" ADD COLUMN country TEXT DEFAULT NULL;`,
+      // );
+      // await DB.execAsync(
+      //   `ALTER TABLE "user_${user_id}_album" ADD COLUMN iso_country_code TEXT DEFAULT NULL;`,
+      // );
       await DB.execAsync("PRAGMA user_version = 1;");
       user_version = 1;
     }

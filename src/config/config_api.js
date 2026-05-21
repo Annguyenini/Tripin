@@ -52,6 +52,10 @@ export const DELETE_TRIP_COORDINATE =
   BASE_API + BASE_TRIP_CONTENTS_API + "/delete-coordinate";
 export const BASE_USER_API = "/user";
 export const UPDATE_PROFILE_IMAGE = BASE_API + BASE_USER_API + "/update-avatar";
+export const REQUEST_UPDATE_PROFILE_PRESIGN_URL =
+  BASE_API + BASE_USER_API + "/request-update-avatar-presign-url";
+export const REQUEST_COMPLETE_UPDATE_PROFILE =
+  BASE_API + BASE_USER_API + "/complete-update-avatar";
 export const GET_USER_DATA = BASE_API + BASE_USER_API + "/get-user-data";
 export const REQUEST_PRESIGN_URLS =
   BASE_API + BASE_TRIP_CONTENTS_API + "/request-presign-urls";

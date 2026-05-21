@@ -5,9 +5,11 @@ import { imagePicker, takePicture } from "./image_picker";
 import { useState } from "react";
 import UserDataService from "../../backend/storage/database/user";
 import UserService from "../../backend/services/user";
+import UserHandler from "../../app-core/flow/user_handler";
 import { UseOverlay } from "../overlay/overlay_main";
 export const ProfileImagePicker = ({ onClose }) => {
   const { showLoading, hideLoading, showErrorBox } = UseOverlay();
+  const previousImage = UserDataService.getProfileImageUri();
   const [imageUri, setImageUri] = useState(
     UserDataService.getProfileImageUri(),
   );
@@ -20,17 +22,16 @@ export const ProfileImagePicker = ({ onClose }) => {
     setImageUri(pic.assets[0].uri);
   };
   const updateUserProfileImage = async () => {
+    if (imageUri === previousImage) return;
     showLoading();
-    const respond = await UserService.updateUserProfileImage(imageUri);
+    const respond = await UserHandler.ChangeUserUserAvatarHandler(imageUri);
     hideLoading();
-    if (!respond.ok) {
+    if (!respond.ok || respond.status !== 200) {
       showErrorBox(
         "Error",
         "Error with update avartar, please try again shortly",
         6000,
       );
-    } else {
-      await UserDataService.setProfileImageUriToLocal(imageUri);
     }
     onClose(false);
   };

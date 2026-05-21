@@ -31,41 +31,59 @@ class AuthHandler {
     return respond;
   }
   async loginWithTokenHandler() {
-    const userdata_etag = await Etag_Service.getEtagFromLocal(
-      ETAG_KEY.USERDATA,
-    );
-
-    const res = await Auth.authenticateToken("access_token", userdata_etag);
-    // if(!res.ok )return false
+    // this function will validate token and set user_id and role to local data
+    // -----------request token validation with server-------
+    const res = await Auth.authenticateToken("access_token");
     const data = await res.data;
+    // ----------- if offline ------------------
     if (!res.ok) {
       return await this._offlineAuthHandler();
     }
+    // --------------if token expired-----------
     if (res.status === 401) {
+      //
       if (data.code === "token_expired") {
+        //access_token expired case
+        // request new access_token
         const tokendata = await Auth.authenticateToken("refresh_token");
 
-        if (tokendata.status === 401) {
+        // if refresh token invalid or expired
+        // delete both access_token and refresh_token from asyncsecure storage
+        try {
+          if (tokendata.status === 401) {
+            await TokenService.deleteToken("access_token");
+            await TokenService.deleteToken("refresh_token");
+            return false;
+          }
+          // store new access_token in to storage
+          else if (tokendata.status === 200) {
+            await TokenService.deleteToken("access_token");
+            await Auth.requestNewAccessToken();
+            return await this.loginWithTokenHandler();
+          } else if (!tokendata.ok || tokendata.code === "network_error") {
+            return await this._offlineAuthHandler();
+          }
+        } catch (err) {
+          console.error(err);
+          return false;
+        }
+      }
+      // token_invalid
+      else if (data.code === "token_invalid") {
+        try {
           await TokenService.deleteToken("access_token");
           await TokenService.deleteToken("refresh_token");
-          return false;
-        } else if (tokendata.status === 200) {
-          await TokenService.deleteToken("access_token");
-          await Auth.requestNewAccessToken();
-          return await this.loginWithTokenHandler();
-        } else if (!tokendata.ok || tokendata.code === "network_error") {
-          return await this._offlineAuthHandler();
+        } catch (err) {
+          console.error("failed to delete access and refresh token", err);
         }
-      } else if (data.code === "token_invalid") {
-        await TokenService.deleteToken("access_token");
-        await TokenService.deleteToken("refresh_token");
         return false;
       }
     }
+    // rate limit hit
     if (res.status === 429) {
       return false;
     }
-    console.log(data.user_data);
+    //
     await UserDataService.setUserAuthToLocal(data.user_data);
 
     return true;
@@ -95,6 +113,8 @@ class AuthHandler {
     return respond;
   }
   async _offlineAuthHandler() {
+    // offline mode validation
+    // using refresh token
     const { status } = await TokenService.verifyTokenOffline(
       await TokenService.getToken("refresh_token"),
     );

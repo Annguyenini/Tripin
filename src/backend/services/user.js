@@ -6,24 +6,55 @@ import AuthService from "./auth";
 import EtagService from "../storage/etag/etag_service";
 import { ETAG_KEY } from "../storage/etag/etag_keys";
 import fetchFunction from "./fetch_function";
+import safeRun from "../../app-core/helpers/safe_run";
+// import * as ImageManipulator from "expo-image-manipulator";
+
 class UserService {
-  async updateUserProfileImage(uri) {
-    const formdata = new FormData();
-    formdata.append("image", {
-      uri: uri,
-      name: `user${UserDataService.getUserId()}_profile_pic`,
-      type: "image/jpeg",
-    });
-    // formdata.append('userdata',{
-    //     user_id:user_id
-    // })
-    const respond = await fetchFunction(API.UPDATE_PROFILE_IMAGE, {
-      method: "POST",
-      body: formdata,
-    });
-    console.log(respond);
+  async _requestAvatarPresignUrl() {
+    const respond = await fetchFunction(
+      API.REQUEST_UPDATE_PROFILE_PRESIGN_URL,
+      {
+        method: "GET",
+      },
+    );
     return respond;
   }
+  async _putAvatarToCloud(presign_url, uri) {
+    try {
+      const content_type = "image/jpeg";
+
+      // const resizedPhoto = await ImageManipulator.manipulateAsync(
+      //   uri,
+      //   [{ resize: { width: 1920 } }], // resize to width of 300 and preserve aspect ratio
+      //   { compress: 0.9, format: "jpeg" },
+      // );
+      const image = await fetch(uri);
+
+      const blob = await image.blob();
+
+      const respond = await fetch(presign_url, {
+        method: "PUT",
+        body: blob,
+        headers: { "Content-Type": content_type },
+      });
+      return respond;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+  async _compeleteUpdateAvatar(pending_token, modified_time) {
+    const respond = await fetchFunction(API.REQUEST_COMPLETE_UPDATE_PROFILE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        pending_token: pending_token,
+        modified_time: modified_time,
+      }),
+    });
+    return respond;
+  }
+
   async getUserData(user_id) {
     const etag = await EtagService.getEtagFromLocal(ETAG_KEY.USERDATA);
 
