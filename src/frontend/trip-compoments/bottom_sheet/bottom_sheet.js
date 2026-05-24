@@ -113,14 +113,14 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
       handleIndicatorStyle={s.sheetHandle}
     >
       <BottomSheetScrollView contentContainerStyle={s.container}>
-        <TouchableOpacity onPress={() => setTest(true)}>
+        {/* <TouchableOpacity onPress={() => setTest(true)}>
           <Text>test</Text>
         </TouchableOpacity>
         {test && (
           <Modal>
             <TestScreen testScreenHandler={() => setTest(false)}></TestScreen>
           </Modal>
-        )}
+        )}*/}
 
         {/* ── trip title ── */}
         {displayTrip && (

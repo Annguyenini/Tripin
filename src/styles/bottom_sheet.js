@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { COLORS, FONTS, RADIUS, SHADOW } from './tokens';
+import { StyleSheet } from "react-native";
+import { COLORS, FONTS, RADIUS, SHADOW } from "./tokens";
 
 export const bottomSheetStyle = StyleSheet.create({
   container: {
@@ -19,7 +19,7 @@ export const bottomSheetStyle = StyleSheet.create({
     height: 4,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.borderStrong,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 16,
   },
 
@@ -28,7 +28,7 @@ export const bottomSheetStyle = StyleSheet.create({
     fontSize: 24,
     color: COLORS.black,
     marginBottom: 12,
-    textDecorationLine: 'underline',
+    textDecorationLine: "underline",
   },
 
   body: {

@@ -59,21 +59,21 @@ export default function AppVersionValidation() {
     Linking.openURL(Platform.OS === "ios" ? IOS_URL : ANDROID_URL);
   };
 
-  return (
-    <Modal visible={needsUpdate} transparent animationType="fade">
-      <View style={styles.overlay}>
-        <View style={styles.card}>
-          <Text style={styles.title}>New Version Available</Text>
-          <Text style={styles.message}>
-            Please update the app to get the latest features and fixes.
-          </Text>
-          {/* <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-            <Text style={styles.buttonText}>Update Now</Text>
-          </TouchableOpacity>*/}
-        </View>
-      </View>
-    </Modal>
-  );
+  // return (
+  //   <Modal visible={needsUpdate} transparent animationType="fade">
+  //     <View style={styles.overlay}>
+  //       <View style={styles.card}>
+  //         <Text style={styles.title}>New Version Available</Text>
+  //         <Text style={styles.message}>
+  //           Please update the app to get the latest features and fixes.
+  //         </Text>
+  //         {/* <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+  //           <Text style={styles.buttonText}>Update Now</Text>
+  //         </TouchableOpacity>*/}
+  //       </View>
+  //     </View>
+  //   </Modal>
+  // );
 }
 
 const styles = StyleSheet.create({
