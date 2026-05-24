@@ -117,5 +117,11 @@ export default {
       },
       mapboxToken: process.env.EXPO_MAPBOX_PUBLIC_TOKEN,
     },
+    updates: {
+      url: "https://u.expo.dev/2e3446d3-9978-4cea-8294-a1166b269f3f",
+    },
+    runtimeVersion: {
+      policy: "appVersion",
+    },
   },
 };
