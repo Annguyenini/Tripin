@@ -7,7 +7,7 @@ import EtagService from "../storage/etag/etag_service";
 import { ETAG_KEY } from "../storage/etag/etag_keys";
 import fetchFunction from "./fetch_function";
 import safeRun from "../../app-core/helpers/safe_run";
-// import * as ImageManipulator from "expo-image-manipulator";
+import * as ImageManipulator from "expo-image-manipulator";
 
 class UserService {
   async _requestAvatarPresignUrl() {
@@ -23,12 +23,13 @@ class UserService {
     try {
       const content_type = "image/jpeg";
 
-      // const resizedPhoto = await ImageManipulator.manipulateAsync(
-      //   uri,
-      //   [{ resize: { width: 1920 } }], // resize to width of 300 and preserve aspect ratio
-      //   { compress: 0.9, format: "jpeg" },
-      // );
-      const image = await fetch(uri);
+      const resizedPhoto = await ImageManipulator.manipulateAsync(
+        uri,
+        [{ resize: { width: 1920 } }], // resize to width of 300 and preserve aspect ratio
+        { compress: 0.9, format: "jpeg" },
+      );
+      // console.log(resizedPhoto);
+      const image = await fetch(resizedPhoto.uri);
 
       const blob = await image.blob();
 
@@ -37,6 +38,7 @@ class UserService {
         body: blob,
         headers: { "Content-Type": content_type },
       });
+
       return respond;
     } catch (err) {
       console.error(err);

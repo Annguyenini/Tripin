@@ -83,8 +83,8 @@ class Album {
     } catch (err) {}
   }
   async mergeMediasFromAlbumAndDB(db_array, album_array) {
-    console.log("merge1 ", db_array);
-    console.log("merge2 ", album_array);
+    // console.log("merge1 ", db_array);
+    // console.log("merge2 ", album_array);
 
     let hash_map = {};
     for (const object of album_array) {
@@ -105,7 +105,7 @@ class Album {
     this.AlbumsArray = [...assets];
   }
   async getMergedMediasArray() {
-    console.log("init album");
+    // console.log("init album");
     try {
       const db_medias = await this.getAllMediasFromDb();
       const album_medias = await this.getAllMediasFromAlbum();
@@ -117,7 +117,7 @@ class Album {
         db_medias,
         album_medias,
       );
-      console.log("init album", result);
+      // console.log("init album", result);
       return result;
     } catch (err) {
       console.error(err);

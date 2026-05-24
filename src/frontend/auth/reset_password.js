@@ -46,7 +46,7 @@ export default function ResetPassword({ onClose }) {
       if (!(await handleRequestResetVerify())) return;
       setStep(2);
     } else if (step === 2) {
-      console.log(pw1);
+      // console.log(pw1);
       if (!validate.password(pw1)) {
         setError("Password must be at least 8 characters.");
         return;
@@ -92,7 +92,7 @@ export default function ResetPassword({ onClose }) {
     }
   };
   const handleRequestResetComplete = async () => {
-    console.log(pw1, session_token);
+    // console.log(pw1, session_token);
     try {
       const respond = await AuthService.requestResetPasswordReset(
         pw1,

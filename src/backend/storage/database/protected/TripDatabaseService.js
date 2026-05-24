@@ -124,6 +124,7 @@ class TripDataBaseService {
 
   async addTripToDatabase(data_object) {
     try {
+      // console.log("trip", data_object);
       const DB = await SqliteService.connectDB();
       await DB.runAsync(
         `INSERT OR IGNORE INTO trips
@@ -131,7 +132,7 @@ class TripDataBaseService {
                  VALUES (?, ?, ?, ?, ?, ?,?,?,?)`,
         [
           data_object.user_id,
-          data_object.id,
+          data_object.trip_id,
           data_object.trip_name,
           data_object.image,
           data_object.created_time,

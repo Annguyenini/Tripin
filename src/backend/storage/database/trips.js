@@ -63,9 +63,9 @@ class TripDataService extends TripLocalDataStorage {
         }
       };
       if (!local) {
-        console.log("begin worker");
+        // console.log("begin worker");
         await Promise.all(Array.from({ length: MAXCONCURRENCY }, worker));
-        console.log("end worker");
+        // console.log("end worker");
       }
       this.item.set(DATA_KEYS.TRIP.ALL_TRIP_LIST, result);
       this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, result);
@@ -149,7 +149,7 @@ class TripDataService extends TripLocalDataStorage {
         "trip_id",
         trip_id,
       );
-      console.log("update end time", end_time, end_time_status, end_status);
+      // console.log("update end time", end_time, end_time_status, end_status);
     } catch {
       throw new Error("Failed to end trip locally");
     }

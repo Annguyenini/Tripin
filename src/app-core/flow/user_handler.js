@@ -24,7 +24,7 @@ class UserDataHandler {
       }
       const data = respond.data;
       let userdata = data.user_data;
-      console.log(userdata);
+      // console.log(userdata);
       if (userdata.avatar) {
         userdata.avatar = await UserDataService.setProfileImageUriToLocal(
           userdata.avatar,
@@ -39,7 +39,7 @@ class UserDataHandler {
       }
       return true;
     } catch (err) {
-      console.error(err);
+      console.error(err.stack);
       return false;
     }
   }
@@ -60,7 +60,7 @@ class UserDataHandler {
       const put_avatar_to_cloud = await safeRun(() =>
         UserService._putAvatarToCloud(presign_url, uri),
       );
-      console.log(put_avatar_to_cloud, uri);
+      // console.log(put_avatar_to_cloud, uri);
       if (put_avatar_to_cloud.status !== 200) {
         throw new Error("Faield to put avatar into cloud");
       }
@@ -69,7 +69,7 @@ class UserDataHandler {
         () => UserService._compeleteUpdateAvatar(pending_token, modified_time),
         "failed to request complete update avatar",
       );
-      console.log(complete_update_avatar, pending_token, modified_time);
+      // console.log(complete_update_avatar, pending_token, modified_time);
 
       if (!complete_update_avatar.ok || complete_update_avatar.status !== 200) {
         return complete_update_avatar;

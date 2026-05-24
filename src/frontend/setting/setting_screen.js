@@ -28,7 +28,7 @@ export const SettingScreen = ({ onclose }) => {
   const callLogout = async () => {
     // await AuthService.requestLogout();
     navigateToAuth();
-    console.log("signout");
+    // console.log("signout");
     await safeRun(
       () => TokenService.deleteToken("access_token"),
       "failed_at_delete_access_token",
@@ -50,7 +50,7 @@ export const SettingScreen = ({ onclose }) => {
       () => Localstorage.clearAllStorage(),
       "failed_at_clear_storage",
     );
-    console.log("signout1");
+    // console.log("signout1");
   };
   return (
     <View style={settingStyle.container}>
@@ -93,13 +93,12 @@ export const SettingScreen = ({ onclose }) => {
         </View>
         <Text style={settingStyle.logoutText}>Log out</Text>
       </TouchableOpacity>
-      <Modal
-        visible={profileVisible}
-        animationType="slide"
-        onRequestClose={() => setProfileVisible(false)}
-      >
-        <ProfileScreen onClose={() => setProfileVisible(false)} />
-      </Modal>
+      {profileVisible && (
+        <View style={settingStyle.profileOverlay}>
+          <ProfileScreen onClose={() => setProfileVisible(false)} />
+        </View>
+      )}
+
       <Modal
         visible={GPSVisible}
         animationType="slide"

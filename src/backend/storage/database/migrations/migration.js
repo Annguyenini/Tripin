@@ -7,7 +7,7 @@ export default async function migration() {
   let user_id = UserDataService.getUserId();
   try {
     if (user_version < 1) {
-      console.log("migration", 1);
+      // console.log("migration", 1);
       // await DB.execAsync(
       //   `ALTER TABLE "user_${user_id}_album" ADD COLUMN city TEXT DEFAULT NULL;`,
       // );
@@ -24,7 +24,7 @@ export default async function migration() {
       user_version = 1;
     }
     if (user_version < 2) {
-      console.log("migration", 2);
+      // console.log("migration", 2);
       await DB.execAsync(
         `ALTER TABLE "trips" ADD COLUMN modified_time TEXT DEFAULT NULL`,
       );
@@ -35,7 +35,7 @@ export default async function migration() {
       user_version = 2;
     }
     if (user_version < 3) {
-      console.log("migration", 3);
+      // console.log("migration", 3);
       await DB.execAsync(
         `ALTER TABLE "trips" ADD COLUMN event TEXT DEFAULT 'add'`,
       );

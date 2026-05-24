@@ -20,13 +20,11 @@ class AppFlow {
     this._fresh_start = true;
   }
   networkCallback(state) {
-    console.log("network", state);
     if (this._fresh_start) return;
     if (state) this.syncCurrentTripContents();
   }
   async tokenAuthorization() {
     // this function call token verification and direct into next screen
-    console.log("token");
     const loginViaToken = await AuthHandler.loginWithTokenHandler();
     // if not verrify, clear out LocalStorage asysnstorage (Not database)
     if (!loginViaToken) {
@@ -79,7 +77,7 @@ class AppFlow {
     }
   }
   async initDBs() {
-    console.log("migration");
+    // console.log("migration");
     try {
       await safeRun(
         () => TripDatabaseService.initTripTable(),
@@ -119,7 +117,7 @@ class AppFlow {
   async syncCurrentTripContents() {
     const trip_id = CurrentTripDataService.getCurrentTripId();
     if (trip_id) {
-      console.log("sync");
+      // console.log("sync");
       await safeRun(
         () => TripContentsHander._requestTripContentSync(trip_id),
         "faild_at_sync_trip_contents",

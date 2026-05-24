@@ -69,7 +69,7 @@ const MediaMarkers = ({ content_cards, zoomLevel, ready }) => {
             return { ...asset, thumb_nail: thumbnail };
           }),
         );
-        console.log(finalArray);
+        // console.log(finalArray);
         setCurrentAssetsArray([...finalArray]);
       } catch (err) {
         console.error(err);

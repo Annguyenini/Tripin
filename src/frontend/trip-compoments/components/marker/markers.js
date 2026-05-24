@@ -84,7 +84,7 @@ export const Marker = ({
       );
   }, [currentDisplayTripData]);
   useEffect(() => {
-    console.log(imagesReady, coordReady);
+    // console.log(imagesReady, coordReady);
     if (!imagesReady || !coordReady) {
       showLoading();
     } else {

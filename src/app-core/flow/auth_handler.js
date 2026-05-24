@@ -27,6 +27,7 @@ class AuthHandler {
     await TokenService.deleteToken("refresh_token");
     await TokenService.setToken("refresh_token", token.refresh_token);
     await TokenService.setToken("access_token", token.access_token);
+    // console.log(data, respond);
     await UserDataService.setUserAuthToLocal(data.user_data);
     return respond;
   }
@@ -99,7 +100,6 @@ class AuthHandler {
     return respond;
   }
   async signUpProviderHandler(pending_token, displayName, username, password) {
-    console.log(pending_token);
     const respond = await Auth.providerSignupComplete(
       pending_token,
       username,

@@ -29,10 +29,10 @@ class GPSCallbackHandler {
       const { latitude: lat1, longitude: lng1 } = this.lastPayload.coordinates;
       const { latitude: lat2, longitude: lng2 } = payload.coordinates;
       distance = CoordinateCal.haversineDistance(lat1, lng1, lat2, lng2);
-      console.log("call back distance", distance);
+      // console.log("call back distance", distance);
     }
     const { speed } = payload.coordinates;
-    console.log("call back speed", speed);
+    // console.log("call back speed", speed);
     // if(speed < 0) return
     // else if (speed < 1){
     //     this.currentMode = 'stationary'
@@ -48,7 +48,7 @@ class GPSCallbackHandler {
     // }
     // payload['type'] = this.currentMode
     // if (distance <= 5)return
-    console.log("call back");
+    // console.log("call back");
 
     this.lastPayload = payload;
     // process new coords

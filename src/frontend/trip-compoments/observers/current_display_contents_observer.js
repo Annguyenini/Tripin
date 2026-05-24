@@ -12,7 +12,7 @@ class CurrentDisplayContentsObserver extends LocalStorage {
     if (!this.watchArray[trip_id]) {
       this.watchArray[trip_id] = [];
     }
-    console.log("media", data_array);
+    // console.log("media", data_array);
     this.watchArray[trip_id] = data_array;
     this.notify(this.GENERATE_KEY(trip_id), data_array);
     return;

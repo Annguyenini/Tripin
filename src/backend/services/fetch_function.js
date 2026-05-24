@@ -6,9 +6,9 @@ const activeFetch = {};
 
 export default async function fetchFunction(url, options = {}, retry = true) {
   const key = `${url}::${options?.headers?.["id"] || ""}`;
-  console.log("key", key, options);
+  // console.log("key", key, options);
   if (activeFetch[key]) {
-    console.log("deduped request for", url);
+    // console.log("deduped request for", url);
     return activeFetch[url]; // return the same promise to both callers
   }
 
@@ -16,7 +16,7 @@ export default async function fetchFunction(url, options = {}, retry = true) {
     delete activeFetch[url];
   });
 
-  console.log("fetch data", url);
+  // console.log("fetch data", url);
 
   return activeFetch[url];
 }
@@ -35,7 +35,7 @@ async function _doFetch(url, options, retry) {
     const data = await respond.json();
 
     if (respond.status === 401) {
-      console.log("data", data.code);
+      // console.log("data", data.code);
       if (data.code === "token_expired" && retry) {
         await AuthService.requestNewAccessToken();
         delete activeFetch[url];

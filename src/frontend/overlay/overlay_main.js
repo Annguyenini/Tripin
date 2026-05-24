@@ -16,7 +16,7 @@ export const OverLayProvider = ({ children }) => {
       message: message,
       duration: duration,
     });
-    console.log(errorDataObject);
+    // console.log(errorDataObject);
 
     setType("error");
     setVisible(true);

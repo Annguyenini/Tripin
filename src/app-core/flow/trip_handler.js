@@ -7,7 +7,6 @@ import {
   ETAG_KEY,
   GENERATE_TRIP_ETAG_KEY,
 } from "../../backend/storage/etag/etag_keys";
-import TripDatabaseService from "../../backend/storage/database/protected/TripDatabaseService";
 import GPSLogic from "../../backend/gps_logic/gps_logic";
 import safeRun from "../helpers/safe_run";
 import trips from "../../backend/storage/database/trips";
@@ -56,6 +55,7 @@ class TripHandler {
         trip_image_uri,
         true,
       );
+      // console.log(trip_data);
       // save tripdata to local
       // hot data
       await safeRun(
@@ -111,7 +111,7 @@ class TripHandler {
     if (respond.status !== 200) return false;
 
     const data = respond.data;
-    console.log("tripdata", data);
+    // console.log("tripdata", data);
     if (!data.all_trip_data) return true;
     await safeRun(
       () => TripDataService.handleAllTripsList(data.all_trip_data),
@@ -312,7 +312,7 @@ class TripHandler {
     return { status: true, message: "Success!" };
   }
   async requestRemoveTrip(trip_id) {
-    console.log("dete");
+    // console.log("dete");
     const deleted_time = Date.now();
     let respond;
     try {
@@ -350,7 +350,7 @@ class TripHandler {
     try {
       const current_time = Date.now();
       const trip_id = CurrentTripDataService.getCurrentTripId();
-      console.log("endTrip", trip_id);
+      // console.log("endTrip", trip_id);
       const forceSync = await safeRun(
         () => TripContentsHandler._forceRequestTripContentSync(trip_id),
         "failed_at_request_last_trip_sync_trip_data",

@@ -262,7 +262,7 @@ export default function PolaroidGallery({ trip_id }) {
     CurrentDisplayContentsObserver.attach(observer, key);
     return () => CurrentDisplayContentsObserver.detach(observer, key);
   }, []);
-  console.log("trip_stat", displayMedias);
+  // console.log("trip_stat", displayMedias);
   useEffect(() => {
     const loc = () => {
       if (!displayMedias) return [];
@@ -286,7 +286,7 @@ export default function PolaroidGallery({ trip_id }) {
       }
       return result;
     };
-    console.log("nana", loc());
+    // console.log("nana", loc());
     setLocationArray(loc());
   }, [displayMedias]);
   // const locationArray = useMemo(() => {

@@ -62,7 +62,7 @@ class TripDisplayObserver extends LocalStorage {
    */
   update(newTripData) {
     // if (!newTripData) return
-    console.log("newTripData", newTripData);
+    // console.log("newTripData", newTripData);
     this.CurrentActiveTripData = newTripData;
     this.notify(this.EVENTS, this.getTripNeedRender());
   }

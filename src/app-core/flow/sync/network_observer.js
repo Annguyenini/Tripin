@@ -24,7 +24,6 @@ class NetworkObserver extends LocalStorage {
       const respone = await fetch(API.HEALTH, {
         method: "POST",
       });
-      console.log(respone);
       this.setServerStatus(true);
       // await app_flow.onAppReady()
     } catch (err) {

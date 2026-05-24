@@ -11,7 +11,7 @@ class CameraService {
       try {
         // const options = {quality: 1, base64 :true}; // control option for picture
         const photo = await cameraRef.current.takePhoto(options); // return a photo
-        console.log("photo", photo);
+        // console.log("photo", photo);
 
         await safeRun(
           () => MediaService.saveMediaHandler(photo.path, "photo"),
@@ -43,14 +43,14 @@ class CameraService {
       cameraRef.current.stopRecording();
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(this.video);
+    // console.log(this.video);
     if (this.video?.path) {
       try {
         await MediaService.saveMediaHandler(this.video.path, "video");
       } catch (err) {
         console.error("failed to save video!", err);
       }
-      console.log(this.video);
+      // console.log(this.video);
       return this.video;
     } else {
       console.warn("No video URI found yet!");

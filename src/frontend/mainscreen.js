@@ -161,11 +161,11 @@ export const MainScreen = () => {
         </View>
       )}
       {settingVisible && (
-        <Modal>
+        <View style={styles.settingOverlay}>
           <SettingScreen
             onclose={() => setSettingVisible(false)}
           ></SettingScreen>
-        </Modal>
+        </View>
       )}
       {albumVisible && (
         <View style={styles.albumOverlay}>
@@ -235,7 +235,7 @@ export const MainScreen = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={footer.fotterbutton}
-            onPress={() => setSettingVisible(true)}
+            onPress={() => setSettingVisible((prev) => !prev)}
           >
             <Ionicons name="settings-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Setting</Text>
@@ -282,6 +282,15 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   tripsOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: Dimensions.get("window").height * 0.01, // adjust to clear your bottom sheet + bottom nav height
+    zIndex: 500,
+    backgroundColor: "#1a1917",
+  },
+  settingOverlay: {
     position: "absolute",
     top: 0,
     left: 0,

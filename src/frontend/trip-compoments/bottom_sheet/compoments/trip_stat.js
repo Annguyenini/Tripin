@@ -38,7 +38,7 @@ export const TripStatCards = () => {
 
     const update_trip_display = {
       update(new_trip) {
-        console.log("new_trip", new_trip);
+        // console.log("new_trip", new_trip);
         setCurrentTripDisplay(new_trip);
       },
     };
@@ -65,7 +65,7 @@ export const TripStatCards = () => {
     }
     if (endedTime) {
       const dur = Number(endedTime) - Number(createdTime);
-      console.log(dur);
+      // console.log(dur);
       const hour = dur / 3600000;
       const hours_floor = Math.floor(hour);
       const minutes = Math.floor((hour - hours_floor) * 60);
@@ -95,7 +95,7 @@ export const TripStatCards = () => {
     const km = distance_m / 1000;
     const km_floor = Math.floor(km);
     const m = Math.floor((km - km_floor) * 1000);
-    console.log(km_floor, m);
+    // console.log(km_floor, m);
     setDistance({ km: km_floor, m: m });
   }, [contents, currentTripDisplay]);
 

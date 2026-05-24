@@ -59,7 +59,7 @@ export default {
           backgroundColor: "#232323",
           image: "./assets/splash-light-icon.png",
           dark: {
-            image: "./assets/splash-dark-icon.png",
+            image: "./assets/splash-tinted-icon.png",
             backgroundColor: "#000000",
           },
           imageWidth: 200,

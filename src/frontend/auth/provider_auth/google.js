@@ -26,7 +26,7 @@ const GoogleIcon = () => (
     />
   </Svg>
 );
-export default function GoogleAuth({ pending }) {
+export default function GoogleAuth({ pending, errorTrigger }) {
   /**
    * action is either 'signin' or 'signup'
    */
@@ -41,9 +41,16 @@ export default function GoogleAuth({ pending }) {
         const res = await AuthHandler.providerVerifyHandler(id_token, "google");
         if (res?.status == 201) {
           const pending_token = res.data?.pending_token;
+          // console.log(res);
           pending?.(pending_token, id_token, "google");
         } else if (res?.status === 200) {
           AppFlow?.onAuthSuccess();
+        } else {
+          errorTrigger(
+            "failed to continue with provider",
+            res?.data?.message,
+            3600,
+          );
         }
       };
       verify();

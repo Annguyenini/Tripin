@@ -38,7 +38,7 @@ export default function AlbumScreen({ onClose }) {
     getalbumPermission();
     const updateImages = {
       update(newImages) {
-        console.log("new image", newImages);
+        // console.log("new image", newImages);
         setImages(newImages);
       },
     };
@@ -67,7 +67,7 @@ export default function AlbumScreen({ onClose }) {
     );
     final.then(() => {
       setFinalImagesArray(Images);
-      console.log(finalImagesArray);
+      // console.log(finalImagesArray);
     });
   }, [Images]);
 
@@ -75,7 +75,7 @@ export default function AlbumScreen({ onClose }) {
     setCurrentMedia(item.media_path);
     setCurrentMediaType(item.mediaType);
     setImageVisible(true);
-    console.log("item", item, imageVisible);
+    // console.log("item", item, imageVisible);
   };
 
   return (

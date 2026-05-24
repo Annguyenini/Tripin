@@ -42,7 +42,7 @@ class MediaService {
         () => this.saveMediaToLocalAlbum(media_uri, type),
         "failed_at_save_media_to_gallery",
       );
-      console.log("uri", local_uri);
+      // console.log("uri", local_uri);
       if (!local_uri) {
         throw new Error("Failed to generate asset!");
       }

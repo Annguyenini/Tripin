@@ -55,11 +55,11 @@ class GPSLogic {
       const { latitude: lat1, longitude: lng1 } = this.lastPayload.coordinates;
       const { latitude: lat2, longitude: lng2 } = payload.coordinates;
       distance = CoordinateCal.haversineDistance(lat1, lng1, lat2, lng2);
-      console.log("call back distance", distance);
+      // console.log("call back distance", distance);
     }
     this.lastPayload = payload;
     const { speed } = payload.coordinates;
-    console.log("call back speed", speed);
+    // console.log("call back speed", speed);
     if (speed < 0) return;
     else if (speed < 1) {
       mode = "stationary";

@@ -7,14 +7,14 @@ import TokenService from "../storage/tokens/token_service";
 import NetworkObserver from "../../app-core/flow/sync/network_observer";
 class Auth {
   async authenticateToken(type) {
-    console.log("veriffy token");
+    // console.log("veriffy token");
     try {
       console.assert(
         type === "access_token" && type === "refresh_token",
         "Wrong token type",
       );
       const token = await TokenService.getToken(type);
-      console.log("token for auth ", token);
+      // console.log("token for auth ", token);
       console.assert(token == null, "token is null");
       const headers = {
         "Content-Type": "application/json",
@@ -53,7 +53,7 @@ class Auth {
         "Error calling requestNewAccessToken!",
       );
       const data = await respond.json();
-      console.log("new acess token", data);
+      // console.log("new acess token", data);
       console.assert(
         data != undefined,
         "Data at request new access token is undefined",
@@ -83,14 +83,6 @@ class Auth {
       });
       const data = await respond.json();
 
-      if (respond.status !== 200) {
-        return {
-          ok: true,
-          status: respond.status,
-          message: data.message,
-          data: null,
-        };
-      }
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -112,7 +104,7 @@ class Auth {
         body: JSON.stringify({ email, displayName, username, password }),
       });
       const data = await respond.json();
-      console.log(respond, data);
+      // console.log(respond, data);
 
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
@@ -138,15 +130,6 @@ class Auth {
         },
       );
       const data = await respond.json();
-
-      if (respond.status !== 200 && respond.status !== 202) {
-        return {
-          ok: false,
-          status: respond.status,
-          message: data.message,
-          data: null,
-        };
-      }
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -178,16 +161,7 @@ class Auth {
         }),
       });
       const data = await respond.json();
-      console.log(respond, data);
 
-      if (respond.status !== 200) {
-        return {
-          ok: false,
-          status: respond.status,
-          message: data.message,
-          data: null,
-        };
-      }
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -209,7 +183,7 @@ class Auth {
         body: JSON.stringify({ email, code }),
       });
       const data = await respond.json();
-      console.log(data);
+      // console.log(data);
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -279,7 +253,7 @@ class Auth {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ new_password, token, email }),
       });
-      console.log(respond);
+      // console.log(respond);
 
       if (respond.status !== 200)
         return { ok: false, status: respond.status, data: null };

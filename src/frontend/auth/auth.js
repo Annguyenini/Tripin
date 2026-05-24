@@ -15,9 +15,8 @@ import {
 } from "./components/forms.js";
 import { useAuthState } from "./use_auth_state.js";
 import { fr, PHOTO_H } from "../../styles/auth_style.js";
-
 export const AuthScreen = () => {
-  const { showLoading, hideLoading } = UseOverlay();
+  const { showLoading, hideLoading, showErrorBox, hideErrorBox } = UseOverlay();
   const {
     showLogin,
     showSignup,
@@ -106,7 +105,7 @@ export const AuthScreen = () => {
               <Text style={[fr.btnText, fr.btnTextOutline]}>Sign Up</Text>
             </TouchableOpacity>
           </View>
-          <GoogleAuth pending={completeForm} />
+          <GoogleAuth pending={completeForm} errorTrigger={showErrorBox} />
         </View>
       </View>
 

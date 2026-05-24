@@ -15,7 +15,7 @@ class Setting extends LocalStorage {
     if (!(await this.saveToLocal(STORAGE_KEYS.SETTINGS.TRACKING_MODE, mode))) {
       return false;
     }
-    console.log("tracking mode", mode);
+    // console.log("tracking mode", mode);
     this._tracking_mode = mode;
     return true;
   }

@@ -4,6 +4,8 @@ import TripContentsDatabase from "../../backend/storage/database/protected/trip_
 import TripContentsSync from "./sync/trip_content_sync";
 import CurrentDisplayContentsObserver from "../../frontend/trip-compoments/observers/current_display_contents_observer";
 import Album from "../../backend/storage/album/album";
+import TripLocalDataStorage from "../../backend/storage/base/trip_base";
+import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
 // in ms
 const BUCKET_TIME_INTERVAL = 5000;
 
@@ -42,7 +44,7 @@ class TripContentHandler {
       };
 
       await Promise.all(Array.from({ length: 3 }, uploader));
-      console.log(successed);
+      // console.log(successed);
       return successed;
     } catch (err) {
       throw new Error("Failed to process upload");
@@ -108,12 +110,12 @@ class TripContentHandler {
     }
   }
   async _requestTripContentSync(trip_id) {
-    console.log("requestsync ", trip_id);
+    // console.log("requestsync ", trip_id);
     if (this._pending) return;
     await TripContentsSync.syncTripContentsHandler(trip_id);
   }
   async _forceRequestTripContentSync(trip_id) {
-    console.log("requestsync ", trip_id);
+    // console.log("requestsync ", trip_id);
     if (this._pending) return false;
     await TripContentsSync.forceSyncTripContentHander(trip_id);
     return true;
@@ -158,12 +160,15 @@ class TripContentHandler {
   async getTripContents(trip_id) {
     try {
       if (!trip_id) return [];
-      const local_content =
-        await TripContentsDatabase.getAssestsFromTripIdJoinTripData(trip_id);
-      this._requestTripContentSync(trip_id);
-      if (local_content) {
-        return local_content;
+      if (trip_id === CurrentTripDataService.getCurrentTripId()) {
+        const local_content =
+          await TripContentsDatabase.getAssestsFromTripIdJoinTripData(trip_id);
+        this._requestTripContentSync(trip_id);
+        if (local_content) {
+          return local_content;
+        }
       }
+
       const respond = await TripContents.requestTripMedias(trip_id);
       if (!respond.ok || respond.status !== 200) return [];
 

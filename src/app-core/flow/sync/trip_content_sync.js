@@ -11,7 +11,6 @@ class TripContentsSync {
     this._pending = false;
   }
   async forceSyncTripContentHander(trip_id) {
-    console.log("force sync");
     if (this._pending) return;
     this._pending = true;
 
@@ -33,7 +32,6 @@ class TripContentsSync {
     if (this._pending) return;
     this._pending = true;
 
-    console.log("sync handler", trip_id);
     try {
       if (_onCallBack) {
         _onCallBack(true);
@@ -42,7 +40,6 @@ class TripContentsSync {
         await TripContentsDatabase.getTripContentsHash(trip_id);
       const respond = await TripContents.requestTripContentsHash(trip_id);
       const server_hash = respond?.data?.hash;
-      console.log("hash", local_hash, server_hash);
       if (local_hash === server_hash && local_hash && server_hash) return;
       await this._getAndProcessTripContentsMetadata(trip_id);
     } catch (err) {
@@ -125,7 +122,6 @@ class TripContentsSync {
         () => TripContents.requestTripContentsMetadata(trip_id),
         "failed_at_get_trip_media_metadata_from_server",
       );
-      console.log(response);
       if (!response.ok || response.status !== 200) return null;
       const server_metadata = response.data.content_cards;
 
@@ -154,7 +150,6 @@ class TripContentsSync {
             (local) => local.uuid === server.uuid,
           ),
       );
-      console.log("sync", upload_array, delete_array, download_array);
 
       if (upload_array.length >= 1 || delete_array.length >= 1) {
         await safeRun(

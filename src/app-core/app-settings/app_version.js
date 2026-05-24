@@ -67,9 +67,9 @@ export default function AppVersionValidation() {
           <Text style={styles.message}>
             Please update the app to get the latest features and fixes.
           </Text>
-          <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+          {/* <TouchableOpacity style={styles.button} onPress={handleUpdate}>
             <Text style={styles.buttonText}>Update Now</Text>
-          </TouchableOpacity>
+          </TouchableOpacity>*/}
         </View>
       </View>
     </Modal>

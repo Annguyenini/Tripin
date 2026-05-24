@@ -19,7 +19,7 @@ class LocationData {
 
     const location_key = `${coors?.coords?.latitude?.toFixed(4)},${coors?.coords?.longitude?.toFixed(4)}`;
     if (this.Location[location_key]) {
-      console.log("cache", this.Location[location_key]);
+      // console.log("cache", this.Location[location_key]);
       return { ...coors["coords"], ...this.Location[location_key] };
     }
     const city_object = await Location.reverseGeocodeAsync({
@@ -29,7 +29,7 @@ class LocationData {
       longitude: coors.coords.longitude,
     });
     this.Location[location_key] = city_object[0];
-    console.log({ ...coors["coords"], ...city_object[0] });
+    // console.log({ ...coors["coords"], ...city_object[0] });
     return { ...coors["coords"], ...city_object[0] };
   }
 }

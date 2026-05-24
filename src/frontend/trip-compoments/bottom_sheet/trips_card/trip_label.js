@@ -32,7 +32,7 @@ export const TripCard = ({ trip, navigateMain, removeTripLabel }) => {
   };
   const requestTripLink = async () => {
     const { url } = await TripHandler.requestSharedTripLink(trip.trip_id);
-    console.log(url);
+    // console.log(url);
     await Share.share({
       message: "Check out my trip!",
       url: url, // iOS only
@@ -41,7 +41,7 @@ export const TripCard = ({ trip, navigateMain, removeTripLabel }) => {
   const requestRemove = async (trip) => {
     showLoading();
     setDeleteVisible(false);
-    console.log(trip, CurrentTripDataService.getCurrentTripId());
+    // console.log(trip, CurrentTripDataService.getCurrentTripId());
     if (trip.trip_id === CurrentTripDataService.getCurrentTripId()) {
       hideLoading();
       showErrorBox(

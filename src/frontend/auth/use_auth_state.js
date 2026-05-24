@@ -95,11 +95,9 @@ export function useAuthState() {
       return;
     }
     setErrors([
-      res.status === 500
-        ? res.message
-        : res.status === 429
-          ? "Too many attempts — please try again shortly."
-          : "Server error. Please try again.",
+      res.status === 429
+        ? "Too many attempts — please try again shortly."
+        : res.data?.message,
     ]);
   };
 
@@ -122,7 +120,7 @@ export function useAuthState() {
     setErrors([
       res.status === 429
         ? "Too many attempts — please try again shortly."
-        : `${res.ok ? res.message : "Connection Lost"}`,
+        : `${res.ok ? res.data.message : "Connection Lost"}`,
     ]);
   };
 

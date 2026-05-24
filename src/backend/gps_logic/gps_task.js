@@ -33,7 +33,7 @@ TaskManager.defineTask(TASK_NAME, async ({ data, error }) => {
       coordinate_id: Crypto.randomUUID(),
     };
     //
-    console.log("location: ", location);
+    // console.log("location: ", location);
     if (_onLocationUpdate) {
       _onLocationUpdate(payload);
     } else {
@@ -73,7 +73,7 @@ class GPSTask {
     return this;
   }
   async StartTask() {
-    console.log("task start : ", this.GpsTaskOption);
+    // console.log("task start : ", this.GpsTaskOption);
     try {
       // Check if task is already running
       const hasStarted =
@@ -100,7 +100,7 @@ class GPSTask {
     }
   }
   async endTask() {
-    console.log("end task");
+    // console.log("end task");
     try {
       const hasStarted =
         await Location.hasStartedLocationUpdatesAsync(TASK_NAME);

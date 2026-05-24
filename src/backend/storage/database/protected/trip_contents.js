@@ -47,7 +47,7 @@ class TripContents extends BaseDatabase {
   async addCardIntoDB(content_cards) {
     // const trip_id = CurrentTripDataService.getCurrentTripId();
     const DB = await SqliteService.connectDB();
-    console.log("add", content_cards);
+    // console.log("add", content_cards);
     try {
       await DB.execAsync("BEGIN");
       for (const card of content_cards) {

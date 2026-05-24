@@ -145,11 +145,13 @@ export default function ProfileScreen({ onClose }) {
           onClose={() => setShowResetPassword(false)}
         ></ResetPassword>
       </Modal>
-      <Modal visible={avatarPickerVisible} animationType="slide">
-        <ProfileImagePicker
-          onClose={() => setAvatarPickerVisible(false)}
-        ></ProfileImagePicker>
-      </Modal>
+      {avatarPickerVisible && (
+        <View style={profileStyle.profilePickerOverlay}>
+          <ProfileImagePicker
+            onClose={() => setAvatarPickerVisible(false)}
+          ></ProfileImagePicker>
+        </View>
+      )}
     </ScrollView>
   );
 }

@@ -107,7 +107,7 @@ class Trip {
     return respond;
   }
   async requestTripDataChange(trip_id, trip_name, image_uri, modified_time) {
-    console.log(modified_time);
+    // console.log(modified_time);
     const data = new FormData();
     if (image_uri) {
       data.append("image", {
@@ -130,7 +130,7 @@ class Trip {
     const headers = {
       "Content-Type": "application/json",
     };
-    console.log("delete");
+    // console.log("delete");
     const respond = await fetchFunction(API.REMOVE_TRIP_DATA, {
       method: "DELETE",
       headers: headers,
