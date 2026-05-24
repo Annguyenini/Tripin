@@ -44,7 +44,7 @@ export default function App() {
   return (
     <OverLayProvider>
       <View style={{ flex: 2 }}>
-        {/* <AppVersionValidation></AppVersionValidation>*/}
+        <AppVersionValidation></AppVersionValidation>
         {/* <SafeAreaProvider> */}
         {/* <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
