@@ -9,6 +9,7 @@ export const OverLayProvider = ({ children }) => {
   const [type, setType] = useState(null);
   const [errorDataObject, setErrorDataObject] = useState({});
   const [steps, setSteps] = useState(null);
+  const [onDone, setOnDone] = useState(null);
   const allow_type = ["error", "loading", "syncing"];
   const showErrorBox = (title = null, message = null, duration = 3000) => {
     setErrorDataObject({
@@ -25,7 +26,8 @@ export const OverLayProvider = ({ children }) => {
     setType("error");
     setVisible(false);
   };
-  const showLoading = (steps = null) => {
+  const showLoading = (onDone = null, steps = null) => {
+    setOnDone(onDone);
     setSteps(steps);
     setType("loading");
     setVisible(true);
@@ -34,6 +36,7 @@ export const OverLayProvider = ({ children }) => {
     setType("loading");
     setVisible(false);
   };
+
   const showSyncing = () => {
     setType("syncing");
     setVisible(true);
@@ -55,7 +58,7 @@ export const OverLayProvider = ({ children }) => {
     >
       {children}
       {visible && type === "loading" && (
-        <LoadingScreen steps={steps}></LoadingScreen>
+        <LoadingScreen onDone={onDone} steps={steps}></LoadingScreen>
       )}
       {visible && type === "error" && (
         <ErrorMessageBox

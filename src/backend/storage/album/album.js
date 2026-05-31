@@ -60,7 +60,7 @@ class Album {
       );
       return result;
     } catch (err) {
-      console.error(err);
+      throw new Error("Failed to get all medias from database", err);
     }
   }
   async getAllMediasFromAlbum(media_type = null) {
@@ -80,29 +80,38 @@ class Album {
       }
       const assets = await MediaLibrary.getAssetsAsync(options);
       return assets.assets;
-    } catch (err) {}
+    } catch (err) {
+      throw new Error("Failed to get all medias from local album", err);
+    }
   }
   async mergeMediasFromAlbumAndDB(db_array, album_array) {
     // console.log("merge1 ", db_array);
     // console.log("merge2 ", album_array);
+    try {
+      let hash_map = {};
+      for (const object of album_array) {
+        // create media_id,
+        object.media_id = GENERATE_MEDIA_ID(object.mediaType, object.uri);
 
-    let hash_map = {};
-    for (const object of album_array) {
-      // create media_id,
-      object.media_id = GENERATE_MEDIA_ID(object.mediaType, object.uri);
+        hash_map[object.media_id] = object;
+      }
+      const merge = album_array.filter((album) => {
+        !db_array.find((db) => db.media_id == album.id);
+      });
+      const result = [...db_array, ...merge];
 
-      hash_map[object.media_id] = object;
+      return result;
+    } catch (err) {
+      throw new Error("failed merge data from database and album", err);
     }
-    const merge = album_array.filter((album) => {
-      !db_array.find((db) => db.media_id == album.id);
-    });
-    const result = [...db_array, ...merge];
-
-    return result;
   }
   async mergeAlbum() {
-    const assets = await this.getMergedMediasArray();
-    this.AlbumsArray = [...assets];
+    try {
+      const assets = await this.getMergedMediasArray();
+      this.AlbumsArray = [...assets];
+    } catch (err) {
+      throw new Error(err);
+    }
   }
   async getMergedMediasArray() {
     // console.log("init album");
@@ -120,8 +129,7 @@ class Album {
       // console.log("init album", result);
       return result;
     } catch (err) {
-      console.error(err);
-      return null;
+      throw new Error(err);
     }
   }
 }

@@ -10,7 +10,7 @@ import { TrackingModePicker } from "../tracking_modes/tracking_mode_picker.js";
 import { TRACKING_MODE } from "../../../../backend/tracking/tracking_mode.js";
 import Setting from "../../../../app-core/setting.js";
 import { UseOverlay } from "../../../overlay/overlay_main.js";
-import TripHandler from "../../../../app-core/flow/trip_handler.js";
+import TripActionsHandler from "../../../../app-core/flow/handlers/trip_actions/trip_action_handler.ts";
 
 export const NewTripFiller = ({ set_show_create_trip_filler }) => {
   const [tripName, setTripName] = useState(null);
@@ -41,7 +41,10 @@ export const NewTripFiller = ({ set_show_create_trip_filler }) => {
       set_show_create_trip_filler(false);
 
       CreateTripShowLoading();
-      res = await TripHandler.requestNewTripHandler(tripName, imageUri ?? null);
+      res = await TripActionsHandler.requestNewTripHandler(
+        tripName,
+        imageUri ?? null,
+      );
     } catch (err) {
       console.error(err);
     } finally {

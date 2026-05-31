@@ -31,7 +31,7 @@ import GPSLogic from "../backend/gps_logic/gps_logic.js";
 import { MapBoxLayout } from "./trip-compoments/map_box_layout.js";
 import { DATA_KEYS } from "../backend/storage/hot_data/keys/storage_keys.js";
 import Setting from "../app-core/setting.js";
-import AppFlow from "../app-core/flow/app_flow.js";
+import AppFlow from "../app-core/flow/app_flow.ts";
 import LoadingScreen from "./overlay/fetching_loading_screen.js";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system/legacy";

@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { View, TouchableOpacity, Text } from "react-native";
-import AppFlow from "../../app-core/flow/app_flow.js";
+import AppFlow from "../../app-core/flow/app_flow.ts";
 import { OverlayCard } from "../overlay/overlay_card.js";
 import { UseOverlay } from "../overlay/overlay_main.js";
 import GoogleAuth from "./provider_auth/google.js";
@@ -15,6 +15,7 @@ import {
 } from "./components/forms.js";
 import { useAuthState } from "./use_auth_state.js";
 import { fr, PHOTO_H } from "../../styles/auth_style.js";
+
 export const AuthScreen = () => {
   const { showLoading, hideLoading, showErrorBox, hideErrorBox } = UseOverlay();
   const {
@@ -49,12 +50,34 @@ export const AuthScreen = () => {
     handleVerification,
     handleProviderSignup,
   } = useAuthState();
+  const loadingRef = useRef();
 
+  const toogleLoading = () => {
+    const loadingSteps = [
+      "Checking you credential",
+      "Making sure you are not a robot",
+      "Nanana",
+    ];
+    const onDone = () => {
+      hideLoading();
+    };
+    if (loadingRef.current) {
+      hideLoading();
+      loadingRef.current = null;
+      return;
+    }
+    console.log("loading");
+
+    loadingRef.current = showLoading(onDone, loadingSteps);
+
+    return;
+  };
   useEffect(() => {
     (async () => {
-      showLoading();
-      await AppFlow.tokenAuthorization();
-      hideLoading();
+      toogleLoading();
+      await AppFlow.tokenHandler().then(() => {
+        toogleLoading();
+      });
     })();
   }, []);
 

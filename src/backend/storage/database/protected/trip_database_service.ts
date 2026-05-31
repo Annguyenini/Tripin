@@ -1,11 +1,6 @@
+import { Trip_Data } from "../../../../types/trip_data.types";
 import SqliteService from "../sqlite/sqlite";
 import UserDataService from "../user";
-
-const VERSION_TYPES = {
-  COORDINATE: "coordinate_version",
-  MEDIA: "media_version",
-  INFORMATION: "information_version",
-};
 
 class TripDataBaseService {
   // -------------------------
@@ -30,12 +25,11 @@ class TripDataBaseService {
                 )
             `);
     } catch (err) {
-      console.error("Failed to create trips database", err);
+      throw new Error("failed to init trip table", err);
     } finally {
       await DB.closeAsync();
     }
   }
-  async tripDatabaseMigration() {}
   // -------------------------
   // Helpers
   // -------------------------
@@ -44,17 +38,16 @@ class TripDataBaseService {
   // Read
   // -------------------------
 
-  async getAllTrip() {
+  async getAllTrip(): Promise<Array<Trip_Data> | null> {
     try {
       const DB = await SqliteService.connectDB();
       return await DB.getAllAsync(`SELECT * FROM trips`);
     } catch (err) {
-      console.error(err);
       return null;
     }
   }
 
-  async getAllUserTripDataFromDB(user_id) {
+  async getAllUserTripDataFromDB(user_id): Promise<Array<Trip_Data> | null> {
     try {
       const DB = await SqliteService.connectDB();
       return await DB.getAllAsync(
@@ -67,10 +60,10 @@ class TripDataBaseService {
     }
   }
 
-  async getCurrentTripData() {
+  async getCurrentTripData(): Promise<Trip_Data> {
     try {
       const DB = await SqliteService.connectDB();
-      const current_trip_data = await DB.getFirstAsync(
+      const current_trip_data: Trip_Data = await DB.getFirstAsync(
         `SELECT * FROM trips WHERE active = 1`,
       );
       return current_trip_data || null;
@@ -79,7 +72,7 @@ class TripDataBaseService {
     }
   }
 
-  async getTripDataFromTripId(trip_id) {
+  async getTripDataFromTripId(trip_id): Promise<Trip_Data> {
     try {
       const DB = await SqliteService.connectDB();
       return await DB.getFirstAsync(`SELECT * FROM trips WHERE trip_id = ?`, [
@@ -91,38 +84,11 @@ class TripDataBaseService {
     }
   }
 
-  async getVersion(version_type, trip_id) {
-    if (!trip_id) return null;
-    try {
-      const DB = await SqliteService.connectDB();
-      const version = await DB.getFirstAsync(
-        `SELECT ${version_type} FROM trips WHERE trip_id = ?`,
-        [trip_id],
-      );
-      return version?.[version_type] ?? null;
-    } catch (err) {
-      console.error(`Failed at the get version ${version_type}:`, err);
-      return null;
-    }
-  }
-
-  async getTripCoordinateVersion(trip_id) {
-    return this.getVersion(VERSION_TYPES.COORDINATE, trip_id);
-  }
-
-  async getTripMediaVersion(trip_id) {
-    return this.getVersion(VERSION_TYPES.MEDIA, trip_id);
-  }
-
-  async getTripInfomationVersion(trip_id) {
-    return this.getVersion(VERSION_TYPES.INFORMATION, trip_id);
-  }
-
   // -------------------------
   // Write
   // -------------------------
 
-  async addTripToDatabase(data_object) {
+  async addTripToDatabase(data_object: Trip_Data): Promise<boolean> {
     try {
       // console.log("trip", data_object);
       const DB = await SqliteService.connectDB();
@@ -166,33 +132,6 @@ class TripDataBaseService {
       console.error("Failed to update value in trip database:", err);
       return false;
     }
-  }
-
-  async updateTripCorrdinateVersion(trip_id, new_version) {
-    return this.updateValueInDatabase(
-      VERSION_TYPES.COORDINATE,
-      new_version,
-      "trip_id",
-      trip_id,
-    );
-  }
-
-  async updateTripMediaVersion(trip_id, new_version) {
-    return this.updateValueInDatabase(
-      VERSION_TYPES.MEDIA,
-      new_version,
-      "trip_id",
-      trip_id,
-    );
-  }
-
-  async updateTripInformationVersion(trip_id, new_version) {
-    return this.updateValueInDatabase(
-      VERSION_TYPES.INFORMATION,
-      new_version,
-      "trip_id",
-      trip_id,
-    );
   }
 }
 

@@ -13,7 +13,7 @@ import {
   takePicture,
 } from "../../../custom_components/image_picker";
 import { UseOverlay } from "../../../overlay/overlay_main";
-import TripHandler from "../../../../app-core/flow/trip_handler";
+import TripHandler from "../../../../app-core/flow/handlers/trip_handler";
 const TripCustomCard = ({ trip, onClose }) => {
   const [tripName, setTripName] = useState(trip.trip_name);
   const [tripImage, setTripImage] = useState(trip.image);

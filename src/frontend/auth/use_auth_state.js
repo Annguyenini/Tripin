@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AuthHandler from "../../app-core/flow/auth_handler.js";
-import AppFlow from "../../app-core/flow/app_flow.js";
+import AppFlow from "../../app-core/flow/app_flow.ts";
 import { UseOverlay } from "../overlay/overlay_main.js";
 import {
   validateLogin,

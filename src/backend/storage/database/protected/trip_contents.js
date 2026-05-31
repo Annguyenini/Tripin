@@ -38,7 +38,7 @@ class TripContents extends BaseDatabase {
         );
       `);
     } catch (err) {
-      console.error("faild to created album db", err);
+      throw new Error("fail to create trip contents table ", err);
     } finally {
       await DB.closeAsync();
     }

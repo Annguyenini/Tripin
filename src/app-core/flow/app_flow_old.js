@@ -1,6 +1,6 @@
 import { navigate } from "../../frontend/navigation/navigationService";
 import AuthHandler from "./auth_handler";
-import TripHandler from "./trip_handler";
+import TripHandler from "./handlers/trip_handler";
 import UserDataHandler from "./user_handler";
 import TripContentsHander from "./trip_contents_handler";
 import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";

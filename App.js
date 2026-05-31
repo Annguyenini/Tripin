@@ -59,7 +59,7 @@ export default function App() {
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator>
             <Stack.Screen
-              name="auth"
+              name="Auth"
               component={AuthLayout}
               options={{ headerShown: false }}
             />

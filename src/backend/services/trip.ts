@@ -1,14 +1,16 @@
 import TokenService from "../storage/tokens/token_service";
-import AuthService from "../services/auth";
+import AuthService from "./auth";
 import * as API from "../../config/config_api";
 import CurrentTripDataService from "../storage/hot_data/current_trip";
 import EtagService from "../storage/etag/etag_service";
 import { ETAG_KEY, GENERATE_TRIP_ETAG_KEY } from "../storage/etag/etag_keys";
 // mport NetworkObserver from '../../app-core/flow/sync/network_observer';
 import fetchFunction from "./fetch_function";
+import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
+
 class Trip {
   constructor() {}
-  async requestNewTrip(trip_name, created_time) {
+  async requestNewTrip(trip_name: string, created_time: number) {
     /**
      * request to create new trip
      * send via FORMDATA
@@ -18,14 +20,14 @@ class Trip {
 
     const respond = await fetchFunction(API.REQUEST_NEW_TRIP_API, {
       method: "POST",
-      body: json.stringify({
+      body: JSON.stringify({
         trip_name: trip_name,
         created_time: created_time,
       }),
     });
     return respond;
   }
-  async uploadTripCoverImage(presign_url, imageUri) {
+  async uploadTripCoverImage(presign_url: string, imageUri: string) {
     try {
       const resizedPhoto = await ImageManipulator.manipulateAsync(
         imageUri,
@@ -40,14 +42,27 @@ class Trip {
       const respond = await fetch(presign_url, {
         method: "PUT",
         body: blob,
-        headers: { "Content-Type": content_type },
+        headers: { "Content-Type": "image/jpeg" },
       });
       return respond;
     } catch (err) {
-      throw new Error("fail to upload trip cover image");
+      throw new Error("fail to upload trip cover image", err);
     }
   }
-
+  async verifyTripCoverImageUpload(pending_token: string) {
+    try {
+      const respond = await fetchFunction(API.VERIFY_TRIP_COVER_IMAGE_UPLOAD, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pending_token: pending_token,
+        }),
+      });
+      return respond;
+    } catch (error) {
+      throw new Error("fail to verify upload image", error);
+    }
+  }
   async end_trip(current_time) {
     try {
       const trip_id = CurrentTripDataService.getCurrentTripId();

@@ -1,9 +1,10 @@
 import { Alert } from "react-native";
 import { STORAGE_KEYS, DATA_KEYS } from "../hot_data/keys/storage_keys";
-import TripDatabaseService from "./protected/TripDatabaseService";
+import TripDatabaseService from "./protected/trip_database_service";
 import TripLocalDataStorage from "../base/trip_base";
 import UserDataService from "./user";
 import trip from "../../../app-core/state_control/trip_states";
+import { Trip_Data } from "../../../types/trip_data.types";
 class TripDataService extends TripLocalDataStorage {
   /**
      * trip data service, use to store trip_name...
@@ -14,8 +15,10 @@ class TripDataService extends TripLocalDataStorage {
      * }
      * @returns
      */
+  private trips_list: Array<Trip_Data>;
   constructor() {
     super();
+    this.trips_list = [];
     this.item = {
       [DATA_KEYS.TRIP.ALL_TRIP_LIST]: [],
       set(prop, value) {
@@ -26,11 +29,11 @@ class TripDataService extends TripLocalDataStorage {
       },
     };
   } /**
-   * function use to handle all trips from user
+   * function use to handle all trips from server
    * @param {*} trips_list
    * @returns
    */
-  async handleAllTripsList(trips_list, local = false) {
+  async handleAllTripsList(trips_list: Array<Trip_Data>): Promise<boolean> {
     let status = true;
     let MAXCONCURRENCY = 5;
     // save detail data for each trip
@@ -51,7 +54,7 @@ class TripDataService extends TripLocalDataStorage {
           let trip = trip_process_queue.shift();
           trip.image = await this.saveTripImageToLocal(
             trip.image,
-            `${trip.id}_cover.jpg`,
+            `${trip.trip_id}_cover.jpg`,
             "aws",
           );
           const image_update = await this.updateTripImage(trip.image, trip.id);
@@ -62,22 +65,17 @@ class TripDataService extends TripLocalDataStorage {
           this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, result);
         }
       };
-      if (!local) {
-        // console.log("begin worker");
-        await Promise.all(Array.from({ length: MAXCONCURRENCY }, worker));
-        // console.log("end worker");
-      }
-      this.item.set(DATA_KEYS.TRIP.ALL_TRIP_LIST, result);
+      await Promise.all(Array.from({ length: MAXCONCURRENCY }, worker));
+      this.trips_list = result;
       this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, result);
-
       return status;
     } catch (err) {
-      console.error("failed_at_handle_all_trip");
+      throw new Error("fail to handle all trips", err);
       return false;
     }
   }
 
-  async FilterAllTripsLocalNeed(server_trip_data) {
+  async FilterAllTripsLocalNeed(server_trip_data: Array<Trip_Data>) {
     const user_id = UserDataService.getUserId();
     const local_trip_data =
       await TripDatabaseService.getAllUserTripDataFromDB(user_id);
@@ -90,7 +88,7 @@ class TripDataService extends TripLocalDataStorage {
     return result;
   }
 
-  async getTripDataFromLocal(user_id, trip_id) {
+  async getTripDataFromLocal(user_id: any, trip_id: string) {
     const trip_data = await TripDatabaseService.getTripDataFromTripId(trip_id);
     if (trip_data.user_id !== user_id) return null;
     return trip_data;

@@ -1,5 +1,5 @@
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import TripHandler from "../../../app-core/flow/trip_handler.js";
+import TripHandler from "../../../app-core/flow/handlers/trip_handler.js";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import {
   TouchableOpacity,

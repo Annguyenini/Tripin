@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { OverlayCard } from "./frontend/overlay/overlay_card";
 import UserDataService from "./backend/storage/database/user";
 import CurrentTripDataService from "./backend/storage/hot_data/current_trip";
-import TripDatabaseService from "./backend/storage/database/protected/TripDatabaseService";
+import TripDatabaseService from "./backend/storage/database/protected/trip_database_service";
 import TripContentsDatabase from "./backend/storage/database/protected/trip_contents";
 import GPSLocgic from "./backend/gps_logic/gps_logic";
 import LocalStorage from "./backend/storage/base/localStorage";

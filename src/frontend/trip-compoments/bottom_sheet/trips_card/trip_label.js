@@ -13,7 +13,7 @@ import TripDisplayObserver from "../../observers/trip_display_observer";
 import CurrentTripDataService from "../../../../backend/storage/hot_data/current_trip";
 import TripCustomCard from "./trip_custom_card";
 import { useState } from "react";
-import TripHandler from "../../../../app-core/flow/trip_handler";
+import TripHandler from "../../../../app-core/flow/handlers/trip_handler";
 import { MaterialIcons } from "@expo/vector-icons";
 import { UseOverlay } from "../../../overlay/overlay_main";
 const default_image = require("../../../../../assets/icon.png");

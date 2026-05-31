@@ -77,7 +77,7 @@ export default function PermissionsFlowScreen({ navigation }) {
     requestPermission();
     if (step === STEPS.length) {
       PermissionStorage.setInitSettings("true");
-      app_flow.onPermissionReady();
+      app_flow.onPermissionSuccess();
     }
   }, [step]);
 
