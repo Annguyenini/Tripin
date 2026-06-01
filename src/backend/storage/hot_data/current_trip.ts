@@ -1,12 +1,11 @@
 import { DATA_KEYS } from "./keys/storage_keys";
 
 import TripLocalDataStorage from "../base/trip_base";
-import TripDatabaseService from "../database/protected/TripDatabaseService";
+import TripDatabaseService from "../database/protected/trip_database_service";
 import safeRun from "../../../app-core/helpers/safe_run";
-import { CurrentTripDataObject } from "../../../types/current_trip_data_types.types";
-
+import { Trip_Data } from "../../../types/trip_data.types";
 class CurrentTripDataService extends TripLocalDataStorage {
-  private item: CurrentTripDataObject;
+  private item: Trip_Data;
   constructor() {
     super();
     this.item = null;
@@ -35,12 +34,11 @@ class CurrentTripDataService extends TripLocalDataStorage {
     return this.item?.modified_time;
   }
   getCurrentTripContentsModifiedTime() {
-    return this.item?.contents_modified_time;
+    return this.item?.content_modified_time;
   }
   // ===================== LOAD / SAVE =====================
-  async saveCurrentTripDataToLocal(trip_data: CurrentTripDataObject) {
+  async saveCurrentTripDataToLocal(trip_data: Trip_Data) {
     try {
-      console.log(trip_data);
       this.item = trip_data;
       this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA, trip_data);
       return true;
@@ -85,69 +83,10 @@ class CurrentTripDataService extends TripLocalDataStorage {
     }
   }
 
-  async deleteTripImageCoverFromLocal() {
-    try {
-      const file_path = this.item?.image;
-      if (!file_path) return;
-      await this.deleteDataFromLocal(file_path);
-      await this.deleteImageFromLocal(file_path);
-    } catch (err) {
-      console.error("Failed at delete trip image", err);
-    }
-  }
-
   // ===================== END TRIP =====================
   async endCurrentTrip(current_time) {
-    try {
-      await this.deleteTripImageCoverFromLocal();
-      await safeRun(
-        () =>
-          TripDatabaseService.updateValueInDatabase(
-            "active",
-            false,
-            "trip_id",
-            this.getCurrentTripId(),
-          ),
-        "failed_at_set_trip_active",
-      );
-      await safeRun(
-        () =>
-          TripDatabaseService.updateValueInDatabase(
-            "ended_time",
-            current_time,
-            "trip_id",
-            this.getCurrentTripId(),
-          ),
-        "failed_at_set_ended_time",
-      );
-    } catch (err) {
-      console.error("Failed at reset current trip data", err);
-    }
     this.item = null;
     this.notify(DATA_KEYS.CURRENT_TRIP.CURRENT_TRIP_DATA, null);
-  }
-
-  // ===================== HELPERS =====================
-  getObjectReady(
-    user_id,
-    trip_id,
-    trip_name,
-    created_time,
-    image_path = null,
-    active,
-  ) {
-    return {
-      user_id,
-      trip_id,
-      trip_name,
-      created_time,
-      image: image_path,
-      active,
-    };
-  }
-
-  generateCurrentTripIdKey(user_id) {
-    return `user_${user_id}:current_trip_id`;
   }
 }
 

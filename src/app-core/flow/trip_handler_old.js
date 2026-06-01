@@ -1,7 +1,7 @@
 import Trip from "../../backend/services/trip";
 import TripDataService from "../../backend/storage/database/trips";
 import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
-import UserDataService from "../../backend/storage/database/user";
+import UserDataService from "../../backend/storage/async_storage/user";
 import EtagService from "../../backend/storage/etag/etag_service";
 import {
   ETAG_KEY,

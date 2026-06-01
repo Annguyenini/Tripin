@@ -1,5 +1,5 @@
 import SqliteService from "../database/sqlite/sqlite";
-import UserDataService from "../database/user";
+import UserDataService from "../async_storage/user";
 
 import * as MediaLibrary from "expo-media-library";
 import * as MediaPermission from "../../album/album_permission";

@@ -11,24 +11,21 @@ import {
   View,
   TouchableOpacity,
   Text,
-  Button,
-  TextInput,
-  Alert,
   StyleSheet,
   Dimensions,
   Modal,
 } from "react-native";
 import { mainScreenStyle, footer } from "../styles/main_screen_styles.js";
 import { navigate } from "./navigation/navigationService.js";
-import { UserDataBottomSheet } from "./trip-compoments/bottom_sheet/bottom_sheet.js";
-import UserDataService from "../backend/storage/database/user.js";
+import { UserDataBottomSheet } from "./trip-components/bottom_sheet/bottom_sheet.js";
+import UserDataService from "../backend/storage/async_storage/user.js";
 import { AppState } from "react-native";
 import {
   startForegroundGPSTracker,
   endForegroundGPSTracker,
 } from "../backend/gps_logic/foreground_gps_logic.js";
 import GPSLogic from "../backend/gps_logic/gps_logic.js";
-import { MapBoxLayout } from "./trip-compoments/map_box_layout.js";
+import { MapBoxLayout } from "./trip-components/map_box_layout.js";
 import { DATA_KEYS } from "../backend/storage/hot_data/keys/storage_keys.js";
 import Setting from "../app-core/setting.js";
 import AppFlow from "../app-core/flow/app_flow.ts";
@@ -37,10 +34,10 @@ import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system/legacy";
 import { BannerManager } from "./overlay/banner_manager.js";
 import { CameraApp } from "./camera/camera_main.js";
-import { TripsList } from "./trips_list.js";
+import { TripsList } from "./trips_list";
 import { SettingScreen } from "./setting/setting_screen.js";
-import CurrentTripDataService from "../backend/storage/hot_data/current_trip.js";
-import { NewTripFiller } from "./trip-compoments/components/helpers/add_new_trip.js";
+import CurrentTripDataService from "../backend/storage/hot_data/current_trip";
+import { NewTripFiller } from "./trip-components/components/helpers/add_new_trip.js";
 import AlbumScreen from "./albums/album.js";
 export const MainScreen = () => {
   // user profile state from local storage

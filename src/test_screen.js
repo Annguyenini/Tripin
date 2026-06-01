@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { OverlayCard } from "./frontend/overlay/overlay_card";
-import UserDataService from "./backend/storage/database/user";
+import UserDataService from "./backend/storage/async_storage/user";
 import CurrentTripDataService from "./backend/storage/hot_data/current_trip";
 import TripDatabaseService from "./backend/storage/database/protected/trip_database_service";
 import TripContentsDatabase from "./backend/storage/database/protected/trip_contents";
 import GPSLocgic from "./backend/gps_logic/gps_logic";
-import LocalStorage from "./backend/storage/base/localStorage";
+import LocalStorage from "./backend/storage/async_storage/localStorage";
 const localStorage = new LocalStorage();
 export const TestScreen = ({ testScreenHandler }) => {
   const gpsTask = useRef(null);
@@ -25,7 +25,11 @@ export const TestScreen = ({ testScreenHandler }) => {
     );
   };
   const onGetUserDb = async () => {
-    console.log(await TripDatabaseService.getAllTrip());
+    console.log(
+      await TripDatabaseService.getTripDataFromTripId(
+        UserDataService.getUserId(),
+      ),
+    );
   };
   const getKeys = async () => {
     console.log(await localStorage.getAllKeys());

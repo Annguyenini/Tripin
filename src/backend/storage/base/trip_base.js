@@ -20,9 +20,9 @@ class TripLocalDataStorage extends LocalStorage {
     return await this.saveToLocal(key, data);
   }
 
-  async getTripDataFromLocal(key) {
-    return await this.getDataFromLocal(key);
-  }
+  // async getTripDataFromLocal(key) {
+  //   return await this.getDataFromLocal(key);
+  // }
   async saveTripImageToLocal(imageUri, filename, source = "local") {
     try {
       if (source !== "local") {

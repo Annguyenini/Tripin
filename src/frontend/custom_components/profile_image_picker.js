@@ -3,7 +3,7 @@ import { OverlayCard } from "../overlay/overlay_card";
 import { profileImagePicker } from "../../styles/function/profile_image_picker_style";
 import { imagePicker, takePicture } from "./image_picker";
 import { useState } from "react";
-import UserDataService from "../../backend/storage/database/user";
+import UserDataService from "../../backend/storage/async_storage/user";
 import UserService from "../../backend/services/user";
 import UserHandler from "../../app-core/flow/user_handler";
 import { UseOverlay } from "../overlay/overlay_main";

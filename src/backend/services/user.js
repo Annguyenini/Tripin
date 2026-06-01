@@ -1,6 +1,6 @@
 import * as API from "../../config/config_api";
 // import UserData from '../../app-core/local_data/local_user_data'
-import UserDataService from "../storage/database/user";
+import UserDataService from "../storage/async_storage/user";
 import TokenService from "../storage/tokens/token_service";
 import AuthService from "./auth";
 import EtagService from "../storage/etag/etag_service";

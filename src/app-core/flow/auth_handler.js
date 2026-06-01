@@ -1,6 +1,6 @@
 import Auth from "../../backend/services/auth";
 import TokenService from "../../backend/storage/tokens/token_service";
-import UserDataService from "../../backend/storage/database/user";
+import UserDataService from "../../backend/storage/async_storage/user";
 import { ETAG_KEY } from "../../backend/storage/etag/etag_keys";
 import Etag_Service from "../../backend/storage/etag/etag_service";
 class AuthHandler {

@@ -1,7 +1,7 @@
 import * as API from "../../config/config_api";
 import UserService from "../../backend/services/user";
 import tokenService from "../../backend/storage/tokens/token_service";
-import UserDataService from "../../backend/storage/database/user";
+import UserDataService from "../../backend/storage/async_storage/user";
 import EtagService from "../../backend/storage/etag/etag_service";
 import { ETAG_KEY } from "../../backend/storage/etag/etag_keys";
 import safeRun from "../helpers/safe_run";

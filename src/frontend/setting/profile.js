@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { profileStyle, colors } from "../../styles/setting/profile";
-import UserDataService from "../../backend/storage/database/user";
+import UserDataService from "../../backend/storage/async_storage/user";
 // import { Image } from 'expo-image';
 import { ProfileImagePicker } from "../custom_components/profile_image_picker";
 import ResetPassword from "../auth/reset_password";

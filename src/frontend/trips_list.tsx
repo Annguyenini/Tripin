@@ -1,15 +1,14 @@
-import TripHandler from "../app-core/flow/handlers/trip_handler.js";
+import TripHandler from "../app-core/flow/handlers/trip_handler";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import { TouchableOpacity, Text, View, FlatList } from "react-native";
-import TripDataService from "../backend/storage/database/trips.js";
-import { DATA_KEYS } from "../backend/storage/hot_data/keys/storage_keys.js";
-import { TripCard } from "./trip-compoments/bottom_sheet/trips_card/trip_label.js";
-import { tripCardsStyle } from "../styles/function/tripcards.js";
-import AppFlow from "../app-core/flow/app_flow.js";
-import { UseOverlay } from "./overlay/overlay_main.js";
+import TripDataService from "../backend/storage/database/trips";
+import { DATA_KEYS } from "../backend/storage/hot_data/keys/storage_keys";
+import { TripCard } from "./trip-components/bottom_sheet/trips_card/trip_label";
+import { tripCardsStyle } from "../styles/function/tripcards";
+import { UseOverlay } from "./overlay/overlay_main";
 import { TripListStyle } from "../styles/trip-components/trips_list";
-import { TripSkeleton } from "./custom_components/skeleton.js";
-import { Trip_Data } from "../types/trip_data.types.js";
+import { TripSkeleton } from "./custom_components/skeleton";
+import { Trip_Data } from "../types/trip_data.types";
 export const TripsList = ({ onClose }) => {
   const [trips, setTrips] = useState(null);
   const [initialLoad, setInitialLoad] = useState(false);

@@ -2,7 +2,7 @@ import TripContents from "../../backend/services/trip_contents";
 import safeRun from "../helpers/safe_run";
 import TripContentsDatabase from "../../backend/storage/database/protected/trip_contents";
 import TripContentsSync from "./sync/trip_content_sync";
-import CurrentDisplayContentsObserver from "../../frontend/trip-compoments/observers/current_display_contents_observer";
+import CurrentDisplayContentsObserver from "../../frontend/trip-components/observers/current_display_contents_observer";
 import Album from "../../backend/storage/album/album";
 import TripLocalDataStorage from "../../backend/storage/base/trip_base";
 import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";

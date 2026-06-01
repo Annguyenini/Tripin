@@ -9,7 +9,7 @@ import TripHandler from "./handlers/trip_handler";
 import UserDataHandler from "./user_handler";
 import TripContentsHander from "./trip_contents_handler";
 import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
-import TripDatabaseService from "../../backend/storage/database/protected/TripDatabaseService";
+import TripDatabaseService from "../../backend/storage/database/protected/trip_database_service";
 import TripContentsDatabase from "../../backend/storage/database/protected/trip_contents";
 import LocalStorage from "../../backend/storage/base/localStorage";
 import safeRun from "../helpers/safe_run";

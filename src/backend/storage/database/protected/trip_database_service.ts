@@ -1,6 +1,5 @@
 import { Trip_Data } from "../../../../types/trip_data.types";
 import SqliteService from "../sqlite/sqlite";
-import UserDataService from "../user";
 
 class TripDataBaseService {
   // -------------------------
@@ -38,16 +37,9 @@ class TripDataBaseService {
   // Read
   // -------------------------
 
-  async getAllTrip(): Promise<Array<Trip_Data> | null> {
-    try {
-      const DB = await SqliteService.connectDB();
-      return await DB.getAllAsync(`SELECT * FROM trips`);
-    } catch (err) {
-      return null;
-    }
-  }
-
-  async getAllUserTripDataFromDB(user_id): Promise<Array<Trip_Data> | null> {
+  async getAllUserTripDataFromDB(
+    user_id: number,
+  ): Promise<Array<Trip_Data> | null> {
     try {
       const DB = await SqliteService.connectDB();
       return await DB.getAllAsync(
@@ -72,7 +64,7 @@ class TripDataBaseService {
     }
   }
 
-  async getTripDataFromTripId(trip_id): Promise<Trip_Data> {
+  async getTripDataFromTripId(trip_id: number): Promise<Trip_Data> {
     try {
       const DB = await SqliteService.connectDB();
       return await DB.getFirstAsync(`SELECT * FROM trips WHERE trip_id = ?`, [

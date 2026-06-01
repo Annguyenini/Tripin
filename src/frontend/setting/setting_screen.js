@@ -12,11 +12,11 @@ import {
 import AuthService from "../../backend/services/auth.js";
 import { navigate, navigateToAuth } from "../navigation/navigationService.js";
 import { settingStyle } from "../../styles/setting_style.js";
-import CurrentTripDataService from "../../backend/storage/hot_data/current_trip.js";
-import UserDataService from "../../backend/storage/database/user.js";
+import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
+import UserDataService from "../../backend/storage/async_storage/user.js";
 import TripService from "../../backend/gps_logic/gps_logic.js";
 import TokenService from "../../backend/storage/tokens/token_service.js";
-import LocalStorage from "../../backend/storage/base/localStorage.js";
+import LocalStorage from "../../backend/storage/async_storage/localStorage.js";
 import safeRun from "../../app-core/helpers/safe_run.js";
 import ProfileScreen from "./profile.js";
 import GPSSetting from "./gps.js";
