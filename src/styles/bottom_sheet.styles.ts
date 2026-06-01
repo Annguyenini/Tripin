@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const BottomSheet = StyleSheet.create({
+export const BottomSheetSyle = StyleSheet.create({
   sheetBg: { backgroundColor: "rgba(255, 252, 245, 0.95)" },
   sheetHandle: { backgroundColor: "#3a3830", width: 40 },
   container: { paddingHorizontal: 16, paddingBottom: 40 },
@@ -192,3 +192,4 @@ export const BottomSheet = StyleSheet.create({
     color: "#3a3830",
     letterSpacing: 2,
   },
+});

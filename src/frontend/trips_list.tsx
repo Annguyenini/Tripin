@@ -25,12 +25,16 @@ export const TripsList = ({ onClose }) => {
 
   const TripLoading = () => {
     if (loadingRef.current) return;
-    loadingRef.current = showLoading(HideTripLoading(), loadingSteps);
+    loadingRef.current = true;
+    showLoading(() => HideTripLoading, loadingSteps);
   };
   const HideTripLoading = () => {
+    console.log("end", loadingRef.current);
     if (!loadingRef.current) return;
+    console.log("end");
+
     hideLoading();
-    loadingRef.current = null;
+    loadingRef.current = false;
   };
 
   //----------------------initial load and update handler--------------
@@ -39,13 +43,14 @@ export const TripsList = ({ onClose }) => {
   };
   // initial loading
   useEffect(() => {
-    async () => {
+    const initLoad = async () => {
       TripLoading();
       await requestTripsData().then(() => {
         HideTripLoading();
       });
     };
-  });
+    initLoad();
+  }, []);
   // ── observers (update new data ) ──
   useEffect(() => {
     const onTripsUpdate = {

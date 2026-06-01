@@ -1,4 +1,4 @@
-import LocalStorage from "../../../backend/storage/base/localStorage";
+import LocalStorage from "../../../backend/storage/async_storage/localStorage";
 class CurrentDisplayContentsObserver extends LocalStorage {
   // watcher class for map box render logic
   constructor() {

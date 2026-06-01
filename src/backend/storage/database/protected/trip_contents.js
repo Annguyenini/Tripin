@@ -39,8 +39,6 @@ class TripContents extends BaseDatabase {
       `);
     } catch (err) {
       throw new Error("fail to create trip contents table ", err);
-    } finally {
-      await DB.closeAsync();
     }
   }
 

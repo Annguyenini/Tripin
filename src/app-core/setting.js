@@ -1,4 +1,4 @@
-import LocalStorage from "../backend/storage/base/localStorage";
+import LocalStorage from "../backend/storage/async_storage/localStorage";
 import { TRACKING_MODE } from "../backend/tracking/tracking_mode";
 import { STORAGE_KEYS } from "../backend/storage/hot_data/keys/storage_keys";
 import safeRun from "./helpers/safe_run";

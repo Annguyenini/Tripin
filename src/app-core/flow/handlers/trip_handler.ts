@@ -86,6 +86,7 @@ class TripHandler {
         () => CurrentTripDataService.loadCurrentTripDataFromLocal(),
         "load_local_trip_failed",
       );
+      return true;
     }
 
     const data = respond.data;

@@ -9,17 +9,16 @@ import {
   PanResponder,
   Modal,
 } from "react-native";
-import AuthService from "../../backend/services/auth.js";
-import { navigate, navigateToAuth } from "../navigation/navigationService.js";
-import { settingStyle } from "../../styles/setting_style.js";
+import { navigate, navigateToAuth } from "../navigation/navigationService";
+import { settingStyle } from "../../styles/setting_style";
 import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
-import UserDataService from "../../backend/storage/async_storage/user.js";
-import TripService from "../../backend/gps_logic/gps_logic.js";
-import TokenService from "../../backend/storage/tokens/token_service.js";
-import LocalStorage from "../../backend/storage/async_storage/localStorage.js";
-import safeRun from "../../app-core/helpers/safe_run.js";
-import ProfileScreen from "./profile.js";
-import GPSSetting from "./gps.js";
+import UserDataService from "../../backend/storage/async_storage/user";
+import TripService from "../../backend/gps_logic/gps_logic";
+import TokenService from "../../backend/storage/tokens/token_service";
+import LocalStorage from "../../backend/storage/async_storage/localStorage";
+import safeRun from "../../app-core/helpers/safe_run";
+import ProfileScreen from "./profile";
+import GPSSetting from "./gps";
 const Localstorage = new LocalStorage();
 export const SettingScreen = ({ onclose }) => {
   const [profileVisible, setProfileVisible] = useState(false);

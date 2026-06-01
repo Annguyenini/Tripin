@@ -26,12 +26,12 @@ class UserDataHandler {
       let userdata = data.user_data;
       // console.log(userdata);
       if (userdata.avatar) {
-        userdata.avatar = await UserDataService.setProfileImageUriToLocal(
+        userdata.avatar = await UserDataService.saveProfileImageUriToLocal(
           userdata.avatar,
           "aws",
         );
       }
-      await UserDataService.setUserDataToLocal(userdata);
+      await UserDataService.saveUserDataToLocal(userdata);
 
       const etag = data.etag;
       if (etag) {
@@ -76,7 +76,7 @@ class UserDataHandler {
       }
 
       await safeRun(
-        () => UserDataService.setProfileImageUriToLocal(uri),
+        () => UserDataService.saveProfileImageUriToLocal(uri),
         "failed to save new avatar to local",
       );
 

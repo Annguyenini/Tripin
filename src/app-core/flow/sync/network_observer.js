@@ -1,4 +1,4 @@
-import LocalStorage from "../../../backend/storage/base/localStorage";
+import LocalStorage from "../../../backend/storage/async_storage/localStorage";
 
 import * as API from "../../../config/config_api";
 let _onNetworkUpdate = null;

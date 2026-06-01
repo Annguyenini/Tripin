@@ -15,30 +15,30 @@ import {
   Dimensions,
   Modal,
 } from "react-native";
-import { mainScreenStyle, footer } from "../styles/main_screen_styles.js";
-import { navigate } from "./navigation/navigationService.js";
-import { UserDataBottomSheet } from "./trip-components/bottom_sheet/bottom_sheet.js";
-import UserDataService from "../backend/storage/async_storage/user.js";
+import { mainScreenStyle, footer } from "../styles/main_screen_styles";
+import { navigate } from "./navigation/navigationService";
+import { UserDataBottomSheet } from "./trip-components/bottom_sheet/bottom_sheet";
+import UserDataService from "../backend/storage/async_storage/user";
 import { AppState } from "react-native";
 import {
   startForegroundGPSTracker,
   endForegroundGPSTracker,
-} from "../backend/gps_logic/foreground_gps_logic.js";
-import GPSLogic from "../backend/gps_logic/gps_logic.js";
-import { MapBoxLayout } from "./trip-components/map_box_layout.js";
-import { DATA_KEYS } from "../backend/storage/hot_data/keys/storage_keys.js";
-import Setting from "../app-core/setting.js";
+} from "../backend/gps_logic/foreground_gps_logic";
+import GPSLogic from "../backend/gps_logic/gps_logic";
+import { MapBoxLayout } from "./trip-components/map_box_layout";
+import { DATA_KEYS } from "../backend/storage/hot_data/keys/storage_keys";
+import Setting from "../app-core/setting";
 import AppFlow from "../app-core/flow/app_flow.ts";
-import LoadingScreen from "./overlay/fetching_loading_screen.js";
+import LoadingScreen from "./overlay/fetching_loading_screen";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system/legacy";
-import { BannerManager } from "./overlay/banner_manager.js";
-import { CameraApp } from "./camera/camera_main.js";
+import { BannerManager } from "./overlay/banner_manager";
+import { CameraApp } from "./camera/camera_main";
 import { TripsList } from "./trips_list";
-import { SettingScreen } from "./setting/setting_screen.js";
+import { SettingScreen } from "./setting/setting_screen";
 import CurrentTripDataService from "../backend/storage/hot_data/current_trip";
-import { NewTripFiller } from "./trip-components/components/helpers/add_new_trip.js";
-import AlbumScreen from "./albums/album.js";
+import { NewTripFiller } from "./trip-components/components/helpers/add_new_trip";
+import AlbumScreen from "./albums/album";
 export const MainScreen = () => {
   // user profile state from local storage
   const [user_id, setUserId] = useState(UserDataService.getUserId());

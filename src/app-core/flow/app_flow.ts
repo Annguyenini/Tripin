@@ -11,7 +11,7 @@ import TripContentsHander from "./trip_contents_handler";
 import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
 import TripDatabaseService from "../../backend/storage/database/protected/trip_database_service";
 import TripContentsDatabase from "../../backend/storage/database/protected/trip_contents";
-import LocalStorage from "../../backend/storage/base/localStorage";
+import LocalStorage from "../../backend/storage/async_storage/localStorage";
 import safeRun from "../helpers/safe_run";
 import { _registerNetworkCallback } from "./sync/network_observer";
 import migration from "../../backend/storage/database/migrations/migration";
@@ -166,16 +166,10 @@ class AppFlow {
 
   async onAppReady(): Promise<boolean> {
     try {
-      await safeRun(
-        () => TripHandler.requestCurrentTripHandler(),
-        "failed to handler trip data",
-      );
-      await safeRun(
-        () => this.syncCurrentTripContents(),
-        "failed_at_sync_trip_media",
-      );
+      await TripHandler.requestCurrentTripHandler();
+      await this.syncCurrentTripContents();
     } catch (err) {
-      console.error("Failed to get current trip data");
+      console.error(`Failed to get current trip data: ${err}`);
     }
     return true;
   }

@@ -1,4 +1,4 @@
-import LocalStorage from "./localStorage";
+import LocalStorage from "../async_storage/localStorage";
 
 class TripLocalDataStorage extends LocalStorage {
   constructor() {

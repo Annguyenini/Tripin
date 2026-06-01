@@ -10,7 +10,7 @@ import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 
 class Trip {
   constructor() {}
-  async requestNewTrip(trip_name: string, created_time: number) {
+  async requestNewTrip(trip_name: string, created_time: number, image: string) {
     /**
      * request to create new trip
      * send via FORMDATA
@@ -20,9 +20,11 @@ class Trip {
 
     const respond = await fetchFunction(API.REQUEST_NEW_TRIP_API, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         trip_name: trip_name,
         created_time: created_time,
+        image: image,
       }),
     });
     return respond;

@@ -52,7 +52,7 @@ export const NewTripFiller = ({ set_show_create_trip_filler }) => {
     }
     if (!res) {
       showErrorBox("Error Creating Trip", "failed", 6000);
-    } else if (res.status !== 200) {
+    } else if (!(res.status === 200 || res.status === 201)) {
       showErrorBox("Error Creating Trip", res.data.message, 6000);
     }
   };

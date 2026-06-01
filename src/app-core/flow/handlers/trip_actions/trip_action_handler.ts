@@ -47,10 +47,11 @@ class TripActionHandler {
       const respond: newTripRespond = await Trip.requestNewTrip(
         trip_name,
         created_time,
+        imageUri,
       );
       const data: newTripData = respond.data;
 
-      if (respond.status !== 200)
+      if (!(respond.status === 200 || respond.status === 201))
         return {
           code: data.code,
           message: data.message,

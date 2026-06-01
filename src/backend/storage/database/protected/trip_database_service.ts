@@ -24,9 +24,7 @@ class TripDataBaseService {
                 )
             `);
     } catch (err) {
-      throw new Error("failed to init trip table", err);
-    } finally {
-      await DB.closeAsync();
+      throw new Error(`failed to init trip table : ${err}`);
     }
   }
   // -------------------------

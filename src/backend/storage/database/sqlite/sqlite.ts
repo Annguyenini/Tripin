@@ -5,7 +5,7 @@ class SqliteService {
   async connectDB() {
     if (!this.DB) {
       this.DB = await SQLite.openDatabaseAsync(SQLITEDBNAME);
-      this.DB.execAsync("PRAGMA journal_mode = WAL;");
+      await this.DB.execAsync("PRAGMA journal_mode = WAL;");
     }
     return this.DB;
   }

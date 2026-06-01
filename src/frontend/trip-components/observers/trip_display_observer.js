@@ -1,4 +1,4 @@
-import LocalStorage from "../../../backend/storage/base/localStorage";
+import LocalStorage from "../../../backend/storage/async_storage/localStorage";
 import CurrentTripDataService from "../../../backend/storage/hot_data/current_trip";
 import { DATA_KEYS } from "../../../backend/storage/hot_data/keys/storage_keys";
 /**
