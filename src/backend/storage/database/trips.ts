@@ -24,6 +24,8 @@ class TripDataService extends TripLocalDataStorage {
    * @param {*} trips_list
    * @returns
    */
+
+  // deprecate
   async handleAllTripsList(trips_list: Array<Trip_Data>): Promise<boolean> {
     let status = true;
     let MAXCONCURRENCY = 5;
@@ -31,8 +33,7 @@ class TripDataService extends TripLocalDataStorage {
     // we use batch so we can update to ui by 10
     try {
       // guard
-
-      trips_list = trips_list.filter((trip) => trip.event !== "remove");
+      trips_list.filter((trip) => trip.event !== "remove");
       // delivered data without image first
       this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, trips_list);
       // add into database if needed
@@ -74,6 +75,10 @@ class TripDataService extends TripLocalDataStorage {
     }
   }
 
+  setTripsList(trips_list: Array<Trip_Data>) {
+    this.trips_list = trips_list;
+    this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, trips_list);
+  }
   async FilterAllTripsLocalNeed(server_trip_data: Array<Trip_Data>) {
     const user_id = UserDataService.getUserId();
     const local_trip_data =

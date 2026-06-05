@@ -43,16 +43,13 @@ class TripContents extends BaseDatabase {
   }
 
   async addCardIntoDB(content_cards) {
-    // const trip_id = CurrentTripDataService.getCurrentTripId();
     const DB = await SqliteService.connectDB();
-    // console.log("add", content_cards);
     try {
-      await DB.execAsync("BEGIN");
       for (const card of content_cards) {
         await DB.runAsync(
           `INSERT OR IGNORE INTO content_cards
             (trip_id, media_type, media_path, time_stamp, modified_time,
-             media_id, uuid, event, altitude,latitude, longitude,speed,heading,
+             media_id, uuid, event, altitude, latitude, longitude, speed, heading,
              city, region, country, iso_country_code)
            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
           [
@@ -76,12 +73,9 @@ class TripContents extends BaseDatabase {
           ],
         );
       }
-      await DB.execAsync(`COMMIT`);
-      return;
     } catch (err) {
       console.error(err);
-      await DB.execAsync(`ROLLBACK`);
-      throw new Error("Failed to insert to db", err.message);
+      throw new Error("Failed to insert to db: " + err.message);
     }
   }
   async deleteCardFromDB(content_card) {

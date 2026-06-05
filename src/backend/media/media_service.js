@@ -1,5 +1,5 @@
 import TripContentsDatabase from "../storage/database/protected/trip_contents";
-import TripContentHandler from "../../app-core/flow/trip_contents_handler";
+import TripContentHandler from "../../app-core/flow/handlers/trip_contents/trip_contents_handler";
 import CurrentTripDataService from "../storage/hot_data/current_trip";
 import LocationData from "../../app-core/local_data/local_location_data";
 import safeRun from "../../app-core/helpers/safe_run";

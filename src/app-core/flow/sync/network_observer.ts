@@ -1,22 +1,24 @@
 import LocalStorage from "../../../backend/storage/async_storage/localStorage";
 
 import * as API from "../../../config/config_api";
-let _onNetworkUpdate = null;
+let _onNetworkUpdate = [];
 export const _registerNetworkCallback = (callback) => {
-  _onNetworkUpdate = callback;
+  _onNetworkUpdate.push(callback);
 };
 class NetworkObserver extends LocalStorage {
+  private isReachable: boolean = false;
   constructor() {
     super();
-    this.EVENTS = {
-      IS_SERVER_REACHABLE: "is_server_reachable",
-    };
-    this.isReachable = null;
+
+    this.isReachable = false;
   }
   setServerStatus(state) {
+    console.log("set", state);
     this.isReachable = state;
-    if (_onNetworkUpdate) {
-      _onNetworkUpdate(state);
+    if (_onNetworkUpdate.length >= 1) {
+      _onNetworkUpdate.forEach((callback) => {
+        callback(state);
+      });
     }
   }
   async callServer() {

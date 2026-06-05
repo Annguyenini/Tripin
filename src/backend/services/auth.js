@@ -82,7 +82,7 @@ class Auth {
         }),
       });
       const data = await respond.json();
-
+      NetworkObserver.setServerStatus(true);
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -105,7 +105,7 @@ class Auth {
       });
       const data = await respond.json();
       // console.log(respond, data);
-
+      NetworkObserver.setServerStatus(true);
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -130,6 +130,7 @@ class Auth {
         },
       );
       const data = await respond.json();
+
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);

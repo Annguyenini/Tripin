@@ -2,20 +2,16 @@ import Trip from "../../../../backend/services/trip";
 import TripDataService from "../../../../backend/storage/database/trips";
 import CurrentTripDataService from "../../../../backend/storage/hot_data/current_trip";
 import UserDataService from "../../../../backend/storage/async_storage/user";
-import EtagService from "../../../../backend/storage/etag/etag_service";
-import {
-  ETAG_KEY,
-  GENERATE_TRIP_ETAG_KEY,
-} from "../../../../backend/storage/etag/etag_keys";
 import GPSLogic from "../../../../backend/gps_logic/gps_logic";
 import safeRun from "../../../helpers/safe_run";
 import trips from "../../../../backend/storage/database/trips";
-import TripContentsHandler from "../../trip_contents_handler";
-import { CurrentTripDataObject } from "../../../../types/current_trip_data_types.types";
+import TripContentsHandler from "../trip_contents/trip_contents_handler";
 import { CreateNewTripHandler } from "../../../../types/trip_actions_handler.types";
+import { Trip_Data } from "../../../../types/trip_data.types";
 interface newTripData {
   trip_id: string;
   presign_url: string | undefined;
+  pending_token: string | undefined;
   code: string;
   message?: string;
 }
@@ -60,7 +56,7 @@ class TripActionHandler {
       // if success fully send to server, process to store in the local
 
       // data from server
-      const trip_id: string = data.trip_id;
+      const trip_id = Number(data.trip_id);
 
       const user_id = UserDataService.getUserId();
       // generate image path and save     to local
@@ -79,37 +75,39 @@ class TripActionHandler {
           throw new Error("fail to upload image to cloud ");
         // save image to database
 
-        trip_image_uri =
-          await CurrentTripDataService.setCurrentTripImageCoverToLocal(
-            imageUri,
-            trip_id,
-          );
+        //---------------------Phase 3--------------------------
+        //if verify fail return fail and only save data without image
+        const pending_token = data?.pending_token;
+        const verify_upload = await Trip.verifyTripCoverImageUpload(
+          pending_token,
+          created_time,
+        );
+        if (verify_upload.status === 200) {
+          trip_image_uri =
+            await CurrentTripDataService.setCurrentTripImageCoverToLocal(
+              imageUri,
+              trip_id,
+            );
+        } else {
+          console.warn("fail to verify image with server");
+        }
       }
-
-      // tripdata object
-      const local_trip_data: CurrentTripDataObject = {
+      // ----------------------save data to local--------------------
+      const local_trip_data: Trip_Data = {
         user_id: user_id,
         trip_id: trip_id,
         trip_name: trip_name,
         image: trip_image_uri,
         created_time: created_time,
         active: true,
-        modified_time: created_time,
-        contents_modified_time: created_time,
+        event: "add",
       };
       // console.log(trip_data);
       // save tripdata to local
       // hot data
-      await safeRun(
-        () =>
-          CurrentTripDataService.saveCurrentTripDataToLocal(local_trip_data),
-        "current_trip_save_failed",
-      );
+      await CurrentTripDataService.saveCurrentTripDataToLocal(local_trip_data);
       // database
-      await safeRun(
-        () => TripDataService.saveTripDataToLocal(local_trip_data),
-        "failed_at_save_to_database",
-      );
+      await TripDataService.saveTripDataToLocal(local_trip_data);
 
       return {
         code: data.code,
@@ -135,58 +133,96 @@ class TripActionHandler {
    */
 
   async modifyTripDataHandler(trip_id, trip_name = null, image_uri = null) {
-    const modified_time = Date.now();
+    // ------------------------- Phase 1: update trip name -------------------------
+    let respond = null;
+    const phase1_modified_time = Date.now();
     try {
-      const respond = await Trip.requestTripDataChange(
+      respond = await Trip.requestTripDataChange(
         trip_id,
         trip_name,
         image_uri,
-        modified_time,
+        phase1_modified_time,
       );
-
-      if (respond.status !== 200) {
+      if (!(respond.status === 201 || respond.status === 200)) {
         console.error("failed to save change in server", respond);
-        return { status: false, message: respond.message };
+        return { success: false, message: respond.data?.message };
       }
-      // modify trip_name and image
-
-      // save to
-      let old_trip_data = CurrentTripDataService.getCurrentTripData();
-
       if (trip_name) {
-        await safeRun(
-          () => TripDataService.updateTripName(trip_name, trip_id),
-          "failed_to_save_to_local_storage",
-        );
-        if (trip_id === CurrentTripDataService.getCurrentTripId()) {
-          old_trip_data["trip_name"] = trip_name;
+        if (!(await TripDataService.updateTripName(trip_name, trip_id))) {
+          return { success: false, message: "fail to update trip name" };
         }
+        await TripDataService.updateTripDataModifiedTime(
+          phase1_modified_time,
+          trip_id,
+        );
       }
-      if (image_uri) {
-        const trip_image_uri = await safeRun(
-          () =>
-            CurrentTripDataService.setCurrentTripImageCoverToLocal(
-              image_uri,
-              trip_id,
-            ),
-          "trip_image_save_failed",
+    } catch (err) {
+      return { success: false, message: `phase 1 failed: ${err}` };
+    }
+
+    // -------------------- Phase 2 & 3: upload and verify image -------------------
+    if (image_uri) {
+      const phase2_modified_time = Date.now();
+      try {
+        const presign_url = respond.data?.presign_url;
+        const pending_token = respond.data?.pending_token;
+
+        const upload_image = await Trip.uploadTripCoverImage(
+          presign_url,
+          image_uri,
         );
-        await safeRun(
-          () => TripDataService.updateTripImage(trip_image_uri, trip_id),
-          "failed_at_save_new_image_to_local",
+        console.log(upload_image);
+
+        if (upload_image?.status !== 200)
+          return { success: false, message: "fail to upload trip image" };
+
+        const verify_update = await Trip.verifyTripCoverImageUpload(
+          pending_token,
+          phase2_modified_time,
         );
+        console.log(verify_update);
+        if (verify_update.status !== 200)
+          return { success: false, message: "fail to verify trip image" };
+
+        const filename = `${trip_id}_cover.jpg`;
+        const trip_image_uri = await TripDataService.saveImageToLocal(
+          image_uri,
+          filename,
+        );
+        if (!trip_image_uri)
+          return { success: false, message: "fail to generate trip image uri" };
+
+        if (!(await TripDataService.updateTripImage(trip_image_uri, trip_id)))
+          return {
+            success: false,
+            message: "fail to update trip image in database",
+          };
+
+        await TripDataService.updateTripDataModifiedTime(
+          phase2_modified_time,
+          trip_id,
+        );
+
+        // update hot data if this is the current trip
         if (trip_id === CurrentTripDataService.getCurrentTripId()) {
+          const old_trip_data = CurrentTripDataService.getCurrentTripData();
           old_trip_data["image"] = trip_image_uri;
+          if (trip_name) old_trip_data["trip_name"] = trip_name;
+          CurrentTripDataService.saveCurrentTripDataToLocal(old_trip_data);
         }
+      } catch (err) {
+        return { success: false, message: `phase 2/3 failed: ${err}` };
       }
-      if (trip_id === CurrentTripDataService.getCurrentTripId()) {
+    } else {
+      // update hot data for name-only change
+      if (trip_name && trip_id === CurrentTripDataService.getCurrentTripId()) {
+        const old_trip_data = CurrentTripDataService.getCurrentTripData();
+        old_trip_data["trip_name"] = trip_name;
         CurrentTripDataService.saveCurrentTripDataToLocal(old_trip_data);
       }
-      await TripDataService.updateTripDataModifiedTime(modified_time, trip_id);
-    } catch (err) {
-      throw new Error("Failed ata request modify trip data");
     }
-    return { status: true, message: "Success!" };
+
+    return { success: true, message: "Success!" };
   }
   async requestRemoveTrip(trip_id) {
     // console.log("dete");
@@ -244,6 +280,14 @@ class TripActionHandler {
       console.error("Failed to end trip", err);
       return false;
     }
+  }
+  async _forceRequestTripContentSync(trip_id) {
+    // console.log("requestsync ", trip_id);
+    if (this._pending) return false;
+    const force_sync =
+      await TripContentsSync.forceSyncTripContentHander(trip_id);
+    if (!force_sync) return false;
+    return true;
   }
 }
 export default new TripActionHandler();

@@ -15,7 +15,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useEffect, useState, useRef } from "react";
 import { scheduleOnRN } from "react-native-worklets";
 import { MaterialIcons } from "@expo/vector-icons";
-import TripContentHandler from "../../app-core/flow/trip_contents_handler";
+import TripContentHandler from "../../app-core/flow/handlers/trip_contents/trip_contents_handler";
 import { OverlayCard } from "../overlay/overlay_card";
 import safeRun from "../../app-core/helpers/safe_run";
 

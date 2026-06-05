@@ -13,12 +13,27 @@ import {
   takePicture,
 } from "../../../custom_components/image_picker";
 import { UseOverlay } from "../../../overlay/overlay_main";
-import TripHandler from "../../../../app-core/flow/handlers/trip_handler";
+import TripHandler from "../../../../app-core/flow/handlers/trip_actions/trip_action_handler";
 const TripCustomCard = ({ trip, onClose }) => {
   const [tripName, setTripName] = useState(trip.trip_name);
   const [tripImage, setTripImage] = useState(trip.image);
   let _imageChanged = useRef(false);
   const { showErrorBox, hideErrorBox, showLoading, hideLoading } = UseOverlay();
+  const loadingRef = useRef(null);
+  const loadingSteps = ["Modifing your memories", "Nanana"];
+  const Loading = () => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    showLoading(() => HideLoading, loadingSteps);
+  };
+  const HideLoading = () => {
+    console.log("end", loadingRef.current);
+    if (!loadingRef.current) return;
+    console.log("end");
+
+    hideLoading();
+    loadingRef.current = false;
+  };
   const callImagePicker = async () => {
     const pic = await imagePicker();
     _imageChanged.current = true;
@@ -32,7 +47,7 @@ const TripCustomCard = ({ trip, onClose }) => {
     setTripImage(pic.assets[0].uri);
   };
   const requestTripModify = async () => {
-    showLoading();
+    Loading();
     onClose(false);
     let new_name = null;
     if (trip.trip_name != tripName) new_name = tripName;
@@ -41,10 +56,11 @@ const TripCustomCard = ({ trip, onClose }) => {
       new_name,
       _imageChanged.current ? tripImage : null,
     );
-    hideLoading();
+    HideLoading();
 
-    if (!update.status) {
-      showErrorBox("Failed", "failed to update trip data", 3600);
+    if (!update.success) {
+      console.log(update);
+      showErrorBox("Failed", update.message, 3600);
     }
   };
   return (

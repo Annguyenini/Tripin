@@ -6,7 +6,7 @@ import EtagService from "../storage/etag/etag_service";
 import { ETAG_KEY, GENERATE_TRIP_ETAG_KEY } from "../storage/etag/etag_keys";
 // mport NetworkObserver from '../../app-core/flow/sync/network_observer';
 import fetchFunction from "./fetch_function";
-import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
+import * as ImageManipulator from "expo-image-manipulator";
 
 class Trip {
   constructor() {}
@@ -48,21 +48,25 @@ class Trip {
       });
       return respond;
     } catch (err) {
-      throw new Error("fail to upload trip cover image", err);
+      throw new Error(`fail to upload trip cover image: ${err}`);
     }
   }
-  async verifyTripCoverImageUpload(pending_token: string) {
+  async verifyTripCoverImageUpload(
+    pending_token: string,
+    modified_time: number,
+  ) {
     try {
       const respond = await fetchFunction(API.VERIFY_TRIP_COVER_IMAGE_UPLOAD, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           pending_token: pending_token,
+          modified_time: modified_time,
         }),
       });
       return respond;
     } catch (error) {
-      throw new Error("fail to verify upload image", error);
+      throw new Error(`fail to verify upload image: ${error}`);
     }
   }
   async end_trip(current_time) {
@@ -142,23 +146,21 @@ class Trip {
   }
   async requestTripDataChange(trip_id, trip_name, image_uri, modified_time) {
     // console.log(modified_time);
-    const data = new FormData();
-    if (image_uri) {
-      data.append("image", {
-        uri: image_uri,
-        name: `cover_${trip_id}`,
-        type: "image/jpeg",
+    try {
+      const respond = await fetchFunction(API.MODIFY_TRIP_DATA, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          trip_id: trip_id,
+          trip_name: trip_name,
+          image: image_uri,
+          modified_time: modified_time,
+        }),
       });
+      return respond;
+    } catch (err) {
+      throw new Error("failed to request modify trip");
     }
-    data.append("trip_id", trip_id ?? "");
-    data.append("trip_name", trip_name ?? "");
-    data.append("modified_time", modified_time ?? "");
-
-    const respond = await fetchFunction(API.MODIFY_TRIP_DATA, {
-      method: "POST",
-      body: data,
-    });
-    return respond;
   }
   async requestRemoveTrip(trip_id, deleted_time) {
     const headers = {

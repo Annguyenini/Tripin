@@ -7,7 +7,7 @@ import {
 import AuthHandler from "./auth_handler";
 import TripHandler from "./handlers/trip_handler";
 import UserDataHandler from "./user_handler";
-import TripContentsHander from "./trip_contents_handler";
+import TripContentsHander from "./handlers/trip_contents/trip_contents_handler";
 import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
 import TripDatabaseService from "../../backend/storage/database/protected/trip_database_service";
 import TripContentsDatabase from "../../backend/storage/database/protected/trip_contents";
@@ -30,17 +30,21 @@ type Appstate =
 
 class AppFlow {
   private LocalStorage: LocalStorage;
-  private _fresh_start: boolean;
+  private _contents_sync: boolean = false;
   private _firstAuthentication: boolean = true;
   private state: Appstate;
+  private network_state: boolean = false;
   constructor() {
     this.LocalStorage = new LocalStorage();
     _registerNetworkCallback(this.networkCallback.bind(this));
-    this._fresh_start = true;
   }
+
   networkCallback(state: boolean): void {
-    if (this._fresh_start) return;
+    console.log(state);
+    if (state === this.network_state) return;
+    this.network_state = state;
     if (state) this.syncCurrentTripContents();
+    // this._fresh_start = false;
   }
 
   async nextStep() {
@@ -143,7 +147,7 @@ class AppFlow {
 
   async migrationDatabasesHandler() {
     try {
-      migration();
+      await migration();
       this.state = "initAlbum";
       this.nextStep();
     } catch (error) {
@@ -167,7 +171,7 @@ class AppFlow {
   async onAppReady(): Promise<boolean> {
     try {
       await TripHandler.requestCurrentTripHandler();
-      await this.syncCurrentTripContents();
+      // await this.syncCurrentTripContents();
     } catch (err) {
       console.error(`Failed to get current trip data: ${err}`);
     }
@@ -178,14 +182,14 @@ class AppFlow {
     return;
   }
   async syncCurrentTripContents(): Promise<void> {
+    console.log("sync", this.state);
+    if (this._contents_sync || this.state !== "ready") return;
     const trip_id = CurrentTripDataService.getCurrentTripId();
     if (trip_id) {
+      this._contents_sync = true;
       // console.log("sync");
-      await safeRun(
-        () => TripContentsHander._requestTripContentSync(trip_id),
-        "faild_at_sync_trip_contents",
-      );
-
+      await TripContentsSync.syncTripContentsHandler(trip_id);
+      this._contents_sync = false;
       console.log("sync complete");
     }
 

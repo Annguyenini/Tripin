@@ -43,16 +43,16 @@ class TripHandler {
     // no trips returned — nothing to save
     if (!data.all_trip_data) return true;
 
-    // save trips and etag to local
-    try {
-      await TripDataService.handleAllTripsList(data.all_trip_data);
-      if (data.etag)
-        await EtagService.saveEtagToLocal(ETAG_KEY.ALL_TRIPS_LIST, data.etag);
-    } catch (err) {
-      console.error(err);
-      return false;
-    }
-
+    //save trips and etag to local
+    // try {
+    //   await TripDataService.handleAllTripsList(data.all_trip_data);
+    //   if (data.etag)
+    //     await EtagService.saveEtagToLocal(ETAG_KEY.ALL_TRIPS_LIST, data.etag);
+    // } catch (err) {
+    //   console.error(err);
+    //   return false;
+    // }
+    TripDataService.setTripsList(data.all_trip_data);
     return true;
   }
 
@@ -154,14 +154,17 @@ class TripHandler {
       }
 
       // save etag for future 304 checks
-      await safeRun(
-        () =>
-          EtagService.saveEtagToLocal(
-            GENERATE_TRIP_ETAG_KEY(trip_id),
-            current_trip_data.etag,
-          ),
-        "save_etag_failed",
-      );
+      //
+      if (current_trip_data.etag) {
+        await safeRun(
+          () =>
+            EtagService.saveEtagToLocal(
+              GENERATE_TRIP_ETAG_KEY(trip_id),
+              current_trip_data.etag,
+            ),
+          "save_etag_failed",
+        );
+      }
     }
 
     return true;

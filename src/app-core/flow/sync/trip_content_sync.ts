@@ -1,55 +1,65 @@
+// the purpose of this calss
+
 import TripContents from "../../../backend/services/trip_contents";
 import TripContentsDatabase from "../../../backend/storage/database/protected/trip_contents";
 import safeRun from "../../helpers/safe_run";
-let _onCallBack = null;
-
-export const _registerSyncingCallback = (callback) => {
-  _onCallBack = callback;
-};
+import TripContentsHandler from "../handlers/trip_contents/trip_contents_handler";
+import TripContentsBucketProcessor from "../handlers/trip_contents/process_bucket";
+import { ContentCard } from "../../../types/content_card.types";
+type CallBack = (value: boolean) => void;
 class TripContentsSync {
-  constructor() {
-    this._pending = false;
+  private _pending: boolean = false;
+  private _callBacks: Array<CallBack> = [];
+  registerSyncingCallback(callback: CallBack) {
+    this._callBacks.push(callback);
   }
-  async forceSyncTripContentHander(trip_id) {
+  emit(value: boolean) {
+    if (this._callBacks.length <= 1) return;
+    this._callBacks.forEach((callback) => {
+      try {
+        callback(value);
+      } catch (err) {
+        console.error(`error emit message: ${err}`);
+      }
+    });
+    return;
+  }
+  async forceSyncTripContentHander(trip_id: number) {
     if (this._pending) return;
     this._pending = true;
 
     try {
-      if (_onCallBack) {
-        _onCallBack(true);
-      }
+      this.emit(true);
       await this._getAndProcessTripContentsMetadata(trip_id);
+      return true;
     } catch (err) {
       console.error(err);
+      return false;
     } finally {
       this._pending = false;
-      if (_onCallBack) {
-        _onCallBack(false);
-      }
+      this.emit(false);
     }
   }
-  async syncTripContentsHandler(trip_id) {
+  async syncTripContentsHandler(trip_id: number) {
     if (this._pending) return;
+    console.log("pending");
     this._pending = true;
 
     try {
-      if (_onCallBack) {
-        _onCallBack(true);
-      }
-      const local_hash =
-        await TripContentsDatabase.getTripContentsHash(trip_id);
-      const respond = await TripContents.requestTripContentsHash(trip_id);
-      const server_hash = respond?.data?.hash;
-      if (local_hash === server_hash && local_hash && server_hash) return;
+      this.emit(true);
+      // const local_hash =
+      //   await TripContentsDatabase.getTripContentsHash(trip_id);
+
+      // const respond = await TripContents.requestTripContentsHash(trip_id);
+      // const server_hash = respond?.data?.hash;
+      // if (local_hash === server_hash && local_hash && server_hash) return;
       await this._getAndProcessTripContentsMetadata(trip_id);
     } catch (err) {
       console.error(err);
     } finally {
       this._pending = false;
 
-      if (_onCallBack) {
-        _onCallBack(false);
-      }
+      this.emit(false);
     }
     // request content hash
     // check contents hash
@@ -116,55 +126,55 @@ class TripContentsSync {
       return;
     }
   }
-  async _getAndProcessTripContentsMetadata(trip_id) {
+  async _getAndProcessTripContentsMetadata(trip_id: number) {
     try {
+      //get the data
       const response = await safeRun(
-        () => TripContents.requestTripContentsMetadata(trip_id),
+        () => TripContents.requestTripMedias(trip_id),
         "failed_at_get_trip_media_metadata_from_server",
       );
       if (!response.ok || response.status !== 200) return null;
-      const server_metadata = response.data.content_cards;
+      const server_contents = response.data.content_cards;
 
       const local_trip_content_assets = await safeRun(
         () => TripContentsDatabase.getAssestsFromTripId(trip_id),
         "failed_at_get_trip_media",
       );
 
-      const delete_array = local_trip_content_assets.filter((local) =>
-        server_metadata.find(
-          (server) =>
-            server.uuid === local.uuid &&
-            server.event == "add" &&
-            local.event == "remove",
-        ),
+      const delete_array = local_trip_content_assets.filter(
+        (local: ContentCard) =>
+          server_contents.find(
+            (server: ContentCard) =>
+              server.uuid === local.uuid &&
+              server.event == "add" &&
+              local.event == "remove",
+          ),
       );
 
       const upload_array = local_trip_content_assets.filter(
-        (local) =>
-          !server_metadata.find((server) => server.uuid === local.uuid),
+        (local: ContentCard) =>
+          !server_contents.find(
+            (server: ContentCard) => server.uuid === local.uuid,
+          ),
       );
 
-      const download_array = server_metadata.filter(
-        (server) =>
+      const download_array = server_contents.filter(
+        (server: ContentCard) =>
           !local_trip_content_assets.find(
-            (local) => local.uuid === server.uuid,
+            (local: ContentCard) => local.uuid === server.uuid,
           ),
       );
 
       if (upload_array.length >= 1 || delete_array.length >= 1) {
-        await safeRun(
-          () =>
-            TripContents.requestSync(
-              [...upload_array, ...delete_array],
-              trip_id,
-            ),
-          "failed to request upload",
-        );
+        for (const content_card of [...upload_array, ...delete_array]) {
+          console.log("sync add");
+          TripContentsBucketProcessor.PushToBucket(content_card, trip_id);
+        }
       }
       await safeRun(() => this._downloadMedias(trip_id, download_array));
       return;
     } catch (error) {
-      console.error(err);
+      console.error(error);
       return;
     }
   }

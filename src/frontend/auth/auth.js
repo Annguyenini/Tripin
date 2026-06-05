@@ -15,7 +15,7 @@ import {
 } from "./components/forms.js";
 import { useAuthState } from "./use_auth_state.js";
 import { fr, PHOTO_H } from "../../styles/auth_style.js";
-
+console.log("test", AppFlow);
 export const AuthScreen = () => {
   const { showLoading, hideLoading, showErrorBox, hideErrorBox } = UseOverlay();
   const {
@@ -52,31 +52,29 @@ export const AuthScreen = () => {
   } = useAuthState();
   const loadingRef = useRef();
 
-  const toogleLoading = () => {
-    const loadingSteps = [
-      "Checking you credential",
-      "Making sure you are not a robot",
-      "Nanana",
-    ];
-    const onDone = () => {
-      hideLoading();
-    };
-    if (loadingRef.current) {
-      hideLoading();
-      loadingRef.current = null;
-      return;
-    }
-    console.log("loading");
+  const loadingSteps = [
+    "Checking you credential",
+    "Making sure you are not a robot",
+    "Nanana",
+  ];
+  const AuthLoading = () => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    showLoading(() => HideAuthLoading, loadingSteps);
+  };
+  const HideAuthLoading = () => {
+    console.log("end", loadingRef.current);
+    if (!loadingRef.current) return;
+    console.log("end");
 
-    loadingRef.current = showLoading(onDone, loadingSteps);
-
-    return;
+    hideLoading();
+    loadingRef.current = false;
   };
   useEffect(() => {
     (async () => {
-      toogleLoading();
+      AuthLoading();
       await AppFlow.tokenHandler().then(() => {
-        toogleLoading();
+        HideAuthLoading();
       });
     })();
   }, []);

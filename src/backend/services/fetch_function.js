@@ -45,7 +45,7 @@ async function _doFetch(url, options, retry) {
         // Add force signout
       }
     }
-
+    console.log("called");
     NetworkObserver.setServerStatus(true);
     return { ok: true, status: respond.status, data: data };
   } catch (err) {

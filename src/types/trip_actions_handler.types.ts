@@ -1,5 +1,5 @@
 export interface CreateNewTripHandler {
-  ok: boolean;
+  ok?: boolean;
   code: string;
   status?: number;
   message?: string;
