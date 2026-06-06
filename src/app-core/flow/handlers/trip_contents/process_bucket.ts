@@ -65,10 +65,12 @@ class TripContentsBucketProcessor {
       const uploader = async (content_cards: Array<ContentCard>) => {
         while (content_cards.length >= 1) {
           const card = content_cards.shift();
+          if (!card) return;
           const respond = await TripContents.uploadTripMediaToCloud(card);
           if (respond.status === 200) {
             successed.push(card);
           } else {
+            console.log(respond);
             failed.push(card);
           }
         }
@@ -79,8 +81,10 @@ class TripContentsBucketProcessor {
       );
       // failed, retry once, it will be pickup by sync
       if (failed.length >= 1) {
+        console.log(failed);
         await Promise.all(Array.from({ length: 3 }, () => uploader(failed)));
       }
+
       // console.log(successed);
       return successed;
     } catch (err) {

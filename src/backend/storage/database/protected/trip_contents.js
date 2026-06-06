@@ -119,7 +119,7 @@ class TripContents extends BaseDatabase {
     try {
       const DB = await SqliteService.connectDB();
       const result = await DB.getAllAsync(
-        `SELECT c.*,t.trip_name FROM content_cards c JOIN trips t ON c.trip_id =t.trip_id WHERE c.trip_id =?`,
+        `SELECT c.*,t.trip_name FROM content_cards c JOIN trips t ON c.trip_id =t.trip_id WHERE c.trip_id =? ORDER BY c.time_stamp DESC`,
         trip_id,
       );
       // const result = await this.findItems("trip_id", trip_id);

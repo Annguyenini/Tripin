@@ -14,9 +14,10 @@ class TripContentsSync {
     this._callBacks.push(callback);
   }
   emit(value: boolean) {
-    if (this._callBacks.length <= 1) return;
+    if (this._callBacks.length <= 0) return;
     this._callBacks.forEach((callback) => {
       try {
+        console.log("emit");
         callback(value);
       } catch (err) {
         console.error(`error emit message: ${err}`);
@@ -47,24 +48,13 @@ class TripContentsSync {
 
     try {
       this.emit(true);
-      // const local_hash =
-      //   await TripContentsDatabase.getTripContentsHash(trip_id);
-
-      // const respond = await TripContents.requestTripContentsHash(trip_id);
-      // const server_hash = respond?.data?.hash;
-      // if (local_hash === server_hash && local_hash && server_hash) return;
       await this._getAndProcessTripContentsMetadata(trip_id);
     } catch (err) {
       console.error(err);
     } finally {
       this._pending = false;
-
       this.emit(false);
     }
-    // request content hash
-    // check contents hash
-    // separate into each buckets
-    // process to sync
   }
   async _downloadMedias(trip_id, download_array) {
     if (!download_array) return;
@@ -167,11 +157,11 @@ class TripContentsSync {
 
       if (upload_array.length >= 1 || delete_array.length >= 1) {
         for (const content_card of [...upload_array, ...delete_array]) {
-          console.log("sync add");
+          console.log("sync add", content_card);
           TripContentsBucketProcessor.PushToBucket(content_card, trip_id);
         }
       }
-      await safeRun(() => this._downloadMedias(trip_id, download_array));
+      // await safeRun(() => this._downloadMedias(trip_id, download_array));
       return;
     } catch (error) {
       console.error(error);

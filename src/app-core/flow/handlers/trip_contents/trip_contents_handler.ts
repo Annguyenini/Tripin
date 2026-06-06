@@ -6,6 +6,7 @@ import Album from "../../../../backend/storage/album/album";
 import { ContentCard } from "../../../../types/content_card.types";
 import { FetchFuctionRespond } from "../../../../types/fetch_fuction_respond.types";
 import TripContentsBucketProcessor from "./process_bucket";
+import TripContentsSync from "../../sync/trip_content_sync";
 // in ms
 
 class TripContentHandler {
@@ -49,18 +50,16 @@ class TripContentHandler {
   async getTripContents(trip_id) {
     try {
       if (!trip_id) return [];
+      const local_content =
+        await TripContentsDatabase.getAssestsFromTripIdJoinTripData(trip_id);
 
-      const respond = await TripContents.requestTripMedias(trip_id);
-      if (!respond.ok || respond.status !== 200) {
-        const local_content =
-          await TripContentsDatabase.getAssestsFromTripIdJoinTripData(trip_id);
-        // if (trip_id === CurrentTripDataService.getCurrentTripId()) {
-        //   this._requestTripContentSync(trip_id);
-        // }
-        return local_content ?? [];
+      TripContentsSync.syncTripContentsHandler(trip_id);
+
+      if (!local_content || local_content.length <= 0) {
+        const respond = await TripContents.requestTripMedias(trip_id);
+        return respond?.data?.content_cards;
       }
-
-      return respond?.data?.content_cards;
+      return local_content;
     } catch (err) {
       console.error(err);
       return [];

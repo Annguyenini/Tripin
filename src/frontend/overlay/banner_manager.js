@@ -13,7 +13,7 @@ import * as Location from "expo-location";
 import Permission from "../../backend/storage/settings/permissions";
 import network_observer from "../../app-core/flow/sync/network_observer";
 import { _registerNetworkCallback } from "../../app-core/flow/sync/network_observer";
-import { _registerSyncingCallback } from "../../app-core/flow/sync/trip_content_sync";
+import TripContentsSync from "../../app-core/flow/sync/trip_content_sync";
 import { SyncBanner } from "./syncing_banner";
 import {
   SatelliteOffIcon,
@@ -472,7 +472,7 @@ export const BannerManager = () => {
     };
     init();
     _registerNetworkCallback(setIsOffline);
-    _registerSyncingCallback(setSync);
+    TripContentsSync.registerSyncingCallback(setSync);
   }, []);
 
   return (

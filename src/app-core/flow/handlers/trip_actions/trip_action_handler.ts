@@ -8,6 +8,7 @@ import trips from "../../../../backend/storage/database/trips";
 import TripContentsHandler from "../trip_contents/trip_contents_handler";
 import { CreateNewTripHandler } from "../../../../types/trip_actions_handler.types";
 import { Trip_Data } from "../../../../types/trip_data.types";
+import TripContentsSync from "../../sync/trip_content_sync";
 interface newTripData {
   trip_id: string;
   presign_url: string | undefined;
@@ -259,11 +260,7 @@ class TripActionHandler {
       const current_time = Date.now();
       const trip_id = CurrentTripDataService.getCurrentTripId();
       // console.log("endTrip", trip_id);
-      const forceSync = await safeRun(
-        () => TripContentsHandler._forceRequestTripContentSync(trip_id),
-        "failed_at_request_last_trip_sync_trip_data",
-      );
-      if (!forceSync) return false;
+      const forceSync = await TripContentsSync.syncTripContentsHandler(trip_id);
       const respond = await Trip.end_trip(current_time);
 
       await safeRun(
@@ -280,14 +277,6 @@ class TripActionHandler {
       console.error("Failed to end trip", err);
       return false;
     }
-  }
-  async _forceRequestTripContentSync(trip_id) {
-    // console.log("requestsync ", trip_id);
-    if (this._pending) return false;
-    const force_sync =
-      await TripContentsSync.forceSyncTripContentHander(trip_id);
-    if (!force_sync) return false;
-    return true;
   }
 }
 export default new TripActionHandler();

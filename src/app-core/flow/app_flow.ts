@@ -40,7 +40,6 @@ class AppFlow {
   }
 
   networkCallback(state: boolean): void {
-    console.log(state);
     if (state === this.network_state) return;
     this.network_state = state;
     if (state) this.syncCurrentTripContents();
