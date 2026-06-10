@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import AuthHandler from "../../app-core/flow/auth_handler.js";
 import AppFlow from "../../app-core/flow/app_flow.ts";
 import { UseOverlay } from "../overlay/overlay_main.js";
@@ -27,7 +27,21 @@ export function useAuthState() {
   const [verifyCode, setVerifyCode] = useState("");
   const [errors, setErrors] = useState([]);
   const { showLoading, hideLoading } = UseOverlay();
+  const loadingRef = useRef(null);
+  const loadingSteps = ["Checking your credential", "Nanana"];
+  const AuthLoading = () => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    showLoading(() => HideAuthLoading, loadingSteps);
+  };
+  const HideAuthLoading = () => {
+    console.log("end", loadingRef.current);
+    if (!loadingRef.current) return;
+    console.log("end");
 
+    hideLoading();
+    loadingRef.current = false;
+  };
   const openLogin = () => {
     setShowSignup(false);
     setErrors([]);
@@ -79,19 +93,19 @@ export function useAuthState() {
       setErrors(errs);
       return;
     }
-    showLoading();
+    AuthLoading();
     const res = await AuthHandler.signUpProviderHandler(
       pendingtoken,
       displayName,
       username,
       password,
     );
-    hideLoading();
+    HideAuthLoading();
     if (res.status === 200) {
-      showLoading();
+      AuthLoading();
       const login = await AuthHandler.providerVerifyHandler(idtoken, provider);
-      if (login.status === 200) await AppFlow.onAuthSuccess();
-      hideLoading();
+      if (login.status === 200) AppFlow.onAuthSuccess();
+      HideAuthLoading();
       return;
     }
     setErrors([
@@ -108,13 +122,13 @@ export function useAuthState() {
       setErrors(errs);
       return;
     }
-    showLoading();
+    AuthLoading();
     const res = await AuthHandler.loginHandler(username, email, password);
-    hideLoading();
+    HideAuthLoading();
     if (res.status === 200) {
-      showLoading();
-      await AppFlow.onAuthSuccess();
-      hideLoading();
+      AuthLoading();
+      AppFlow.onAuthSuccess();
+      HideAuthLoading();
       return;
     }
     setErrors([
@@ -137,16 +151,17 @@ export function useAuthState() {
       setErrors(errs);
       return;
     }
-    showLoading();
+    AuthLoading();
     const res = await AuthHandler.signUpHandler(
       email,
       displayName,
       username,
       password,
     );
-    hideLoading();
+    HideAuthLoading();
     if (!res.ok || res.status !== 201) {
-      setErrors([res.message]);
+      console.log(res);
+      setErrors([res.data?.message]);
       return;
     }
     setShowSignup(false);

@@ -23,21 +23,21 @@ import * as MediaLibrary from "expo-media-library";
 
 const AnimatedCamera = Animated.createAnimatedComponent(Camera);
 
-import { cameraStyle } from "../../styles/camera_style.js";
-import { navigate } from "../navigation/navigationService.js";
-import AlbumService from "../../backend/storage/album/album.js";
+import { cameraStyle } from "../../styles/camera_style";
+import { navigate } from "../navigation/navigationService";
+import AlbumService from "../../backend/storage/album/album";
 
-import TopBarCamera from "./layout/top_bar.js";
-import PermissionLayout from "./layout/permission.js";
-import BotBarControl from "./layout/bot_bar.js";
-import ZoomText from "./layout/zoom_text.js";
-import useCameraCapture from "./camera_setting/use_camera_capture.js";
-import useCameraZoom from "./camera_setting/use_camera_zoom.js";
-import CameraSetting from "./layout/camera_setting_bar.js";
+import TopBarCamera from "./layout/top_bar";
+import PermissionLayout from "./layout/permission";
+import BotBarControl from "./layout/bot_bar";
+import ZoomText from "./layout/zoom_text";
+import useCameraCapture from "./camera_setting/use_camera_capture";
+import useCameraZoom from "./camera_setting/use_camera_zoom";
+import CameraSetting from "./layout/camera_setting_bar";
 // import {microphonePermission} from 'expo-audio'
 import { Audio } from "expo-av";
-import HorizontalSlider from "./layout/vertical_slider.js";
-import { generateOrGetThumbnailFromMediaId } from "../../backend/media/generate_thumbnail.js";
+import HorizontalSlider from "./layout/vertical_slider";
+import { generateOrGetThumbnailFromMediaId } from "../../backend/media/generate_thumbnail";
 const { width, height } = Dimensions.get("window");
 
 const exitCamera = () => navigate("Main");

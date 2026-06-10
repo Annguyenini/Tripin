@@ -26,7 +26,7 @@ export const TestScreen = ({ testScreenHandler }) => {
   };
   const onGetUserDb = async () => {
     console.log(
-      await TripDatabaseService.getTripDataFromTripId(
+      await TripDatabaseService.getAllUserTripDataFromDB(
         UserDataService.getUserId(),
       ),
     );

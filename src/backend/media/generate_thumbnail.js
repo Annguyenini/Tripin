@@ -37,7 +37,11 @@ export const generateOrGetThumbnailFromMediaId = async (
   try {
     // console.log('gen', cached_path)
     const { uri: thumbnailUri } = await safeRun(
-      () => VideoThumbnails.getThumbnailAsync(cached_path, { time: 1000 }),
+      () =>
+        VideoThumbnails.getThumbnailAsync(cached_path, {
+          time: 1000,
+          quality: 0.1,
+        }),
       "failed_at_generate_thumbnail",
     );
 

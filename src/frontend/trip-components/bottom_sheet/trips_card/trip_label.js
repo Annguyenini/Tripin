@@ -12,8 +12,9 @@ import { tripCardsStyle } from "../../../../styles/function/tripcards";
 import TripDisplayObserver from "../../observers/trip_display_observer";
 import CurrentTripDataService from "../../../../backend/storage/hot_data/current_trip";
 import TripCustomCard from "./trip_custom_card";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import TripHandler from "../../../../app-core/flow/handlers/trip_handler";
+import TripActionHandler from "../../../../app-core/flow/handlers/trip_actions/trip_action_handler";
 import { MaterialIcons } from "@expo/vector-icons";
 import { UseOverlay } from "../../../overlay/overlay_main";
 const default_image = require("../../../../../assets/icon.png");
@@ -22,6 +23,21 @@ export const TripCard = ({ trip, navigateMain, removeTripLabel }) => {
   const [optionVisible, setOptionVisible] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const { showErrorBox, hideErrorBox, showLoading, hideLoading } = UseOverlay();
+  const loadingRef = useRef(null);
+  const loadingSteps = ["Removing Trip", "Say byeeeeeeeeeee", "Nanana"];
+  const Loading = () => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    showLoading(() => HideLoading, loadingSteps);
+  };
+  const HideLoading = () => {
+    console.log("end", loadingRef.current);
+    if (!loadingRef.current) return;
+    console.log("end");
+
+    hideLoading();
+    loadingRef.current = false;
+  };
   const pressHandler = async (trip) => {
     navigateMain();
     if (trip.trip_id === CurrentTripDataService.getCurrentTripId()) return;
@@ -39,11 +55,11 @@ export const TripCard = ({ trip, navigateMain, removeTripLabel }) => {
     });
   };
   const requestRemove = async (trip) => {
-    showLoading();
+    Loading();
     setDeleteVisible(false);
     // console.log(trip, CurrentTripDataService.getCurrentTripId());
     if (trip.trip_id === CurrentTripDataService.getCurrentTripId()) {
-      hideLoading();
+      HideLoading();
       showErrorBox(
         "Failed to remove trip",
         "Can not remove the active trip, make sure to end it first!",
@@ -53,18 +69,18 @@ export const TripCard = ({ trip, navigateMain, removeTripLabel }) => {
     }
     let respond;
     try {
-      respond = await TripHandler.requestRemoveTrip(trip.trip_id);
+      respond = await TripActionHandler.requestRemoveTrip(trip.trip_id);
       if (!respond.status) {
-        hideLoading();
+        HideLoading();
         showErrorBox("Failed to remove trip", respond.message, 3600);
         return;
       }
-      hideLoading();
+      HideLoading();
     } catch (err) {
       console.error(err);
     } finally {
       removeTripLabel(trip);
-      hideLoading();
+      HideLoading();
       showErrorBox("Failed to remove trip", respond.message, 3600);
     }
     return;

@@ -5,7 +5,7 @@ import {
   imagePicker,
   takePicture,
 } from "../../../custom_components/image_picker";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { TrackingModePicker } from "../tracking_modes/tracking_mode_picker";
 import { TRACKING_MODE } from "../../../../backend/tracking/tracking_mode";
 import Setting from "../../../../app-core/setting";
@@ -17,12 +17,22 @@ export const NewTripFiller = ({ set_show_create_trip_filler }) => {
   const [imageUri, setImageUri] = useState(null);
   const [alert, setAlert] = useState(null);
   const { showLoading, hideLoading, showErrorBox } = UseOverlay();
-  const CreateTripShowLoading = () => {
-    return showLoading(["Checking Trip Nameeeeee", "Almost there", "Nananana"]);
+  const loadingRef = useRef(null);
+  const loadingSteps = ["Creating Trip", "Checking Data", "Nanana"];
+  const Loading = () => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    showLoading(() => HideLoading, loadingSteps);
   };
-  const CreateTripHideLoading = () => {
-    return hideLoading();
+  const HideLoading = () => {
+    console.log("end", loadingRef.current);
+    if (!loadingRef.current) return;
+    console.log("end");
+
+    hideLoading();
+    loadingRef.current = false;
   };
+
   const callImagePicker = async () => {
     const pic = await imagePicker();
     setImageUri(pic.assets[0].uri);
@@ -40,7 +50,7 @@ export const NewTripFiller = ({ set_show_create_trip_filler }) => {
       }
       set_show_create_trip_filler(false);
 
-      CreateTripShowLoading();
+      Loading();
       res = await TripActionsHandler.requestNewTripHandler(
         tripName,
         imageUri ?? null,
@@ -48,7 +58,7 @@ export const NewTripFiller = ({ set_show_create_trip_filler }) => {
     } catch (err) {
       console.error(err);
     } finally {
-      CreateTripHideLoading();
+      HideLoading();
     }
     if (!res) {
       showErrorBox("Error Creating Trip", "failed", 6000);

@@ -240,10 +240,10 @@ class TripActionHandler {
         () => TripDataService.removeTrip(trip_id),
         "failed to remove trip from local",
       );
-      await safeRun(
-        () => TripDataService.loadAllTripsListFromLocal(),
-        "failed to load trip from local",
-      );
+      // await safeRun(
+      //   () => TripDataService.loadAllTripsListFromLocal(),
+      //   "failed to load trip from local",
+      // );
       return { status: true, message: respond.data.code };
     } catch (err) {
       console.error("failed to remove trip");

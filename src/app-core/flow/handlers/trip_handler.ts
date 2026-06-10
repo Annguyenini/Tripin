@@ -179,17 +179,18 @@ class TripHandler {
    */
   async requestTripDataHandler(trip_id) {
     const user_id = UserDataService.getUserId();
-    const respond = await Trip.requestTripData(trip_id);
-
+    const local_data = await TripDataService.getTripDataFromLocal(
+      user_id,
+      trip_id,
+    );
     // not modified or failed — return local copy
-    if (!respond.ok || respond.status === 304) {
-      return await TripDataService.getTripDataFromLocal(user_id, trip_id);
+    if (!local_data) {
+      const respond = await Trip.requestTripData(trip_id);
+      if (respond.status !== 200) return null;
+      const data = respond.data;
+      return data.trip_data;
     }
-
-    if (respond.status !== 200) return null;
-
-    const data = respond.data;
-    return data.trip_data;
+    return local_data;
   }
 
   // ─── Sharing ──────────────────────────────────────────────────────────────

@@ -1,9 +1,9 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
-import { cameraStyle, camera_zoom } from "../../../styles/camera_style.js";
-import MediaViewCard from "../../albums/viewer_card.js";
+import { cameraStyle, camera_zoom } from "../../../styles/camera_style";
+import MediaViewCard from "../../albums/viewer_card";
 import { useRef, useState } from "react";
-import AlbumService from "../../../backend/storage/album/album.js";
+import AlbumService from "../../../backend/storage/album/album";
 const cameraSetting_icon = require("../../../../assets/image/camera_setting.png");
 
 const BotBarControl = ({

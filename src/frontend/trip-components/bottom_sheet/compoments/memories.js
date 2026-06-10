@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import CurrentDisplayContentsObserver from "../../observers/current_display_contents_observer";
 import {
   View,
@@ -8,10 +8,13 @@ import {
   Dimensions,
   TouchableOpacity,
   Platform,
+  Animated,
 } from "react-native";
 import Svg, { Line, Path, Defs, Marker } from "react-native-svg";
 import { Image } from "expo-image";
 import Video from "react-native-video";
+import setCoords from "../../../utils/map_flyto";
+import { flyToMarker } from "../../../utils/map_ref";
 
 const { width: SW, height: SH } = Dimensions.get("window");
 
@@ -32,6 +35,10 @@ const GALLERY_W = SW;
 
 const mono = Platform.OS === "ios" ? "Courier New" : "monospace";
 const serif = Platform.OS === "ios" ? "Georgia" : "serif";
+
+const FRAME_W = 80;
+const FRAME_H = 100;
+const SCALE_SELECTED = 1.55;
 
 function cardCenter(locationArray, index) {
   const slotLeft = index * SLOT_W + 36;
@@ -62,7 +69,6 @@ function GalleryOverlay({ width, locationArray }) {
           <Path d="M0,0 L6,3 L0,6 Z" fill={ACCENT} opacity="0.7" />
         </Marker>
       </Defs>
-
       <Line
         x1="0"
         y1={STRING_Y}
@@ -72,7 +78,6 @@ function GalleryOverlay({ width, locationArray }) {
         strokeWidth="1.5"
         opacity="0.5"
       />
-
       {locationArray.map((loc, i) =>
         loc.hang ? (
           <Line
@@ -87,7 +92,6 @@ function GalleryOverlay({ width, locationArray }) {
           />
         ) : null,
       )}
-
       {locationArray.map((loc, i) => {
         if (i === locationArray.length - 1) return null;
         const from = cardCenter(locationArray, i);
@@ -129,7 +133,6 @@ function PolaroidCard({ location, index, onPress }) {
       <View
         style={[styles.tape, { top: STRING_Y - 8, left: CARD_W / 2 - 13 }]}
       />
-
       <View
         style={[
           styles.polaroid,
@@ -139,7 +142,6 @@ function PolaroidCard({ location, index, onPress }) {
         {location.medias?.[0]?.media_path ? (
           location.medias?.[0]?.media_type === "video" ? (
             <Video
-              cachePolicy="memory-disk"
               source={{ uri: location.medias[0].media_path }}
               style={styles.photoArea}
             />
@@ -164,20 +166,125 @@ function PolaroidCard({ location, index, onPress }) {
   );
 }
 
-function PhotoSheet({ location, onClose }) {
-  const FRAME_H = 160;
-  const FRAME_W = 120;
-  const HOLE_H = 7;
-  const HOLE_W = 10;
-  const holes = Array.from({ length: 5 });
+function MediaFrame({
+  media,
+  index,
+  isSelected,
+  onPress,
+  onLeftPress,
+  onRightPress,
+}) {
+  const scale = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
 
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(scale, {
+        toValue: isSelected ? SCALE_SELECTED : 1,
+        useNativeDriver: true,
+        friction: 8,
+        tension: 90,
+      }),
+      Animated.timing(opacity, {
+        toValue: isSelected ? 1 : 0,
+        duration: isSelected ? 180 : 80,
+        delay: isSelected ? 120 : 0,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [isSelected]);
+
+  const ts = media.time_stamp
+    ? new Date(media.time_stamp).toLocaleString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : null;
+
+  return (
+    <View style={[styles.frameOuter, isSelected && { zIndex: 10 }]}>
+      <View style={styles.frameRow}>
+        {/* Left + */}
+        {/* <Animated.View style={[styles.btnWrap, { opacity }]}>
+          <TouchableOpacity
+            style={styles.plusBtn}
+            onPress={() => onLeftPress(media)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.plusBtnText}>+</Text>
+          </TouchableOpacity>
+        </Animated.View>*/}
+
+        {/* Frame */}
+        <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
+          <Animated.View
+            style={[styles.mediaFrame, { transform: [{ scale }] }]}
+          >
+            {media.media_type === "video" ? (
+              <Video
+                source={{ uri: media.media_path }}
+                style={StyleSheet.absoluteFill}
+                repeat
+                muted
+                resizeMode="cover"
+              />
+            ) : (
+              <Image
+                cachePolicy="memory-disk"
+                source={{ uri: media.media_path }}
+                style={StyleSheet.absoluteFill}
+                contentFit="cover"
+              />
+            )}
+            <Text style={styles.frameNum}>
+              {String(index + 1).padStart(2, "0")}
+            </Text>
+          </Animated.View>
+        </TouchableOpacity>
+
+        {/* Right + */}
+        {/* <Animated.View style={[styles.btnWrap, { opacity }]}>
+          <TouchableOpacity
+            style={styles.plusBtn}
+            onPress={() => onRightPress(media)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.plusBtnText}>+</Text>
+          </TouchableOpacity>
+        </Animated.View>*/}
+      </View>
+
+      {ts && (
+        <Animated.Text style={[styles.frameDate, { opacity }]}>
+          {ts}
+        </Animated.Text>
+      )}
+    </View>
+  );
+}
+
+function PhotoSheet({ location, onClose, onLeftPress, onRightPress }) {
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const holes = Array.from({ length: 5 });
+  const [media, setMedia] = useState(null);
+  const mediaOnPress = (index) => {
+    setSelectedIndex(index);
+    flyToMarker(
+      [location?.medias[index]?.longitude, location?.medias[index]?.latitude],
+      20,
+    );
+    // setCoords(location[index]);
+  };
   const SprocketRow = () => (
     <View
       style={{
         justifyContent: "space-between",
         paddingVertical: 10,
         paddingHorizontal: 5,
-        height: FRAME_H,
+        height: 220,
       }}
     >
       {holes.map((_, i) => (
@@ -196,16 +303,26 @@ function PhotoSheet({ location, onClose }) {
       <View style={styles.sheet}>
         <View style={styles.sheetHandle} />
         <View style={styles.sheetHeader}>
-          <Text style={styles.sheetCity}>
-            {location.city} - {location.region} -{" "}
-            {_getFlag(location.iso_country_code)}
-          </Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.sheetCity}>
+              {location.city} - {location.region} -{" "}
+              {_getFlag(location.iso_country_code)}
+            </Text>
+            {location.timestamp && (
+              <Text style={styles.sheetDate}>
+                {new Date(location.timestamp).toLocaleDateString(undefined, {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </Text>
+            )}
+          </View>
           <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
             <Text style={styles.closeTxt}>✕</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Film strip */}
         <View style={styles.filmStrip}>
           <SprocketRow />
           <ScrollView
@@ -214,27 +331,15 @@ function PhotoSheet({ location, onClose }) {
             contentContainerStyle={styles.frames}
           >
             {location.medias.map((media, i) => (
-              <View key={media.media_path ?? i} style={styles.frame}>
-                {media.media_type === "video" ? (
-                  <Video
-                    cachePolicy="memory-disk"
-                    source={{ uri: media.media_path }}
-                    style={styles.photoArea}
-                    repeat={true}
-                    muted={true}
-                  />
-                ) : (
-                  <Image
-                    cachePolicy="memory-disk"
-                    source={{ uri: media.media_path }}
-                    style={StyleSheet.absoluteFill}
-                    contentFit="cover"
-                  />
-                )}
-                <Text style={styles.frameNum}>
-                  {String(i + 1).padStart(2, "0")}
-                </Text>
-              </View>
+              <MediaFrame
+                key={media.uuid ?? media.media_path ?? i}
+                media={media}
+                index={i}
+                isSelected={selectedIndex === i}
+                onPress={() => mediaOnPress(selectedIndex === i ? null : i)}
+                onLeftPress={onLeftPress}
+                onRightPress={onRightPress}
+              />
             ))}
           </ScrollView>
           <SprocketRow />
@@ -244,7 +349,11 @@ function PhotoSheet({ location, onClose }) {
   );
 }
 
-export default function PolaroidGallery({ trip_id }) {
+export default function PolaroidGallery({
+  trip_id,
+  onLeftPress,
+  onRightPress,
+}) {
   const [selectedCity, setSelectedCity] = useState(null);
   const [locationArray, setLocationArray] = useState([]);
   const [displayMedias, setDisplayMedias] = useState(
@@ -252,6 +361,7 @@ export default function PolaroidGallery({ trip_id }) {
       CurrentDisplayContentsObserver.GENERATE_KEY(trip_id)
     ],
   );
+
   useEffect(() => {
     const observer = {
       update(newdata) {
@@ -262,7 +372,7 @@ export default function PolaroidGallery({ trip_id }) {
     CurrentDisplayContentsObserver.attach(observer, key);
     return () => CurrentDisplayContentsObserver.detach(observer, key);
   }, []);
-  // console.log("trip_stat", displayMedias);
+
   useEffect(() => {
     const loc = () => {
       if (!displayMedias) return [];
@@ -286,32 +396,8 @@ export default function PolaroidGallery({ trip_id }) {
       }
       return result;
     };
-    // console.log("nana", loc());
     setLocationArray(loc());
   }, [displayMedias]);
-  // const locationArray = useMemo(() => {
-  //     console.log('nana', 11)
-  //     if (!displayMedias) return [];
-  //     const result = [];
-  //     for (const media of displayMedias) {
-  //         const city = media.city ?? 'Unknown';
-  //         let entry = result.find(item => item.city === city);
-  //         if (!entry) {
-  //             entry = {
-  //                 city,
-  //                 region: media.region,
-  //                 country: media.country,
-  //                 iso_country_code: media.iso_country_code,
-  //                 hang: result.length % 2 !== 0,
-  //                 rot: result.length % 2 === 0 ? -5 : 6,
-  //                 medias: [],
-  //             };
-  //             result.push(entry);
-  //         }
-  //         entry.medias.push(media);
-  //     }
-  //     return result;
-  // }, [displayMedias]);
 
   const worldWidth = Math.max(GALLERY_W, locationArray.length * SLOT_W + 80);
 
@@ -326,7 +412,6 @@ export default function PolaroidGallery({ trip_id }) {
         contentContainerStyle={{ width: worldWidth, height: GALLERY_H }}
       >
         <GalleryOverlay width={worldWidth} locationArray={locationArray} />
-
         {locationArray.map((loc, i) => (
           <PolaroidCard
             key={loc.city}
@@ -341,6 +426,8 @@ export default function PolaroidGallery({ trip_id }) {
         <PhotoSheet
           location={selectedCity}
           onClose={() => setSelectedCity(null)}
+          onLeftPress={onLeftPress ?? (() => {})}
+          onRightPress={onRightPress ?? (() => {})}
         />
       )}
     </View>
@@ -355,25 +442,37 @@ const _getFlag = (isoCode) => {
     .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
     .join("");
 };
+
 const styles = StyleSheet.create({
   filmStrip: {
-    backgroundColor: "#4a2e08",
+    // backgroundColor: "#4a2e08",
     flexDirection: "row",
     alignItems: "center",
-    height: 160,
+    height: 180,
   },
   frames: {
     alignItems: "center",
-    gap: 3,
-    paddingVertical: 12,
+    gap: 20,
+    paddingVertical: 30,
+    paddingHorizontal: 1,
   },
-  frame: {
-    width: 120,
-    height: 136,
+  frameOuter: {
+    alignItems: "center",
+    gap: 0,
+  },
+  frameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
+  },
+  mediaFrame: {
+    width: FRAME_W,
+    height: FRAME_H,
+    borderRadius: 5,
+    overflow: "hidden",
     backgroundColor: "#2a2a2a",
     borderWidth: 1.5,
-    borderColor: "#333",
-    overflow: "hidden",
+    borderColor: "rgba(255,255,255,0.08)",
   },
   frameNum: {
     position: "absolute",
@@ -383,20 +482,43 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: "rgba(255,255,255,0.25)",
   },
+  frameDate: {
+    fontFamily: mono,
+    fontSize: 9,
+    color: "#FFFFFF",
+    textAlign: "center",
+  },
+  btnWrap: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  plusBtn: {
+    width: 20,
+    height: 20,
+    borderRadius: 16,
+    backgroundColor: "#000000",
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.3)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  plusBtnText: {
+    color: "#fff",
+    fontSize: 15,
+    // lineHeight: 22,
+    includeFontPadding: false,
+  },
   hole: {
-    width: 10,
-    height: 7,
-    backgroundColor: "#7a5010",
-    borderRadius: 2,
-    borderWidth: 1,
-    borderColor: "#333",
+    // width: 10,
+    // height: 7,
+    // backgroundColor: "#7a5010",
+    // borderRadius: 2,
+    // borderWidth: 1,
+    // borderColor: "#333",
   },
   root: { flex: 1 },
-
   gallery: { flexGrow: 0 },
-
   cardSlot: { position: "absolute", width: CARD_W, height: GALLERY_H },
-
   tape: {
     position: "absolute",
     width: 26,
@@ -406,7 +528,6 @@ const styles = StyleSheet.create({
     opacity: 0.85,
     zIndex: 10,
   },
-
   polaroid: {
     position: "absolute",
     width: CARD_W,
@@ -422,9 +543,7 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 10,
   },
-
   photoArea: { flex: 1, borderRadius: 1, overflow: "hidden" },
-
   cardBottom: { paddingTop: 4, paddingBottom: 5, alignItems: "center" },
   cardCity: {
     fontFamily: mono,
@@ -433,16 +552,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 0.5,
   },
-
   overlay: { ...StyleSheet.absoluteFillObject, justifyContent: "flex-end" },
-
   sheet: {
     backgroundColor: BG,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingBottom: 40,
   },
-
   sheetHandle: {
     width: 34,
     height: 4,
@@ -452,7 +568,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 8,
   },
-
   sheetHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -460,14 +575,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 10,
   },
-
   sheetCity: {
-    flex: 1,
     fontFamily: serif,
     fontSize: 22,
     color: TEXT_PRIMARY,
   },
-
+  sheetDate: {
+    fontFamily: mono,
+    fontSize: 13,
+    color: TEXT_MUTED,
+    marginTop: 2,
+  },
   closeBtn: {
     width: 30,
     height: 30,
@@ -477,14 +595,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   closeTxt: { color: TEXT_MUTED, fontSize: 12 },
-
   photoStrip: {
     paddingHorizontal: 20,
     paddingVertical: 12,
     gap: 10,
     alignItems: "flex-start",
   },
-
   stripPhoto: {
     width: 140,
     height: 180,

@@ -7,7 +7,7 @@ import * as CoordinatesCal from "../../../../backend/coordinates/coordinates_cal
 export const TripStatCards = () => {
   const [createdTime, setCreatedTime] = useState(null);
   const [endedTime, setEndedTime] = useState(null);
-  const [duration, setDuration] = useState({ hours: 0, minutes: 0 });
+  const [duration, setDuration] = useState({ hours: 0, minutes: 0, days: 0 });
   const [contents, setContents] = useState([]);
   const [currentTripDisplay, setCurrentTripDisplay] = useState(
     TripDisplayObserver.getTripNeedRender() ?? null,
@@ -60,24 +60,23 @@ export const TripStatCards = () => {
     };
   }, []);
   useEffect(() => {
-    if (!createdTime) {
-      return;
-    }
+    if (!createdTime) return;
+
+    const calcDuration = (dur) => {
+      const totalMinutes = Math.floor(dur / 60000);
+      const totalHours = Math.floor(totalMinutes / 60);
+      const days = Math.floor(totalHours / 24);
+      const hours = totalHours % 24;
+      const minutes = totalMinutes % 60;
+      return { days, hours, minutes };
+    };
+
     if (endedTime) {
       const dur = Number(endedTime) - Number(createdTime);
-      // console.log(dur);
-      const hour = dur / 3600000;
-      const hours_floor = Math.floor(hour);
-      const minutes = Math.floor((hour - hours_floor) * 60);
-
-      setDuration({ hours: hours_floor, minutes: minutes });
+      setDuration(calcDuration(dur));
     } else {
       const interval = setInterval(() => {
-        const dur = Date.now() - createdTime;
-        const hour = dur / 3600000;
-        const hours_floor = Math.floor(hour);
-        const minutes = Math.floor((hour - hours_floor) * 60);
-        setDuration({ hours: hours_floor, minutes: minutes });
+        setDuration(calcDuration(Date.now() - createdTime));
       }, 1000);
       return () => clearInterval(interval);
     }
@@ -115,7 +114,7 @@ export const TripStatCards = () => {
         <Text style={s.statEmoji}>⏰</Text>
         <Text style={[s.statLabel, { color: "#b86a10" }]}>Duration</Text>
         <Text style={s.statValue}>
-          {duration.hours ?? 0}h {duration.minutes ?? 0}m
+          {duration.days ?? 0}d {duration.hours ?? 0}h {duration.minutes ?? 0}m
         </Text>
       </View>
       <View

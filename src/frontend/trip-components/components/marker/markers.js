@@ -23,7 +23,25 @@ export const Marker = ({
   const { showLoading, hideLoading } = UseOverlay();
   const [coordReady, setCoordReady] = useState(true);
   const [imagesReady, setImageReady] = useState(true);
+  const loadingRef = useRef(null);
+  const loadingSteps = [
+    "Getting Trip Contents",
+    "Generate markers",
+    "Ploting Marker",
+  ];
+  const Loading = () => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    showLoading(() => HideLoading, loadingSteps);
+  };
+  const HideLoading = () => {
+    console.log("end", loadingRef.current);
+    if (!loadingRef.current) return;
+    console.log("end");
 
+    hideLoading();
+    loadingRef.current = false;
+  };
   const filterCards = (content_cards) => {
     return content_cards.filter((card) => card.event !== "remove");
   };
@@ -87,9 +105,9 @@ export const Marker = ({
   useEffect(() => {
     // console.log(imagesReady, coordReady);
     if (!imagesReady || !coordReady) {
-      showLoading();
+      Loading();
     } else {
-      hideLoading();
+      HideLoading();
     }
   }, [coordReady, imagesReady]);
   if (!contentCards) return;

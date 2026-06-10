@@ -22,6 +22,7 @@ import { TripStatCards } from "./compoments/trip_stat";
 import PolaroidGallery from "./compoments/memories";
 import TripCustomCard from "./trips_card/trip_custom_card";
 import { Trip_Data } from "../../../types/trip_data.types";
+import { TestScreen } from "../../../test_screen";
 // ─── Assets ───────────────────────────────────────────────────────────────────
 const default_image = require("../../../../assets/icon.png");
 
@@ -116,6 +117,7 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
       TripDisplayObserver.detach(updateTripData, TripDisplayObserver.EVENTS);
     };
   }, []);
+  console.log(trip);
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -128,6 +130,14 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
       handleIndicatorStyle={BottomSheetSyle.sheetHandle}
     >
       <BottomSheetScrollView contentContainerStyle={BottomSheetSyle.container}>
+        {/*<TouchableOpacity onPress={() => setTest(true)}>
+          <Text>test</Text>
+        </TouchableOpacity>
+        <>
+          <Modal visible={test}>
+            <TestScreen testScreenHandler={() => setTest(false)}></TestScreen>
+          </Modal>
+        </>*/}
         {displayTrip && (
           <>
             {/* ── Trip Title ── */}

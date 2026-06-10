@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import TripDisplayObserver from "./observers/trip_display_observer";
 import CurrentDisplayContentsObserver from "./observers/current_display_contents_observer";
+import { addObserver } from "../utils/map_flyto";
+import { flyToMarker } from "../utils/map_ref";
 
 const mapData = () => {
   const [currentTripDisplayData, setCurrentTripDisplayData] = useState(
@@ -38,10 +40,13 @@ const mapData = () => {
     const existing = CurrentDisplayContentsObserver.getAssetArray(
       currentTripDisplayData.trip_id,
     );
+    flyToMarker(coordsFromArray(existing), 15);
     setCenterCoords(coordsFromArray(existing));
 
     const observer = {
       update(arr) {
+        flyToMarker(coordsFromArray(arr), 15);
+
         setCenterCoords(coordsFromArray(arr));
       },
     };
@@ -50,6 +55,16 @@ const mapData = () => {
     return () => CurrentDisplayContentsObserver.detach(observer, key);
   }, [currentTripDisplayData]);
 
+  useEffect(() => {
+    const observer = {
+      update(arr) {
+        flyToMarker(coordsFromArray(arr), 15);
+
+        setCenterCoords(coordsFromArray(arr));
+      },
+    };
+    // addObserver(observer);
+  }, []);
   return { centerCoords };
 };
 

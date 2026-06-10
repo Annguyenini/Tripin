@@ -50,25 +50,29 @@ export default function AlbumScreen({ onClose }) {
 
   useEffect(() => {
     // get thumbnail or get it from cache
-    let unsolve = [...Images];
+    const result = [...Images];
+
+    let unsolve = Images.filter((media) => media.media_type === "video");
+
     const generateThumbnails = async () => {
       while (unsolve.length > 0) {
         const image = unsolve.shift();
+        console.log(image);
+
         const thumbnail = await generateOrGetThumbnailFromMediaId(
           image.media_id,
           image.media_path,
         );
         const idx = Images.findIndex((imgs) => imgs.uuid === image.uuid);
-        Images[idx] = { ...image, thumb_nail: thumbnail };
+        result[idx] = { ...image, thumb_nail: thumbnail };
+        setFinalImagesArray([...result]); // trickle in
       }
     };
-    const final = Promise.all(
-      Array.from({ length: 3 }, () => generateThumbnails),
+    Promise.all(Array.from({ length: 3 }, () => generateThumbnails())).then(
+      () => {
+        setFinalImagesArray(result);
+      },
     );
-    final.then(() => {
-      setFinalImagesArray(Images);
-      // console.log(finalImagesArray);
-    });
   }, [Images]);
 
   const handleImageClick = (item) => {

@@ -11,6 +11,7 @@ import { View } from "react-native";
 import { HelpBarMap } from "./help_bar_map";
 import mapData from "./map_data";
 import { Marker } from "./components/marker/markers";
+import { setCameraMapRef } from "../utils/map_ref";
 MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN);
 const mapStyles = {
   street: "mapbox://styles/mapbox/streets-v12",
@@ -73,7 +74,7 @@ export const MapBoxLayout = ({}) => {
     };
     flyTo();
   }, [centerCoords]);
-
+  setCameraMapRef(cameraMapRef);
   return (
     <View style={{ flex: 1 }}>
       <MapboxGL.MapView
@@ -105,6 +106,7 @@ export const MapBoxLayout = ({}) => {
           followUserLocation={isFollowingUser}
           followUserMode="normal"
           followZoomLevel={13}
+
           // centerCoordinate={centerCoords ?? undefined} // lat 20 just looks nice
           // zoomLevel={centerCoords ? 16 : 13}
           // followZoomLevel={zoomLevel}
