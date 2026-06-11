@@ -94,8 +94,8 @@ class TripDataService extends TripLocalDataStorage {
 
   async getTripDataFromLocal(user_id: any, trip_id: number) {
     const trip_data = await TripDatabaseService.getTripDataFromTripId(trip_id);
-    if (trip_data.user_id !== user_id) return null;
-    return trip_data;
+    if (trip_data && trip_data.user_id !== user_id) return null;
+    return trip_data ?? null;
   }
   async saveTripDataToLocal(data: Trip_Data) {
     const status = await TripDatabaseService.addTripToDatabase(data);

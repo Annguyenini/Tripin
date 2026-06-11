@@ -7,6 +7,7 @@ import { ContentCard } from "../../../../types/content_card.types";
 import { FetchFuctionRespond } from "../../../../types/fetch_fuction_respond.types";
 import TripContentsBucketProcessor from "./process_bucket";
 import TripContentsSync from "../../sync/trip_content_sync";
+import CurrentTripDataService from "../../../../backend/storage/hot_data/current_trip";
 // in ms
 
 class TripContentHandler {
@@ -52,11 +53,13 @@ class TripContentHandler {
       if (!trip_id) return [];
       const local_content =
         await TripContentsDatabase.getAssestsFromTripIdJoinTripData(trip_id);
-
-      TripContentsSync.syncTripContentsHandler(trip_id);
+      if (CurrentTripDataService.getCurrentTripId() === trip_id) {
+        TripContentsSync.syncTripContentsHandler(trip_id);
+      }
 
       if (!local_content || local_content.length <= 0) {
         const respond = await TripContents.requestTripMedias(trip_id);
+        console.log("dsdsdsdsd");
         return respond?.data?.content_cards;
       }
       return local_content;

@@ -42,6 +42,7 @@ export const TripCard = ({ trip, navigateMain, removeTripLabel }) => {
     navigateMain();
     if (trip.trip_id === CurrentTripDataService.getCurrentTripId()) return;
     // await trip_contents_handler.requestTripCoordinatesHandler(trip.id)
+    console.log(trip);
     const trip_data = await TripHandler.requestTripDataHandler(trip.trip_id);
     TripDisplayObserver.setTripSelected(trip_data);
     return;
