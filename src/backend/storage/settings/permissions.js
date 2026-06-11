@@ -1,7 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { STORAGE_KEYS, DATA_KEYS } from "../hot_data/keys/storage_keys";
-import LocalStorage from "../base/localStorage";
+import LocalStorage from "../async_storage/localStorage";
 import safeRun from "../../../app-core/helpers/safe_run";
 class Permission extends LocalStorage {
   constructor() {

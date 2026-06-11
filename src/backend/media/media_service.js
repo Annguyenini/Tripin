@@ -1,8 +1,6 @@
-import Albumdb from "../storage/database/protected/albumdb";
-import TripContentHandler from "../../app-core/flow/trip_contents_handler";
-import CurrentTripCoordinateService from "../trip_coordinates/current_trip_coordinate_service";
+import TripContentsDatabase from "../storage/database/protected/trip_contents";
+import TripContentHandler from "../../app-core/flow/handlers/trip_contents/trip_contents_handler";
 import CurrentTripDataService from "../storage/hot_data/current_trip";
-import CurrentDisplayTripMediaObserver from "../../frontend/trip-compoments/observers/current_display_media_observer";
 import LocationData from "../../app-core/local_data/local_location_data";
 import safeRun from "../../app-core/helpers/safe_run";
 import * as MediaLibrary from "expo-media-library";
@@ -24,114 +22,65 @@ class MediaService {
     return `${media_type}:${id}`;
   }
   async saveMediaHandler(media_uri, type) {
-    let asset_object;
+    let content_cards;
     let media_id;
     let local_uri;
-    let coordinate_id;
+    let uuid;
     let time_stamp = Date.now();
     const trip_id = CurrentTripDataService.getCurrentTripId();
+    const trip_name = CurrentTripDataService.getCurrentTripName();
+
     // get coordinate for image
     const location_data = await safeRun(
       () => LocationData.getCurrentCoor(),
       "failed_at_get_location",
     );
 
-    if (!location_data) {
-      return;
-    }
-    const longitude = location_data.longitude;
-    const latitude = location_data.latitude;
-    const city = location_data.city;
-    const region = location_data.region;
-    const country = location_data.country;
-    const iso_country_code = location_data.isoCountryCode;
     try {
       // save to camera roll, gallery
       local_uri = await safeRun(
         () => this.saveMediaToLocalAlbum(media_uri, type),
         "failed_at_save_media_to_gallery",
       );
-      console.log("uri", local_uri);
+      // console.log("uri", local_uri);
       if (!local_uri) {
         throw new Error("Failed to generate asset!");
       }
       // generate media an unique media id
       media_id = this.GENERATE_MEDIA_ID(type, local_uri);
-      coordinate_id = Crypto.randomUUID();
+      uuid = Crypto.randomUUID();
       // get object ready to insert into album
-      asset_object = Albumdb.getAlbumAssetObjectReady(
-        local_uri,
-        media_id,
-        type,
-        latitude,
-        longitude,
-        coordinate_id,
-        city,
-        region,
-        country,
-        iso_country_code,
-      );
-
-      // add media into sqlite 3
-      await safeRun(
-        () =>
-          Albumdb.addMediaIntoDB(
-            type,
-            local_uri,
-            time_stamp,
-            media_id,
-            longitude,
-            latitude,
-            coordinate_id,
-            city,
-            region,
-            country,
-            iso_country_code,
-          ),
-        "failed_at_save_image_to_sqlite3",
-      );
-
-      // insert into album
-      Albumdb.addToAlbumArray(asset_object);
+      content_cards = TripContentsDatabase.createContentCard({
+        uuid,
+        trip_id: trip_id ?? null,
+        media_type: type,
+        media_path: local_uri,
+        time_stamp: time_stamp,
+        media_id: media_id,
+        event: "add",
+        altitude: location_data.altitude,
+        latitude: location_data.latitude,
+        longitude: location_data.longitude,
+        speed: location_data.speed,
+        heading: location_data.heading,
+        city: location_data.city,
+        region: location_data.region,
+        country: location_data.country,
+        iso_country_code: location_data.isoCountryCode,
+        // filename: `trip${trip_id}_${time_stamp}.${type === "video" ? "mp4" : "jpeg"}`,
+        // minetype: `${type === "video" ? "video/mp4" : "image/jpeg"}`,
+        trip_name: trip_name ?? "unkown",
+      });
     } catch (err) {
       console.error("Failed to save media to local db", err);
       throw new "Failed to save image to local"();
     }
-    // if in a active trip
-    if (trip_id) {
-      try {
-        TripContentHandler.uploadTripMediaHandler(
-          media_id,
-          trip_id,
-          media_uri,
-          longitude,
-          latitude,
-          coordinate_id,
-          type,
-          time_stamp,
-          city,
-          region,
-          country,
-          iso_country_code,
-        );
-        // generate a location object
-        const coordinate_object =
-          CurrentTripCoordinateService.generateCoordinatePayload(
-            location_data,
-            coordinate_id,
-            time_stamp,
-          );
-        // add the coordinate obejct to service
-        CurrentTripCoordinateService.push(coordinate_object);
-        // display to map
-        CurrentDisplayTripMediaObserver.addAssetIntoArray(
-          trip_id,
-          asset_object,
-        );
-      } catch (err) {
-        console.error(err);
-      }
+    try {
+      TripContentHandler.tripContentHandler(content_cards, trip_id);
+    } catch (err) {
+      console.error(err);
     }
+
     return;
   }
 

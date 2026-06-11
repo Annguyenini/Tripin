@@ -1,13 +1,3 @@
-import * as MediaLibrary from "expo-media-library";
-// import TripData from '../../app-core/local_data/local_trip_data'
-import CurrentTripDataService from "../storage/hot_data/current_trip";
-import TripContentHandler from "../../app-core/flow/trip_contents_handler";
-import TripDataStorage from "../trip_coordinates/current_trip_coordinate_service";
-import * as VideoThumbnails from "expo-video-thumbnails";
-import Albumdb from "../storage/database/protected/albumdb";
-import trip_album_subject from "../trip_album/trip_album_subject";
-// import TripDatabaseService from '../database/TripDatabaseService';
-import CurrentDisplayTripMediaObserver from "../../frontend/trip-compoments/observers/current_display_media_observer";
 import MediaService from "../media/media_service";
 import safeRun from "../../app-core/helpers/safe_run";
 class CameraService {
@@ -21,7 +11,7 @@ class CameraService {
       try {
         // const options = {quality: 1, base64 :true}; // control option for picture
         const photo = await cameraRef.current.takePhoto(options); // return a photo
-        console.log("photo", photo);
+        // console.log("photo", photo);
 
         await safeRun(
           () => MediaService.saveMediaHandler(photo.path, "photo"),
@@ -53,14 +43,14 @@ class CameraService {
       cameraRef.current.stopRecording();
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(this.video);
+    // console.log(this.video);
     if (this.video?.path) {
       try {
         await MediaService.saveMediaHandler(this.video.path, "video");
       } catch (err) {
         console.error("failed to save video!", err);
       }
-      console.log(this.video);
+      // console.log(this.video);
       return this.video;
     } else {
       console.warn("No video URI found yet!");

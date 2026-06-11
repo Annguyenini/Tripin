@@ -13,22 +13,12 @@ import { Image } from "expo-image";
 import { Albumstyles } from "../../styles/album";
 import { FlatList } from "react-native-gesture-handler";
 const FILTERS = ["All", "Trips", "Photos", "Videos"];
-import AlbumService from "../../backend/storage/database/protected/albumdb";
-import { navigate } from "../navigation/navigationService";
+import AlbumService from "../../backend/storage/album/album";
 import MediaViewCard from "./viewer_card";
-import Permission from "../../backend/storage/settings/permissions";
 import { getAlbumPermission } from "../../backend/album/album_permission";
-import * as VideoThumbnails from "expo-video-thumbnails";
-import {
-  copyAsync,
-  documentDirectory,
-  getInfoAsync,
-  makeDirectoryAsync,
-} from "expo-file-system/legacy";
-import safeRun from "../../app-core/helpers/safe_run";
 import { generateOrGetThumbnailFromMediaId } from "../../backend/media/generate_thumbnail";
 const videoPauseIcon = require("../../../assets/image/video_pause_icon.png");
-export default function AlbumScreen() {
+export default function AlbumScreen({ onClose }) {
   const [Images, setImages] = useState([]);
   const [imageVisible, setImageVisible] = useState(false);
   const [currentMedia, setCurrentMedia] = useState(null);
@@ -37,9 +27,7 @@ export default function AlbumScreen() {
   const [finalImagesArray, setFinalImagesArray] = useState(null);
   useEffect(() => {
     const fetchImages = async () => {
-      const assets = await AlbumService.getMergedMediasArray();
-
-      setImages(assets);
+      setImages([...AlbumService.AlbumsArray]);
     };
     const getalbumPermission = async () => {
       const permission = await getAlbumPermission();
@@ -50,7 +38,7 @@ export default function AlbumScreen() {
     getalbumPermission();
     const updateImages = {
       update(newImages) {
-        console.log("new image", newImages);
+        // console.log("new image", newImages);
         setImages(newImages);
       },
     };
@@ -62,41 +50,44 @@ export default function AlbumScreen() {
 
   useEffect(() => {
     // get thumbnail or get it from cache
-    const generateThumbnails = async () => {
-      const result = await Promise.all(
-        Images.map(async (asset) => {
-          if (asset.media_type !== "video") return asset;
-          const dest = await generateOrGetThumbnailFromMediaId(
-            asset.media_id,
-            asset.media_path,
-          );
-          return { ...asset, thumb_nail: dest };
-        }),
-      );
-      console.log(result);
-      setFinalImagesArray(result);
-    };
-    generateThumbnails();
-    console.log(finalImagesArray);
-  }, [Images]);
+    const result = [...Images];
 
-  const onCallMainScreen = () => {
-    navigate("Main");
-  };
+    let unsolve = Images.filter((media) => media.media_type === "video");
+
+    const generateThumbnails = async () => {
+      while (unsolve.length > 0) {
+        const image = unsolve.shift();
+        console.log(image);
+
+        const thumbnail = await generateOrGetThumbnailFromMediaId(
+          image.media_id,
+          image.media_path,
+        );
+        const idx = Images.findIndex((imgs) => imgs.uuid === image.uuid);
+        result[idx] = { ...image, thumb_nail: thumbnail };
+        setFinalImagesArray([...result]); // trickle in
+      }
+    };
+    Promise.all(Array.from({ length: 3 }, () => generateThumbnails())).then(
+      () => {
+        setFinalImagesArray(result);
+      },
+    );
+  }, [Images]);
 
   const handleImageClick = (item) => {
     setCurrentMedia(item.media_path);
     setCurrentMediaType(item.mediaType);
     setImageVisible(true);
-    console.log("item", item, imageVisible);
+    // console.log("item", item, imageVisible);
   };
 
   return (
     <View style={Albumstyles.container}>
-      <TouchableOpacity onPress={onCallMainScreen}>
+      <TouchableOpacity onPress={onClose}>
         <Text style={{ color: "white", fontSize: 40 }}>←</Text>
       </TouchableOpacity>
-      {!fullAlbumPermission && (
+      {/* {!fullAlbumPermission && (
         <View style={Albumstyles.accessBanner}>
           <Text style={Albumstyles.accessText}>
             📷 You've given us limited photo access — some images might not
@@ -106,7 +97,7 @@ export default function AlbumScreen() {
             <Text style={Albumstyles.accessLink}>Fix it in Settings →</Text>
           </TouchableOpacity>
         </View>
-      )}
+      )}*/}
       <FlatList
         data={finalImagesArray}
         extraData={finalImagesArray}

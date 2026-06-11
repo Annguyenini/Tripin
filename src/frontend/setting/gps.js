@@ -12,9 +12,8 @@ import * as Location from "expo-location";
 
 import { Ionicons } from "@expo/vector-icons";
 import { GPSStyle, colors } from "../../styles/setting/gps";
-import UserDataService from "../../backend/storage/database/user";
+import UserDataService from "../../backend/storage/async_storage/user";
 // import { Image } from 'expo-image';
-import { ProfileImagePicker } from "../custom_components/profile_image_picker";
 const ROW_ICONS = {
   location: { bg: colors.peach, iconColor: colors.peachDark },
   navigate: { bg: colors.sage, iconColor: colors.sageDark },

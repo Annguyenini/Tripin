@@ -9,17 +9,17 @@ import {
   PanResponder,
   Modal,
 } from "react-native";
-import AuthService from "../../backend/services/auth.js";
-import { navigate, navigateToAuth } from "../navigation/navigationService.js";
-import { settingStyle } from "../../styles/setting_style.js";
-import CurrentTripDataService from "../../backend/storage/hot_data/current_trip.js";
-import UserDataService from "../../backend/storage/database/user.js";
-import TripService from "../../backend/gps_logic/gps_logic.js";
-import TokenService from "../../backend/storage/tokens/token_service.js";
-import LocalStorage from "../../backend/storage/base/localStorage.js";
-import safeRun from "../../app-core/helpers/safe_run.js";
-import ProfileScreen from "./profile.js";
-import GPSSetting from "./gps.js";
+import { navigate, navigateToAuth } from "../navigation/navigationService";
+import { settingStyle } from "../../styles/setting_style";
+import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
+import UserDataService from "../../backend/storage/async_storage/user";
+import TripService from "../../backend/gps_logic/gps_logic";
+import TokenService from "../../backend/storage/tokens/token_service";
+import LocalStorage from "../../backend/storage/async_storage/localStorage";
+import safeRun from "../../app-core/helpers/safe_run";
+import ProfileScreen from "./profile";
+import GPSSetting from "./gps";
+import { Linking } from "react-native";
 const Localstorage = new LocalStorage();
 export const SettingScreen = ({ onclose }) => {
   const [profileVisible, setProfileVisible] = useState(false);
@@ -28,7 +28,7 @@ export const SettingScreen = ({ onclose }) => {
   const callLogout = async () => {
     // await AuthService.requestLogout();
     navigateToAuth();
-    console.log("signout");
+    // console.log("signout");
     await safeRun(
       () => TokenService.deleteToken("access_token"),
       "failed_at_delete_access_token",
@@ -50,7 +50,7 @@ export const SettingScreen = ({ onclose }) => {
       () => Localstorage.clearAllStorage(),
       "failed_at_clear_storage",
     );
-    console.log("signout1");
+    // console.log("signout1");
   };
   return (
     <View style={settingStyle.container}>
@@ -82,6 +82,13 @@ export const SettingScreen = ({ onclose }) => {
         label="GPS"
         sub="accuracy, interval, background"
       />
+      <Text style={settingStyle.sectionLabel}>POLICIES</Text>
+      <TouchableOpacity
+        onPress={() => Linking.openURL("https://tripping.live/privacy")}
+        style={settingStyle.PoliciesItems}
+      >
+        <Text style={settingStyle.logoutText}>Privacy</Text>
+      </TouchableOpacity>
 
       <Text style={settingStyle.sectionLabel}>APP</Text>
       {/* <SettingRow icon="🌐" label="Language" sub="English" /> */}
@@ -93,13 +100,12 @@ export const SettingScreen = ({ onclose }) => {
         </View>
         <Text style={settingStyle.logoutText}>Log out</Text>
       </TouchableOpacity>
-      <Modal
-        visible={profileVisible}
-        animationType="slide"
-        onRequestClose={() => setProfileVisible(false)}
-      >
-        <ProfileScreen onClose={() => setProfileVisible(false)} />
-      </Modal>
+      {profileVisible && (
+        <View style={settingStyle.profileOverlay}>
+          <ProfileScreen onClose={() => setProfileVisible(false)} />
+        </View>
+      )}
+
       <Modal
         visible={GPSVisible}
         animationType="slide"

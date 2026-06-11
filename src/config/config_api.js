@@ -1,6 +1,7 @@
-// export const BASE_API = "https://tripping.live";
-export const BASE_API = "http://192.168.0.111:8000";
+export const BASE_API = "https://tripping.live";
+// export const BASE_API = "http://192.168.0.111:8000";
 export const HEALTH = BASE_API + "/health";
+export const APP_VERSION = BASE_API + "/app-version";
 export const LOGIN_API = BASE_API + "/auth/login";
 export const SIGN_UP_API = BASE_API + "/auth/signup";
 export const LOGIN_TOKEN_API = BASE_API + "/auth/login-via-token";
@@ -18,6 +19,8 @@ export const REQUEST_RESET_PASSWORD_COMPLETE =
 
 export const BASE_TRIP_API = "/trip";
 export const REQUEST_NEW_TRIP_API = BASE_API + BASE_TRIP_API + "/new-trip";
+export const VERIFY_TRIP_COVER_IMAGE_UPLOAD =
+  BASE_API + BASE_TRIP_API + "/trip-cover-upload-verification";
 export const END_TRIP = BASE_API + BASE_TRIP_API + "/end-trip";
 export const REQUEST_TRIPS_DATA = BASE_API + BASE_TRIP_API + "/all-trips/full";
 export const REQUEST_TRIPS_METADATA =
@@ -39,14 +42,27 @@ export const REQUEST_LOCATION_CONDITIONS =
   BASE_API + BASE_TRIP_CONTENTS_API + "/location-conditions";
 export const REQUEST_TRIP_COORDINATES = BASE_API + BASE_TRIP_CONTENTS_API;
 export const REQUEST_TRIP_MEDIAS = BASE_API + BASE_TRIP_CONTENTS_API;
+export const REQUEST_TRIP_CONTENTS =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/get-all-contents";
+export const REQUEST_TRIP_CONTENTS_HASH =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/request-trip-contents-hash";
+export const REQUEST_TRIP_CONTENTS_METADATA =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/request-trip-contents-metadata";
 export const DELETE_TRIP_MEDIA =
   BASE_API + BASE_TRIP_CONTENTS_API + "/delete-media";
 export const DELETE_TRIP_COORDINATE =
   BASE_API + BASE_TRIP_CONTENTS_API + "/delete-coordinate";
 export const BASE_USER_API = "/user";
 export const UPDATE_PROFILE_IMAGE = BASE_API + BASE_USER_API + "/update-avatar";
+export const REQUEST_UPDATE_PROFILE_PRESIGN_URL =
+  BASE_API + BASE_USER_API + "/request-update-avatar-presign-url";
+export const REQUEST_COMPLETE_UPDATE_PROFILE =
+  BASE_API + BASE_USER_API + "/complete-update-avatar";
 export const GET_USER_DATA = BASE_API + BASE_USER_API + "/get-user-data";
-
+export const REQUEST_PRESIGN_URLS =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/request-presign-urls";
+export const REQUEST_CONTENT_CARDS_SYNC =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/sync";
 export const SYNC = BASE_API + "/sync";
 export const TRIP_COORDINATE_HASH = SYNC + "/trip-coordinate-hash";
 export const TRIP_MEDIAS_HASH = SYNC + "/trip-medias-hash";

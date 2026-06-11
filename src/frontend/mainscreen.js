@@ -11,36 +11,34 @@ import {
   View,
   TouchableOpacity,
   Text,
-  Button,
-  TextInput,
-  Alert,
   StyleSheet,
   Dimensions,
   Modal,
 } from "react-native";
-import { mainScreenStyle, footer } from "../styles/main_screen_styles.js";
-import { navigate } from "./navigation/navigationService.js";
-import { UserDataBottomSheet } from "./trip-compoments/bottom_sheet/bottom_sheet.js";
-import UserDataService from "../backend/storage/database/user.js";
+import { mainScreenStyle, footer } from "../styles/main_screen_styles";
+import { navigate } from "./navigation/navigationService";
+import { UserDataBottomSheet } from "./trip-components/bottom_sheet/bottom_sheet";
+import UserDataService from "../backend/storage/async_storage/user";
 import { AppState } from "react-native";
 import {
   startForegroundGPSTracker,
   endForegroundGPSTracker,
-} from "../backend/gps_logic/foreground_gps_logic.js";
-import GPSLogic from "../backend/gps_logic/gps_logic.js";
-import { MapBoxLayout } from "./trip-compoments/map_box_layout.js";
-import { DATA_KEYS } from "../backend/storage/hot_data/keys/storage_keys.js";
-import Setting from "../app-core/setting.js";
-import AppFlow from "../app-core/flow/app_flow.js";
-import LoadingScreen from "./overlay/fetching_loading_screen.js";
+} from "../backend/gps_logic/foreground_gps_logic";
+import GPSLogic from "../backend/gps_logic/gps_logic";
+import { MapBoxLayout } from "./trip-components/map_box_layout";
+import { DATA_KEYS } from "../backend/storage/hot_data/keys/storage_keys";
+import Setting from "../app-core/setting";
+import AppFlow from "../app-core/flow/app_flow.ts";
+import LoadingScreen from "./overlay/fetching_loading_screen";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system/legacy";
-import { BannerManager } from "./overlay/banner_manager.js";
-import { CameraApp } from "./camera/camera_main.js";
-import { TripsList } from "./trips_list.js";
-import { SettingScreen } from "./setting/setting_screen.js";
-import CurrentTripDataService from "../backend/storage/hot_data/current_trip.js";
-import { NewTripFiller } from "./trip-compoments/components/helpers/add_new_trip.js";
+import { BannerManager } from "./overlay/banner_manager";
+import { CameraApp } from "./camera/camera_main";
+import { TripsList } from "./trips_list";
+import { SettingScreen } from "./setting/setting_screen";
+import CurrentTripDataService from "../backend/storage/hot_data/current_trip";
+import { NewTripFiller } from "./trip-components/components/helpers/add_new_trip";
+import AlbumScreen from "./albums/album";
 export const MainScreen = () => {
   // user profile state from local storage
   const [user_id, setUserId] = useState(UserDataService.getUserId());
@@ -51,6 +49,7 @@ export const MainScreen = () => {
   const [cameraVisible, setCameraVisible] = useState(false);
   const [tripsListVisible, setTripsListVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
+  const [albumVisible, setAlbumVisible] = useState(false);
   // controls whether map renders — waits for trip data to be ready
   const [tripDataSuccess, setTripDataSuccess] = useState(false);
   const isUserDataReady = useRef(false);
@@ -159,13 +158,17 @@ export const MainScreen = () => {
         </View>
       )}
       {settingVisible && (
-        <Modal>
+        <View style={styles.settingOverlay}>
           <SettingScreen
             onclose={() => setSettingVisible(false)}
           ></SettingScreen>
-        </Modal>
+        </View>
       )}
-
+      {albumVisible && (
+        <View style={styles.albumOverlay}>
+          <AlbumScreen onClose={() => setAlbumVisible(false)}></AlbumScreen>
+        </View>
+      )}
       {/* show map once trip data is ready, otherwise show loading */}
       {tripDataSuccess && RenderMap()}
       {!tripDataSuccess && <LoadingScreen />}
@@ -220,13 +223,16 @@ export const MainScreen = () => {
             )}
           </View>
 
-          <TouchableOpacity style={footer.fotterbutton} onPress={callAlbum}>
+          <TouchableOpacity
+            style={footer.fotterbutton}
+            onPress={() => setAlbumVisible((prev) => !prev)}
+          >
             <Ionicons name="images-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Gallery</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={footer.fotterbutton}
-            onPress={() => setSettingVisible(true)}
+            onPress={() => setSettingVisible((prev) => !prev)}
           >
             <Ionicons name="settings-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Setting</Text>
@@ -273,6 +279,24 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   tripsOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: Dimensions.get("window").height * 0.01, // adjust to clear your bottom sheet + bottom nav height
+    zIndex: 500,
+    backgroundColor: "#1a1917",
+  },
+  settingOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: Dimensions.get("window").height * 0.01, // adjust to clear your bottom sheet + bottom nav height
+    zIndex: 500,
+    backgroundColor: "#1a1917",
+  },
+  albumOverlay: {
     position: "absolute",
     top: 0,
     left: 0,

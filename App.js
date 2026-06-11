@@ -22,14 +22,16 @@ import { styles } from "./src/styles/style.js";
 import { mainScreenStyle } from "./src/styles/main_screen_styles.js";
 import { CameraApp } from "./src/frontend/camera/camera_main.js";
 import { SettingScreen } from "./src/frontend/setting/setting_screen.js";
-import AppFlow from "./src/app-core/flow/app_flow.js";
 import AlbumScreen from "./src/frontend/albums/album.js";
 import { OverLayProvider } from "./src/frontend/overlay/overlay_main.js";
 import PermissionsScreen from "./src/frontend/setting/permissions.js";
-const backgroundImage = require("./assets/image/main_background.png");
 const logo = require("./assets/image/main_logo.png");
 const { width, height } = Dimensions.get("window");
 const Stack = createStackNavigator();
+import * as Application from "expo-application";
+import * as Linking from "expo-linking";
+import { Platform } from "react-native";
+import AppVersionValidation from "./src/app-core/app-settings/app_version.js";
 
 export default function App() {
   const [authentication, setAuthentication] = useState(false);
@@ -42,6 +44,7 @@ export default function App() {
   return (
     <OverLayProvider>
       <View style={{ flex: 2 }}>
+        <AppVersionValidation></AppVersionValidation>
         {/* <SafeAreaProvider> */}
         {/* <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
@@ -56,7 +59,7 @@ export default function App() {
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator>
             <Stack.Screen
-              name="auth"
+              name="Auth"
               component={AuthLayout}
               options={{ headerShown: false }}
             />

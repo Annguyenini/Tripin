@@ -3,7 +3,7 @@ export default {
     name: "tripping",
     slug: "tripin",
     scheme: "tripping",
-    version: "1.0.0",
+    version: "1.1.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "light",
@@ -59,7 +59,7 @@ export default {
           backgroundColor: "#232323",
           image: "./assets/splash-light-icon.png",
           dark: {
-            image: "./assets/splash-dark-icon.png",
+            image: "./assets/splash-tinted-icon.png",
             backgroundColor: "#000000",
           },
           imageWidth: 200,
@@ -116,6 +116,12 @@ export default {
         projectId: "2e3446d3-9978-4cea-8294-a1166b269f3f",
       },
       mapboxToken: process.env.EXPO_MAPBOX_PUBLIC_TOKEN,
+    },
+    updates: {
+      url: "https://u.expo.dev/2e3446d3-9978-4cea-8294-a1166b269f3f",
+    },
+    runtimeVersion: {
+      policy: "appVersion",
     },
   },
 };

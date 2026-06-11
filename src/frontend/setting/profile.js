@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { profileStyle, colors } from "../../styles/setting/profile";
-import UserDataService from "../../backend/storage/database/user";
+import UserDataService from "../../backend/storage/async_storage/user";
 // import { Image } from 'expo-image';
 import { ProfileImagePicker } from "../custom_components/profile_image_picker";
 import ResetPassword from "../auth/reset_password";
@@ -145,11 +145,13 @@ export default function ProfileScreen({ onClose }) {
           onClose={() => setShowResetPassword(false)}
         ></ResetPassword>
       </Modal>
-      <Modal visible={avatarPickerVisible} animationType="slide">
-        <ProfileImagePicker
-          onClose={() => setAvatarPickerVisible(false)}
-        ></ProfileImagePicker>
-      </Modal>
+      {avatarPickerVisible && (
+        <View style={profileStyle.profilePickerOverlay}>
+          <ProfileImagePicker
+            onClose={() => setAvatarPickerVisible(false)}
+          ></ProfileImagePicker>
+        </View>
+      )}
     </ScrollView>
   );
 }

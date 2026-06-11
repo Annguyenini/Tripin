@@ -2,15 +2,33 @@ import { View, Image, TouchableOpacity, Text } from "react-native";
 import { OverlayCard } from "../overlay/overlay_card";
 import { profileImagePicker } from "../../styles/function/profile_image_picker_style";
 import { imagePicker, takePicture } from "./image_picker";
-import { useState } from "react";
-import UserDataService from "../../backend/storage/database/user";
+import { useRef, useState } from "react";
+import UserDataService from "../../backend/storage/async_storage/user";
 import UserService from "../../backend/services/user";
+import UserHandler from "../../app-core/flow/user_handler";
 import { UseOverlay } from "../overlay/overlay_main";
 export const ProfileImagePicker = ({ onClose }) => {
   const { showLoading, hideLoading, showErrorBox } = UseOverlay();
+  const previousImage = UserDataService.getProfileImageUri();
   const [imageUri, setImageUri] = useState(
     UserDataService.getProfileImageUri(),
   );
+  const loadingRef = useRef();
+
+  const loadingSteps = ["Modifing data", "Changing your avatar", "Nanana"];
+  const Loading = () => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    showLoading(() => HideLoading, loadingSteps);
+  };
+  const HideLoading = () => {
+    console.log("end", loadingRef.current);
+    if (!loadingRef.current) return;
+    console.log("end");
+
+    hideLoading();
+    loadingRef.current = false;
+  };
   const callImagePicker = async () => {
     const pic = await imagePicker();
     setImageUri(pic.assets[0].uri);
@@ -20,17 +38,16 @@ export const ProfileImagePicker = ({ onClose }) => {
     setImageUri(pic.assets[0].uri);
   };
   const updateUserProfileImage = async () => {
-    showLoading();
-    const respond = await UserService.updateUserProfileImage(imageUri);
-    hideLoading();
-    if (!respond.ok) {
+    if (imageUri === previousImage) return;
+    Loading();
+    const respond = await UserHandler.ChangeUserUserAvatarHandler(imageUri);
+    HideLoading();
+    if (!respond.ok || respond.status !== 200) {
       showErrorBox(
         "Error",
         "Error with update avartar, please try again shortly",
         6000,
       );
-    } else {
-      await UserDataService.setProfileImageUriToLocal(imageUri);
     }
     onClose(false);
   };

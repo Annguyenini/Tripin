@@ -1,4 +1,4 @@
-import LocalStorage from "../backend/storage/base/localStorage";
+import LocalStorage from "../backend/storage/async_storage/localStorage";
 import { TRACKING_MODE } from "../backend/tracking/tracking_mode";
 import { STORAGE_KEYS } from "../backend/storage/hot_data/keys/storage_keys";
 import safeRun from "./helpers/safe_run";
@@ -15,7 +15,7 @@ class Setting extends LocalStorage {
     if (!(await this.saveToLocal(STORAGE_KEYS.SETTINGS.TRACKING_MODE, mode))) {
       return false;
     }
-    console.log("tracking mode", mode);
+    // console.log("tracking mode", mode);
     this._tracking_mode = mode;
     return true;
   }

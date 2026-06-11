@@ -6,22 +6,21 @@ import * as API from "../../config/config_api";
 import TokenService from "../storage/tokens/token_service";
 import NetworkObserver from "../../app-core/flow/sync/network_observer";
 class Auth {
-  async authenticateToken(type, etag = null) {
+  async authenticateToken(type) {
+    // console.log("veriffy token");
     try {
       console.assert(
         type === "access_token" && type === "refresh_token",
         "Wrong token type",
       );
       const token = await TokenService.getToken(type);
-      console.log("token for auth ", token);
+      // console.log("token for auth ", token);
       console.assert(token == null, "token is null");
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       };
-      if (etag) {
-        headers["If-None-Match"] = etag;
-      }
+
       const respond = await fetch(API.LOGIN_TOKEN_API, {
         method: "POST",
         headers: headers,
@@ -54,7 +53,7 @@ class Auth {
         "Error calling requestNewAccessToken!",
       );
       const data = await respond.json();
-      console.log("new acess token", data);
+      // console.log("new acess token", data);
       console.assert(
         data != undefined,
         "Data at request new access token is undefined",
@@ -83,15 +82,7 @@ class Auth {
         }),
       });
       const data = await respond.json();
-
-      if (respond.status !== 200) {
-        return {
-          ok: true,
-          status: respond.status,
-          message: data.message,
-          data: null,
-        };
-      }
+      NetworkObserver.setServerStatus(true);
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -113,16 +104,8 @@ class Auth {
         body: JSON.stringify({ email, displayName, username, password }),
       });
       const data = await respond.json();
-      console.log(respond, data);
-
-      if (respond.status !== 200) {
-        return {
-          ok: false,
-          status: respond.status,
-          message: data.message,
-          data: null,
-        };
-      }
+      // console.log(respond, data);
+      NetworkObserver.setServerStatus(true);
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -148,14 +131,6 @@ class Auth {
       );
       const data = await respond.json();
 
-      if (respond.status !== 200 && respond.status !== 202) {
-        return {
-          ok: false,
-          status: respond.status,
-          message: data.message,
-          data: null,
-        };
-      }
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -187,16 +162,7 @@ class Auth {
         }),
       });
       const data = await respond.json();
-      console.log(respond, data);
 
-      if (respond.status !== 200) {
-        return {
-          ok: false,
-          status: respond.status,
-          message: data.message,
-          data: null,
-        };
-      }
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -218,9 +184,7 @@ class Auth {
         body: JSON.stringify({ email, code }),
       });
       const data = await respond.json();
-      if (respond.status !== 200) {
-        return { ok: false, status: respond.status, data: null };
-      }
+      // console.log(data);
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -242,9 +206,10 @@ class Auth {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const data = await respond.json();
-      if (respond.status !== 200)
+      if (respond.status !== 201)
         return { ok: false, status: respond.status, data: null };
+      const data = await respond.json();
+
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -258,16 +223,17 @@ class Auth {
       return { ok: false };
     }
   }
-  async requestResetPasswordVerify(code, token) {
+  async requestResetPasswordVerify(code, email) {
     try {
       const respond = await fetch(API.REQUEST_RESET_PASSWORD_VERIFY, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, token }),
+        body: JSON.stringify({ code, email }),
       });
-      const data = await respond.json();
-      if (respond.status !== 200)
+      if (respond.status !== 201)
         return { ok: false, status: respond.status, data: null };
+      const data = await respond.json();
+
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);
@@ -281,16 +247,19 @@ class Auth {
       return { ok: false };
     }
   }
-  async requestResetPasswordReset(new_password, token) {
+  async requestResetPasswordReset(new_password, token, email) {
     try {
       const respond = await fetch(API.REQUEST_RESET_PASSWORD_COMPLETE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ new_password, token }),
+        body: JSON.stringify({ new_password, token, email }),
       });
-      const data = await respond.json();
+      // console.log(respond);
+
       if (respond.status !== 200)
         return { ok: false, status: respond.status, data: null };
+      const data = await respond.json();
+
       return { ok: true, status: respond.status, data: data };
     } catch (err) {
       console.error("Failed to fetch", err);

@@ -2,7 +2,7 @@ import * as Location from "expo-location";
 import locationDataService from "../storage/hot_data/current_location_data_service";
 let subcription;
 export const startForegroundGPSTracker = async () => {
-  console.log("start");
+  // console.log("start");
 
   subcription = await Location.watchPositionAsync(
     {
@@ -19,7 +19,7 @@ export const startForegroundGPSTracker = async () => {
   );
 };
 export const endForegroundGPSTracker = async () => {
-  console.log("end");
+  // console.log("end");
   if (subcription) {
     subcription.remove();
     subcription = null;

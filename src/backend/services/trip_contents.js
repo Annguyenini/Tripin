@@ -1,149 +1,72 @@
-import CurrentTripDataService from "../storage/hot_data/current_trip";
 import * as API from "../../config/config_api";
-import TokenService from "../storage/tokens/token_service";
-import AuthService from "./auth";
-import getTimestamp from "../addition_functions/get_current_time";
-import * as FileSystem from "expo-file-system/legacy";
 import fetchFunction from "./fetch_function";
+
 class TripContentService {
-  async send_coordinates(coor_object, version) {
-    console.log("after send", coor_object);
-    const respond = await fetchFunction(
-      API.SEND_COORDINATES +
-        `/${CurrentTripDataService.getCurrentTripId()}/coordinates`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          id: coor_object.coordinate_id,
-        },
-        body: JSON.stringify({
-          coordinates: coor_object,
-          version: version,
-        }),
-      },
-    );
-    return respond;
-  }
-  async deleteCoordinate(trip_id, coordinate_id, modified_time) {
-    const respond = await fetchFunction(API.DELETE_TRIP_COORDINATE, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json", id: coordinate_id },
-      body: JSON.stringify({
-        trip_id: trip_id,
-        coordinate_id: coordinate_id,
-        modified_time: modified_time,
-      }),
-    });
-    return respond;
-  }
-
-  async requestTripCoordinates(trip_id, coordinateHash) {
-    if (!trip_id) return;
-    const headers = {};
-    if (coordinateHash) {
-      headers["If-None-Match"] = coordinateHash;
-    }
-    const respond = await fetchFunction(
-      API.REQUEST_TRIP_COORDINATES + `/${trip_id}/coordinates`,
-      {
-        method: "GET",
-        headers: headers,
-      },
-    );
-
-    return respond;
-  }
-  async request_location_conditions(longitude, latitude) {
-    const respond = await fetchFunction(
-      API.REQUEST_LOCATION_CONDITIONS +
-        `?longitude=${longitude}&latitude=${latitude}`,
-      {
-        methods: "GET",
-        headers: { "Content-Type": "application/json" },
-      },
-    );
-    return respond;
-  }
-
-  async sendTripMedia(
-    media_id,
-    trip_id,
-    mediaUri,
-    longitude,
-    latitude,
-    mediaType,
-    coordinate_id,
-    time_stamp,
-    city,
-    region,
-    country,
-    iso_country_code,
-  ) {
-    const form = new FormData();
-    const path = `trip${trip_id}_${time_stamp}`;
-    const isVideo = mediaType === "video";
-    console.log(mediaUri);
-    form.append(isVideo ? "video" : "image", {
-      uri: mediaUri,
-      name: `${path}.${isVideo ? "mp4" : "jpg"}`,
-      type: isVideo ? "video/mp4" : "image/jpeg",
-    });
-
-    form.append(
-      "data",
-      JSON.stringify({
-        trip_id: String(trip_id),
-        longitude: String(longitude),
-        latitude: String(latitude),
-        time_stamp: time_stamp,
-        media_id: media_id,
-        coordinate_id: coordinate_id,
-        city: city,
-        region: region,
-        country: country,
-        iso_country_code: iso_country_code,
-      }),
-    );
-    // const headers = {
-    //     'id': media_id
-    // }
-    const respond = await fetchFunction(
-      API.SEND_MEDIAS_BASE + `/${trip_id}/upload`,
-      {
-        // headers: headers,
-        method: "POST",
-        body: form,
-      },
-    );
-    return respond;
-  }
-  async requestTripMedias(trip_id, trip_media_hash) {
-    const headers = {};
-    if (trip_media_hash) {
-      headers["If-None-Match"] = trip_media_hash;
-    }
-    const respond = await fetchFunction(
-      API.REQUEST_TRIP_MEDIAS + `/${trip_id}/medias`,
-      {
-        method: "GET",
-        headers: headers,
-      },
-    );
-    return respond;
-  }
-
-  async deleteMedias(trip_id, media_id, modified_time) {
-    const respond = await fetchFunction(API.DELETE_TRIP_MEDIA, {
-      method: "DELETE",
+  async requestUploadPresignUrl(content_cards, trip_id) {
+    return await fetchFunction(API.REQUEST_PRESIGN_URLS, {
+      method: "POST",
+      body: JSON.stringify({ content_cards, trip_id }),
       headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  async requestSync(content_cards, trip_id) {
+    return await fetchFunction(API.REQUEST_CONTENT_CARDS_SYNC, {
+      method: "POST",
+      body: JSON.stringify({ content_cards, trip_id }),
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  async uploadTripMediaToCloud(card_data) {
+    try {
+      const content_type =
+        card_data.media_type === "video" ? "video/mp4" : "image/jpeg";
+      const image = await fetch(card_data.media_path);
+      const blob = await image.blob();
+      const respond = await fetch(card_data.presign_url, {
+        method: "PUT",
+        body: blob,
+        headers: { "Content-Type": content_type },
+      });
+      return respond;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+
+  async requestTripMedias(trip_id) {
+    const headers = {};
+    // if (trip_media_hash) headers["If-None-Match"] = trip_media_hash;
+    return await fetchFunction(API.REQUEST_TRIP_CONTENTS + `/${trip_id}`, {
+      method: "GET",
+      headers: headers,
+    });
+  }
+  async requestTripContentsHash(trip_id) {
+    // console.log("request hashs", trip_id);
+    const headers = { "Content-Type": "application/json" };
+    // if (trip_media_hash) headers["If-None-Match"] = trip_media_hash;
+    return await fetchFunction(API.REQUEST_TRIP_CONTENTS_HASH, {
+      method: "POST",
       body: JSON.stringify({
         trip_id: trip_id,
-        media_id: media_id,
-        modified_time: modified_time,
       }),
+      headers: headers,
     });
-    return respond;
+  }
+  async requestTripContentsMetadata(trip_id) {
+    const headers = { "Content-Type": "application/json" };
+    // if (trip_media_hash) headers["If-None-Match"] = trip_media_hash;
+    return await fetchFunction(API.REQUEST_TRIP_CONTENTS_METADATA, {
+      method: "POST",
+      body: JSON.stringify({
+        trip_id: trip_id,
+      }),
+      headers: headers,
+    });
   }
 }
+
 export default new TripContentService();
