@@ -87,6 +87,12 @@ export const settingStyle = StyleSheet.create({
     borderRadius: 10,
     padding: 13,
   },
+  PoliciesItems: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    margin: 20,
+  },
   logoutText: {
     color: "#e07a3a",
     fontSize: 13,

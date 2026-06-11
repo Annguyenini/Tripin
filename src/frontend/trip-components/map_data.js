@@ -55,16 +55,6 @@ const mapData = () => {
     return () => CurrentDisplayContentsObserver.detach(observer, key);
   }, [currentTripDisplayData]);
 
-  useEffect(() => {
-    const observer = {
-      update(arr) {
-        flyToMarker(coordsFromArray(arr), 15);
-
-        setCenterCoords(coordsFromArray(arr));
-      },
-    };
-    // addObserver(observer);
-  }, []);
   return { centerCoords };
 };
 

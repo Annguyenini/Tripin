@@ -19,6 +19,7 @@ import LocalStorage from "../../backend/storage/async_storage/localStorage";
 import safeRun from "../../app-core/helpers/safe_run";
 import ProfileScreen from "./profile";
 import GPSSetting from "./gps";
+import { Linking } from "react-native";
 const Localstorage = new LocalStorage();
 export const SettingScreen = ({ onclose }) => {
   const [profileVisible, setProfileVisible] = useState(false);
@@ -81,6 +82,13 @@ export const SettingScreen = ({ onclose }) => {
         label="GPS"
         sub="accuracy, interval, background"
       />
+      <Text style={settingStyle.sectionLabel}>POLICIES</Text>
+      <TouchableOpacity
+        onPress={() => Linking.openURL("https://tripping.live/privacy")}
+        style={settingStyle.PoliciesItems}
+      >
+        <Text style={settingStyle.logoutText}>Privacy</Text>
+      </TouchableOpacity>
 
       <Text style={settingStyle.sectionLabel}>APP</Text>
       {/* <SettingRow icon="🌐" label="Language" sub="English" /> */}
