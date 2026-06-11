@@ -87,7 +87,7 @@ export default function AlbumScreen({ onClose }) {
       <TouchableOpacity onPress={onClose}>
         <Text style={{ color: "white", fontSize: 40 }}>←</Text>
       </TouchableOpacity>
-      {!fullAlbumPermission && (
+      {/* {!fullAlbumPermission && (
         <View style={Albumstyles.accessBanner}>
           <Text style={Albumstyles.accessText}>
             📷 You've given us limited photo access — some images might not
@@ -97,7 +97,7 @@ export default function AlbumScreen({ onClose }) {
             <Text style={Albumstyles.accessLink}>Fix it in Settings →</Text>
           </TouchableOpacity>
         </View>
-      )}
+      )}*/}
       <FlatList
         data={finalImagesArray}
         extraData={finalImagesArray}

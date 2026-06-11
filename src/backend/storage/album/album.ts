@@ -53,11 +53,13 @@ class Album {
 
   async getAllMediasFromDb() {
     const DB = await SqliteService.connectDB();
+    const user_id = UserDataService.getUserId();
     let result: Array<ContentCard>;
     try {
       result = await DB.getAllAsync(
-        `SELECT * FROM content_cards WHERE event = ?  ORDER BY time_stamp DESC`,
+        `SELECT * FROM content_cards WHERE event = ? AND user_id =? ORDER BY time_stamp DESC`,
         "add",
+        user_id,
       );
       return result;
     } catch (err) {
