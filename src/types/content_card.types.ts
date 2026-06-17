@@ -1,7 +1,7 @@
 type ContentCardEvent = "add" | "remove";
 export interface ContentCard {
   uuid: string;
-  trip_id?: string;
+  trip_id?: number;
   media_type: string;
   media_path: string;
   time_stamp: number;
@@ -16,7 +16,7 @@ export interface ContentCard {
   region: string;
   country: string;
   iso_country_code: string;
-  filename: string;
+  filename?: string;
   minetype?: string;
   trip_name?: string;
   presign_url?: string;

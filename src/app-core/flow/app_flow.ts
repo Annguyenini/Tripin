@@ -163,6 +163,7 @@ class AppFlow {
       this.state = "ready";
       this.nextStep();
     } catch (error) {
+      console.error("failed to init user album", error);
       throw new Error("failed to init user album");
     }
   }

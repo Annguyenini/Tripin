@@ -13,15 +13,21 @@ import Video from "react-native-video";
 import { FRAME_W, TEXT_MUTED, TEXT_PRIMARY, mono, BG } from "./constants";
 import { flyToMarker } from "../../../../utils/map_ref";
 
-const { width } = Dimensions.get("window");
+const { width: SCREEN_W } = Dimensions.get("window");
+
+// The right panel is the screen minus the left sidebar (110) minus sheet padding (16*2) minus divider gap (10)
+const LEFT_W = 110;
+const SHEET_PAD = 16;
+const PANEL_GAP = 10;
+const RIGHT_W = SCREEN_W - LEFT_W - SHEET_PAD * 2 - PANEL_GAP;
 
 /* ---------------- FRAME ---------------- */
-function Frame({ media, index, isSelected, onPress, onLeft, onRight }) {
+function Frame({ media, index, isSelected, onPress }) {
   const scale = useRef(new Animated.Value(1)).current;
 
   React.useEffect(() => {
     Animated.spring(scale, {
-      toValue: isSelected ? 1.2 : 1,
+      toValue: isSelected ? 1.01 : 1,
       useNativeDriver: true,
       friction: 8,
     }).start();
@@ -42,38 +48,16 @@ function Frame({ media, index, isSelected, onPress, onLeft, onRight }) {
           <Image source={{ uri: media.media_path }} style={styles.media} />
         )}
 
-        <Text style={styles.index}>{String(index + 1).padStart(2, "0")}</Text>
-
-        {isSelected && (
-          <View style={styles.overlayActions}>
-            <TouchableOpacity style={styles.btn} onPress={() => onLeft(media)}>
-              <Text style={styles.btnText}>←</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.btnAdd}
-              onPress={() => onRight(media)}
-            >
-              <Text style={styles.btnText}>＋</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.btn} onPress={() => onRight(media)}>
-              <Text style={styles.btnText}>→</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        <Text style={styles.indexLabel}>
+          {String(index + 1).padStart(2, "0")}
+        </Text>
       </Animated.View>
     </TouchableOpacity>
   );
 }
 
 /* ---------------- SHEET ---------------- */
-export default function PhotoSheet({
-  location,
-  onClose,
-  onLeftPress,
-  onRightPress,
-}) {
+export default function PhotoSheet({ location, onClose }) {
   const [index, setIndex] = useState(0);
   const [focus, setFocus] = useState(null);
 
@@ -91,9 +75,15 @@ export default function PhotoSheet({
     : null;
 
   return (
+    // absoluteFill covers the parent <View style={StyleSheet.absoluteFill}>
+    // in PolaroidGallery, which is explicitly SCREEN_W × SCREEN_H
     <View style={styles.overlay}>
-      {/* BACKDROP */}
-      <TouchableOpacity style={StyleSheet.absoluteFill} onPress={onClose} />
+      {/* BACKDROP — tap outside sheet to close */}
+      <TouchableOpacity
+        style={StyleSheet.absoluteFill}
+        onPress={onClose}
+        activeOpacity={1}
+      />
 
       <View style={styles.sheet}>
         {/* HEADER */}
@@ -132,35 +122,35 @@ export default function PhotoSheet({
             </TouchableOpacity>
           </View>
 
-          {/* RIGHT PANEL */}
+          {/* RIGHT PANEL — fixed width so FlatList page items are predictable */}
           <View style={styles.right}>
             <FlatList
               data={location.medias}
-              keyExtractor={(item, i) => i.toString()}
+              keyExtractor={(_, i) => i.toString()}
               horizontal
               pagingEnabled
               showsHorizontalScrollIndicator={false}
               bounces={false}
               decelerationRate="fast"
+              // RIGHT_W is the exact pixel width of this panel
               getItemLayout={(_, i) => ({
-                length: width,
-                offset: width * i,
+                length: RIGHT_W,
+                offset: RIGHT_W * i,
                 index: i,
               })}
               onMomentumScrollEnd={(e) => {
-                const i = Math.round(e.nativeEvent.contentOffset.x / width);
+                const i = Math.round(e.nativeEvent.contentOffset.x / RIGHT_W);
                 setIndex(i);
                 setFocus(null);
               }}
-              renderItem={({ item, index }) => (
-                <View style={[styles.page, { width }]}>
+              renderItem={({ item, index: i }) => (
+                // Each page is exactly RIGHT_W wide — no flex, no overflow
+                <View style={[styles.page, { width: RIGHT_W }]}>
                   <Frame
                     media={item}
-                    index={index}
-                    isSelected={index === activeIndex}
-                    onPress={() => setFocus(focus === index ? null : index)}
-                    onLeft={onLeftPress}
-                    onRight={onRightPress}
+                    index={i}
+                    isSelected={i === activeIndex}
+                    onPress={() => setFocus(focus === i ? null : i)}
                   />
                 </View>
               )}
@@ -201,12 +191,9 @@ const styles = StyleSheet.create({
 
   sheet: {
     backgroundColor: BG,
+    // Full height — backdrop above handles the tap-to-close area
     height: "100%",
-    padding: 16,
-  },
-
-  header: {
-    marginBottom: 10,
+    padding: SHEET_PAD,
   },
 
   city: {
@@ -215,6 +202,7 @@ const styles = StyleSheet.create({
     color: TEXT_PRIMARY,
   },
 
+  header: {},
   sub: {
     fontSize: 12,
     color: TEXT_MUTED,
@@ -223,13 +211,12 @@ const styles = StyleSheet.create({
   body: {
     flexDirection: "row",
     flex: 1,
-    alignItems: "stretch",
   },
 
-  /* LEFT PANEL (FIXED SEPARATION) */
+  /* LEFT PANEL */
   left: {
-    width: 110,
-    paddingRight: 10,
+    width: LEFT_W,
+    paddingRight: PANEL_GAP,
     borderRightWidth: StyleSheet.hairlineWidth,
     borderRightColor: "rgba(0,0,0,0.1)",
   },
@@ -267,21 +254,20 @@ const styles = StyleSheet.create({
 
   /* RIGHT PANEL */
   right: {
-    flex: 1,
+    // Explicit pixel width — matches RIGHT_W constant used in FlatList
+    width: RIGHT_W,
     justifyContent: "center",
-    alignItems: "flex-start",
-    paddingLeft: 8,
   },
 
   page: {
+    // width set inline via RIGHT_W; height fills the panel
     justifyContent: "center",
     alignItems: "center",
-    flex: 1,
   },
 
   heroFrame: {
     width: FRAME_W,
-    height: 260,
+    height: 220,
     borderRadius: 10,
     overflow: "hidden",
     backgroundColor: "#111",
@@ -292,7 +278,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 
-  index: {
+  indexLabel: {
     position: "absolute",
     bottom: 6,
     right: 6,

@@ -19,10 +19,16 @@ import TripActionsHandler from "../../../app-core/flow/handlers/trip_actions/tri
 import { UseOverlay } from "../../overlay/overlay_main";
 import { BottomSheetSyle } from "../../../styles/bottom_sheet.styles";
 import { TripStatCards } from "./compoments/trip_stat";
-import PolaroidGallery from "./compoments/memories";
+// import PolaroidGallery from "./compoments/memories";\
+import GalleryManager from "./trip_dashboard/stat/memories_manage";
+import TripTimeline from "./trip_dashboard/timeline/timeline";
+import PolaroidGallery from "./compoments/memories/PolaroidGallery";
 import TripCustomCard from "./trips_card/trip_custom_card";
 import { Trip_Data } from "../../../types/trip_data.types";
 import { TestScreen } from "../../../test_screen";
+import TripDashBoard from "./trip_dashboard/dashboard_manager";
+import TripStat from "./trip_dashboard/stat/stat";
+import TimeLineManager from "./trip_dashboard/timeline/timeline_manager";
 // ─── Assets ───────────────────────────────────────────────────────────────────
 const default_image = require("../../../../assets/icon.png");
 
@@ -39,7 +45,7 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
   const [showEdit, setShowEdit] = useState(false);
   const [status, setStatus] = useState("Current");
   const [secondTripDisplay, setSecondTripDisplay] = useState(null);
-
+  const [viewMode, setViewMode] = useState<"dash" | "timeline">("dash");
   const [displayTrip, setDisplayTrip] = useState(
     CurrentTripDataService.getCurrentTripStatus(),
   );
@@ -138,73 +144,48 @@ export const UserDataBottomSheet = ({ userDisplayName }) => {
             <TestScreen testScreenHandler={() => setTest(false)}></TestScreen>
           </Modal>
         </>*/}
+
         {displayTrip && (
           <>
-            {/* ── Trip Title ── */}
-            <View style={BottomSheetSyle.titleRow}>
-              <Image
-                source={trip.image ? { uri: trip.image } : default_image}
-                style={BottomSheetSyle.image}
-              />
-
-              <View style={BottomSheetSyle.titleBlock}>
-                <View style={BottomSheetSyle.tripNameRow}>
-                  <Text style={BottomSheetSyle.tripName}>{trip.trip_name}</Text>
-                  <TouchableOpacity
-                    style={BottomSheetSyle.moreBtn}
-                    onPress={() => setShowEdit(true)}
-                  >
-                    <Text style={BottomSheetSyle.moreBtnText}>•••</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={BottomSheetSyle.statusRow}>
-                  <View style={BottomSheetSyle.statusDot} />
-                  <Text style={BottomSheetSyle.statusText}>{status}</Text>
-                </View>
-              </View>
-
-              <View
-                style={[
-                  BottomSheetSyle.endTripCover,
-                  secondTripDisplay && { backgroundColor: "#2a2826" },
-                ]}
-              >
-                {secondTripDisplay ? (
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSecondTripDisplay(null);
-                      goBack();
-                    }}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={BottomSheetSyle.upBtnText}>← GoBack</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity onPress={end_trip} activeOpacity={0.8}>
-                    <Text style={BottomSheetSyle.upBtnText}>End trip</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            </View>
-
-            {/* ── Stat Cards ── */}
-            <TripStatCards />
-
-            {/* ── Memories Divider ── */}
-            <View style={BottomSheetSyle.dividerRow}>
-              <View style={BottomSheetSyle.dividerLine} />
-              <Text style={BottomSheetSyle.dividerLabel}>MEMORIES</Text>
-              <View style={BottomSheetSyle.dividerLine} />
-            </View>
-
-            {/* ── Memory Cards ── */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={BottomSheetSyle.memoriesScroll}
+            <View
+              style={{
+                flexDirection: "row",
+                alignSelf: "center",
+                backgroundColor: "#2a2826",
+                borderRadius: 999,
+                marginBottom: 0,
+              }}
             >
-              <PolaroidGallery trip_id={trip.trip_id} />
-            </ScrollView>
+              <TouchableOpacity
+                onPress={() => setViewMode("dash")}
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 8,
+                  borderRadius: 999,
+                  backgroundColor:
+                    viewMode === "dash" ? "#4a4743" : "transparent",
+                }}
+              >
+                <Text style={{ color: "white" }}>Statistic</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setViewMode("timeline")}
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 8,
+                  borderRadius: 999,
+                  backgroundColor:
+                    viewMode === "timeline" ? "#4a4743" : "transparent",
+                }}
+              >
+                <Text style={{ color: "white" }}>Timeline</Text>
+              </TouchableOpacity>
+            </View>
+            {viewMode === "dash" && <TripStat TripData={trip}></TripStat>}
+            {viewMode === "timeline" && (
+              <TimeLineManager trip_id={trip.trip_id}></TimeLineManager>
+            )}
           </>
         )}
       </BottomSheetScrollView>

@@ -8,6 +8,7 @@ import { FetchFuctionRespond } from "../../../../types/fetch_fuction_respond.typ
 import TripContentsBucketProcessor from "./process_bucket";
 import TripContentsSync from "../../sync/trip_content_sync";
 import CurrentTripDataService from "../../../../backend/storage/hot_data/current_trip";
+import MediaStorageService from "../../../../backend/media/media_storage_service";
 // in ms
 
 class TripContentHandler {
@@ -31,6 +32,9 @@ class TripContentHandler {
           await safeRun(
             () => TripContentsDatabase.deleteCardFromDB(content_card),
             "failed to delete media to local databse ",
+          );
+          await MediaStorageService.deleteMediaToLocalAlbum(
+            content_card.media_path,
           );
           CurrentDisplayContentsObserver.deleteAssestFromArray(
             trip_id,

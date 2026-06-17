@@ -126,7 +126,7 @@ export const AuthScreen = () => {
               <Text style={[fr.btnText, fr.btnTextOutline]}>Sign Up</Text>
             </TouchableOpacity>
           </View>
-          <GoogleAuth pending={completeForm} errorTrigger={showErrorBox} />
+          {/* <GoogleAuth pending={completeForm} errorTrigger={showErrorBox} />*/}
         </View>
       </View>
 

@@ -265,7 +265,7 @@ export default function MediaViewCard({
                   }
                   source={{ uri: currentAsset.media_path }}
                   controls
-                  resizeMode="cover"
+                  resizeMode="contain"
                   paused={false}
                 />
               ) : (
@@ -276,6 +276,7 @@ export default function MediaViewCard({
                       : mediaCardStyle.image
                   }
                   source={{ uri: currentAsset.media_path }}
+                  contentFit="contain"
                 />
               )}
             </Animated.View>
@@ -313,6 +314,7 @@ export default function MediaViewCard({
                           mediaCardStyle.imageList,
                           index === currentIndex && listStyle.selected,
                         ]}
+                        contentFit="contain"
                       />
                       {item.media_type === "video" && (
                         <View style={mediaCardStyle.ImageListOverlay}>
