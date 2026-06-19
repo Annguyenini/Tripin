@@ -24,7 +24,7 @@ import { CameraApp } from "./src/frontend/camera/camera_main.js";
 import { SettingScreen } from "./src/frontend/setting/setting_screen.js";
 import AlbumScreen from "./src/frontend/albums/album.js";
 import { OverLayProvider } from "./src/frontend/overlay/overlay_main.js";
-import PermissionsScreen from "./src/frontend/setting/permissions.js";
+import PermissionsScreen from "./src/frontend/screens/permissions.js";
 const logo = require("./assets/image/main_logo.png");
 const { width, height } = Dimensions.get("window");
 const Stack = createStackNavigator();
@@ -32,6 +32,7 @@ import * as Application from "expo-application";
 import * as Linking from "expo-linking";
 import { Platform } from "react-native";
 import AppVersionValidation from "./src/app-core/app-settings/app_version.js";
+import TutorialScreen from "./src/frontend/screens/tutorial";
 
 export default function App() {
   const [authentication, setAuthentication] = useState(false);
@@ -66,6 +67,16 @@ export default function App() {
             <Stack.Screen
               name="Permission"
               component={PermissionLayout}
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+                presentation: "card",
+                animation: "none",
+              }} /// ← hides the "Auth" tet
+            />
+            <Stack.Screen
+              name="Tutorial"
+              component={Tutorial}
               options={{
                 headerShown: false,
                 gestureEnabled: false,
@@ -125,6 +136,9 @@ function AuthLayout() {
 }
 function PermissionLayout() {
   return <PermissionsScreen />;
+}
+function Tutorial() {
+  return <TutorialScreen />;
 }
 const MainLayout = () => {
   console.log("render1");

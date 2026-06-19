@@ -82,7 +82,6 @@ export const TripCard = ({ trip, navigateMain, removeTripLabel }) => {
     } finally {
       removeTripLabel(trip);
       HideLoading();
-      showErrorBox("Failed to remove trip", respond.message, 3600);
     }
     return;
   };

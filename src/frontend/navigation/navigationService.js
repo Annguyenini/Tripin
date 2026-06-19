@@ -19,6 +19,9 @@ export function navigateToPermission() {
   navigate("Permission");
 }
 
+export function navigateToTutorial() {
+  navigate("Tutorial");
+}
 export function navigateToMain() {
   navigate("Main");
 }

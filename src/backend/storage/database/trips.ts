@@ -169,6 +169,13 @@ class TripDataService extends TripLocalDataStorage {
 
     return true;
   }
+  removeTripFromTripsList(trip_id: number) {
+    let trips_list = this.trips_list.filter(
+      (trip) => trip.event !== "remove" && trip.trip_id !== trip_id,
+    );
+    this.trips_list = trips_list;
+    this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, trips_list);
+  }
   getAllTripsList() {
     return this.trips_list;
   }
