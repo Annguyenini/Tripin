@@ -14,8 +14,8 @@ export default {
       backgroundColor: "#ffffff",
     },
     ios: {
-      // supportsTablet: true,
-      requireFullScreen: true,
+      supportsTablet: true,
+      // requireFullScreen: true,
       infoPlist: {
         UIBackgroundModes: ["location"],
         // UIDeviceFamily: [1],
@@ -31,14 +31,14 @@ export default {
           "We need access to save trip media to your library.",
         ITSAppUsesNonExemptEncryption: false,
       },
-      bundleIdentifier: "com.anonymous.tripin",
+      bundleIdentifier: "com.trip.tripping",
     },
     android: {
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff",
       },
-      package: "com.anonymous.tripin",
+      package: "com.trip.tripping",
       permissions: [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
