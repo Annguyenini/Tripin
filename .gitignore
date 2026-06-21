@@ -117,3 +117,5 @@ test2.py/ios
 
 /visuals
 .dependency-cruiser.js
+
+*sync_*

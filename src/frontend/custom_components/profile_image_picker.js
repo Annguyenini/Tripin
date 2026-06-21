@@ -41,6 +41,7 @@ export const ProfileImagePicker = ({ onClose }) => {
     if (imageUri === previousImage) return;
     Loading();
     const respond = await UserHandler.ChangeUserUserAvatarHandler(imageUri);
+    console.log(respond);
     HideLoading();
     if (!respond.ok || respond.status !== 200) {
       showErrorBox(

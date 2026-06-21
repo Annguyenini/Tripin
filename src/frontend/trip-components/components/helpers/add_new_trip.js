@@ -107,6 +107,7 @@ export const NewTripFiller = ({ set_show_create_trip_filler }) => {
 
       <TextInput
         placeholder="Enter your trip name!"
+        placeholderTextColor="#999"
         onChangeText={(text) => setTripName(text)}
         style={tripStyle.input}
       />

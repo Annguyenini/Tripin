@@ -178,19 +178,29 @@ class TripHandler {
    * @returns {Promise<object|null>} trip data or null on unrecoverable failure
    */
   async requestTripDataHandler(trip_id) {
-    const user_id = UserDataService.getUserId();
-    const local_data = await TripDataService.getTripDataFromLocal(
-      user_id,
-      trip_id,
-    );
-    // not modified or failed — return local copy
-    if (!local_data) {
-      const respond = await Trip.requestTripData(trip_id);
-      if (respond.status !== 200) return null;
-      const data = respond.data;
-      return data.trip_data;
+    try {
+      const user_id = UserDataService.getUserId();
+      console.log(user_id, trip_id);
+
+      const local_data = await TripDataService.getTripDataFromLocal(
+        user_id,
+        trip_id,
+      );
+      console.log(local_data);
+
+      // not modified or failed — return local copy
+      if (!local_data) {
+        const respond = await Trip.requestTripData(trip_id);
+        console.log(respond);
+        if (respond.status !== 200) return null;
+        const data = respond.data;
+        return data.trip_data;
+      }
+      return local_data;
+    } catch (err) {
+      console.error("Failed", err);
+      return null;
     }
-    return local_data;
   }
 
   // ─── Sharing ──────────────────────────────────────────────────────────────

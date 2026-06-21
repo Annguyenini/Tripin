@@ -94,8 +94,8 @@ class TripDataService extends TripLocalDataStorage {
 
   async getTripDataFromLocal(user_id: any, trip_id: number) {
     const trip_data = await TripDatabaseService.getTripDataFromTripId(trip_id);
-    if (trip_data.user_id !== user_id) return null;
-    return trip_data;
+    if (trip_data && trip_data.user_id !== user_id) return null;
+    return trip_data ?? null;
   }
   async saveTripDataToLocal(data: Trip_Data) {
     const status = await TripDatabaseService.addTripToDatabase(data);
@@ -168,6 +168,13 @@ class TripDataService extends TripLocalDataStorage {
     }
 
     return true;
+  }
+  removeTripFromTripsList(trip_id: number) {
+    let trips_list = this.trips_list.filter(
+      (trip) => trip.event !== "remove" && trip.trip_id !== trip_id,
+    );
+    this.trips_list = trips_list;
+    this.notify(DATA_KEYS.TRIP.ALL_TRIP_LIST, trips_list);
   }
   getAllTripsList() {
     return this.trips_list;

@@ -28,7 +28,7 @@ class CurrentDisplayContentsObserver extends LocalStorage {
     if (!this.watchArray[trip_id]) {
       this.watchArray[trip_id] = [];
     }
-    this.watchArray[trip_id].unshift(data_object);
+    this.watchArray[trip_id].push(data_object);
     this.notify(this.GENERATE_KEY(trip_id), this.watchArray[trip_id]);
   }
   deleteAssestFromArray(trip_id: number, data_object: ContentCard) {

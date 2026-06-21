@@ -74,7 +74,12 @@ export const MapBoxLayout = ({}) => {
     };
     flyTo();
   }, [centerCoords]);
-  setCameraMapRef(cameraMapRef);
+  const setCameraRef = useCallback((ref) => {
+    cameraMapRef.current = ref;
+    if (ref) {
+      setCameraMapRef(cameraMapRef); // only set when ref is actually populated
+    }
+  }, []);
   return (
     <View style={{ flex: 1 }}>
       <MapboxGL.MapView
@@ -102,7 +107,9 @@ export const MapBoxLayout = ({}) => {
         styleURL={`${mapStyles[mapStyle]}`}
       >
         <MapboxGL.Camera
-          ref={cameraMapRef}
+          ref={(ref) => {
+            if (ref) setCameraMapRef(ref);
+          }}
           followUserLocation={isFollowingUser}
           followUserMode="normal"
           followZoomLevel={13}

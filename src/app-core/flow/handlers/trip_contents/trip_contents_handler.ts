@@ -7,6 +7,8 @@ import { ContentCard } from "../../../../types/content_card.types";
 import { FetchFuctionRespond } from "../../../../types/fetch_fuction_respond.types";
 import TripContentsBucketProcessor from "./process_bucket";
 import TripContentsSync from "../../sync/trip_content_sync";
+import CurrentTripDataService from "../../../../backend/storage/hot_data/current_trip";
+import MediaStorageService from "../../../../backend/media/media_storage_service";
 // in ms
 
 class TripContentHandler {
@@ -31,6 +33,9 @@ class TripContentHandler {
             () => TripContentsDatabase.deleteCardFromDB(content_card),
             "failed to delete media to local databse ",
           );
+          await MediaStorageService.deleteMediaToLocalAlbum(
+            content_card.media_path,
+          );
           CurrentDisplayContentsObserver.deleteAssestFromArray(
             trip_id,
             content_card,
@@ -52,11 +57,13 @@ class TripContentHandler {
       if (!trip_id) return [];
       const local_content =
         await TripContentsDatabase.getAssestsFromTripIdJoinTripData(trip_id);
-
-      TripContentsSync.syncTripContentsHandler(trip_id);
+      if (CurrentTripDataService.getCurrentTripId() === trip_id) {
+        TripContentsSync.syncTripContentsHandler(trip_id);
+      }
 
       if (!local_content || local_content.length <= 0) {
         const respond = await TripContents.requestTripMedias(trip_id);
+        console.log("dsdsdsdsd");
         return respond?.data?.content_cards;
       }
       return local_content;

@@ -12,26 +12,42 @@ import {
   mono,
 } from "./constants";
 
-export default function PolaroidCard({ location, index, onPress }) {
+export default function PolaroidCard({ location, index, isSelected, onPress }) {
   const left = index * SLOT_W + 36;
   const top = location.hang ? STRING_Y + HANG_LEN : STRING_Y;
-
   const rot = location.rot ?? (index % 2 === 0 ? -5 : 5);
   const media = location.medias?.[0];
 
   return (
-    <TouchableOpacity style={[styles.slot, { left }]} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.slot, { left }]}
+      onPress={onPress}
+      activeOpacity={0.85}
+    >
       {/* tape */}
       <View style={styles.tape} />
 
       {/* polaroid */}
       <View
-        style={[styles.card, { top, transform: [{ rotate: `${rot}deg` }] }]}
+        style={[
+          styles.card,
+          { top, transform: [{ rotate: `${rot}deg` }] },
+          isSelected && styles.cardSelected,
+        ]}
       >
         {media?.media_type === "video" ? (
-          <Video source={{ uri: media.media_path }} style={styles.media} />
+          <Video
+            source={{ uri: media.media_path }}
+            style={styles.media}
+            muted
+          />
         ) : media ? (
-          <Image source={{ uri: media.media_path }} style={styles.media} />
+          <Image
+            source={{ uri: media.media_path }}
+            style={styles.media}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+          />
         ) : (
           <View style={[styles.media, { backgroundColor: "#ccc" }]} />
         )}
@@ -65,11 +81,19 @@ const styles = StyleSheet.create({
     height: CARD_H,
     backgroundColor: "#f2ece0",
     padding: 7,
+    paddingBottom: 0,
     borderRadius: 3,
     shadowColor: "#000",
     shadowOpacity: 0.4,
     shadowRadius: 10,
     elevation: 8,
+  },
+  cardSelected: {
+    shadowOpacity: 0.7,
+    shadowRadius: 16,
+    elevation: 16,
+    borderWidth: 2,
+    borderColor: "#1a1a1a",
   },
   media: {
     flex: 1,
@@ -77,11 +101,13 @@ const styles = StyleSheet.create({
   },
   bottom: {
     paddingTop: 4,
+    paddingBottom: 5,
     alignItems: "center",
   },
   city: {
     fontFamily: mono,
     fontSize: 9,
     fontWeight: "700",
+    color: "#2a201a",
   },
 });

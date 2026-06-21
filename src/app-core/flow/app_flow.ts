@@ -17,6 +17,8 @@ import { _registerNetworkCallback } from "./sync/network_observer";
 import migration from "../../backend/storage/database/migrations/migration";
 import Album from "../../backend/storage/album/album";
 import TripContentsSync from "./sync/trip_content_sync";
+import UserSettingsLoader from "./user_settings/user_setting";
+
 // Applow architecture could be found in /architecture
 type Appstate =
   | "auth"
@@ -26,146 +28,156 @@ type Appstate =
   | "initTripContentsDatabase"
   | "migrationDatabases"
   | "initAlbum"
+  | "userSettings"
   | "ready";
 
 class AppFlow {
+  // ─── State ──────────────────────────────────────────────────────────────
   private LocalStorage: LocalStorage;
-  private _contents_sync: boolean = false;
-  private _firstAuthentication: boolean = true;
   private state: Appstate;
   private network_state: boolean = false;
+  private _contents_sync: boolean = false;
+  private _firstAuthentication: boolean = true;
+
   constructor() {
     this.LocalStorage = new LocalStorage();
     _registerNetworkCallback(this.networkCallback.bind(this));
   }
 
-  networkCallback(state: boolean): void {
-    if (state === this.network_state) return;
-    this.network_state = state;
-    if (state) this.syncCurrentTripContents();
-    // this._fresh_start = false;
-  }
+  // ─── State Machine Dispatcher ───────────────────────────────────────────
 
   async nextStep() {
     switch (this.state) {
       case "permission":
-        console.log(1);
         navigateToPermission();
         break;
       case "userdata":
-        console.log(2);
-
         await this.userdataHandler();
         break;
       case "initTripDatabase":
-        console.log(3);
-
         await this.initTripDatabaseHandler();
         break;
       case "initTripContentsDatabase":
-        console.log(4);
-
         await this.initTripContentsDatabaseHandler();
         break;
       case "migrationDatabases":
-        console.log(5);
-
         await this.migrationDatabasesHandler();
         break;
       case "initAlbum":
-        console.log(6);
-
         await this.initAlbum();
+        break;
+      case "userSettings":
+        await this.userSettingsLoader();
+        break;
       case "ready":
         navigateToMain();
         break;
     }
   }
 
-  async tokenHandler(): Promise<void> {
-    if (this._firstAuthentication) {
-      this._firstAuthentication = false;
-      const loginViaToken: boolean = await AuthHandler.loginWithTokenHandler();
-      if (!loginViaToken) {
-        await this.LocalStorage.clearAllStorage();
-        return;
-      }
+  // ─── Helper: advance state + continue the chain ────────────────────────
 
-      this.state = "permission";
-      this.nextStep();
+  private advance(next: Appstate): void {
+    this.state = next;
+    this.nextStep();
+  }
+
+  // ─── Helper: shared error handling for init steps ──────────────────────
+
+  private handleInitError(label: string, error: unknown): void {
+    console.error(`${label} failed:`, error);
+    navigateToAuth();
+  }
+
+  // ─── Auth / Permission Entry Points ─────────────────────────────────────
+
+  async tokenHandler(): Promise<void> {
+    if (!this._firstAuthentication) return;
+    this._firstAuthentication = false;
+
+    const loginViaToken: boolean = await AuthHandler.loginWithTokenHandler();
+    if (!loginViaToken) {
+      await this.LocalStorage.clearAllStorage();
+      return;
     }
-    return;
+
+    this.advance("permission");
   }
 
   onAuthSuccess(): void {
     // calling for login
-    this.state = "permission";
-    this.nextStep();
+    this.advance("permission");
   }
 
   onPermissionSuccess(): void {
-    this.state = "userdata";
-    this.nextStep();
+    this.advance("userdata");
   }
+
+  // ─── Init Steps ──────────────────────────────────────────────────────────
 
   async userdataHandler(): Promise<void> {
     const userDataHandler: boolean = await UserDataHandler.GetUserDataHandler();
     if (!userDataHandler) {
       // impliment error screen and return back to auth
       navigateToAuth();
+      return;
     }
-    this.state = "initTripDatabase";
-    this.nextStep();
+    this.advance("initTripDatabase");
   }
 
-  async initTripDatabaseHandler() {
+  async initTripDatabaseHandler(): Promise<void> {
     try {
       await TripDatabaseService.initTripTable();
-      this.state = "initTripContentsDatabase";
-      this.nextStep();
+      this.advance("initTripContentsDatabase");
     } catch (error) {
-      console.error(error);
       // impliment error screen
-      navigateToAuth();
-      return;
+      this.handleInitError("initTripDatabase", error);
     }
   }
 
-  async initTripContentsDatabaseHandler() {
+  async initTripContentsDatabaseHandler(): Promise<void> {
     try {
       await TripContentsDatabase.initTable();
-      this.state = "migrationDatabases";
-      this.nextStep();
+      this.advance("migrationDatabases");
     } catch (error) {
-      console.error(error);
       // impliment error screen
-      navigateToAuth();
-      return;
+      this.handleInitError("initTripContentsDatabase", error);
     }
   }
 
-  async migrationDatabasesHandler() {
+  async migrationDatabasesHandler(): Promise<void> {
     try {
       await migration();
-      this.state = "initAlbum";
-      this.nextStep();
+      this.advance("initAlbum");
     } catch (error) {
-      console.error(error);
       // impliment error screen
-      navigateToAuth();
-      return;
+      this.handleInitError("migrationDatabases", error);
     }
   }
 
   async initAlbum(): Promise<void> {
     try {
       Album.mergeAlbum();
-      this.state = "ready";
-      this.nextStep();
+      this.advance("userSettings");
     } catch (error) {
+      console.error("failed to init user album", error);
       throw new Error("failed to init user album");
     }
   }
+
+  async userSettingsLoader(): Promise<void> {
+    try {
+      const onUserSettingReady = () => {
+        this.advance("ready");
+      };
+      await UserSettingsLoader.loadUserSettings(onUserSettingReady);
+    } catch (error) {
+      console.error(`failed to load user setting ${error}`);
+      throw new Error(`failed to load user setting ${error}`);
+    }
+  }
+
+  // ─── App Ready / Trip Sync ───────────────────────────────────────────────
 
   async onAppReady(): Promise<boolean> {
     try {
@@ -176,23 +188,32 @@ class AppFlow {
     }
     return true;
   }
+
   async onRequestTrips(): Promise<void> {
     const trips = await TripHandler.requestAllTripHandler();
     return;
   }
+
   async syncCurrentTripContents(): Promise<void> {
     console.log("sync", this.state);
     if (this._contents_sync || this.state !== "ready") return;
+
     const trip_id = CurrentTripDataService.getCurrentTripId();
     if (trip_id) {
       this._contents_sync = true;
-      // console.log("sync");
       await TripContentsSync.syncTripContentsHandler(trip_id);
       this._contents_sync = false;
       console.log("sync complete");
     }
+  }
 
-    return;
+  // ─── Network Observer Callback ───────────────────────────────────────────
+
+  networkCallback(state: boolean): void {
+    if (state === this.network_state) return;
+    this.network_state = state;
+    if (state) this.syncCurrentTripContents();
   }
 }
+
 export default new AppFlow();

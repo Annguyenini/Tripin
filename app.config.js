@@ -1,6 +1,6 @@
 export default {
   expo: {
-    name: "tripping",
+    name: "Tripping",
     slug: "tripin",
     scheme: "tripping",
     version: "1.1.0",
@@ -14,9 +14,11 @@ export default {
       backgroundColor: "#ffffff",
     },
     ios: {
-      supportsTablet: true,
+      // supportsTablet: true,
+      requireFullScreen: true,
       infoPlist: {
         UIBackgroundModes: ["location"],
+        // UIDeviceFamily: [1],
         NSLocationWhenInUseUsageDescription:
           "This app needs your location to track your trips while you're using the app.",
         NSLocationAlwaysAndWhenInUseUsageDescription:

@@ -67,3 +67,8 @@ export const SYNC = BASE_API + "/sync";
 export const TRIP_COORDINATE_HASH = SYNC + "/trip-coordinate-hash";
 export const TRIP_MEDIAS_HASH = SYNC + "/trip-medias-hash";
 export const TRIP_MEDIAS_METADATA = SYNC + "/trip-medias-metadata";
+
+// user setting
+export const USER_SETTINGS_BASE = BASE_API + "/user-settings";
+
+export const USER_SETTINGS = USER_SETTINGS_BASE + "/user-settings";

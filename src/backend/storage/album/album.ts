@@ -57,13 +57,13 @@ class Album {
     let result: Array<ContentCard>;
     try {
       result = await DB.getAllAsync(
-        `SELECT * FROM content_cards WHERE event = ? AND user_id =? ORDER BY time_stamp DESC`,
+        `SELECT * FROM content_cards WHERE event = ? ORDER BY time_stamp DESC`,
         "add",
         user_id,
       );
       return result;
     } catch (err) {
-      throw new Error("Failed to get all medias from database", err);
+      throw new Error(`Failed to get all medias from database:${err}`);
     }
   }
   async getAllMediasFromAlbum(media_type = null) {
@@ -117,11 +117,13 @@ class Album {
     }
   }
   async getMergedMediasArray() {
-    // console.log("init album");
+    console.log("init album");
     try {
       const db_medias = await this.getAllMediasFromDb();
-      const album_medias = await this.getAllMediasFromAlbum();
+      console.log("merge", db_medias);
 
+      const album_medias = await this.getAllMediasFromAlbum();
+      console.log("merge", db_medias, album_medias);
       if (!album_medias || album_medias.length === 0) {
         return db_medias;
       }
@@ -132,6 +134,7 @@ class Album {
       // console.log("init album", result);
       return result;
     } catch (err) {
+      console.error(err);
       throw new Error(err);
     }
   }
