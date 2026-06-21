@@ -29,10 +29,6 @@ class LocalStorage {
   }
 
   async saveDataObjectToLocal(key, data_object) {
-    // if(!data_object||typeof(data_object)!=='object'){
-    //     console.log('data must be object')
-    //     return false
-    // }
     try {
       // await SecureStore.setItemAsync(STORAGE_KEYS.TRIPDATA,JSON.stringify(tripdata))
       await AsyncStorage.setItem(key, JSON.stringify(data_object));

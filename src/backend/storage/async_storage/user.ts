@@ -145,9 +145,6 @@ class UserDataService extends LocalStorage {
     return;
   }
 
-  /**
-   *
-   */
   async deleteUserDataFromLocal() {
     try {
       let keys_array = await this.getAllKeys();
