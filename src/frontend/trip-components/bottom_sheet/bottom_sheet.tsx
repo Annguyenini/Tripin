@@ -34,7 +34,7 @@ const default_image = require("../../../../assets/icon.png");
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const UserDataBottomSheet = ({ userDisplayName }) => {
+export const UserDataBottomSheet = () => {
   // ── Refs ──────────────────────────────────────────────────────────────────
   const bottomSheetRef = useRef(null);
 

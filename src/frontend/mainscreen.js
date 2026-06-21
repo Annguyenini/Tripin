@@ -18,7 +18,6 @@ import {
 import { mainScreenStyle, footer } from "../styles/main_screen_styles";
 import { navigate } from "./navigation/navigationService";
 import { UserDataBottomSheet } from "./trip-components/bottom_sheet/bottom_sheet";
-import UserDataService from "../backend/storage/async_storage/user";
 import { AppState } from "react-native";
 import {
   startForegroundGPSTracker,
@@ -41,11 +40,7 @@ import { NewTripFiller } from "./trip-components/components/helpers/add_new_trip
 import AlbumScreen from "./albums/album";
 export const MainScreen = () => {
   // user profile state from local storage
-  const [user_id, setUserId] = useState(UserDataService.getUserId());
-  const [user_name, setUsername] = useState(UserDataService.getUserName());
-  const [display_name, setDisplayName] = useState(
-    UserDataService.getDisplayName(),
-  );
+
   const [cameraVisible, setCameraVisible] = useState(false);
   const [tripsListVisible, setTripsListVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
@@ -174,11 +169,7 @@ export const MainScreen = () => {
       {!tripDataSuccess && <LoadingScreen />}
 
       {/* user profile bottom sheet */}
-      <UserDataBottomSheet
-        userId={user_id}
-        userDisplayName={display_name}
-        // set_show_profile_picker={set_show_profile_picker}
-      />
+      <UserDataBottomSheet />
 
       {/* bottom nav bar */}
       {/* bottom nav bar */}
