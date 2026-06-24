@@ -1,52 +1,63 @@
-import { useState } from 'react'
-import { View, Text, TouchableOpacity, Image, StyleSheet, Animated } from 'react-native'
+import { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Animated,
+} from "react-native";
 
 const MODES = [
+  // {
+  //   key: 'normal',
+  //   label: 'Detail Tracking (disable for now)',
+  //   sub: 'GPS path, speed, altitude & photos',
+  //   // preview: require('../../../assets/preview_detail.png'),   // swap with your asset
+  //   // fallback placeholder if no asset yet:
+  //   emoji: '🗺️',
+  // },
   {
-    key: 'normal',
-    label: 'Detail Tracking (disable for now)',
-    sub: 'GPS path, speed, altitude & photos',
-    // preview: require('../../../assets/preview_detail.png'),   // swap with your asset
-    // fallback placeholder if no asset yet:
-    emoji: '🗺️',
-  },
-  {
-    key: 'media_only',
-    label: 'Only Medias (default) ',
-    sub: 'Photos & videos only, no GPS path',
+    key: "media_only",
+    label: "Only Medias (default) ",
+    sub: "Photos & videos only, no GPS path",
     // preview: require('../../../assets/preview_media.png'),
-    emoji: '📷',
+    emoji: "📷",
   },
-]
+];
 
 export const TrackingModePicker = ({ value, onChange }) => {
-  const [selected, setSelected] = useState(value ?? 'normal')
+  const [selected, setSelected] = useState(value ?? "normal");
 
   const handleSelect = (key) => {
-    setSelected(key)
-    onChange?.(key)
-  }
+    setSelected(key);
+    onChange?.(key);
+  };
 
-  const active = MODES.find(m => m.key === selected)
+  const active = MODES.find((m) => m.key === selected);
 
   return (
     <View style={s.wrapper}>
-
       {/* label */}
       <Text style={s.heading}>Tracking Mode</Text>
       <Text style={s.sub}>Choose how this trip records data</Text>
 
       {/* toggle row */}
       <View style={s.toggleRow}>
-        {MODES.map(mode => (
+        {MODES.map((mode) => (
           <TouchableOpacity
-            disabled ={mode.key ==='normal'? true : false}
+            disabled={mode.key === "normal" ? true : false}
             key={mode.key}
             style={[s.option, selected === mode.key && s.optionActive]}
             onPress={() => handleSelect(mode.key)}
             activeOpacity={0.75}
           >
-            <Text style={[s.optionText, selected === mode.key && s.optionTextActive]}>
+            <Text
+              style={[
+                s.optionText,
+                selected === mode.key && s.optionTextActive,
+              ]}
+            >
               {mode.label}
             </Text>
             {selected === mode.key && <View style={s.activeDot} />}
@@ -68,7 +79,7 @@ export const TrackingModePicker = ({ value, onChange }) => {
           <Text style={s.previewSub}>{active.sub}</Text>
 
           {/* feature bullets */}
-          {active.key === 'normal' ? (
+          {active.key === "normal" ? (
             <>
               <FeatureRow text="GPS coordinates logged" />
               <FeatureRow text="Speed & altitude tracked" />
@@ -83,67 +94,65 @@ export const TrackingModePicker = ({ value, onChange }) => {
               <FeatureRow text="Media gallery view" />
             </>
           )}
-          
         </View>
-        
       </View>
       <View style={s.featureRow}>
         <Text style={s.featureDot}>·</Text>
         <Text style={s.noiceText}>You can change it later!</Text>
+      </View>
     </View>
-    </View>
-  )
-}
+  );
+};
 
 const FeatureRow = ({ text }) => (
   <View style={s.featureRow}>
     <Text style={s.featureDot}>·</Text>
     <Text style={s.featureText}>{text}</Text>
   </View>
-)
+);
 
 const s = StyleSheet.create({
   wrapper: {
-    width: '100%',
+    width: "100%",
     gap: 12,
   },
 
   heading: {
-    fontFamily: 'PermanentMarker',
+    fontFamily: "PermanentMarker",
     fontSize: 16,
-    color: '#000000',
+    color: "#000000",
     letterSpacing: 0.04,
   },
 
   sub: {
-    fontFamily: 'DMMono',
+    fontFamily: "DMMono",
     fontSize: 10,
-    color: '#5a5550',
+    color: "#5a5550",
     letterSpacing: 0.1,
     marginTop: -6,
   },
 
   // ── TOGGLE ──
   toggleRow: {
-    flexDirection: 'row',
-    backgroundColor: '#141210',
+    flexDirection: "row",
+    backgroundColor: "#141210",
     borderRadius: 10,
     padding: 3,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: "rgba(255,255,255,0.06)",
   },
 
   option: {
     flex: 1,
     paddingVertical: 10,
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 8,
     gap: 4,
   },
 
   optionActive: {
-    backgroundColor: '#f0f0ec',
-    shadowColor: '#000',
+    backgroundColor: "#f0f0ec",
+    shadowColor: "#000",
     shadowOffset: { width: 3, height: 3 },
     shadowOpacity: 0.4,
     shadowRadius: 0,
@@ -151,32 +160,32 @@ const s = StyleSheet.create({
   },
 
   optionText: {
-    fontFamily: 'DMMono',
+    fontFamily: "DMMono",
     fontSize: 12,
-    color: '#5a5550',
+    color: "#5a5550",
     letterSpacing: 0.06,
   },
 
   optionTextActive: {
-    color: '#1a1a1a',
-    fontWeight: '600',
+    color: "#1a1a1a",
+    fontWeight: "600",
   },
 
   activeDot: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: "#1a1a1a",
   },
 
   // ── PREVIEW CARD ──
   previewCard: {
-    backgroundColor: '#1a1917',
+    backgroundColor: "#1a1917",
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-    overflow: 'hidden',
-    flexDirection: 'row',
+    borderColor: "rgba(255,255,255,0.06)",
+    overflow: "hidden",
+    flexDirection: "row",
     gap: 12,
     padding: 12,
   },
@@ -185,11 +194,11 @@ const s = StyleSheet.create({
     width: 90,
     height: 110,
     borderRadius: 10,
-    backgroundColor: '#242220',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#242220",
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: "rgba(255,255,255,0.06)",
   },
 
   previewEmoji: {
@@ -197,54 +206,54 @@ const s = StyleSheet.create({
   },
 
   previewImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 10,
   },
 
   previewInfo: {
     flex: 1,
     gap: 6,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
 
   previewTitle: {
-    fontFamily: 'PermanentMarker',
+    fontFamily: "PermanentMarker",
     fontSize: 13,
-    color: '#f0f0ec',
+    color: "#f0f0ec",
     letterSpacing: 0.04,
   },
 
   previewSub: {
-    fontFamily: 'DMMono',
+    fontFamily: "DMMono",
     fontSize: 9,
-    color: '#5a5550',
+    color: "#5a5550",
     letterSpacing: 0.08,
     marginBottom: 4,
   },
 
   featureRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
-    alignItems: 'center',
+    alignItems: "center",
   },
 
   featureDot: {
-    color: '#c8a87a',
+    color: "#c8a87a",
     fontSize: 16,
     lineHeight: 16,
   },
 
   featureText: {
-    fontFamily: 'DMMono',
+    fontFamily: "DMMono",
     fontSize: 10,
-    color: '#888',
+    color: "#888",
     letterSpacing: 0.06,
   },
   noiceText: {
-    fontFamily: 'DMMono',
+    fontFamily: "DMMono",
     fontSize: 10,
-    color: '#ff0000',
+    color: "#ff0000",
     letterSpacing: 0.06,
   },
-})
+});
