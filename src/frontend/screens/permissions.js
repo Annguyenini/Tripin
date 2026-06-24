@@ -95,13 +95,12 @@ export default function PermissionsFlowScreen({ navigation }) {
           break;
         }
         case 1: {
-          const timeout = setTimeout(() => {
-            console.log("time out");
-          }, 5000);
           const { status } = await Location.requestBackgroundPermissionsAsync();
-          clearTimeout(timeout);
           if (status !== "granted") return setDenied(true);
-          setStep((s) => s + 1);
+          setTimeout(() => {
+            setStep((s) => s + 1);
+          }, 550);
+
           break;
         }
         case 2: {
