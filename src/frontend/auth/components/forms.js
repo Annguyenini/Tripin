@@ -29,7 +29,6 @@ export function LoginForm({
   onSignup,
   onForgot,
   clearAllDataFields,
-  GoogleAuth,
 }) {
   return (
     <>
@@ -100,7 +99,7 @@ export function LoginForm({
       >
         <Text style={fr.submitBtnText}>Submit</Text>
       </TouchableOpacity>
-      <GoogleAuth action="signin" />
+      {/* <GoogleAuth action="signin" />*/}
       <TouchableOpacity onPress={onSignup}>
         <Text style={fr.linkText}>Create an account</Text>
       </TouchableOpacity>
