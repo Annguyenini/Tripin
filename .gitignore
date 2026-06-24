@@ -117,5 +117,6 @@ test2.py/ios
 
 /visuals
 .dependency-cruiser.js
-
-*sync_*
+.sync_*.db
+.sync_*.db-wal
+.sync_*.db-shm

@@ -1,0 +1,2402 @@
+Resolved "production" environment for the build. Learn more: https://docs.expo.dev/eas/environment-variables/#setting-the-environment-for-your-builds
+No environment variables with visibility "Plain text" and "Sensitive" found for the "production" environment on EAS.
+
+ITSAppUsesNonExemptEncryption is defined in the app config.
+- Incrementing buildNumber from 84 to 85.
+✔ Incremented buildNumber from 84 to 85.
+
+
+
+Expo Metro config:
+- Version: 54.0.16
+- Extensions: ts, tsx, mjs, js, jsx, json, cjs, scss, sass, css
+- React Native: /home/annguyen/tripin/node_modules/react-native
+- Watch Folders: 
+- Node Module Paths: 
+- Sass: null
+- Reanimated: 4.1.7
+- Worklets: 0.5.1
+- Babel Runtime: null
+
+✔ Using remote iOS credentials (Expo server)
+
+If you provide your Apple account credentials we will be able to generate all necessary build credentials and fully validate them.
+This is optional, but without Apple account access you will need to provide all the missing values manually and we can only run minimal validation on them.
+[?25l[2K[1G[36m?[39m [1mDo you want to log in to your Apple account?[22m [90m›[39m [90m(Y/n)[39m[2K[1G[2K[1G[32m✔[39m [1mDo you want to log in to your Apple account?[22m [90m…[39m yes
+[?25h
+› Log in to your Apple Developer account to continue
+[2K[1G[36m?[39m [1mApple ID:[22m [90m›[39m [90manphuongnhi11234@gmail.com[39m78[2K[1G[2K[1G[32m✔[39m [1mApple ID:[22m [90m…[39m anphuongnhi11234@gmail.com78
+[?25h› Restoring session /home/annguyen/.app-store/auth/anphuongnhi11234@gmail.com/cookie
+› Team An Nguyen (9MNJFTH4SN)
+› Provider An Nguyen (128264376)
+✔ Logged in Local session
+- Linking bundle identifier com.anonymous.tripin
+✔ Bundle identifier registered com.anonymous.tripin
+- Syncing capabilities
+Current remote capabilities:
+[
+  {
+    "context": {
+      "providerId": 128264376,
+      "teamId": "9MNJFTH4SN"
+    },
+    "id": "4N8849AJ3X_IN_APP_PURCHASE",
+    "attributes": {
+      "ownerType": "BUNDLE",
+      "settings": null,
+      "editable": true,
+      "inputs": null,
+      "enabled": true,
+      "responseId": "9c624124-7030-41ae-9c74-98a475ab1148"
+    }
+  }
+]
+
+Current local entitlements:
+{}
+Existing to disable:  [ '4N8849AJ3X_IN_APP_PURCHASE' ]
+✔ Synced capabilities: No updates
+- Syncing capabilities identifiers
+No capability identifiers need to be updated
+✔ Synced capability identifiers: No updates
+- Fetching Apple distribution certificates
+✔ Fetched Apple distribution certificates
+- Fetching Apple provisioning profiles
+✔ Fetched Apple provisioning profiles
+
+Project Credentials Configuration
+
+Project                   @annguyen1123/tripin
+Bundle Identifier         com.anonymous.tripin
+                          
+App Store Configuration   
+                          
+Distribution Certificate  
+Serial Number             2BBE4F03A34EB5A60F6C913C3E19402
+Expiration Date           Sat, 31 Oct 2026 15:26:52 PDT
+Apple Team                9MNJFTH4SN (An Nguyen (Individual))
+Updated                   7 months ago
+                          
+Provisioning Profile      
+Developer Portal ID       ZU8XT74VCH
+Status                    active
+Expiration                Sat, 31 Oct 2026 15:26:52 PDT
+Apple Team                9MNJFTH4SN (An Nguyen (Individual))
+Updated                   7 months ago
+                          
+All credentials are ready to build @annguyen1123/tripin (com.anonymous.tripin)
+
+
+Compressing project files and uploading to EAS Build. Learn more: https://expo.fyi/eas-build-archive
+- Compressing project files
+making shallow copy { requireCommit: false }
+makeShallowCopyAsync {
+  src: '/home/annguyen/tripin',
+  dst: '/tmp/annguyen/eas-cli-nodejs/4bfb3f56-da1c-401e-94ec-305f571c21fc-shallow-clone'
+}
+initializing ignore mapping with .gitignore files {
+  ignoreFilePaths: [ '.gitignore', 'android/.gitignore', 'ios/.gitignore' ],
+  ignoreMapping: [
+    [ '', [Ignore] ],
+    [ '', [Ignore] ],
+    [ 'android/', [Ignore] ],
+    [ 'ios/', [Ignore] ]
+  ]
+}
+makeShallowCopyAsync ignoreMapping {
+  ignoreMapping: [
+    [ '', [Ignore] ],
+    [ '', [Ignore] ],
+    [ 'android/', [Ignore] ],
+    [ 'ios/', [Ignore] ]
+  ]
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/dist',
+  relativePath: 'dist'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/dist/assets',
+  relativePath: 'dist/assets'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/dist/metadata.json',
+  relativePath: 'dist/metadata.json'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/dist/_expo',
+  relativePath: 'dist/_expo'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/dist/assetmap.json',
+  relativePath: 'dist/assetmap.json'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/.env',
+  relativePath: '.env'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/.nextcloudsync.log',
+  relativePath: '.nextcloudsync.log'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/index.js',
+  relativePath: 'index.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/tsconfig.json',
+  relativePath: 'tsconfig.json'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/eas.json',
+  relativePath: 'eas.json'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/.zed',
+  relativePath: '.zed'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/.zed/settings.json',
+  relativePath: '.zed/settings.json'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/App.js',
+  relativePath: 'App.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/build_debug.log',
+  relativePath: 'build_debug.log'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/babel.config.js',
+  relativePath: 'babel.config.js'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/.git',
+  relativePath: '.git'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures',
+  relativePath: 'architectures'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/capture.md',
+  relativePath: 'architectures/capture.md'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/sample outputs',
+  relativePath: 'architectures/sample outputs'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/sample outputs/trip_medias_output.json',
+  relativePath: 'architectures/sample outputs/trip_medias_output.json'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/sync',
+  relativePath: 'architectures/sync'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/sync/TripContentsSync.md',
+  relativePath: 'architectures/sync/TripContentsSync.md'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/TripContentSyncManager.md',
+  relativePath: 'architectures/TripContentSyncManager.md'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/TripService.md',
+  relativePath: 'architectures/TripService.md'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/diagrams',
+  relativePath: 'architectures/diagrams'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/diagrams/trip_content_priority_system.png',
+  relativePath: 'architectures/diagrams/trip_content_priority_system.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/diagrams/active_trip_content_flow.svg',
+  relativePath: 'architectures/diagrams/active_trip_content_flow.svg'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/diagrams/trip_data.png',
+  relativePath: 'architectures/diagrams/trip_data.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/diagrams/current_trip_contents_handler.png',
+  relativePath: 'architectures/diagrams/current_trip_contents_handler.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/diagrams/contents_injection.png',
+  relativePath: 'architectures/diagrams/contents_injection.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/diagrams/trip_action.png',
+  relativePath: 'architectures/diagrams/trip_action.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/architectures/ARCHITECTURE.md',
+  relativePath: 'architectures/ARCHITECTURE.md'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/ios',
+  relativePath: 'ios'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/.sync_5c36daf1d910.db-wal',
+  relativePath: '.sync_5c36daf1d910.db-wal'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/repomix-output.xml',
+  relativePath: 'repomix-output.xml'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/package-lock.json',
+  relativePath: 'package-lock.json'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/Dockerfile',
+  relativePath: 'Dockerfile'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/visuals',
+  relativePath: 'visuals'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/.sync_5c36daf1d910.db-shm',
+  relativePath: '.sync_5c36daf1d910.db-shm'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/package.json',
+  relativePath: 'package.json'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets',
+  relativePath: 'assets'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/samples',
+  relativePath: 'assets/samples'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/samples/ipad-sample3.png',
+  relativePath: 'assets/samples/ipad-sample3.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/samples/ipad-sample1.png',
+  relativePath: 'assets/samples/ipad-sample1.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/samples/sample-ipad2.webp',
+  relativePath: 'assets/samples/sample-ipad2.webp'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/samples/ipad-sample4.png',
+  relativePath: 'assets/samples/ipad-sample4.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/samples/ipad-sample2.png',
+  relativePath: 'assets/samples/ipad-sample2.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/samples/ipad-sample1',
+  relativePath: 'assets/samples/ipad-sample1'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/samples/ipad-sample1/ipad-sample3.png',
+  relativePath: 'assets/samples/ipad-sample1/ipad-sample3.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/samples/ipad-sample1/ipad-sample1.png',
+  relativePath: 'assets/samples/ipad-sample1/ipad-sample1.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/samples/ipad-sample1/ipad-sample4.png',
+  relativePath: 'assets/samples/ipad-sample1/ipad-sample4.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/samples/ipad-sample1/ipad-sample2.png',
+  relativePath: 'assets/samples/ipad-sample1/ipad-sample2.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/samples/ipad-sample1.zip',
+  relativePath: 'assets/samples/ipad-sample1.zip'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/icon_old.png',
+  relativePath: 'assets/icon_old.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/splash-icon.png',
+  relativePath: 'assets/splash-icon.png'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/keys',
+  relativePath: 'assets/keys'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial',
+  relativePath: 'assets/tutorial'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/11_timeline.png',
+  relativePath: 'assets/tutorial/11_timeline.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/2_background_tracking_on.png',
+  relativePath: 'assets/tutorial/2_background_tracking_on.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/3_background_tracking_off.png',
+  relativePath: 'assets/tutorial/3_background_tracking_off.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/5_create_new_trip_unfill.png',
+  relativePath: 'assets/tutorial/5_create_new_trip_unfill.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/12_statistic.png',
+  relativePath: 'assets/tutorial/12_statistic.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/6_create_new_trip_fill.png',
+  relativePath: 'assets/tutorial/6_create_new_trip_fill.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/8_camera.png',
+  relativePath: 'assets/tutorial/8_camera.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/4_create_new_trip.png',
+  relativePath: 'assets/tutorial/4_create_new_trip.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/7_after_create_trip.png',
+  relativePath: 'assets/tutorial/7_after_create_trip.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/1_mainscreen.png',
+  relativePath: 'assets/tutorial/1_mainscreen.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/9_display_on_map.png',
+  relativePath: 'assets/tutorial/9_display_on_map.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/13_statistic_2.png',
+  relativePath: 'assets/tutorial/13_statistic_2.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/tutorial/10_slideshow.png',
+  relativePath: 'assets/tutorial/10_slideshow.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/icon.png',
+  relativePath: 'assets/icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image',
+  relativePath: 'assets/image'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/walking_icon.png',
+  relativePath: 'assets/image/walking_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/gallery_icon.png',
+  relativePath: 'assets/image/gallery_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/layout for trip.png',
+  relativePath: 'assets/image/layout for trip.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/camera_flash_off.png',
+  relativePath: 'assets/image/camera_flash_off.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/navigation_notoutline_icon.png',
+  relativePath: 'assets/image/navigation_notoutline_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/setting_icon.png',
+  relativePath: 'assets/image/setting_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/camera_rotate_icon.png',
+  relativePath: 'assets/image/camera_rotate_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/location_rejected_icon.png',
+  relativePath: 'assets/image/location_rejected_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/user1_avatar.jpg',
+  relativePath: 'assets/image/user1_avatar.jpg'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/camera_flash_on.png',
+  relativePath: 'assets/image/camera_flash_on.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/location_icon.png',
+  relativePath: 'assets/image/location_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/main_logo.png',
+  relativePath: 'assets/image/main_logo.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/current_trip_header_bar.png',
+  relativePath: 'assets/image/current_trip_header_bar.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/favicon.png',
+  relativePath: 'assets/image/favicon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/auto_icon.png',
+  relativePath: 'assets/image/auto_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/layout for trip.psxprj',
+  relativePath: 'assets/image/layout for trip.psxprj'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/video_pause_icon.png',
+  relativePath: 'assets/image/video_pause_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/camera_gallery.png',
+  relativePath: 'assets/image/camera_gallery.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/home_icon.png',
+  relativePath: 'assets/image/home_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/main_logo_old.png',
+  relativePath: 'assets/image/main_logo_old.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/camera_setting.png',
+  relativePath: 'assets/image/camera_setting.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/profile_icon.png',
+  relativePath: 'assets/image/profile_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/camera_icon.png',
+  relativePath: 'assets/image/camera_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/main_background.png',
+  relativePath: 'assets/image/main_background.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/navigation_outline_icon.png',
+  relativePath: 'assets/image/navigation_outline_icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/bottomsheet.png',
+  relativePath: 'assets/image/bottomsheet.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards',
+  relativePath: 'assets/image/Image cards'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards/image_card_4(frame).png',
+  relativePath: 'assets/image/Image cards/image_card_4(frame).png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards/image_card_4(preview).psxprj',
+  relativePath: 'assets/image/Image cards/image_card_4(preview).psxprj'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards/image_card_3(frame).png',
+  relativePath: 'assets/image/Image cards/image_card_3(frame).png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards/image_card_2(frame).png',
+  relativePath: 'assets/image/Image cards/image_card_2(frame).png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards/image_card_1(preview).psxprj',
+  relativePath: 'assets/image/Image cards/image_card_1(preview).psxprj'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards/image_card_3(preview).psxprj',
+  relativePath: 'assets/image/Image cards/image_card_3(preview).psxprj'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards/image_card_1(preview).png',
+  relativePath: 'assets/image/Image cards/image_card_1(preview).png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards/image_card_2(preview).png',
+  relativePath: 'assets/image/Image cards/image_card_2(preview).png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards/image_card_4(preview).png',
+  relativePath: 'assets/image/Image cards/image_card_4(preview).png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards/image_card_3(preview).png',
+  relativePath: 'assets/image/Image cards/image_card_3(preview).png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards/image_card_2(preview).psxprj',
+  relativePath: 'assets/image/Image cards/image_card_2(preview).psxprj'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/image/Image cards/image_card_1(frame).png',
+  relativePath: 'assets/image/Image cards/image_card_1(frame).png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/splash-tinted-icon.png',
+  relativePath: 'assets/splash-tinted-icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts',
+  relativePath: 'assets/fonts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/robot-heroes-font',
+  relativePath: 'assets/fonts/robot-heroes-font'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/robot-heroes-font/misc',
+  relativePath: 'assets/fonts/robot-heroes-font/misc'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/robot-heroes-font/misc/license.txt',
+  relativePath: 'assets/fonts/robot-heroes-font/misc/license.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/robot-heroes-font/RobotHeroes-0vy69.ttf',
+  relativePath: 'assets/fonts/robot-heroes-font/RobotHeroes-0vy69.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/robot-heroes-font/info.txt',
+  relativePath: 'assets/fonts/robot-heroes-font/info.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/robot-heroes-font/RobotHeroesItalic-gwnJ1.ttf',
+  relativePath: 'assets/fonts/robot-heroes-font/RobotHeroesItalic-gwnJ1.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/VT323',
+  relativePath: 'assets/fonts/VT323'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/VT323/OFL.txt',
+  relativePath: 'assets/fonts/VT323/OFL.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/VT323/VT323-Regular.ttf',
+  relativePath: 'assets/fonts/VT323/VT323-Regular.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323/VT323',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323/VT323'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323/VT323/OFL.txt',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323/VT323/OFL.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323/VT323/VT323-Regular.ttf',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323/VT323/VT323-Regular.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323/Alfa_Slab_One',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323/Alfa_Slab_One'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323/Alfa_Slab_One/OFL.txt',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323/Alfa_Slab_One/OFL.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323/Alfa_Slab_One/AlfaSlabOne-Regular.ttf',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323/Alfa_Slab_One/AlfaSlabOne-Regular.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/hilton-fontain-font',
+  relativePath: 'assets/fonts/hilton-fontain-font'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/hilton-fontain-font/HiltonFontain-0vOMd.ttf',
+  relativePath: 'assets/fonts/hilton-fontain-font/HiltonFontain-0vOMd.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/hilton-fontain-font/info.txt',
+  relativePath: 'assets/fonts/hilton-fontain-font/info.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/font2.otf',
+  relativePath: 'assets/fonts/font2.otf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/cyber-brush-font',
+  relativePath: 'assets/fonts/cyber-brush-font'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/cyber-brush-font/CyberBrush-MAA2x.ttf',
+  relativePath: 'assets/fonts/cyber-brush-font/CyberBrush-MAA2x.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/cyber-brush-font/info.txt',
+  relativePath: 'assets/fonts/cyber-brush-font/info.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/love-line-font',
+  relativePath: 'assets/fonts/love-line-font'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/love-line-font/LoveLine-YqqJ8.ttf',
+  relativePath: 'assets/fonts/love-line-font/LoveLine-YqqJ8.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/love-line-font/info.txt',
+  relativePath: 'assets/fonts/love-line-font/info.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/mainfont.otf',
+  relativePath: 'assets/fonts/mainfont.otf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/elontias-font',
+  relativePath: 'assets/fonts/elontias-font'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/elontias-font/info.txt',
+  relativePath: 'assets/fonts/elontias-font/info.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/elontias-font/Elontias-KV0My.ttf',
+  relativePath: 'assets/fonts/elontias-font/Elontias-KV0My.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/VT323 (2)',
+  relativePath: 'assets/fonts/VT323 (2)'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/VT323 (2)/OFL.txt',
+  relativePath: 'assets/fonts/VT323 (2)/OFL.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/VT323 (2)/VT323-Regular.ttf',
+  relativePath: 'assets/fonts/VT323 (2)/VT323-Regular.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/lhanoienne-demo',
+  relativePath: 'assets/fonts/lhanoienne-demo'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: "/home/annguyen/tripin/assets/fonts/lhanoienne-demo/L'Hanoienne-Demo.ttf",
+  relativePath: "assets/fonts/lhanoienne-demo/L'Hanoienne-Demo.ttf"
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/quinquennialhk-font',
+  relativePath: 'assets/fonts/quinquennialhk-font'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/quinquennialhk-font/misc',
+  relativePath: 'assets/fonts/quinquennialhk-font/misc'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/quinquennialhk-font/misc/Thumbs-c801.db',
+  relativePath: 'assets/fonts/quinquennialhk-font/misc/Thumbs-c801.db'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/quinquennialhk-font/misc/Quinquennial HK Font Agreement-2d37.txt',
+  relativePath: 'assets/fonts/quinquennialhk-font/misc/Quinquennial HK Font Agreement-2d37.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/quinquennialhk-font/Quinquennialhk-zme3.ttf',
+  relativePath: 'assets/fonts/quinquennialhk-font/Quinquennialhk-zme3.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/quinquennialhk-font/info.txt',
+  relativePath: 'assets/fonts/quinquennialhk-font/info.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/lhanoienne-demo (2)',
+  relativePath: 'assets/fonts/lhanoienne-demo (2)'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: "/home/annguyen/tripin/assets/fonts/lhanoienne-demo (2)/L'Hanoienne-Demo.ttf",
+  relativePath: "assets/fonts/lhanoienne-demo (2)/L'Hanoienne-Demo.ttf"
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Permanent_Marker',
+  relativePath: 'assets/fonts/Permanent_Marker'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Permanent_Marker/PermanentMarker-Regular.ttf',
+  relativePath: 'assets/fonts/Permanent_Marker/PermanentMarker-Regular.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Permanent_Marker/LICENSE.txt',
+  relativePath: 'assets/fonts/Permanent_Marker/LICENSE.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/elontias-font (2)',
+  relativePath: 'assets/fonts/elontias-font (2)'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/elontias-font (2)/info.txt',
+  relativePath: 'assets/fonts/elontias-font (2)/info.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/elontias-font (2)/Elontias-KV0My.ttf',
+  relativePath: 'assets/fonts/elontias-font (2)/Elontias-KV0My.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/yakin-font',
+  relativePath: 'assets/fonts/yakin-font'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/yakin-font/misc',
+  relativePath: 'assets/fonts/yakin-font/misc'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/yakin-font/misc/More Info-5a87.txt',
+  relativePath: 'assets/fonts/yakin-font/misc/More Info-5a87.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/yakin-font/misc/Read Me-cbfc.pdf',
+  relativePath: 'assets/fonts/yakin-font/misc/Read Me-cbfc.pdf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/yakin-font/Yakin-MVe6w.ttf',
+  relativePath: 'assets/fonts/yakin-font/Yakin-MVe6w.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/yakin-font/info.txt',
+  relativePath: 'assets/fonts/yakin-font/info.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/yakin-font/Yakin-rgZBp.otf',
+  relativePath: 'assets/fonts/yakin-font/Yakin-rgZBp.otf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323 (2)',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323 (2)'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323 (2)/VT323',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323 (2)/VT323'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323 (2)/VT323/OFL.txt',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323 (2)/VT323/OFL.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323 (2)/VT323/VT323-Regular.ttf',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323 (2)/VT323/VT323-Regular.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323 (2)/Alfa_Slab_One',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323 (2)/Alfa_Slab_One'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323 (2)/Alfa_Slab_One/OFL.txt',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323 (2)/Alfa_Slab_One/OFL.txt'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/fonts/Alfa_Slab_One,VT323 (2)/Alfa_Slab_One/AlfaSlabOne-Regular.ttf',
+  relativePath: 'assets/fonts/Alfa_Slab_One,VT323 (2)/Alfa_Slab_One/AlfaSlabOne-Regular.ttf'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/adaptive-icon.png',
+  relativePath: 'assets/adaptive-icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/splash-dark-icon.png',
+  relativePath: 'assets/splash-dark-icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/assets/splash-light-icon.png',
+  relativePath: 'assets/splash-light-icon.png'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/test.js',
+  relativePath: 'test.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/.gitignore',
+  relativePath: '.gitignore'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/test_output',
+  relativePath: 'test_output'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/test_output/tripdata.json',
+  relativePath: 'test_output/tripdata.json'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/test_output/albumassets.json',
+  relativePath: 'test_output/albumassets.json'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/app.config.js',
+  relativePath: 'app.config.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/metro.config.js',
+  relativePath: 'metro.config.js'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/.vscode',
+  relativePath: '.vscode'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/node_modules',
+  relativePath: 'node_modules'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src',
+  relativePath: 'src'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/examplecode',
+  relativePath: 'src/examplecode'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/examplecode/camerazoom.ts',
+  relativePath: 'src/examplecode/camerazoom.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/examplecode/changestatus.js',
+  relativePath: 'src/examplecode/changestatus.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/examplecode/custommarker.js',
+  relativePath: 'src/examplecode/custommarker.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend',
+  relativePath: 'src/frontend'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/input_validations',
+  relativePath: 'src/frontend/input_validations'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/input_validations/auth_validation.js',
+  relativePath: 'src/frontend/input_validations/auth_validation.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/setting',
+  relativePath: 'src/frontend/setting'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/setting/setting_screen.js',
+  relativePath: 'src/frontend/setting/setting_screen.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/setting/gps.js',
+  relativePath: 'src/frontend/setting/gps.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/setting/profile.js',
+  relativePath: 'src/frontend/setting/profile.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/screens',
+  relativePath: 'src/frontend/screens'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/screens/tutorial.tsx',
+  relativePath: 'src/frontend/screens/tutorial.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/screens/permissions.js',
+  relativePath: 'src/frontend/screens/permissions.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components',
+  relativePath: 'src/frontend/trip-components'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/map_box_layout.js',
+  relativePath: 'src/frontend/trip-components/map_box_layout.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components',
+  relativePath: 'src/frontend/trip-components/components'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/marker',
+  relativePath: 'src/frontend/trip-components/components/marker'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/marker/markers.js',
+  relativePath: 'src/frontend/trip-components/components/marker/markers.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/marker/marker_manager.js',
+  relativePath: 'src/frontend/trip-components/components/marker/marker_manager.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/marker/coordinate_markers',
+  relativePath: 'src/frontend/trip-components/components/marker/coordinate_markers'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/marker/coordinate_markers/coordinate_markers.js',
+  relativePath: 'src/frontend/trip-components/components/marker/coordinate_markers/coordinate_markers.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/marker/coordinate_markers/coordinates_radius_slider.js',
+  relativePath: 'src/frontend/trip-components/components/marker/coordinate_markers/coordinates_radius_slider.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/marker/image_markers',
+  relativePath: 'src/frontend/trip-components/components/marker/image_markers'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/marker/image_markers/media_markers.js',
+  relativePath: 'src/frontend/trip-components/components/marker/image_markers/media_markers.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/helpers',
+  relativePath: 'src/frontend/trip-components/components/helpers'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/helpers/add_new_trip.js',
+  relativePath: 'src/frontend/trip-components/components/helpers/add_new_trip.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/tracking_modes',
+  relativePath: 'src/frontend/trip-components/components/tracking_modes'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/tracking_modes/tracking_mode_picker.js',
+  relativePath: 'src/frontend/trip-components/components/tracking_modes/tracking_mode_picker.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/components/tracking_modes/tracking_mode_manager.js',
+  relativePath: 'src/frontend/trip-components/components/tracking_modes/tracking_mode_manager.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet',
+  relativePath: 'src/frontend/trip-components/bottom_sheet'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/compoments',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/compoments'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/compoments/gallery',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/compoments/gallery'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/compoments/gallery/insert_new_card.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/compoments/gallery/insert_new_card.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/compoments/metro.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/compoments/metro.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/compoments/trip_stat.js',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/compoments/trip_stat.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/compoments/memories',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/compoments/memories'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/compoments/memories/GalleryOverlay.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/compoments/memories/GalleryOverlay.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/compoments/memories/PhotoSheet.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/compoments/memories/PhotoSheet.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/compoments/memories/constants.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/compoments/memories/constants.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/compoments/memories/PolaroidCard.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/compoments/memories/PolaroidCard.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/compoments/memories/PolaroidGallery.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/compoments/memories/PolaroidGallery.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/bottom_sheet.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/bottom_sheet.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/trips_card',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/trips_card'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/trips_card/trip_label.js',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/trips_card/trip_label.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/trips_card/trip_custom_card.js',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/trips_card/trip_custom_card.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/trip_dashboard',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/trip_dashboard'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/trip_dashboard/stat',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/trip_dashboard/stat'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/trip_dashboard/stat/stat.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/trip_dashboard/stat/stat.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/trip_dashboard/stat/memories.js',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/trip_dashboard/stat/memories.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/trip_dashboard/stat/memories_manage.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/trip_dashboard/stat/memories_manage.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/trip_dashboard/dashboard_manager.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/trip_dashboard/dashboard_manager.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/trip_dashboard/timeline',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/trip_dashboard/timeline'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/trip_dashboard/timeline/timeline.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/trip_dashboard/timeline/timeline.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/bottom_sheet/trip_dashboard/timeline/timeline_manager.tsx',
+  relativePath: 'src/frontend/trip-components/bottom_sheet/trip_dashboard/timeline/timeline_manager.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/map_data.js',
+  relativePath: 'src/frontend/trip-components/map_data.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/observers',
+  relativePath: 'src/frontend/trip-components/observers'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/observers/trip_display_observer.js',
+  relativePath: 'src/frontend/trip-components/observers/trip_display_observer.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/observers/current_display_contents_observer.ts',
+  relativePath: 'src/frontend/trip-components/observers/current_display_contents_observer.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trip-components/help_bar_map.js',
+  relativePath: 'src/frontend/trip-components/help_bar_map.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/utils',
+  relativePath: 'src/frontend/utils'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/utils/map_flyto.ts',
+  relativePath: 'src/frontend/utils/map_flyto.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/utils/map_ref.ts',
+  relativePath: 'src/frontend/utils/map_ref.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/utils/mock_contents.ts',
+  relativePath: 'src/frontend/utils/mock_contents.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/overlay',
+  relativePath: 'src/frontend/overlay'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/overlay/banner_manager.js',
+  relativePath: 'src/frontend/overlay/banner_manager.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/overlay/offline_banner.js',
+  relativePath: 'src/frontend/overlay/offline_banner.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/overlay/syncing_banner.js',
+  relativePath: 'src/frontend/overlay/syncing_banner.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/overlay/overlay_card.js',
+  relativePath: 'src/frontend/overlay/overlay_card.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/overlay/fetching_loading_screen.js',
+  relativePath: 'src/frontend/overlay/fetching_loading_screen.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/overlay/overlay_main.js',
+  relativePath: 'src/frontend/overlay/overlay_main.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/auth',
+  relativePath: 'src/frontend/auth'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/auth/auth.js',
+  relativePath: 'src/frontend/auth/auth.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/auth/use_auth_state.js',
+  relativePath: 'src/frontend/auth/use_auth_state.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/auth/components',
+  relativePath: 'src/frontend/auth/components'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/auth/components/forms.js',
+  relativePath: 'src/frontend/auth/components/forms.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/auth/components/coords_label.js',
+  relativePath: 'src/frontend/auth/components/coords_label.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/auth/components/snap_label.js',
+  relativePath: 'src/frontend/auth/components/snap_label.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/auth/provider_auth',
+  relativePath: 'src/frontend/auth/provider_auth'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/auth/provider_auth/google.js',
+  relativePath: 'src/frontend/auth/provider_auth/google.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/auth/reset_password.js',
+  relativePath: 'src/frontend/auth/reset_password.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/trips_list.tsx',
+  relativePath: 'src/frontend/trips_list.tsx'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/mainscreen.js',
+  relativePath: 'src/frontend/mainscreen.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera',
+  relativePath: 'src/frontend/camera'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/camera_setting',
+  relativePath: 'src/frontend/camera/camera_setting'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/camera_setting/use_camera_zoom.js',
+  relativePath: 'src/frontend/camera/camera_setting/use_camera_zoom.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/camera_setting/use_camera_capture.js',
+  relativePath: 'src/frontend/camera/camera_setting/use_camera_capture.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/fillter',
+  relativePath: 'src/frontend/camera/fillter'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/fillter/use_frame_filter.js',
+  relativePath: 'src/frontend/camera/fillter/use_frame_filter.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/fillter/filters.js',
+  relativePath: 'src/frontend/camera/fillter/filters.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/camera_main.js',
+  relativePath: 'src/frontend/camera/camera_main.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/functions',
+  relativePath: 'src/frontend/camera/functions'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/use_camera_device_setup.js',
+  relativePath: 'src/frontend/camera/use_camera_device_setup.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/layout',
+  relativePath: 'src/frontend/camera/layout'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/layout/middle_bar.js',
+  relativePath: 'src/frontend/camera/layout/middle_bar.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/layout/camera_setting_bar.js',
+  relativePath: 'src/frontend/camera/layout/camera_setting_bar.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/layout/vertical_slider.js',
+  relativePath: 'src/frontend/camera/layout/vertical_slider.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/layout/zoom_bar.js',
+  relativePath: 'src/frontend/camera/layout/zoom_bar.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/layout/zoom_text.js',
+  relativePath: 'src/frontend/camera/layout/zoom_text.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/layout/capture_option.js',
+  relativePath: 'src/frontend/camera/layout/capture_option.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/layout/bot_bar.js',
+  relativePath: 'src/frontend/camera/layout/bot_bar.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/layout/permission.js',
+  relativePath: 'src/frontend/camera/layout/permission.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/camera/layout/top_bar.js',
+  relativePath: 'src/frontend/camera/layout/top_bar.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/navigation',
+  relativePath: 'src/frontend/navigation'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/navigation/navigationService.js',
+  relativePath: 'src/frontend/navigation/navigationService.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/custom_components',
+  relativePath: 'src/frontend/custom_components'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/custom_components/image_picker.js',
+  relativePath: 'src/frontend/custom_components/image_picker.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/custom_components/profile_image_picker.js',
+  relativePath: 'src/frontend/custom_components/profile_image_picker.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/custom_components/loading.js',
+  relativePath: 'src/frontend/custom_components/loading.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/custom_components/skeleton.js',
+  relativePath: 'src/frontend/custom_components/skeleton.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/custom_components/error.js',
+  relativePath: 'src/frontend/custom_components/error.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/albums',
+  relativePath: 'src/frontend/albums'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/albums/viewer_data_card.js',
+  relativePath: 'src/frontend/albums/viewer_data_card.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/albums/album.js',
+  relativePath: 'src/frontend/albums/album.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/frontend/albums/viewer_card.js',
+  relativePath: 'src/frontend/albums/viewer_card.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles',
+  relativePath: 'src/styles'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/icons',
+  relativePath: 'src/styles/icons'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/icons/navigation.js',
+  relativePath: 'src/styles/icons/navigation.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/icons/satellite.js',
+  relativePath: 'src/styles/icons/satellite.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/camera_top_bar.js',
+  relativePath: 'src/styles/camera_top_bar.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function',
+  relativePath: 'src/styles/function'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/trip_display_box_style.js',
+  relativePath: 'src/styles/function/trip_display_box_style.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/current_trip_header.js',
+  relativePath: 'src/styles/function/current_trip_header.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/trip_style.js',
+  relativePath: 'src/styles/function/trip_style.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/image_label.js',
+  relativePath: 'src/styles/function/image_label.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/current_trip_box_style.js',
+  relativePath: 'src/styles/function/current_trip_box_style.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/media_data_card.js',
+  relativePath: 'src/styles/function/media_data_card.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/tracking_mode_manager.js',
+  relativePath: 'src/styles/function/tracking_mode_manager.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/overlay_card.js',
+  relativePath: 'src/styles/function/overlay_card.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/radius_selector_style.js',
+  relativePath: 'src/styles/function/radius_selector_style.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/marker_manager_style.js',
+  relativePath: 'src/styles/function/marker_manager_style.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/help_bar_map.js',
+  relativePath: 'src/styles/function/help_bar_map.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/tripcards.js',
+  relativePath: 'src/styles/function/tripcards.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/profile_image_picker_style.js',
+  relativePath: 'src/styles/function/profile_image_picker_style.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/error_box_style.js',
+  relativePath: 'src/styles/function/error_box_style.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/function/media_card.js',
+  relativePath: 'src/styles/function/media_card.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/camera_style.js',
+  relativePath: 'src/styles/camera_style.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/setting',
+  relativePath: 'src/styles/setting'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/setting/gps.js',
+  relativePath: 'src/styles/setting/gps.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/setting/profile.js',
+  relativePath: 'src/styles/setting/profile.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/trip-components',
+  relativePath: 'src/styles/trip-components'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/trip-components/trips_list.ts',
+  relativePath: 'src/styles/trip-components/trips_list.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/album.js',
+  relativePath: 'src/styles/album.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/setting_style.js',
+  relativePath: 'src/styles/setting_style.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/old',
+  relativePath: 'src/styles/old'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/old/album.js',
+  relativePath: 'src/styles/old/album.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/icons.js',
+  relativePath: 'src/styles/icons.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/bottom_sheet.styles.ts',
+  relativePath: 'src/styles/bottom_sheet.styles.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/timeline.ts',
+  relativePath: 'src/styles/timeline.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/main_screen_styles.js',
+  relativePath: 'src/styles/main_screen_styles.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/style.js',
+  relativePath: 'src/styles/style.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/styles/auth_style.js',
+  relativePath: 'src/styles/auth_style.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/test_screen.js',
+  relativePath: 'src/test_screen.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/asset',
+  relativePath: 'src/asset'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/config',
+  relativePath: 'src/config'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/config/config_api.js',
+  relativePath: 'src/config/config_api.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/config/public_keys.js',
+  relativePath: 'src/config/public_keys.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/config/config_db.js',
+  relativePath: 'src/config/config_db.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend',
+  relativePath: 'src/backend'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/coordinates',
+  relativePath: 'src/backend/coordinates'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/coordinates/coordinates_cal.js',
+  relativePath: 'src/backend/coordinates/coordinates_cal.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/trip_album',
+  relativePath: 'src/backend/trip_album'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/trip_album/trip_album_subject.js',
+  relativePath: 'src/backend/trip_album/trip_album_subject.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/gps_logic',
+  relativePath: 'src/backend/gps_logic'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/gps_logic/gps_task.js',
+  relativePath: 'src/backend/gps_logic/gps_task.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/gps_logic/gps_logic.js',
+  relativePath: 'src/backend/gps_logic/gps_logic.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/gps_logic/old_gps_callback_handler.js',
+  relativePath: 'src/backend/gps_logic/old_gps_callback_handler.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/gps_logic/foreground_gps_logic.js',
+  relativePath: 'src/backend/gps_logic/foreground_gps_logic.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/gps_logic/gps_states.js',
+  relativePath: 'src/backend/gps_logic/gps_states.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/tracking',
+  relativePath: 'src/backend/tracking'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/tracking/tracking_mode.js',
+  relativePath: 'src/backend/tracking/tracking_mode.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/services',
+  relativePath: 'src/backend/services'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/services/auth.js',
+  relativePath: 'src/backend/services/auth.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/services/user.js',
+  relativePath: 'src/backend/services/user.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/services/trip.ts',
+  relativePath: 'src/backend/services/trip.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/services/user_settings.ts',
+  relativePath: 'src/backend/services/user_settings.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/services/sync',
+  relativePath: 'src/backend/services/sync'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/services/sync/trip_contents_sync.js',
+  relativePath: 'src/backend/services/sync/trip_contents_sync.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/services/trip_contents.js',
+  relativePath: 'src/backend/services/trip_contents.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/services/fetch_function.js',
+  relativePath: 'src/backend/services/fetch_function.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/camera',
+  relativePath: 'src/backend/camera'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/camera/camera_functions.ts',
+  relativePath: 'src/backend/camera/camera_functions.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/bridge',
+  relativePath: 'src/backend/bridge'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/bridge/UI_event_bus.js',
+  relativePath: 'src/backend/bridge/UI_event_bus.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage',
+  relativePath: 'src/backend/storage'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/etag',
+  relativePath: 'src/backend/storage/etag'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/etag/etag_service.js',
+  relativePath: 'src/backend/storage/etag/etag_service.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/etag/etag_keys.js',
+  relativePath: 'src/backend/storage/etag/etag_keys.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/settings',
+  relativePath: 'src/backend/storage/settings'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/settings/permissions.js',
+  relativePath: 'src/backend/storage/settings/permissions.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/tokens',
+  relativePath: 'src/backend/storage/tokens'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/tokens/token_service.js',
+  relativePath: 'src/backend/storage/tokens/token_service.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/database',
+  relativePath: 'src/backend/storage/database'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/database/migrations',
+  relativePath: 'src/backend/storage/database/migrations'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/database/migrations/migration.js',
+  relativePath: 'src/backend/storage/database/migrations/migration.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/database/protected',
+  relativePath: 'src/backend/storage/database/protected'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/database/protected/database.js',
+  relativePath: 'src/backend/storage/database/protected/database.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/database/protected/trip_contents.js',
+  relativePath: 'src/backend/storage/database/protected/trip_contents.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/database/protected/trip_database_service.ts',
+  relativePath: 'src/backend/storage/database/protected/trip_database_service.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/database/trips.ts',
+  relativePath: 'src/backend/storage/database/trips.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/database/sqlite',
+  relativePath: 'src/backend/storage/database/sqlite'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/database/sqlite/sqlite.ts',
+  relativePath: 'src/backend/storage/database/sqlite/sqlite.ts'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/async_storage',
+  relativePath: 'src/backend/storage/async_storage'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/album',
+  relativePath: 'src/backend/storage/album'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/album/album.ts',
+  relativePath: 'src/backend/storage/album/album.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/base',
+  relativePath: 'src/backend/storage/base'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/base/trip_base.js',
+  relativePath: 'src/backend/storage/base/trip_base.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/hot_data',
+  relativePath: 'src/backend/storage/hot_data'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/hot_data/current_location_data_service.js',
+  relativePath: 'src/backend/storage/hot_data/current_location_data_service.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/hot_data/current_trip.ts',
+  relativePath: 'src/backend/storage/hot_data/current_trip.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/hot_data/keys',
+  relativePath: 'src/backend/storage/hot_data/keys'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/storage/hot_data/keys/storage_keys.js',
+  relativePath: 'src/backend/storage/hot_data/keys/storage_keys.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/addition_functions',
+  relativePath: 'src/backend/addition_functions'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/addition_functions/covert_to_geojson.js',
+  relativePath: 'src/backend/addition_functions/covert_to_geojson.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/addition_functions/get_current_time.js',
+  relativePath: 'src/backend/addition_functions/get_current_time.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/addition_functions/compute_cluster.js',
+  relativePath: 'src/backend/addition_functions/compute_cluster.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/album',
+  relativePath: 'src/backend/album'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/album/album_permission.js',
+  relativePath: 'src/backend/album/album_permission.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/album/generate_thumbnail.js',
+  relativePath: 'src/backend/album/generate_thumbnail.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/media',
+  relativePath: 'src/backend/media'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/media/media_service.ts',
+  relativePath: 'src/backend/media/media_service.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/media/media_storage_service.ts',
+  relativePath: 'src/backend/media/media_storage_service.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/backend/media/generate_thumbnail.js',
+  relativePath: 'src/backend/media/generate_thumbnail.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/types',
+  relativePath: 'src/types'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/types/fetch_fuction_respond.types.ts',
+  relativePath: 'src/types/fetch_fuction_respond.types.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/types/current_trip_data_types.types.ts',
+  relativePath: 'src/types/current_trip_data_types.types.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/types/trip_data.types.ts',
+  relativePath: 'src/types/trip_data.types.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/types/content_card.types.ts',
+  relativePath: 'src/types/content_card.types.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/types/user_data.types.ts',
+  relativePath: 'src/types/user_data.types.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/types/user_settings.types.ts',
+  relativePath: 'src/types/user_settings.types.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/types/trip_actions_handler.types.ts',
+  relativePath: 'src/types/trip_actions_handler.types.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core',
+  relativePath: 'src/app-core'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow',
+  relativePath: 'src/app-core/flow'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/user_handler.js',
+  relativePath: 'src/app-core/flow/user_handler.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/app_flow.ts',
+  relativePath: 'src/app-core/flow/app_flow.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/handlers',
+  relativePath: 'src/app-core/flow/handlers'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/handlers/trip_actions',
+  relativePath: 'src/app-core/flow/handlers/trip_actions'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/handlers/trip_actions/trip_action_handler.ts',
+  relativePath: 'src/app-core/flow/handlers/trip_actions/trip_action_handler.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/handlers/trip_contents',
+  relativePath: 'src/app-core/flow/handlers/trip_contents'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/handlers/trip_contents/trip_contents_handler.ts',
+  relativePath: 'src/app-core/flow/handlers/trip_contents/trip_contents_handler.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/handlers/trip_contents/process_bucket.ts',
+  relativePath: 'src/app-core/flow/handlers/trip_contents/process_bucket.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/handlers/user_settings_handler.ts',
+  relativePath: 'src/app-core/flow/handlers/user_settings_handler.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/handlers/trip_handler.ts',
+  relativePath: 'src/app-core/flow/handlers/trip_handler.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/sync',
+  relativePath: 'src/app-core/flow/sync'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/sync/trip_content_sync.ts',
+  relativePath: 'src/app-core/flow/sync/trip_content_sync.ts'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/sync/offline_sync_manager.js',
+  relativePath: 'src/app-core/flow/sync/offline_sync_manager.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/sync/network_observer.ts',
+  relativePath: 'src/app-core/flow/sync/network_observer.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/user_settings',
+  relativePath: 'src/app-core/flow/user_settings'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/user_settings/user_setting.ts',
+  relativePath: 'src/app-core/flow/user_settings/user_setting.ts'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/flow/auth_handler.js',
+  relativePath: 'src/app-core/flow/auth_handler.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/helpers',
+  relativePath: 'src/app-core/helpers'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/helpers/safe_run.js',
+  relativePath: 'src/app-core/helpers/safe_run.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/app-settings',
+  relativePath: 'src/app-core/app-settings'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/app-settings/app_version.js',
+  relativePath: 'src/app-core/app-settings/app_version.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/state_control',
+  relativePath: 'src/app-core/state_control'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/state_control/trip_states.js',
+  relativePath: 'src/app-core/state_control/trip_states.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/setting.js',
+  relativePath: 'src/app-core/setting.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/md-files',
+  relativePath: 'src/app-core/md-files'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/md-files/deprecated.md',
+  relativePath: 'src/app-core/md-files/deprecated.md'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/local_data',
+  relativePath: 'src/app-core/local_data'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/local_data/local_location_data.js',
+  relativePath: 'src/app-core/local_data/local_location_data.js'
+}
+copying {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/src/app-core/local_data/local_data.js',
+  relativePath: 'src/app-core/local_data/local_data.js'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/android',
+  relativePath: 'android'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/.dependency-cruiser.js',
+  relativePath: '.dependency-cruiser.js'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/.sync_5c36daf1d910.db',
+  relativePath: '.sync_5c36daf1d910.db'
+}
+skipping {
+  src: '/home/annguyen/tripin',
+  srcFilePath: '/home/annguyen/tripin/.expo',
+  relativePath: '.expo'
+}
+- Uploading to EAS Build (0 / 115 MB)
+✔ Uploaded to EAS 46s
+Using expo-updates runtimeversion:resolve CLI for runtime version resolution
+runtimeversion:resolve output:
+{"runtimeVersion":"1.1.0","fingerprintSources":null,"workflow":"managed"}
+
+- Computing project fingerprint
+✔ Computed project fingerprint
+Starting iOS build
+
+See logs: https://expo.dev/accounts/annguyen1123/projects/tripin/builds/c1231713-1474-4f66-82e2-cf10e8984a27
+
+Waiting for build to complete. You can press Ctrl+C to exit.
+- Waiting for build to complete.
