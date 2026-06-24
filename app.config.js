@@ -15,10 +15,10 @@ export default {
     },
     ios: {
       supportsTablet: true,
-      // requireFullScreen: true,
+      requireFullScreen: true,
       infoPlist: {
         UIBackgroundModes: ["location"],
-        UIDeviceFamily: [1],
+        // UIDeviceFamily: [1],
         NSLocationWhenInUseUsageDescription:
           "This app needs your location to track your trips while you're using the app.",
         NSLocationAlwaysAndWhenInUseUsageDescription:
