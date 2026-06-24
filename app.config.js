@@ -14,22 +14,30 @@ export default {
       backgroundColor: "#ffffff",
     },
     ios: {
-      supportsTablet: true,
+      supportsTablet: false,
       requireFullScreen: true,
       infoPlist: {
         UIBackgroundModes: ["location"],
-        // UIDeviceFamily: [1],
+        UIDeviceFamily: [1],
         NSLocationWhenInUseUsageDescription:
-          "This app needs your location to track your trips while you're using the app.",
+          "Allow $(PRODUCT_NAME) to access your location while using the app to record trips and display your position on the map.",
+
         NSLocationAlwaysAndWhenInUseUsageDescription:
-          "This app needs your location to track your trips even when the app is in the background.",
+          "Allow $(PRODUCT_NAME) to access your location in the background so your trips can continue to be recorded even when the app is not open.",
+
         NSLocationAlwaysUsageDescription:
-          "This app needs your location to track your trips.",
+          "Allow $(PRODUCT_NAME) to access your location to continuously record trip routes and travel activity.",
+
         NSPhotoLibraryUsageDescription:
-          "We need access to delete trip media from your library.",
+          "Allow $(PRODUCT_NAME) to access your photo library so you can select photos and attach them to your trips.",
+
         NSPhotoLibraryAddUsageDescription:
-          "We need access to save trip media to your library.",
-        ITSAppUsesNonExemptEncryption: false,
+          "Allow $(PRODUCT_NAME) to save trip photos and exported trip content to your photo library.",
+
+        NSCameraUsageDescription:
+          "Allow $(PRODUCT_NAME) to use the camera so you can take photos, videos and attach them to your trips.",
+        NSMicrophoneUsageDescription:
+          "Allow $(PRODUCT_NAME) to access your microphone so audio can be recorded when capturing videos.",
       },
       bundleIdentifier: "com.anonymous.tripin",
     },

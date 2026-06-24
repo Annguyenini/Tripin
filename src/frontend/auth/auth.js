@@ -3,7 +3,6 @@ import { View, TouchableOpacity, Text } from "react-native";
 import AppFlow from "../../app-core/flow/app_flow.ts";
 import { OverlayCard } from "../overlay/overlay_card.js";
 import { UseOverlay } from "../overlay/overlay_main.js";
-import GoogleAuth from "./provider_auth/google.js";
 import ResetPassword from "./reset_password.js";
 import { SnapLabel } from "./components/snap_label.js";
 import { CoordsLabel } from "./components/coords_label.js";
@@ -126,7 +125,6 @@ export const AuthScreen = () => {
               <Text style={[fr.btnText, fr.btnTextOutline]}>Sign Up</Text>
             </TouchableOpacity>
           </View>
-          {/* <GoogleAuth pending={completeForm} errorTrigger={showErrorBox} />*/}
         </View>
       </View>
 
@@ -163,7 +161,6 @@ export const AuthScreen = () => {
             onSignup={openSignup}
             onForgot={() => setShowResetPassword(true)}
             clearAllDataFields={clearAllDataFields}
-            GoogleAuth={GoogleAuth}
           />
         </OverlayCard>
       )}

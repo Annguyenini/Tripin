@@ -94,3 +94,7 @@ const styles = {
     fontFamily: "DMMono", // your body font
   },
 };
+
+{
+  /* <GoogleAuth pending={completeForm} errorTrigger={showErrorBox} />*/
+}
