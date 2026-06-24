@@ -458,17 +458,17 @@ export const BannerManager = () => {
 
   useEffect(() => {
     const init = async () => {
-      const fg = await Location.requestForegroundPermissionsAsync();
+      const fg = await Location.getForegroundPermissionsAsync();
       setForegroundGranted(fg.status === "granted");
       await Permission.setForeGroundPer(
         fg.status === "granted" ? "true" : "false",
       );
 
-      const bg = await Location.requestBackgroundPermissionsAsync();
-      setBackgroundGranted(bg.status === "granted");
-      await Permission.setBackGroundPer(
-        bg.status === "granted" ? "true" : "false",
-      );
+      // const bg = await Location.getBackgroundPermissionsAsync();
+      // setBackgroundGranted(bg.status === "granted");
+      // await Permission.setBackGroundPer(
+      //   bg.status === "granted" ? "true" : "false",
+      // );
     };
     init();
     _registerNetworkCallback(setIsOffline);

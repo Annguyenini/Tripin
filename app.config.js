@@ -17,16 +17,16 @@ export default {
       supportsTablet: false,
       requireFullScreen: true,
       infoPlist: {
-        UIBackgroundModes: ["location"],
+        // UIBackgroundModes: ["location"],
         UIDeviceFamily: [1],
         NSLocationWhenInUseUsageDescription:
           "Allow $(PRODUCT_NAME) to access your location while using the app to record trips and display your position on the map.",
 
-        NSLocationAlwaysAndWhenInUseUsageDescription:
-          "Allow $(PRODUCT_NAME) to access your location in the background so your trips can continue to be recorded even when the app is not open.",
+        // NSLocationAlwaysAndWhenInUseUsageDescription:
+        //   "Allow $(PRODUCT_NAME) to access your location in the background so your trips can continue to be recorded even when the app is not open.",
 
-        NSLocationAlwaysUsageDescription:
-          "Allow $(PRODUCT_NAME) to access your location to continuously record trip routes and travel activity.",
+        // NSLocationAlwaysUsageDescription:
+        //   "Allow $(PRODUCT_NAME) to access your location to continuously record trip routes and travel activity.",
 
         NSPhotoLibraryUsageDescription:
           "Allow $(PRODUCT_NAME) to access your photo library so you can select photos and attach them to your trips.",
@@ -85,12 +85,12 @@ export default {
       [
         "expo-location",
         {
-          locationAlwaysAndWhenInUsePermission:
-            "Allow $(PRODUCT_NAME) to track your trips.",
-          locationAlwaysPermission:
-            "Allow $(PRODUCT_NAME) to track your trips in the background.",
+          // locationAlwaysAndWhenInUsePermission:
+          //   "Allow $(PRODUCT_NAME) to access your location in the background so your trips can continue to be recorded even when the app is not open.",
+          // locationAlwaysPermission:
+          //   "Allow $(PRODUCT_NAME) to access your location to continuously record trip routes and travel activity.",
           locationWhenInUsePermission:
-            "Allow $(PRODUCT_NAME) to track your trips while using the app.",
+            "Allow $(PRODUCT_NAME) to access your location while using the app to record trips and display your position on the map.",
           isIosBackgroundLocationEnabled: true,
           isAndroidBackgroundLocationEnabled: true,
         },
@@ -98,8 +98,11 @@ export default {
       [
         "expo-media-library",
         {
-          photosPermission: "Allow $(PRODUCT_NAME) to access your photos.",
-          savePhotosPermission: "Allow $(PRODUCT_NAME) to save photos.",
+          photosPermission:
+            "Allow $(PRODUCT_NAME) to access your photos so you can select images to add to your trips.",
+
+          savePhotosPermission:
+            "Allow $(PRODUCT_NAME) to save photos so you can export and store trip images in your photo library.",
           isAccessMediaLocationEnabled: true,
         },
       ],
@@ -107,14 +110,15 @@ export default {
       [
         "react-native-vision-camera",
         {
-          cameraPermissionText: "Allow $(PRODUCT_NAME) access to camera",
+          cameraPermissionText:
+            "Allow $(PRODUCT_NAME) to use the camera so you can take photos, videos and attach them to your trips.",
         },
       ],
       [
         "expo-audio",
         {
           microphonePermission:
-            "Allow $(PRODUCT_NAME) to access your microphone.",
+            "Allow $(PRODUCT_NAME) to access your microphone so audio can be recorded when capturing videos.",
           enableBackgroundPlayback: true,
           enableBackgroundRecording: false,
         },

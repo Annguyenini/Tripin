@@ -52,11 +52,11 @@ export default function GPSSetting({ onClose }) {
 
   useEffect(() => {
     const init = async () => {
-      const fg = await Location.requestForegroundPermissionsAsync();
+      const fg = await Location.getForegroundPermissionsAsync();
       setForegroundGranted(fg.status === "granted");
 
-      const bg = await Location.requestBackgroundPermissionsAsync();
-      setBackgroundGranted(bg.status === "granted");
+      // const bg = await Location.getBackgroundPermissionsAsync();
+      // setBackgroundGranted(bg.status === "granted");
     };
     init();
   }, []);
