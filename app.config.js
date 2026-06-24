@@ -38,6 +38,7 @@ export default {
           "Allow $(PRODUCT_NAME) to use the camera so you can take photos, videos and attach them to your trips.",
         NSMicrophoneUsageDescription:
           "Allow $(PRODUCT_NAME) to access your microphone so audio can be recorded when capturing videos.",
+        ITSAppUsesNonExemptEncryption: false,
       },
       bundleIdentifier: "com.anonymous.tripin",
     },
