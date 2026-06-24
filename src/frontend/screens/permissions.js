@@ -13,6 +13,14 @@ import * as MediaLibrary from "expo-media-library";
 import { Camera } from "expo-camera";
 import app_flow from "../../app-core/flow/app_flow";
 import PermissionStorage from "../../backend/storage/settings/permissions";
+// {
+//   emoji: "🛰️",
+//   title: "Stay With Us?",
+//   description:
+//     "Background location lets us track your trip while you're busy living it. We respect your privacy — deny this and the app still works, just less automagically.",
+//   required: false,
+//   skipLabel: "Nah, I'll manage",
+// },
 const STEPS = [
   {
     emoji: "📍",
@@ -21,14 +29,6 @@ const STEPS = [
       "We're a map-based app — kinda useless without knowing where you are. Like a compass with no north.",
     required: true,
     skipLabel: null,
-  },
-  {
-    emoji: "🛰️",
-    title: "Stay With Us?",
-    description:
-      "Background location lets us track your trip while you're busy living it. We respect your privacy — deny this and the app still works, just less automagically.",
-    required: false,
-    skipLabel: "Nah, I'll manage",
   },
   {
     emoji: "📸",
@@ -94,22 +94,21 @@ export default function PermissionsFlowScreen({ navigation }) {
           setStep((s) => s + 1);
           break;
         }
+        // case 1: {
+        //   const { status } = await Location.requestBackgroundPermissionsAsync();
+        //   if (status !== "granted") return setDenied(true);
+        //   setTimeout(() => {
+        //     setStep((s) => s + 1);
+        //   }, 550);
+        //   break;
+        // }
         case 1: {
-          const { status } = await Location.requestBackgroundPermissionsAsync();
-          if (status !== "granted") return setDenied(true);
-          setTimeout(() => {
-            setStep((s) => s + 1);
-          }, 550);
-
-          break;
-        }
-        case 2: {
           const { status } = await Camera.requestCameraPermissionsAsync();
           if (status !== "granted") return setDenied(true);
           setStep((s) => s + 1);
           break;
         }
-        case 3: {
+        case 2: {
           await MediaLibrary.requestPermissionsAsync();
           // not checking status — app handles limited/denied gracefully
           setStep((s) => s + 1);
