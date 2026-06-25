@@ -24,7 +24,7 @@ export default function TrackingModeManager() {
       await Setting.setTrackingMode(TRACKING_MODE.NORMAL);
       setMode(mode);
     }
-    await GPSLogic.syncGPSTask();
+    // await GPSLogic.syncGPSTask();
     setVisible(false);
   };
   return (

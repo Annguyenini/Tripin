@@ -459,6 +459,7 @@ export const BannerManager = () => {
   useEffect(() => {
     const init = async () => {
       const fg = await Location.getForegroundPermissionsAsync();
+      console.log("foreground", fg);
       setForegroundGranted(fg.status === "granted");
       await Permission.setForeGroundPer(
         fg.status === "granted" ? "true" : "false",
@@ -479,8 +480,8 @@ export const BannerManager = () => {
     <View style={styles.wrapper} pointerEvents="box-none">
       {!isOffline && <OfflineBanner />}
       {!foregroundGranted && <LocationBanner />}
-      {!backgroundGranted && <SatelliteOffBanner />}
-      {backgroundGranted && <SatelliteOnBanner />}
+      {/* {!backgroundGranted && <SatelliteOffBanner />}
+      {backgroundGranted && <SatelliteOnBanner />}*/}
       <SyncBanner visible={sync} />
     </View>
   );

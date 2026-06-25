@@ -91,7 +91,7 @@ export default {
           //   "Allow $(PRODUCT_NAME) to access your location to continuously record trip routes and travel activity.",
           locationWhenInUsePermission:
             "Allow $(PRODUCT_NAME) to access your location while using the app to record trips and display your position on the map.",
-          isIosBackgroundLocationEnabled: true,
+          isIosBackgroundLocationEnabled: false,
           isAndroidBackgroundLocationEnabled: true,
         },
       ],
