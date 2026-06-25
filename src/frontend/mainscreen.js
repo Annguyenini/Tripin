@@ -60,8 +60,8 @@ export const MainScreen = () => {
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
     const initSetting = async () => {
-      await Setting.init();
-      GPSLogic.syncGPSTask();
+      // await Setting.init();
+      // GPSLogic.syncGPSTask();
       const isTripDataReady = await AppFlow.onAppReady();
       setTripDataSuccess(isTripDataReady);
     };
@@ -83,27 +83,43 @@ export const MainScreen = () => {
   // start GPS tracker on mount, pause/resume based on app state, clean up on unmount
   useEffect(() => {
     const initGps = async () => {
-      gpsTask.current = await startForegroundGPSTracker();
+      try {
+        gpsTask.current = await startForegroundGPSTracker();
+      } catch (err) {
+        console.error(`fail to start foreground GPS Tracker: ${err}`);
+      }
     };
     initGps();
 
-    const getState = AppState.addEventListener("change", (nextState) => {
+    const getState = AppState.addEventListener("change", async (nextState) => {
       setState(nextState);
       if (nextState === "active") {
         if (!gpsTask.current) {
-          gpsTask.current = startForegroundGPSTracker();
+          try {
+            gpsTask.current = await startForegroundGPSTracker();
+          } catch (err) {
+            console.error(`fail to start foreground GPS Tracker: ${err}`);
+          }
         }
       } else {
-        endForegroundGPSTracker();
+        try {
+          gpsTask.current = await endForegroundGPSTracker();
+        } catch (err) {
+          console.error(`fail to end foreground GPS Tracker: ${err}`);
+        }
         gpsTask.current = null;
       }
-      GPSLogic.syncGPSTask();
+      // GPSLogic.syncGPSTask();
     });
 
-    return () => {
+    return async () => {
       getState.remove();
       gpsTask.current = null;
-      endForegroundGPSTracker();
+      try {
+        gpsTask.current = await endForegroundGPSTracker();
+      } catch (err) {
+        console.error(`fail to end foreground GPS Tracker: ${err}`);
+      }
     };
   }, []);
 
@@ -165,7 +181,8 @@ export const MainScreen = () => {
         </View>
       )}
       {/* show map once trip data is ready, otherwise show loading */}
-      {tripDataSuccess && RenderMap()}
+      {/* {tripDataSuccess && RenderMap()}*/}
+      <MapBoxLayout />
       {!tripDataSuccess && <LoadingScreen />}
 
       {/* user profile bottom sheet */}

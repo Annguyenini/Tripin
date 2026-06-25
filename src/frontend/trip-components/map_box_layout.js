@@ -124,26 +124,20 @@ export const MapBoxLayout = ({}) => {
 
         {/* { (isDisplay||tripSelected)&&<CoordinatesPointsLayout trip_id={currentDisplayTripId}></CoordinatesPointsLayout>}
             { (isDisplay||tripSelected)&&<ImageLabel trip_id={currentDisplayTripId} zoomLevel={zoomLevel}></ImageLabel>} */}
-        {mapRendered && (
-          <Marker
-            zoomLevel={zoomLevel}
-            isDisplayImageMaker={isImageMarkerDisplay}
-            isCoordsMarkerDisplay={isCoordsMarkerDisplay}
-          ></Marker>
-        )}
+        <Marker
+          zoomLevel={zoomLevel}
+          isDisplayImageMaker={isImageMarkerDisplay}
+          isCoordsMarkerDisplay={isCoordsMarkerDisplay}
+        ></Marker>
       </MapboxGL.MapView>
 
-      {mapRendered && (
-        <>
-          {/* <MarkerManager imageMarkerDisplay={isImageMarkerDisplay} setIsImageMarkerDisplay={setIsImageMarkerDisplay} isCoordsMarkerDisplay ={isCoordsMarkerDisplay} setIsCoordsMarkerDisplay={setIsCoordsMarkerDisplay}></MarkerManager> */}
-          {/* <TrackingModeManager></TrackingModeManager> */}
-          <HelpBarMap
-            setMapStyle={setMapStyle}
-            isFollowingUser={isFollowingUser}
-            setIsFollowingUser={() => setIsFollowingUser(true)}
-          ></HelpBarMap>
-        </>
-      )}
+      {/* <MarkerManager imageMarkerDisplay={isImageMarkerDisplay} setIsImageMarkerDisplay={setIsImageMarkerDisplay} isCoordsMarkerDisplay ={isCoordsMarkerDisplay} setIsCoordsMarkerDisplay={setIsCoordsMarkerDisplay}></MarkerManager> */}
+      {/* <TrackingModeManager></TrackingModeManager> */}
+      <HelpBarMap
+        setMapStyle={setMapStyle}
+        isFollowingUser={isFollowingUser}
+        setIsFollowingUser={() => setIsFollowingUser(true)}
+      ></HelpBarMap>
     </View>
   );
 };
