@@ -131,8 +131,8 @@ type Props = {
 export default function TutorialScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
-  const onDone = () => {
-    UserSettingsLoader._onFinishBoarding();
+  const onDone = async () => {
+    await UserSettingsLoader._onFinishBoarding();
     return;
   };
   const onViewableItemsChanged = useRef(

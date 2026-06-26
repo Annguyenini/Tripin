@@ -31,11 +31,11 @@ export const MapBoxLayout = ({}) => {
   const [zoomLevel, setZoomLevel] = useState(13);
   const mapRef = useRef(null);
   const cameraMapRef = useRef(null);
-  const sendMapRenderSignal = async () => {
-    if (renderRef.current) return;
-    renderRef.current = true;
-    setMapRendered(true);
-  };
+  // const sendMapRenderSignal = async () => {
+  //   if (renderRef.current) return;
+  //   renderRef.current = true;
+  //   setMapRendered(true);
+  // };
   const allowedZooms = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22,
   ];
@@ -63,23 +63,23 @@ export const MapBoxLayout = ({}) => {
     const flyTo = async () => {
       if (centerCoords) {
         setIsFollowingUser(false);
-        await cameraMapRef?.current.setCamera({
-          centerCoordinate: centerCoords,
-          zoomLevel: 15,
-          animationDuration: 1000,
-        });
+        // await cameraMapRef?.current.setCamera({
+        //   centerCoordinate: centerCoords,
+        //   zoomLevel: 15,
+        //   animationDuration: 1000,
+        // });
       } else if (!centerCoords) {
         setIsFollowingUser(true);
       }
     };
     flyTo();
   }, [centerCoords]);
-  const setCameraRef = useCallback((ref) => {
-    cameraMapRef.current = ref;
-    if (ref) {
-      setCameraMapRef(cameraMapRef); // only set when ref is actually populated
-    }
-  }, []);
+  // const setCameraRef = useCallback((ref) => {
+  //   cameraMapRef.current = ref;
+  //   if (ref) {
+  //     setCameraMapRef(cameraMapRef); // only set when ref is actually populated
+  //   }
+  // }, []);
   return (
     <View style={{ flex: 1 }}>
       <MapboxGL.MapView
@@ -96,7 +96,7 @@ export const MapBoxLayout = ({}) => {
           // if(!userLock){
           //     setUserLock(true)
           // }
-          await sendMapRenderSignal();
+          // await sendMapRenderSignal();
         }}
         onCameraChanged={(e) => {
           zoomHandler(e);
