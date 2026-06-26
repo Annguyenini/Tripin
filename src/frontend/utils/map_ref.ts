@@ -11,7 +11,7 @@ export const flyToMarker = (coords: Coords, zoom: number) => {
     console.log("missing ref");
     return;
   }
-  cameraMapRef.setCamera({
+  cameraMapRef?.setCamera?.({
     centerCoordinate: coords,
     zoomLevel: zoom,
     animationDuration: 1000,
@@ -23,7 +23,7 @@ export const flyToOnTopMarker = (coords: Coords, zoom: number) => {
     console.log("missing ref");
     return;
   }
-  cameraMapRef.setCamera({
+  cameraMapRef?.setCamera?.({
     centerCoordinate: coords,
     zoomLevel: zoom,
     animationDuration: 1000,
