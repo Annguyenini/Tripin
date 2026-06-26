@@ -26,16 +26,16 @@ export const MapBoxLayout = ({}) => {
   const zoomRef = useRef(0);
   const renderRef = useRef(false);
   const [userLock, setUserLock] = useState(false);
-  const [isFollowingUser, setIsFollowingUser] = useState(true);
+  const [isFollowingUser, setIsFollowingUser] = useState(false);
   // const isFollowingUser = useRef(true)
   const [zoomLevel, setZoomLevel] = useState(13);
   const mapRef = useRef(null);
   const cameraMapRef = useRef(null);
-  const sendMapRenderSignal = async () => {
-    if (renderRef.current) return;
-    renderRef.current = true;
-    setMapRendered(true);
-  };
+  // const sendMapRenderSignal = async () => {
+  //   if (renderRef.current) return;
+  //   renderRef.current = true;
+  //   setMapRendered(true);
+  // };
   const allowedZooms = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22,
   ];
@@ -57,26 +57,27 @@ export const MapBoxLayout = ({}) => {
   //     console.log(isFollowingUser.current)
 
   // }
-  const { centerCoords } = mapData();
+  // const { centerCoords } = mapData();
   // console.log(centerCoords);
-  useEffect(() => {
-    const flyTo = async () => {
-      if (centerCoords) {
-        setIsFollowingUser(false);
-        await cameraMapRef?.current.setCamera({
-          centerCoordinate: centerCoords,
-          zoomLevel: 15,
-          animationDuration: 1000,
-        });
-      } else if (!centerCoords) {
-        setIsFollowingUser(true);
-      }
-    };
-    flyTo();
-  }, [centerCoords]);
+  // useEffect(() => {
+  //   const flyTo = async () => {
+  //     if (centerCoords) {
+  //       setIsFollowingUser(false);
+  //       // await cameraMapRef?.current.setCamera({
+  //       //   centerCoordinate: centerCoords,
+  //       //   zoomLevel: 15,
+  //       //   animationDuration: 1000,
+  //       // });
+  //     } else if (!centerCoords) {
+  //       setIsFollowingUser(true);
+  //     }
+  //   };
+  //   flyTo();
+  // }, [centerCoords]);
   const setCameraRef = useCallback((ref) => {
-    cameraMapRef.current = ref;
     if (ref) {
+      console.log(ref);
+
       setCameraMapRef(cameraMapRef); // only set when ref is actually populated
     }
   }, []);
@@ -89,17 +90,23 @@ export const MapBoxLayout = ({}) => {
         scrollEnabled={true}
         compassEnabled={true}
         scaleBarEnabled={true}
-        scaleBarPosition={{ top: 1, right: 8 }}
+        // scaleBarPosition={{
+        //   top: 2,
+        //   right: 10,
+        // }}
         heading={45}
         pitch={45}
         onDidFinishLoadingMap={async () => {
+          console.log("loaded");
+          // setIsFollowingUser(true);
+
           // if(!userLock){
           //     setUserLock(true)
           // }
-          await sendMapRenderSignal();
+          // await sendMapRenderSignal();
         }}
         onCameraChanged={(e) => {
-          zoomHandler(e);
+          // zoomHandler(e);
         }}
         onTouchStart={() => {
           setIsFollowingUser(false);
@@ -107,9 +114,7 @@ export const MapBoxLayout = ({}) => {
         styleURL={`${mapStyles[mapStyle]}`}
       >
         <MapboxGL.Camera
-          ref={(ref) => {
-            if (ref) setCameraMapRef(ref);
-          }}
+          ref={(ref) => setCameraRef(ref)}
           followUserLocation={isFollowingUser}
           followUserMode="normal"
           followZoomLevel={13}

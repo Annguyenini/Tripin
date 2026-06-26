@@ -155,7 +155,7 @@ class LocalStorage {
       await deleteAsync(filename);
       return filename;
     } catch (err) {
-      console.error(err, filename);
+      console.error(`failed to delete ${filename} from local :${err}`);
       return null;
     }
   }
