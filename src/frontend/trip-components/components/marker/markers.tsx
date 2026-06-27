@@ -1,5 +1,5 @@
 import { TouchableOpacity, View, Image } from "react-native";
-import React, { useRef } from "react";
+import React, { use, useRef } from "react";
 import { useState, useEffect, useCallback } from "react";
 
 import TripDisplayObserver from "../../observers/trip_display_observer";
@@ -8,13 +8,11 @@ import TripContentsHandler from "../../../../app-core/flow/handlers/trip_content
 import CurrentDisplayContentsObserver from "../../observers/current_display_contents_observer";
 import MediaMarkers from "./image_markers/media_markers";
 import CoordinateMarkers from "./coordinate_markers/coordinate_markers";
+import MapSharedConfig from "../../main_map/map_shared_config";
+import LoadingTracker from "../../../overlay/map_loading/loading_tracker";
 const image_icon = require("../../../../../assets/image/gallery_icon.png");
 
-export const Marker = ({
-  zoomLevel,
-  isDisplayImageMaker,
-  isCoordsMarkerDisplay,
-}) => {
+export const Marker = ({}) => {
   const [currentDisplayTripData, setCurrentDisplayTripData] = useState(
     TripDisplayObserver.getTripNeedRender(),
   );
@@ -24,6 +22,10 @@ export const Marker = ({
   const [coordReady, setCoordReady] = useState(true);
   const [imagesReady, setImageReady] = useState(true);
   const loadingRef = useRef(null);
+  const [zoomLevel, setZoomLevel] = useState(null);
+  const allowedZooms = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22,
+  ];
   const loadingSteps = [
     "Getting Trip Contents",
     "Generate markers",
@@ -59,7 +61,12 @@ export const Marker = ({
         filterCards(content_cards),
       );
     };
+    const initZoomLevel = () => {
+      const zoomlevel = MapSharedConfig.getZoomValue();
+      setZoomLevel(zoomlevel ?? 13);
+    };
     initContentCards();
+    initZoomLevel();
   }, [currentDisplayTripData]);
 
   // call back for display trip change
@@ -102,24 +109,38 @@ export const Marker = ({
         ),
       );
   }, [currentDisplayTripData]);
+
+  useEffect(() => {
+    const zoomLevelUpdate = {
+      update(zoom) {
+        if (!zoom || zoom === zoomLevel || !allowedZooms.includes(zoom)) {
+          setZoomLevel(zoom);
+        }
+      },
+    };
+    MapSharedConfig.attach(zoomLevelUpdate, "zoom");
+    return () => MapSharedConfig.detach(zoomLevelUpdate, "zoom");
+  }, []);
+
   useEffect(() => {
     // console.log(imagesReady, coordReady);
     if (!imagesReady || !coordReady) {
       Loading();
     } else {
       HideLoading();
+      LoadingTracker.notifyReady("marker");
     }
   }, [coordReady, imagesReady]);
   if (!contentCards) return;
   return (
     <View>
-      {currentDisplayTripData && isCoordsMarkerDisplay && (
+      {currentDisplayTripData && (
         <CoordinateMarkers
           content_cards={contentCards}
           ready={() => setCoordReady(true)}
         ></CoordinateMarkers>
       )}
-      {currentDisplayTripData && isDisplayImageMaker && (
+      {currentDisplayTripData && (
         <MediaMarkers
           content_cards={contentCards}
           zoomLevel={zoomLevel}

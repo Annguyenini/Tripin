@@ -20,6 +20,7 @@ import {
   SatelliteOnIcon,
 } from "../../styles/icons/satellite";
 import { LocationOffIcon } from "../../styles/icons/navigation";
+import { LoadingOverlay } from "./map_loading/map_loading";
 
 // ── Offline ──────────────────────────────────────────────────────────────────
 const OfflineBanner = () => {
@@ -477,13 +478,16 @@ export const BannerManager = () => {
   }, []);
 
   return (
-    <View style={styles.wrapper} pointerEvents="box-none">
-      {!isOffline && <OfflineBanner />}
-      {!foregroundGranted && <LocationBanner />}
-      {/* {!backgroundGranted && <SatelliteOffBanner />}
+    <>
+      <View style={styles.wrapper} pointerEvents="box-none">
+        <LoadingOverlay></LoadingOverlay>
+
+        {!isOffline && <OfflineBanner />}
+        {!foregroundGranted && <LocationBanner />}
+        {/* {!backgroundGranted && <SatelliteOffBanner />}
       {backgroundGranted && <SatelliteOnBanner />}*/}
-      <SyncBanner visible={sync} />
-    </View>
+      </View>
+    </>
   );
 };
 
@@ -495,6 +499,12 @@ const styles = StyleSheet.create({
     left: 12,
     zIndex: 300,
     gap: 6,
+    backgroundColor: "#1a1917",
+    borderWidth: 1,
+    borderColor: "#2e2c29",
+    borderRadius: 10,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
   },
   banner: {
     flexDirection: "row",

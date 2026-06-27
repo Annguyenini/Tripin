@@ -1,8 +1,11 @@
 import { View, TouchableOpacity, Text, Image, Animated } from "react-native";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { helpBarMapStyle } from "../../styles/function/help_bar_map";
 import LocationDataService from "../../backend/storage/hot_data/current_location_data_service";
 import { Ionicons } from "@expo/vector-icons";
+import MapSharedConfig from "./main_map/map_shared_config";
+import MapTransform from "./main_map/map_transform";
+import LoadingTracker from "../overlay/map_loading/loading_tracker";
 
 const MAP_STYLES = [
   { style: "satellite", color: "#3B6D11" },
@@ -14,11 +17,8 @@ const BTN = 40; // button size
 const GAP = 6; // gap between buttons
 const STEP = BTN + GAP;
 
-export const HelpBarMap = ({
-  isFollowingUser,
-  setIsFollowingUser,
-  setMapStyle,
-}) => {
+export const HelpBarMap = ({ setStyles }) => {
+  console.log("render bar");
   const navigation_icon = require("../../../assets/image/navigation_notoutline_icon.png");
   const navigation_outline_icon = require("../../../assets/image/navigation_outline_icon.png");
 
@@ -26,13 +26,39 @@ export const HelpBarMap = ({
   const [locationExpanded, setLocationExpanded] = useState(false);
   const [isoCountryCode, setIsoCountryCode] = useState("");
   const [location, setLocation] = useState(null);
-
+  const [isFollowingUser, setIsFollowingUser] = useState(false);
   // style options: slide in from right (translateX: 80 → 0, opacity: 0 → 1)
   const styleAnim = useRef(new Animated.Value(0)).current; // 0=hidden 1=visible
   // location pill: width 0 → 140
   const locationAnim = useRef(new Animated.Value(0)).current;
 
-  useState(() => {
+  const followingUser = async () => {
+    await MapTransform.followingUser();
+  };
+  const setMapStyle = (style) => {
+    console.log(style);
+    setStyles(style);
+  };
+  useEffect(() => {
+    const initialFollowing = () => {
+      const initial = MapSharedConfig.getIsFollowingUser();
+      if (isFollowingUser !== initial) {
+        setIsFollowingUser(initial);
+      }
+    };
+    initialFollowing();
+    const updateIsFollowing = {
+      update(value) {
+        if (isFollowingUser !== value) {
+          setIsFollowingUser(value);
+        }
+      },
+    };
+    MapSharedConfig.attach(updateIsFollowing, "isFollowingUser");
+    return () => MapSharedConfig.detach(updateIsFollowing, "isFollowingUser");
+  }, []);
+
+  useEffect(() => {
     const observer = {
       update(newLocation) {
         setLocation(newLocation);
@@ -40,8 +66,9 @@ export const HelpBarMap = ({
       },
     };
     LocationDataService.attach(observer, LocationDataService.location_key);
-    return () =>
+    return () => {
       LocationDataService.detach(observer, LocationDataService.location_key);
+    };
   }, []);
 
   const _getFlag = (isoCode) => {
@@ -92,14 +119,14 @@ export const HelpBarMap = ({
     inputRange: [0, 0.3, 1],
     outputRange: [0, 0, 1],
   });
-
+  LoadingTracker.notifyReady("help bar map");
   return (
     <View style={helpBarMapStyle.container}>
       {/* ── Layer 1: recenter ── */}
       <View style={{ position: "absolute", top: 0, right: 0 }}>
         <TouchableOpacity
           style={helpBarMapStyle.btn}
-          onPress={() => setIsFollowingUser(true)}
+          onPress={() => followingUser()}
         >
           <Image
             style={helpBarMapStyle.icon}
