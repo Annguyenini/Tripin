@@ -15,6 +15,7 @@ import { flyToMarker, flyToOnTopMarker } from "../../../../utils/map_ref";
 import { ContentCard } from "../../../../../types/content_card.types";
 import Video from "react-native-video";
 import MediaViewCard from "../../../../albums/viewer_card";
+import MapTransform from "../../../main_map/map_transform";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -363,7 +364,7 @@ export default function TripTimeline({
         const focused = cards[best];
         onCardFocus?.(focused, best);
         if (focused.latitude != null && focused.longitude != null) {
-          flyToOnTopMarker([focused.longitude, focused.latitude], 16);
+          MapTransform.flyTo([focused.longitude, focused.latitude], 16);
         }
       }
     },
@@ -384,7 +385,6 @@ export default function TripTimeline({
     },
     [cards, onCardFocus],
   );
-  console.log(mainIndex);
   if (!cards.length) return null;
 
   const mainCard = cards[mainIndex];

@@ -38,6 +38,9 @@ import { SettingScreen } from "./setting/setting_screen";
 import CurrentTripDataService from "../backend/storage/hot_data/current_trip";
 import { NewTripFiller } from "./trip-components/components/helpers/add_new_trip";
 import AlbumScreen from "./albums/album";
+const Map = React.memo(({}) => {
+  return <MapBoxLayout></MapBoxLayout>;
+});
 export const MainScreen = () => {
   // user profile state from local storage
 
@@ -146,15 +149,13 @@ export const MainScreen = () => {
   const callAlbum = () => navigate("Album");
 
   // memoized to prevent map re-mounting on unrelated state changes
-  const RenderMap = useCallback(() => {
-    return <MapBoxLayout />;
-  }, []);
 
   const hideAllScreen = () => {
     setCameraVisible(false);
     setSettingVisible(false);
     setTripsListVisible(false);
   };
+
   return (
     <View style={styles.container}>
       <BannerManager />
@@ -182,7 +183,7 @@ export const MainScreen = () => {
       )}
       {/* show map once trip data is ready, otherwise show loading */}
       {/* {tripDataSuccess && RenderMap()}*/}
-      <MapBoxLayout />
+      <Map></Map>
       {!tripDataSuccess && <LoadingScreen />}
 
       {/* user profile bottom sheet */}
