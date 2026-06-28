@@ -67,7 +67,6 @@ export const MapBoxLayout = ({}) => {
         <Mapbox.Camera
           ref={setCameraRef}
           // followUserLocation
-          followZoomLevel={1}
           zoomLevel={0}
         />
         <Mapbox.UserLocation

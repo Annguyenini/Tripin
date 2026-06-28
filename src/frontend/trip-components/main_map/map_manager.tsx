@@ -9,8 +9,9 @@ const Map = React.memo(({}) => {
   return <MapBoxLayout></MapBoxLayout>;
 });
 const MapManager = () => {
-  let initialFollowing = false;
   useEffect(() => {
+    let initialFollowing = false;
+
     const mapReady = {
       update(steps) {
         if (steps.length === 3 && !initialFollowing) {
