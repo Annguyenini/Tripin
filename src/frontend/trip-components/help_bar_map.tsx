@@ -5,7 +5,7 @@ import LocationDataService from "../../backend/storage/hot_data/current_location
 import { Ionicons } from "@expo/vector-icons";
 import MapSharedConfig from "./main_map/map_shared_config";
 import MapTransform from "./main_map/map_transform";
-import LoadingTracker from "../overlay/map_loading/loading_tracker";
+import LoadingTracker from "./observers/loading_tracker";
 
 const MAP_STYLES = [
   { style: "satellite", color: "#3B6D11" },

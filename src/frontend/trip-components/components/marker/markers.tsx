@@ -9,7 +9,7 @@ import CurrentDisplayContentsObserver from "../../observers/current_display_cont
 import MediaMarkers from "./image_markers/media_markers";
 import CoordinateMarkers from "./coordinate_markers/coordinate_markers";
 import MapSharedConfig from "../../main_map/map_shared_config";
-import LoadingTracker from "../../../overlay/map_loading/loading_tracker";
+import LoadingTracker from "../../observers/loading_tracker";
 const image_icon = require("../../../../../assets/image/gallery_icon.png");
 
 export const Marker = ({}) => {
@@ -113,7 +113,7 @@ export const Marker = ({}) => {
   useEffect(() => {
     const zoomLevelUpdate = {
       update(zoom) {
-        if (!zoom || zoom === zoomLevel || !allowedZooms.includes(zoom)) {
+        if (zoom && zoom !== zoomLevel && allowedZooms.includes(zoom)) {
           setZoomLevel(zoom);
         }
       },

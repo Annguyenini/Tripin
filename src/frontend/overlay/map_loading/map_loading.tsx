@@ -1,7 +1,7 @@
 // loading_overlay.jsx
 import { useEffect, useState, useRef } from "react";
 import { View, Text, StyleSheet, Animated } from "react-native";
-import LoadingTracker from "./loading_tracker";
+import LoadingTracker from "../../trip-components/observers/loading_tracker";
 
 export const LoadingOverlay = ({ threshold = 3 }) => {
   const [count, setCount] = useState(0);
