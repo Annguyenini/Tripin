@@ -14,7 +14,7 @@ import mapData from "./map_data";
 import { Marker } from "./components/marker/markers";
 import { setCameraMapRef } from "../utils/map_ref";
 import MapSharedConfig from "./main_map/map_shared_config";
-import LoadingTracker from "../overlay/map_loading/loading_tracker";
+import LoadingTracker from "./observers/loading_tracker";
 MapboxGL.setAccessToken(process.env.EXPO_MAPBOX_PUBLIC_TOKEN);
 const Markers = React.memo(({}) => {
   return <Marker></Marker>;
@@ -67,7 +67,7 @@ export const MapBoxLayout = ({}) => {
         <Mapbox.Camera
           ref={setCameraRef}
           // followUserLocation
-          followZoomLevel={13}
+          zoomLevel={0}
         />
         <Mapbox.UserLocation
           androidRenderMode={"gps"}

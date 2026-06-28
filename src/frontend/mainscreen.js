@@ -38,8 +38,10 @@ import { SettingScreen } from "./setting/setting_screen";
 import CurrentTripDataService from "../backend/storage/hot_data/current_trip";
 import { NewTripFiller } from "./trip-components/components/helpers/add_new_trip";
 import AlbumScreen from "./albums/album";
+import MapManager from "./trip-components/main_map/map_manager";
 const Map = React.memo(({}) => {
-  return <MapBoxLayout></MapBoxLayout>;
+  return <MapManager></MapManager>;
+  // return <MapBoxLayout></MapBoxLayout>;
 });
 export const MainScreen = () => {
   // user profile state from local storage

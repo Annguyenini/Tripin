@@ -18,8 +18,9 @@ class MapTransform {
             lastlocation.coords.longitude,
             lastlocation.coords.latitude,
           ],
-          zoomLevel: 15,
-          animationDuration: 1000,
+          zoomLevel: 13,
+          animationDuration: 2000,
+          animationMode: "easeTo",
         });
       }
     } catch (err) {
