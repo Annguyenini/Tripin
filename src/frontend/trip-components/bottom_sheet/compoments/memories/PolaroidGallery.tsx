@@ -6,12 +6,11 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
-import CurrentDisplayContentsObserver from "../../../observers/current_display_contents_observer";
+import CurrentDisplayContentsObserver from "../../../observers/current_contents/current_display_contents_observer";
 import GalleryOverlay from "./GalleryOverlay";
 import PolaroidCard from "./PolaroidCard";
 import PhotoSheet from "./PhotoSheet";
 import { SLOT_W, GALLERY_H } from "./constants";
-import { ContentCard } from "../../../../../types/content_card.types";
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get("window");
 
 export default function PolaroidGallery({ data }) {

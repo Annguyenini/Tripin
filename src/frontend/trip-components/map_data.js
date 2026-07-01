@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import TripDisplayObserver from "./observers/trip_display_observer";
-import CurrentDisplayContentsObserver from "./observers/current_display_contents_observer";
+import CurrentDisplayContentsObserver from "./observers/current_contents/current_display_contents_observer";
 import { addObserver } from "../utils/map_flyto";
 import { flyToMarker } from "../utils/map_ref";
 

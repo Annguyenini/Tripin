@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import CurrentDisplayContentsObserver from "../../../observers/current_display_contents_observer";
+import CurrentDisplayContentsObserver from "../../../observers/current_contents/current_display_contents_observer";
 import {
   View,
   Text,

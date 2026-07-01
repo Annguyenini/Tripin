@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import TripDisplayObserver from "../../observers/trip_display_observer";
 import { UseOverlay } from "../../../overlay/overlay_main";
 import TripContentsHandler from "../../../../app-core/flow/handlers/trip_contents/trip_contents_handler";
-import CurrentDisplayContentsObserver from "../../observers/current_display_contents_observer";
+import CurrentDisplayContentsObserver from "../../observers/current_contents/current_display_contents_observer";
 import MediaMarkers from "./image_markers/media_markers";
 import CoordinateMarkers from "./coordinate_markers/coordinate_markers";
 import MapSharedConfig from "../../main_map/map_shared_config";

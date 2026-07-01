@@ -1,5 +1,5 @@
-import LocalStorage from "../../../backend/storage/async_storage/localStorage";
-import { ContentCard } from "../../../types/content_card.types";
+import LocalStorage from "../../../../backend/storage/async_storage/localStorage";
+import { ContentCard } from "../../../../types/content_card.types";
 
 class CurrentDisplayContentsObserver extends LocalStorage {
   // watcher class for map box render logic

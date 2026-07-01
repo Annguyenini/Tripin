@@ -4,7 +4,7 @@ import { View, Text } from "react-native";
 // import PolaroidGallery from "../memories/PolaroidGallery";
 import PolaroidGallery from "./memories";
 import { ContentCard } from "../../../../../types/content_card.types";
-import CurrentDisplayContentsObserver from "../../../observers/current_display_contents_observer";
+import CurrentDisplayContentsObserver from "../../../observers/current_contents/current_display_contents_observer";
 import { TouchableOpacity } from "@gorhom/bottom-sheet";
 import { ScrollView } from "react-native";
 import InsertNewCard from "../../compoments/gallery/insert_new_card";

@@ -1,5 +1,5 @@
-export const BASE_API = "https://tripping.live";
-// export const BASE_API = "http://192.168.0.111:8000";
+// export const BASE_API = "https://tripping.live";
+export const BASE_API = "http://192.168.0.111:8000";
 export const HEALTH = BASE_API + "/health";
 export const APP_VERSION = BASE_API + "/app-version";
 export const LOGIN_API = BASE_API + "/auth/login";
@@ -59,6 +59,10 @@ export const REQUEST_UPDATE_PROFILE_PRESIGN_URL =
 export const REQUEST_COMPLETE_UPDATE_PROFILE =
   BASE_API + BASE_USER_API + "/complete-update-avatar";
 export const GET_USER_DATA = BASE_API + BASE_USER_API + "/get-user-data";
+export const REQUEST_DELETE_USER =
+  BASE_API + BASE_USER_API + "/request-delete-user";
+export const DELETE_USER = BASE_API + BASE_USER_API + "/delete-user";
+
 export const REQUEST_PRESIGN_URLS =
   BASE_API + BASE_TRIP_CONTENTS_API + "/request-presign-urls";
 export const REQUEST_CONTENT_CARDS_SYNC =

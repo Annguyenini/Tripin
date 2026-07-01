@@ -93,6 +93,12 @@ export const settingStyle = StyleSheet.create({
     gap: 12,
     margin: 20,
   },
+  Delete: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    margin: 20,
+  },
   logoutText: {
     color: "#e07a3a",
     fontSize: 13,

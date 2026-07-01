@@ -70,6 +70,23 @@ class UserService {
     });
     return respond;
   }
+  async requestDeleteUser() {
+    const headers = {};
+
+    const respond = await fetchFunction(API.REQUEST_DELETE_USER, {
+      method: "POST",
+      headers: headers,
+    });
+    return respond;
+  }
+  async deleteUser(code) {
+    const respond = await fetchFunction(API.DELETE_USER, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: code }),
+    });
+    return respond;
+  }
 }
 
 const userService = new UserService();

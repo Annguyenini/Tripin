@@ -86,5 +86,23 @@ class UserDataHandler {
       return { message: "Failed to update user avartar", status: 500 };
     }
   }
+  async requestDeleteUser() {
+    try {
+      const response = await UserService.requestDeleteUser();
+      return response;
+    } catch (err) {
+      console.error(`fail to delete user:${err}`);
+      return response;
+    }
+  }
+  async deleteUser(code) {
+    try {
+      const response = await UserService.deleteUser(code);
+      return response;
+    } catch (err) {
+      console.error(`fail to delete user:${err}`);
+      return response;
+    }
+  }
 }
 export default new UserDataHandler();

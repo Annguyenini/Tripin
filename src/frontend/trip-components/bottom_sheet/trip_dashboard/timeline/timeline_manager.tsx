@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import TripTimeline from "./timeline";
 
 import { ContentCard } from "../../../../../types/content_card.types";
-import CurrentDisplayContentsObserver from "../../../observers/current_display_contents_observer";
+import CurrentDisplayContentsObserver from "../../../observers/current_contents/current_display_contents_observer";
 
 const MOCK_CONTENT_CARDS: ContentCard[] = [
   {

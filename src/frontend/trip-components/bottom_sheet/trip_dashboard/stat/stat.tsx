@@ -157,6 +157,12 @@ const TripStat = ({ TripData }) => {
         <View style={BottomSheetSyle.dividerLine} />
       </View>
 
+      {showEdit && (
+        <TripCustomCard
+          trip={TripData}
+          onClose={() => setShowEdit(false)}
+        ></TripCustomCard>
+      )}
       {/* ── Memory Cards ── */}
       {/*<ScrollView
               horizontal
