@@ -1,5 +1,5 @@
-// export const BASE_API = "https://tripping.live";
-export const BASE_API = "http://192.168.0.111:8000";
+export const BASE_API = "https://tripping.live";
+// export const BASE_API = "http://192.168.0.111:8000";
 export const HEALTH = BASE_API + "/health";
 export const APP_VERSION = BASE_API + "/app-version";
 export const LOGIN_API = BASE_API + "/auth/login";
