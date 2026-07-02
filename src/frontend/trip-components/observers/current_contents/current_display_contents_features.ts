@@ -8,7 +8,7 @@ class LocationBaseContentsNode {
   private _previousEvent: LocationBaseContentsNode = null;
   private _parent: LocationBaseContentsNode = null;
   private _child: LocationBaseContentsNode = null;
-  private _contents: ContentCard[];
+  private _contents: ContentCard[] = [];
   public name: string;
   public id: number;
   constructor(name: string, id: number) {
@@ -90,7 +90,8 @@ class LocationBaseContentsGraph {
     let start = this._eventHead;
     let lastNode: LocationBaseContentsNode = null;
     // get the last 'name' node
-    while (start.getNextEvent() !== null) {
+
+    while (start) {
       if (start.name === name) {
         lastNode = start;
       }
@@ -101,7 +102,10 @@ class LocationBaseContentsGraph {
       return lastNode;
     }
     // if not the last node, create new one with id = lastNode.id =1
-    const new_id = lastNode.id + 1;
+    let new_id = 1;
+    if (lastNode) {
+      new_id = lastNode.id + 1;
+    }
     const new_node = new LocationBaseContentsNode(name, new_id);
     //add to graph
     new_node.previousEvent(this._eventTail);
@@ -112,12 +116,7 @@ class LocationBaseContentsGraph {
   }
 
   setContentList(cards: ContentCard[]) {
-    // sort
-    let sorted_cards = cards.sort((a, b) => {
-      return b.time_stamp - a.time_stamp;
-    });
-
-    sorted_cards.forEach((card) => {
+    cards.forEach((card) => {
       const city = card.city;
       //get node
       const node = this.findBelongNode(city);
@@ -129,6 +128,7 @@ class LocationBaseContentsGraph {
     const city = card.city;
     //get node
     const node = this.findBelongNode(city);
+    console.log(node);
     //push card into node
     node.pushContent(card);
   }
@@ -136,9 +136,12 @@ class LocationBaseContentsGraph {
     let result = [];
     let temp = this._eventHead;
     if (!temp) return null;
-    while (temp.getNextEvent() !== null) {
-      result = [result, ...temp.getContents()];
+    let i = 0;
+    while (temp) {
+      console.log(i);
+      result.push(temp.getContents());
       temp = temp.getNextEvent();
+      i++;
     }
     return result;
   }
@@ -152,51 +155,49 @@ class LocationBaseContentsGraph {
     }
     return result;
   }
+  getEventTree() {
+    let temp = this._eventHead;
+    let result = [];
+    while (temp) {
+      result.push(temp);
+      temp = temp.getNextEvent();
+    }
+    return result;
+  }
 }
 
 interface ContentCardsFeatures {
-  timestamp: ContentCard[];
-  events: ContentCard[];
-  location: ContentCard[];
+  timestamp: Array<ContentCard[]>;
+  events: Array<ContentCard[]>;
+  // location: Array<ContentCard[]>;
 }
 interface Observer {
   update: (value: ContentCardsFeatures) => void;
 }
 class ContentsDisplayFeatures {
-  public _trip_id: number = null;
   private _ContentLocationGraph: LocationBaseContentsGraph = null;
-  private _TimeStampContent: ContentCard[] = [];
   private _ContentCards: ContentCard[] = [];
-  private _observer: Observer[] = [];
-  constructor(trip_id: number) {
-    this._trip_id = trip_id;
-    this._ContentLocationGraph = new LocationBaseContentsGraph();
-    this._ContentCards = CurrentDisplayContents.getAssetArray(this._trip_id);
-  }
-  attach(observer: Observer) {
-    if (this._observer.includes(observer)) return;
-    this._observer.push(observer);
-  }
-  detach(observer: Observer) {
-    this._observer = this._observer.filter((obs) => obs !== observer);
-  }
-  notify(contentCardsFeatures: ContentCardsFeatures) {
-    this._observer.forEach((obs) => {
-      obs.update(contentCardsFeatures);
-    });
-  }
-  newAssetHandler(newContent) {
-    this._ContentCards = newContent;
-    this._ContentLocationGraph.setContentList(newContent);
-  }
-  pushContentHandler(content) {
-    this._ContentCards.push(content);
-    this._ContentLocationGraph.addContentToList(content);
-  }
-  getContentsByEvent() {
-    return this._ContentLocationGraph.getContentByEvent();
-  }
-  getContentsByLocation(name: string) {
-    return this._ContentLocationGraph.getContentByLocation(name);
+
+  generateContentsFeatures(contents: ContentCard[]): ContentCardsFeatures {
+    try {
+      if (contents.length <= 0) return null;
+      let sorted_cards = contents.sort((a, b) => a.time_stamp - b.time_stamp);
+      console.log("new asset", sorted_cards);
+      this._ContentLocationGraph = new LocationBaseContentsGraph();
+
+      this._ContentLocationGraph.setContentList(sorted_cards);
+      console.log("event log", this._ContentLocationGraph.getEventTree());
+
+      let cards_by_event = this._ContentLocationGraph.getContentByEvent();
+      console.log("event comntents", cards_by_event);
+      return {
+        timestamp: [sorted_cards],
+        events: cards_by_event,
+      };
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
   }
 }
+export default ContentsDisplayFeatures;

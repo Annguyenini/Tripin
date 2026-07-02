@@ -60,7 +60,14 @@ export const CameraApp = ({ onClose }) => {
       "telephoto-camera",
     ],
   });
-  const [flash, setFlash] = useState("auto");
+  const [flash, setFlash] = useState("off");
+  const toggleFlash = (value) => {
+    if (device?.hasFlash && (value === "on" || value === "auto")) {
+      setFlash(value);
+    } else {
+      setFlash("off");
+    }
+  };
   const [isCameraReady, setCameraReady] = useState(false);
   // album
   const [image_icon, setImage_icon] = useState(null);
@@ -161,7 +168,7 @@ export const CameraApp = ({ onClose }) => {
       <TopBarCamera exitCamera={onClose} />
       <CameraSetting
         flash={flash}
-        setFlash={setFlash}
+        setFlash={toggleFlash}
         facing={facing}
         setFacing={setFacing}
       />

@@ -1,135 +1,129 @@
-import MapboxGL from "@rnmapbox/maps";
+import MapBox from "@rnmapbox/maps";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { computeCluster } from "../../../../../backend/addition_functions/compute_cluster";
 import eventBus from "../../../../../backend/bridge/UI_event_bus";
+import { EVENT_COLORS } from "../utils/color_cycle";
+import ContentsDisplayFeatures from "../../../observers/current_contents/current_display_contents_features";
+import { MOCK_CONTENT_CARDS } from "../../../../utils/mock_contents";
 const CoordinateMarkers = ({ content_cards, ready }) => {
+  const ContentsFeatures = new ContentsDisplayFeatures();
   const [radiusForGrouping, setRadiusForGrouping] = useState(0);
   const previousClusterKey = useRef("empty");
+  const [GeoJson, setGeoJson] = useState({
+    type: "FeatureCollection",
+    features: [],
+  });
+
   // const [coordinatesObject,setCoordinatesObject]=useState({})
   //
+  // useEffect(() => {
+  //   const radiusListener = (val) => {
+  //     setRadiusForGrouping(val);
+  //   };
+  //   eventBus.on("RadiusChange", radiusListener);
+  //   ready();
+  //   return () => {
+  //     eventBus.off("RadiusChange", radiusListener);
+  //   };
+  // }, [content_cards]);
   useEffect(() => {
-    const radiusListener = (val) => {
-      setRadiusForGrouping(val);
+    let GEOJSON = {
+      type: "FeatureCollection",
+      features: [],
     };
-    eventBus.on("RadiusChange", radiusListener);
-    ready();
-    return () => {
-      eventBus.off("RadiusChange", radiusListener);
+    let event = 0;
+    let PointMarker = {
+      type: "FeatureCollection",
+      features: [],
     };
-  }, [content_cards]);
 
-  const coordinatesMap = useMemo(() => {
-    return new Map([
-      [
-        0,
-        [
-          ...content_cards.map((obj) => {
-            return [obj.longitude, obj.latitude];
-          }),
-        ],
-      ],
-      [
-        20,
-        [
-          ...computeCluster(content_cards, 20, true).map((obj) => {
-            return [obj.center.lng, obj.center.lat];
-          }),
-        ],
-      ],
-      [
-        40,
-        [
-          ...computeCluster(content_cards, 40, true).map((obj) => {
-            return [obj.center.lng, obj.center.lat];
-          }),
-        ],
-      ],
-      [
-        60,
-        [
-          ...computeCluster(content_cards, 60, true).map((obj) => {
-            return [obj.center.lng, obj.center.lat];
-          }),
-        ],
-      ],
-      [
-        80,
-        [
-          ...computeCluster(content_cards, 80, true).map((obj) => {
-            return [obj.center.lng, obj.center.lat];
-          }),
-        ],
-      ],
-      [
-        100,
-        [
-          ...computeCluster(content_cards, 100, true).map((obj) => {
-            return [obj.center.lng, obj.center.lat];
-          }),
-        ],
-      ],
-    ]);
-  }, [content_cards]);
+    for (let i = 0; i < content_cards?.events?.length; i++) {
+      try {
+        let current_event = content_cards.events[i];
+        if (!current_event) continue;
+        let color = EVENT_COLORS[event % EVENT_COLORS.length];
+        // structure for line string
+        let geoLine = {
+          type: "Feature",
+          properties: {
+            //default color
+            stroke: color,
+          },
+          geometry: {
+            type: "LineString",
+            coordinates: [],
+          },
+        };
+        let edgeLines = [];
+        let edgeHeadCoords = null;
+        for (let feature of current_event) {
+          //point marker
 
-  const currentCluster = useMemo(() => {
-    return coordinatesMap.get(radiusForGrouping);
-  }, [coordinatesMap, radiusForGrouping]);
+          geoLine.geometry.coordinates.push([
+            feature.longitude,
+            feature.latitude,
+          ]);
+          edgeHeadCoords = [feature.longitude, feature.latitude];
+        }
+        //temp fix for one that have single coor on line
+        if (geoLine.geometry.coordinates.length === 1) {
+          geoLine.geometry.coordinates.push(edgeHeadCoords);
+        }
+        const next_event = content_cards?.events[i + 1];
+        if (next_event) {
+          console.log("next_event", next_event, content_cards);
+          const edgeTail = next_event[0];
+          const edgeTailCoords = [edgeTail.longitude, edgeTail.latitude];
+          const edgeLine = {
+            type: "Feature",
+            properties: {
+              //default color
+              stroke: color,
+            },
+            geometry: {
+              type: "LineString",
+              coordinates: [edgeHeadCoords, edgeTailCoords],
+            },
+          };
+          // edgeLine.geometry.coordinates.push(edgeHeadCoords);
 
-  const clusterKey = useMemo(() => {
-    if (!currentCluster || currentCluster.length === 0) {
-      return previousClusterKey.current;
+          // GEOJSON.features.push(edgeLine);
+          edgeLines.push(edgeLine);
+        }
+        GEOJSON.features.push(geoLine);
+        GEOJSON.features.push(...edgeLines);
+
+        event++;
+      } catch (err) {
+        console.log(err);
+      }
     }
-    const key = `${currentCluster.length}-${currentCluster[0]}-${currentCluster[currentCluster.length - 1]}`;
-    previousClusterKey.current = key;
-    return key;
-  }, [currentCluster]);
-  // console.log(currentCluster);
-  if (!currentCluster || currentCluster.length === 0) {
-    return null;
-  }
-  const geoJson = {
-    type: "FeatureCollection",
-    features: [
-      // POINTS
-      ...currentCluster.map((coors) => ({
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: coors,
-        },
-      })),
+    console.log(GEOJSON, PointMarker);
+    setGeoJson(GEOJSON);
+  }, [content_cards]);
+  if (!GeoJson) return null;
 
-      // LINE
-      {
-        type: "Feature",
-        geometry: {
-          type: "LineString",
-          coordinates: currentCluster,
-        },
-      },
-    ],
-  };
   return (
-    <MapboxGL.ShapeSource id="route" key={clusterKey} shape={geoJson}>
-      <MapboxGL.LineLayer
+    <MapBox.ShapeSource id="route" key={"point"} shape={GeoJson}>
+      <MapBox.CircleLayer
+        id="points-layer"
+        // filter={["==", "$type", "Point"]}
+        style={{
+          circleRadius: 8,
+          circleColor: ["get", "stroke"],
+          circleStrokeWidth: 2,
+        }}
+      />
+      <MapBox.LineLayer
         id="line-layer"
         style={{
           lineWidth: 2,
-          lineColor: "#1a1a1a",
+          lineColor: ["get", "stroke"],
           lineDasharray: [2, 2],
+          lineCap: "round",
         }}
       />
-
-      <MapboxGL.CircleLayer
-        id="points-layer"
-        style={{
-          circleRadius: 8,
-          circleColor: "#1a1a1a",
-          circleStrokeWidth: 2,
-          circleStrokeColor: "#f0f0ec",
-        }}
-      />
-    </MapboxGL.ShapeSource>
+    </MapBox.ShapeSource>
   );
 };
 export default CoordinateMarkers;

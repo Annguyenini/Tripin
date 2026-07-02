@@ -11,6 +11,9 @@ class CurrentDisplayContentsObserver extends LocalStorage {
   GENERATE_KEY(trip_id: number) {
     return `contents:${trip_id}`;
   }
+  GENERATE_KEY_FOR_SINGLE_NEW_CONTENT(trip_id: number) {
+    return `content:${trip_id}`;
+  }
   setDefaultArray(trip_id: number, data_array: ContentCard[]) {
     if (!this.watchArray[trip_id]) {
       this.watchArray[trip_id] = [];

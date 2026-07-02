@@ -195,13 +195,13 @@ export const MainScreen = () => {
       {/* bottom nav bar */}
       <View style={footer.footerContainer}>
         <View style={footer.fotterrow}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={footer.fotterbutton}
             onPress={() => hideAllScreen()}
           >
             <Ionicons name="home-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Home</Text>
-          </TouchableOpacity>
+          </TouchableOpacity>*/}
           <TouchableOpacity
             style={footer.fotterbutton}
             onPress={() => setTripsListVisible((prev) => !prev)}
@@ -234,13 +234,13 @@ export const MainScreen = () => {
             )}
           </View>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={footer.fotterbutton}
             onPress={() => setAlbumVisible((prev) => !prev)}
           >
             <Ionicons name="images-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Gallery</Text>
-          </TouchableOpacity>
+          </TouchableOpacity>*/}
           <TouchableOpacity
             style={footer.fotterbutton}
             onPress={() => setSettingVisible((prev) => !prev)}

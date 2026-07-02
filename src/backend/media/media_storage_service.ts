@@ -45,15 +45,15 @@ class MediaStorageService {
       } else {
         fileName = `${Crypto.randomUUID()}.jpg`;
       }
-
+      const sourceUri = uri.startsWith("file://") ? uri : `file://${uri}`;
       const localUri = `${documentDirectory}media/${fileName}`;
       await makeDirectoryAsync(`${documentDirectory}media/`, {
         intermediates: true,
       });
       if (source != "local") {
-        await downloadAsync(uri, localUri);
+        await downloadAsync(sourceUri, localUri);
       } else {
-        await copyAsync({ from: uri, to: localUri });
+        await copyAsync({ from: sourceUri, to: localUri });
       }
       return localUri;
     } catch (error) {

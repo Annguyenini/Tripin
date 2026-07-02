@@ -20,4 +20,5 @@ export interface ContentCard {
   minetype?: string;
   trip_name?: string;
   presign_url?: string;
+  render_event?: number;
 }
