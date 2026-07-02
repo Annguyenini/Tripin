@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { useMemo } from "react";
-import CurrentDisplayContentsObserver from "../../observers/current_display_contents_observer";
-import { useEffect, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
+import CurrentDisplayContentsObserver from "../../observers/current_contents/current_display_contents_observer";
 import TripDisplayObserver from "../../observers/trip_display_observer";
 import * as CoordinatesCal from "../../../../backend/coordinates/coordinates_cal";
+import { Ionicons } from "@expo/vector-icons";
+
 export const TripStatCards = () => {
   const [createdTime, setCreatedTime] = useState(null);
   const [endedTime, setEndedTime] = useState(null);
@@ -13,6 +14,7 @@ export const TripStatCards = () => {
     TripDisplayObserver.getTripNeedRender() ?? null,
   );
   const [distance, setDistance] = useState({ km: 0, m: 0 });
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const fetchDurration = async () => {
@@ -29,6 +31,7 @@ export const TripStatCards = () => {
     fetchDurration();
     fetchTripContents();
   }, []);
+
   useEffect(() => {
     const updateContents = {
       update(newAssets) {
@@ -38,7 +41,6 @@ export const TripStatCards = () => {
 
     const update_trip_display = {
       update(new_trip) {
-        // console.log("new_trip", new_trip);
         setCurrentTripDisplay(new_trip);
       },
     };
@@ -59,6 +61,7 @@ export const TripStatCards = () => {
       );
     };
   }, []);
+
   useEffect(() => {
     if (!createdTime) return;
 
@@ -83,9 +86,6 @@ export const TripStatCards = () => {
   }, [createdTime]);
 
   const totalDistanceTravel = useMemo(() => {
-    // const filtedArray = [...coordinates.map((coord)=>{
-    //     return[coord.latitude,coord.longitude]
-    // })]
     const distance_m = CoordinatesCal.TotalDistanceTravel([
       ...contents.map((coord) => {
         return [coord.latitude, coord.longitude];
@@ -94,65 +94,98 @@ export const TripStatCards = () => {
     const km = distance_m / 1000;
     const km_floor = Math.floor(km);
     const m = Math.floor((km - km_floor) * 1000);
-    // console.log(km_floor, m);
     setDistance({ km: km_floor, m: m });
   }, [contents, currentTripDisplay]);
 
+  const durationText = `${duration.days ?? 0}d ${duration.hours ?? 0}h ${duration.minutes ?? 0}m`;
+  const distanceText =
+    distance.km !== 0 ? `${distance.km} km ${distance.m} m` : `${distance.m} m`;
+
   return (
-    <View style={s.statsRow}>
-      {/* <View style={[s.statCard, { backgroundColor: '#fde8ef', borderColor: '#f0b8cc' }]}>
-                <Text style={s.statEmoji}>🏙️</Text>
-                <Text style={[s.statLabel, { color: '#a83058' }]}>Current Location</Text>
-                <Text adjustsFontSizeToFit numberOfLines={1} minimumFontScale={0.3} style={[s.statValue, { color: '#e07a3a' }]}>{city ?? 'You lost some where'}</Text>
-            </View> */}
-      <View
-        style={[
-          s.statCard,
-          { backgroundColor: "#fef3e2", borderColor: "#f5d8a8" },
-        ]}
+    <View style={s.card}>
+      <View style={s.row}>
+        <Ionicons name="time-outline" size={16} color="#b86a10" />
+        <Text style={s.label}>Duration</Text>
+        <Text style={s.value}>{durationText}</Text>
+      </View>
+      <View style={s.divider} />
+      <View style={s.row}>
+        <Ionicons name="navigate-outline" size={16} color="#a83058" />
+        <Text style={s.label}>Distance</Text>
+        <Text style={s.value}>{distanceText}</Text>
+      </View>
+
+      {expanded && (
+        <>
+          <View style={s.divider} />
+          <View style={s.row}>
+            <Ionicons name="camera-outline" size={16} color="#2a6aaa" />
+            <Text style={s.label}>Shots taken</Text>
+            <Text style={s.value}>{contents.length}</Text>
+          </View>
+        </>
+      )}
+
+      <TouchableOpacity
+        style={s.expandToggle}
+        onPress={() => setExpanded((prev) => !prev)}
       >
-        <Text style={s.statEmoji}>⏰</Text>
-        <Text style={[s.statLabel, { color: "#b86a10" }]}>Duration</Text>
-        <Text style={s.statValue}>
-          {duration.days ?? 0}d {duration.hours ?? 0}h {duration.minutes ?? 0}m
+        <Text style={s.expandText}>
+          {expanded ? "Show less" : "Show 1 more stat"}
         </Text>
-      </View>
-      <View
-        style={[
-          s.statCard,
-          { backgroundColor: "#e8f4fd", borderColor: "#b8d8f0" },
-        ]}
-      >
-        <Text style={s.statEmoji}>📸</Text>
-        <Text style={[s.statLabel, { color: "#2a6aaa" }]}>Shots taken</Text>
-        <Text style={s.statValue}>{contents.length}</Text>
-      </View>
-      <View
-        style={[
-          s.statCard,
-          { backgroundColor: "#fde8ef", borderColor: "#f0b8cc" },
-        ]}
-      >
-        <Text style={s.statEmoji}>🌅</Text>
-        <Text style={[s.statLabel, { color: "#a83058" }]}>Distance</Text>
-        <Text style={[s.statValue, { color: "#e07a3a" }]}>
-          {distance.km !== 0 ? distance.km + " km " : 0}
-          {distance.m !== 0 ? distance.m + " m" : 0}
-        </Text>
-      </View>
+        <Ionicons
+          name={expanded ? "chevron-up" : "chevron-down"}
+          size={12}
+          color="#a09e99"
+        />
+      </TouchableOpacity>
     </View>
   );
 };
 
 const s = StyleSheet.create({
-  statsRow: { flexDirection: "row", gap: 8, marginBottom: 20 },
-  statCard: { flex: 1, borderRadius: 12, borderWidth: 0.5, padding: 10 },
-  statEmoji: { fontSize: 18, marginBottom: 4 },
-  statLabel: {
-    fontSize: 10,
-    marginBottom: 2,
-    fontFamily: "DMMono",
-    letterSpacing: 0.4,
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    borderWidth: 0.5,
+    borderColor: "#e8e3d8",
+    paddingHorizontal: 12,
+    marginBottom: 12,
   },
-  statValue: { fontSize: 22, color: "#3a2a18", fontFamily: "DMMono" },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 10,
+  },
+  divider: {
+    height: 0.5,
+    backgroundColor: "#efebe2",
+  },
+  label: {
+    flex: 1,
+    fontSize: 11,
+    color: "#5f5e5a",
+    fontFamily: "DMMono",
+  },
+  value: {
+    fontSize: 12,
+    color: "#1a1917",
+    fontFamily: "DMMono",
+    fontWeight: "600",
+  },
+  expandToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+    paddingVertical: 10,
+    borderTopWidth: 0.5,
+    borderTopColor: "#efebe2",
+  },
+  expandText: {
+    fontSize: 10,
+    color: "#a09e99",
+    fontFamily: "DMMono",
+  },
 });

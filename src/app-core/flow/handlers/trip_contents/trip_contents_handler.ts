@@ -1,7 +1,7 @@
 import TripContents from "../../../../backend/services/trip_contents";
 import safeRun from "../../../helpers/safe_run";
 import TripContentsDatabase from "../../../../backend/storage/database/protected/trip_contents";
-import CurrentDisplayContentsObserver from "../../../../frontend/trip-components/observers/current_display_contents_observer";
+import CurrentDisplayContentsObserver from "../../../../frontend/trip-components/observers/current_contents/current_display_contents_observer";
 import Album from "../../../../backend/storage/album/album";
 import { ContentCard } from "../../../../types/content_card.types";
 import { FetchFuctionRespond } from "../../../../types/fetch_fuction_respond.types";

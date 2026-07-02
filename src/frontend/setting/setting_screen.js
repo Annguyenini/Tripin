@@ -20,10 +20,12 @@ import safeRun from "../../app-core/helpers/safe_run";
 import ProfileScreen from "./profile";
 import GPSSetting from "./gps";
 import { Linking } from "react-native";
+import { DeleteAccountFlow } from "./delete_account";
 const Localstorage = new LocalStorage();
 export const SettingScreen = ({ onclose }) => {
   const [profileVisible, setProfileVisible] = useState(false);
   const [GPSVisible, setGPSVisible] = useState(false);
+  const [deleteVisible, setDeleteVisible] = useState(false);
 
   const callLogout = async () => {
     // await AuthService.requestLogout();
@@ -100,12 +102,23 @@ export const SettingScreen = ({ onclose }) => {
         </View>
         <Text style={settingStyle.logoutText}>Log out</Text>
       </TouchableOpacity>
+      {/* delete acount*/}
+      <TouchableOpacity
+        onPress={() => setDeleteVisible(true)}
+        style={settingStyle.Delete}
+      >
+        <Text style={{ fontSize: 13, color: "red" }}>Delete Account</Text>
+      </TouchableOpacity>
+
       {profileVisible && (
         <View style={settingStyle.profileOverlay}>
           <ProfileScreen onClose={() => setProfileVisible(false)} />
         </View>
       )}
-
+      <DeleteAccountFlow
+        visible={deleteVisible}
+        onClose={() => setDeleteVisible(false)}
+      ></DeleteAccountFlow>
       <Modal
         visible={GPSVisible}
         animationType="slide"

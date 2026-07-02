@@ -1,5 +1,5 @@
-import LocalStorage from "../../../backend/storage/async_storage/localStorage";
-import { ContentCard } from "../../../types/content_card.types";
+import LocalStorage from "../../../../backend/storage/async_storage/localStorage";
+import { ContentCard } from "../../../../types/content_card.types";
 
 class CurrentDisplayContentsObserver extends LocalStorage {
   // watcher class for map box render logic
@@ -10,6 +10,9 @@ class CurrentDisplayContentsObserver extends LocalStorage {
   }
   GENERATE_KEY(trip_id: number) {
     return `contents:${trip_id}`;
+  }
+  GENERATE_KEY_FOR_SINGLE_NEW_CONTENT(trip_id: number) {
+    return `content:${trip_id}`;
   }
   setDefaultArray(trip_id: number, data_array: ContentCard[]) {
     if (!this.watchArray[trip_id]) {

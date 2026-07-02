@@ -212,6 +212,7 @@ class TripHandler {
    */
   async requestSharedTripLink(trip_id) {
     const res = await Trip.requestSharedTripLink(trip_id);
+    console.log(res);
     if (res.status !== 200) return { status: false, message: res.message };
     return { status: true, message: res.data.message, url: res.data.url };
   }

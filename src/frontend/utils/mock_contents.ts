@@ -1,230 +1,124 @@
-const MOCK_CONTENT_CARDS: ContentCard[] = [
-  {
-    uuid: "a1b2c3d4-0001",
-    trip_id: "trip-bx-001",
-    media_type: "image",
-    media_path:
-      "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&h=600&fit=crop",
-    time_stamp: 1718000000000,
-    media_id: "media-0001",
-    event: "add",
-    altitude: 40,
-    latitude: 35.6762,
-    longitude: 139.6503,
-    speed: 0,
-    heading: 0,
-    city: "Tokyo",
+import { ContentCard } from "../../types/content_card.types";
+
+const CITY_COORDS: Record<
+  string,
+  { lat: number; lng: number; region: string; country: string; iso: string }
+> = {
+  Tokyo: {
+    lat: 35.6762,
+    lng: 139.6503,
     region: "Tokyo",
     country: "Japan",
-    iso_country_code: "JP",
+    iso: "JP",
   },
-  {
-    uuid: "a1b2c3d4-0002",
-    trip_id: "trip-bx-001",
-    media_type: "image",
-    media_path:
-      "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=300&h=500&fit=crop",
-    time_stamp: 1718003600000,
-    media_id: "media-0002",
-    event: "add",
-    altitude: 38,
-    latitude: 35.6814,
-    longitude: 139.767,
-    speed: 12,
-    heading: 45,
-    city: "Tokyo",
-    region: "Tokyo",
+  Osaka: {
+    lat: 34.6937,
+    lng: 135.5023,
+    region: "Osaka",
     country: "Japan",
-    iso_country_code: "JP",
+    iso: "JP",
   },
-  {
-    uuid: "a1b2c3d4-0003",
-    trip_id: "trip-bx-001",
-    media_type: "video",
-    media_path:
-      "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=500&h=400&fit=crop",
-    time_stamp: 1718007200000,
-    media_id: "media-0003",
-    event: "add",
-    altitude: 42,
-    latitude: 35.6585,
-    longitude: 139.7454,
-    speed: 8,
-    heading: 90,
-    city: "Tokyo",
-    region: "Tokyo",
+  Kyoto: {
+    lat: 35.0116,
+    lng: 135.7681,
+    region: "Kyoto",
     country: "Japan",
-    iso_country_code: "JP",
+    iso: "JP",
   },
-  {
-    uuid: "a1b2c3d4-0004",
-    trip_id: "trip-bx-001",
-    media_type: "image",
-    media_path:
-      "https://images.unsplash.com/photo-1431274172761-fca41d930114?w=400&h=500&fit=crop",
-    time_stamp: 1718100000000,
-    media_id: "media-0004",
-    event: "add",
-    altitude: 35,
-    latitude: 48.8566,
-    longitude: 2.3522,
-    speed: 0,
-    heading: 0,
-    city: "Paris",
-    region: "Île-de-France",
-    country: "France",
-    iso_country_code: "FR",
-  },
-  {
-    uuid: "a1b2c3d4-0005",
-    trip_id: "trip-bx-001",
-    media_type: "image",
-    media_path:
-      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=350&h=500&fit=crop",
-    time_stamp: 1718103600000,
-    media_id: "media-0005",
-    event: "add",
-    altitude: 33,
-    latitude: 48.8738,
-    longitude: 2.295,
-    speed: 5,
-    heading: 270,
-    city: "Paris",
-    region: "Île-de-France",
-    country: "France",
-    iso_country_code: "FR",
-  },
-  {
-    uuid: "a1b2c3d4-0006",
-    trip_id: "trip-bx-001",
-    media_type: "image",
-    media_path:
-      "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&h=400&fit=crop",
-    time_stamp: 1718200000000,
-    media_id: "media-0006",
-    event: "add",
-    altitude: 10,
-    latitude: 40.7128,
-    longitude: -74.006,
-    speed: 0,
-    heading: 0,
-    city: "New York",
-    region: "New York",
-    country: "United States",
-    iso_country_code: "US",
-  },
-  {
-    uuid: "a1b2c3d4-0007",
-    trip_id: "trip-bx-001",
-    media_type: "video",
-    media_path:
-      "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=500&h=500&fit=crop",
-    time_stamp: 1718203600000,
-    media_id: "media-0007",
-    event: "add",
-    altitude: 12,
-    latitude: 40.758,
-    longitude: -73.9855,
-    speed: 20,
-    heading: 180,
-    city: "New York",
-    region: "New York",
-    country: "United States",
-    iso_country_code: "US",
-  },
-  {
-    uuid: "a1b2c3d4-0008",
-    trip_id: "trip-bx-001",
-    media_type: "image",
-    media_path:
-      "https://images.unsplash.com/photo-1522083165195-3424ed129620?w=300&h=400&fit=crop",
-    time_stamp: 1718207200000,
-    media_id: "media-0008",
-    event: "add",
-    altitude: 15,
-    latitude: 40.6892,
-    longitude: -74.0445,
-    speed: 0,
-    heading: 0,
-    city: "New York",
-    region: "New York",
-    country: "United States",
-    iso_country_code: "US",
-  },
-  {
-    uuid: "a1b2c3d4-0009",
-    trip_id: "trip-bx-001",
-    media_type: "image",
-    media_path:
-      "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=500&h=350&fit=crop",
-    time_stamp: 1718300000000,
-    media_id: "media-0009",
-    event: "add",
-    altitude: 5,
-    latitude: -33.8688,
-    longitude: 151.2093,
-    speed: 0,
-    heading: 0,
-    city: "Sydney",
-    region: "New South Wales",
-    country: "Australia",
-    iso_country_code: "AU",
-  },
-  {
-    uuid: "a1b2c3d4-0010",
-    trip_id: "trip-bx-001",
-    media_type: "image",
-    media_path:
-      "https://images.unsplash.com/photo-1524293581917-878a6d017c71?w=400&h=600&fit=crop",
-    time_stamp: 1718303600000,
-    media_id: "media-0010",
-    event: "add",
-    altitude: 8,
-    latitude: -33.8568,
-    longitude: 151.2153,
-    speed: 10,
-    heading: 135,
-    city: "Sydney",
-    region: "New South Wales",
-    country: "Australia",
-    iso_country_code: "AU",
-  },
-  {
-    uuid: "a1b2c3d4-0011",
-    trip_id: "trip-bx-001",
-    media_type: "video",
-    media_path:
-      "https://images.unsplash.com/photo-1557750255-c76072a7aad1?w=450&h=500&fit=crop",
-    time_stamp: 1718400000000,
-    media_id: "media-0011",
-    event: "add",
-    altitude: 20,
-    latitude: 21.0285,
-    longitude: 105.8542,
-    speed: 15,
-    heading: 60,
-    city: "Hanoi",
+  Hanoi: {
+    lat: 21.0285,
+    lng: 105.8542,
     region: "Hanoi",
     country: "Vietnam",
-    iso_country_code: "VN",
+    iso: "VN",
   },
-  {
-    uuid: "a1b2c3d4-0012",
-    trip_id: "trip-bx-001",
-    media_type: "image",
-    media_path:
-      "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=400&h=500&fit=crop",
-    time_stamp: 1718403600000,
-    media_id: "media-0012",
-    event: "add",
-    altitude: 18,
-    latitude: 21.034,
-    longitude: 105.8412,
-    speed: 0,
-    heading: 0,
-    city: "Hanoi",
-    region: "Hanoi",
+  "Ho Chi Minh City": {
+    lat: 10.7626,
+    lng: 106.6602,
+    region: "Ho Chi Minh",
     country: "Vietnam",
-    iso_country_code: "VN",
+    iso: "VN",
   },
+  "Da Nang": {
+    lat: 16.0544,
+    lng: 108.2022,
+    region: "Da Nang",
+    country: "Vietnam",
+    iso: "VN",
+  },
+  Paris: {
+    lat: 48.8566,
+    lng: 2.3522,
+    region: "Île-de-France",
+    country: "France",
+    iso: "FR",
+  },
+};
+
+const EVENT_PLAN: Array<[string, number]> = [
+  ["Tokyo", 3],
+  ["Osaka", 1],
+  ["Kyoto", 2],
+  ["Osaka", 1],
+  ["Kyoto", 1],
+  ["Hanoi", 4],
+  ["Ho Chi Minh City", 1],
+  ["Hanoi", 1],
+  ["Da Nang", 2],
+  ["Ho Chi Minh City", 2],
+  ["Da Nang", 1],
+  ["Paris", 2],
 ];
+
+// Real, loadable placeholder video for any card that rolls "video" media_type.
+// (Publicly hosted Google sample file — stable, CORS-friendly, actually plays.)
+const SAMPLE_VIDEO_URL =
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+
+let cardIndex = 1;
+// realistic starting timestamp (late night JST-ish vibe)
+let timeStamp = 1718000000000;
+const cards: ContentCard[] = [];
+
+for (const [city, count] of EVENT_PLAN) {
+  const coords = CITY_COORDS[city];
+  const citySlug = city.toLowerCase().replace(/ /g, "-");
+
+  for (let i = 0; i < count; i++) {
+    const idStr = String(cardIndex).padStart(4, "0");
+    const latJitter = (Math.random() - 0.5) * 0.003;
+    const lngJitter = (Math.random() - 0.5) * 0.003;
+    const isFirstInEvent = i === 0;
+    const isVideo = Math.random() > 0.85;
+
+    // picsum.photos seeded URLs always resolve to a real, loadable image —
+    // seeding by city+index keeps them stable/reproducible across runs,
+    // and different per card so the gallery doesn't look repetitive.
+    const imageUrl = `https://picsum.photos/seed/${citySlug}-${idStr}/800/1000`;
+
+    cards.push({
+      uuid: `evt-${idStr}`,
+      trip_id: 1,
+      media_type: isVideo ? "video" : "image",
+      media_path: isVideo ? SAMPLE_VIDEO_URL : imageUrl,
+      time_stamp: timeStamp,
+      media_id: `media-e${idStr}`,
+      event: "add",
+      altitude: 8 + (cardIndex % 7) * 2,
+      latitude: coords.lat + latJitter,
+      longitude: coords.lng + lngJitter,
+      speed: isFirstInEvent ? 0 : Math.round(3 + Math.random() * 8),
+      heading: Math.round(Math.random() * 360),
+      city,
+      region: coords.region,
+      country: coords.country,
+      iso_country_code: coords.iso,
+    });
+
+    cardIndex++;
+    // slightly more realistic spacing (not perfectly linear)
+    timeStamp += 600000 + Math.floor(Math.random() * 120000);
+  }
+}
+
+export const MOCK_CONTENT_CARDS: ContentCard[] = cards;

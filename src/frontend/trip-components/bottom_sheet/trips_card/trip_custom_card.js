@@ -7,6 +7,7 @@ import {
   Text,
   View,
   StyleSheet,
+  Modal,
 } from "react-native";
 import {
   imagePicker,
@@ -64,65 +65,67 @@ const TripCustomCard = ({ trip, onClose }) => {
     }
   };
   return (
-    <OverlayCard
-      title={trip.trip_name + " — edit"}
-      onClose={() => onClose(false)}
-    >
-      {/* cover image */}
-      <TouchableOpacity
-        style={s.imageWrap}
-        onPress={callImagePicker}
-        activeOpacity={0.85}
+    <Modal>
+      <OverlayCard
+        title={trip.trip_name + " — edit"}
+        onClose={() => onClose(false)}
       >
-        <Image
-          source={
-            tripImage
-              ? { uri: tripImage }
-              : require("../../../../../assets/icon.png")
-          }
-          style={s.image}
-        />
-        <View style={s.imageOverlay}>
-          <Text style={s.imageOverlayText}>CHANGE COVER</Text>
-        </View>
-      </TouchableOpacity>
-
-      {/* image buttons */}
-      <View style={s.row}>
+        {/* cover image */}
         <TouchableOpacity
-          style={s.btnSecondary}
+          style={s.imageWrap}
           onPress={callImagePicker}
-          activeOpacity={0.75}
+          activeOpacity={0.85}
         >
-          <Text style={s.btnSecondaryText}>📁 gallery</Text>
+          <Image
+            source={
+              tripImage
+                ? { uri: tripImage }
+                : require("../../../../../assets/icon.png")
+            }
+            style={s.image}
+          />
+          <View style={s.imageOverlay}>
+            <Text style={s.imageOverlayText}>CHANGE COVER</Text>
+          </View>
         </TouchableOpacity>
+
+        {/* image buttons */}
+        <View style={s.row}>
+          <TouchableOpacity
+            style={s.btnSecondary}
+            onPress={callImagePicker}
+            activeOpacity={0.75}
+          >
+            <Text style={s.btnSecondaryText}>📁 gallery</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={s.btnSecondary}
+            onPress={callCamera}
+            activeOpacity={0.75}
+          >
+            <Text style={s.btnSecondaryText}>📷 camera</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* name input */}
+        <TextInput
+          style={s.input}
+          placeholder={tripName}
+          placeholderTextColor="#555"
+          value={tripName}
+          onChangeText={(text) => setTripName(text)}
+        />
+
+        {/* save */}
         <TouchableOpacity
-          style={s.btnSecondary}
-          onPress={callCamera}
-          activeOpacity={0.75}
+          style={s.btnPrimary}
+          activeOpacity={0.8}
+          onPress={requestTripModify}
         >
-          <Text style={s.btnSecondaryText}>📷 camera</Text>
+          <Text style={s.btnPrimaryText}>SAVE CHANGES</Text>
         </TouchableOpacity>
-      </View>
-
-      {/* name input */}
-      <TextInput
-        style={s.input}
-        placeholder={tripName}
-        placeholderTextColor="#555"
-        value={tripName}
-        onChangeText={(text) => setTripName(text)}
-      />
-
-      {/* save */}
-      <TouchableOpacity
-        style={s.btnPrimary}
-        activeOpacity={0.8}
-        onPress={requestTripModify}
-      >
-        <Text style={s.btnPrimaryText}>SAVE CHANGES</Text>
-      </TouchableOpacity>
-    </OverlayCard>
+      </OverlayCard>
+    </Modal>
   );
 };
 const s = StyleSheet.create({

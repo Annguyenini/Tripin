@@ -5,14 +5,17 @@ import { useState, useEffect, useCallback } from "react";
 import TripDisplayObserver from "../../observers/trip_display_observer";
 import { UseOverlay } from "../../../overlay/overlay_main";
 import TripContentsHandler from "../../../../app-core/flow/handlers/trip_contents/trip_contents_handler";
-import CurrentDisplayContentsObserver from "../../observers/current_display_contents_observer";
+import CurrentDisplayContentsObserver from "../../observers/current_contents/current_display_contents_observer";
 import MediaMarkers from "./image_markers/media_markers";
 import CoordinateMarkers from "./coordinate_markers/coordinate_markers";
 import MapSharedConfig from "../../main_map/map_shared_config";
 import LoadingTracker from "../../observers/loading_tracker";
+import ContentsDisplayFeatures from "../../observers/current_contents/current_display_contents_features";
+import { MOCK_CONTENT_CARDS } from "../../../utils/mock_contents";
 const image_icon = require("../../../../../assets/image/gallery_icon.png");
 
 export const Marker = ({}) => {
+  const ContentsFeatures = new ContentsDisplayFeatures();
   const [currentDisplayTripData, setCurrentDisplayTripData] = useState(
     TripDisplayObserver.getTripNeedRender(),
   );
@@ -23,6 +26,7 @@ export const Marker = ({}) => {
   const [imagesReady, setImageReady] = useState(true);
   const loadingRef = useRef(null);
   const [zoomLevel, setZoomLevel] = useState(null);
+  const [contentsFeature, setContentsFeature] = useState(null);
   const allowedZooms = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 21, 22,
   ];
@@ -55,7 +59,11 @@ export const Marker = ({}) => {
       const content_cards = await TripContentsHandler.getTripContents(
         currentDisplayTripData?.trip_id,
       );
+
       setContentCards(filterCards(content_cards));
+      setContentsFeature(
+        ContentsFeatures.generateContentsFeatures(content_cards),
+      );
       CurrentDisplayContentsObserver.setDefaultArray(
         currentDisplayTripData?.trip_id,
         filterCards(content_cards),
@@ -93,6 +101,7 @@ export const Marker = ({}) => {
     const updateContentCards = {
       update(newAsset) {
         setContentCards(filterCards(newAsset));
+        setContentsFeature(ContentsFeatures.generateContentsFeatures(newAsset));
       },
     };
     CurrentDisplayContentsObserver.attach(
@@ -136,7 +145,7 @@ export const Marker = ({}) => {
     <View>
       {currentDisplayTripData && (
         <CoordinateMarkers
-          content_cards={contentCards}
+          content_cards={contentsFeature}
           ready={() => setCoordReady(true)}
         ></CoordinateMarkers>
       )}
