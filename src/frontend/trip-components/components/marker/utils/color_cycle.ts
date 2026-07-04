@@ -6,3 +6,11 @@ export const EVENT_COLORS = [
   "rgba(138, 177, 125, 1)", // sage
   "rgba(214, 69, 90, 1)", // crimson
 ];
+export const EDGEPOINT_COLORS = [
+  "rgba(94, 129, 172, 1)", // slate blue
+  "rgba(191, 97, 106, 1)", // brick red
+  "rgba(163, 190, 140, 1)", // moss green
+  "rgba(208, 135, 112, 1)", // terracotta
+  "rgba(129, 161, 193, 1)", // steel blue
+  "rgba(180, 142, 173, 1)", // mauve
+];

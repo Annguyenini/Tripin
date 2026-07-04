@@ -9,7 +9,7 @@ import LoadingTracker from "./observers/loading_tracker";
 
 const MAP_STYLES = [
   { style: "satellite", color: "#3B6D11" },
-  { style: "dark", color: "#2C2C2A" },
+  // { style: "dark", color: "#2C2C2A" },
   { style: "street", color: "#e8c9a0" },
 ];
 

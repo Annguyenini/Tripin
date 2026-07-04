@@ -1,24 +1,35 @@
 import { View, TouchableOpacity, Text, TextInput, Image } from "react-native";
+import * as Location from "expo-location";
+
 import { tripStyle } from "../../../../styles/function/trip_style";
 import { OverlayCard } from "../../../overlay/overlay_card";
 import {
   imagePicker,
   takePicture,
 } from "../../../custom_components/image_picker";
-import { useRef, useState } from "react";
+
+import { useEffect, useRef, useState } from "react";
 import { TrackingModePicker } from "../tracking_modes/tracking_mode_picker";
 import { TRACKING_MODE } from "../../../../backend/tracking/tracking_mode";
 import Setting from "../../../../app-core/setting";
 import { UseOverlay } from "../../../overlay/overlay_main";
 import TripActionsHandler from "../../../../app-core/flow/handlers/trip_actions/trip_action_handler";
-
+import { Linking } from "react-native";
 export const NewTripFiller = ({ set_show_create_trip_filler }) => {
   const [tripName, setTripName] = useState(null);
   const [imageUri, setImageUri] = useState(null);
+  const [fgStatus, setFgStatus] = useState(null);
   const [alert, setAlert] = useState(null);
   const { showLoading, hideLoading, showErrorBox } = UseOverlay();
   const loadingRef = useRef(null);
   const loadingSteps = ["Creating Trip", "Checking Data", "Nanana"];
+  useEffect(() => {
+    const isfglocation = async () => {
+      const fg = await Location.getForegroundPermissionsAsync();
+      setFgStatus(fg?.status === "granted");
+    };
+    isfglocation();
+  });
   const Loading = () => {
     if (loadingRef.current) return;
     loadingRef.current = true;
@@ -73,51 +84,75 @@ export const NewTripFiller = ({ set_show_create_trip_filler }) => {
       await Setting.setTrackingMode(TRACKING_MODE.MEDIAS_ONLY);
     }
   };
+
   return (
     <OverlayCard
       title="Create New Trip"
       onClose={() => set_show_create_trip_filler(false)}
     >
-      {alert && <Text style={{ fontSize: 12, color: "red" }}>{alert}</Text>}
-      <View style={tripStyle.imageFrame}>
-        {imageUri ? (
-          <Image source={{ uri: imageUri }} style={tripStyle.image} />
-        ) : (
-          <Text style={tripStyle.placeholder}>
-            No image (recomment rotate your phone){" "}
+      {!fgStatus ? (
+        <>
+          <Text>
+            This feature not useable without location permission, Please enable
+            it in setting and restart the App to continue!
           </Text>
-        )}
-      </View>
 
-      <View style={tripStyle.imageButtons}>
-        <TouchableOpacity
-          style={tripStyle.secondaryButton}
-          onPress={callImagePicker}
-        >
-          <Text style={tripStyle.secondaryButtonText}>Choose Image</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => Linking.openSettings()}
+            style={tripStyle.PermissionEnableButton}
+          >
+            <Text style={tripStyle.PermissionEnableText}>Open settings</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <>
+          {alert && <Text style={{ fontSize: 12, color: "red" }}>{alert}</Text>}
 
-        <TouchableOpacity
-          style={tripStyle.secondaryButton}
-          onPress={callCamera}
-        >
-          <Text style={tripStyle.secondaryButtonText}>Take Picture</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={tripStyle.imageFrame}>
+            {imageUri ? (
+              <Image source={{ uri: imageUri }} style={tripStyle.image} />
+            ) : (
+              <Text style={tripStyle.placeholder}>
+                No image (recommend rotate your phone){" "}
+              </Text>
+            )}
+          </View>
 
-      <TextInput
-        placeholder="Enter your trip name!"
-        placeholderTextColor="#999"
-        onChangeText={(text) => setTripName(text)}
-        style={tripStyle.input}
-      />
-      <TrackingModePicker
-        value={"media_only"}
-        onChange={trackingModeHandler}
-      ></TrackingModePicker>
-      <TouchableOpacity style={tripStyle.submitButton} onPress={requestHandler}>
-        <Text style={tripStyle.submitButtonText}>Submit</Text>
-      </TouchableOpacity>
+          <View style={tripStyle.imageButtons}>
+            <TouchableOpacity
+              style={tripStyle.secondaryButton}
+              onPress={callImagePicker}
+            >
+              <Text style={tripStyle.secondaryButtonText}>Choose Image</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={tripStyle.secondaryButton}
+              onPress={callCamera}
+            >
+              <Text style={tripStyle.secondaryButtonText}>Take Picture</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TextInput
+            placeholder="Enter your trip name!"
+            placeholderTextColor="#999"
+            onChangeText={(text) => setTripName(text)}
+            style={tripStyle.input}
+          />
+
+          <TrackingModePicker
+            value={"media_only"}
+            onChange={trackingModeHandler}
+          />
+
+          <TouchableOpacity
+            style={tripStyle.submitButton}
+            onPress={requestHandler}
+          >
+            <Text style={tripStyle.submitButtonText}>Submit</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </OverlayCard>
   );
 };

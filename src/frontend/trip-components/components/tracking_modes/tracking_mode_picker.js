@@ -97,8 +97,8 @@ export const TrackingModePicker = ({ value, onChange }) => {
         </View>
       </View>
       <View style={s.featureRow}>
-        <Text style={s.featureDot}>·</Text>
-        <Text style={s.noiceText}>You can change it later!</Text>
+        {/* <Text style={s.featureDot}>·</Text>
+        <Text style={s.noiceText}>You can change it later!</Text>*/}
       </View>
     </View>
   );

@@ -34,7 +34,7 @@ const MemoryManager = ({ trip_id }) => {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 8, gap: 10 }}
+      contentContainerStyle={{ paddingBottom: 20, gap: 0 }}
     >
       <PolaroidGallery displayMedias={contents}></PolaroidGallery>
     </ScrollView>

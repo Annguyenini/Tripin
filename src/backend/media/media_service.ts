@@ -46,10 +46,7 @@ class MediaService {
     // let time_stamp = Date.now();
 
     // get coordinate for image
-    const location_data = await safeRun(
-      () => LocationData.getCurrentCoor(),
-      "failed_at_get_location",
-    );
+    const location_data = (await LocationData.getCurrentCoor()) ?? null;
 
     try {
       // save to camera roll, gallery
@@ -73,15 +70,15 @@ class MediaService {
         time_stamp: time_stamp,
         media_id: media_id,
         event: "add",
-        altitude: location_data.altitude,
-        latitude: location_data.latitude,
-        longitude: location_data.longitude,
-        speed: location_data.speed,
-        heading: location_data.heading,
-        city: location_data.city,
-        region: location_data.region,
-        country: location_data.country,
-        iso_country_code: location_data.isoCountryCode,
+        altitude: location_data?.altitude,
+        latitude: location_data?.latitude,
+        longitude: location_data?.longitude,
+        speed: location_data?.speed,
+        heading: location_data?.heading,
+        city: location_data?.city,
+        region: location_data?.region,
+        country: location_data?.country,
+        iso_country_code: location_data?.isoCountryCode,
       };
     } catch (err) {
       console.error("Failed to save media to local db", err);

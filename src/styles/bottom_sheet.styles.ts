@@ -139,7 +139,7 @@ export const BottomSheetSyle = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    marginBottom: 16,
+    marginBottom: 0,
   },
   dividerLine: { flex: 1, height: 0.5, backgroundColor: "#3a3830" },
   dividerLabel: {

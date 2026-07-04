@@ -9,23 +9,32 @@ import TripContentsBucketProcessor from "./process_bucket";
 import TripContentsSync from "../../sync/trip_content_sync";
 import CurrentTripDataService from "../../../../backend/storage/hot_data/current_trip";
 import MediaStorageService from "../../../../backend/media/media_storage_service";
+import * as Location from "expo-location";
 // in ms
 
 class TripContentHandler {
   async tripContentHandler(content_card: ContentCard, trip_id: number) {
     try {
       const event = content_card.event;
+      const fg = await Location.getForegroundPermissionsAsync();
 
       switch (event) {
         case "add":
-          await safeRun(
-            () => TripContentsDatabase.addCardIntoDB([content_card]),
-            "failed to save media to local databse ",
-          );
-          CurrentDisplayContentsObserver.addAssetIntoArray(
-            trip_id,
-            content_card,
-          );
+          if (fg.granted) {
+            console.log("add to server");
+            await safeRun(
+              () => TripContentsDatabase.addCardIntoDB([content_card]),
+              "failed to save media to local databse ",
+            );
+            CurrentDisplayContentsObserver.addAssetIntoArray(
+              trip_id,
+              content_card,
+            );
+            if (trip_id) {
+              TripContentsBucketProcessor.PushToBucket(content_card, trip_id);
+            }
+          }
+
           Album.addToAlbumArray(content_card);
           break;
         case "remove":
@@ -41,13 +50,12 @@ class TripContentHandler {
             content_card,
           );
           Album.deleteFromAlbumArray(content_card);
+          if (trip_id) {
+            TripContentsBucketProcessor.PushToBucket(content_card, trip_id);
+          }
           break;
         default:
           throw new Error("undified event");
-      }
-
-      if (trip_id) {
-        TripContentsBucketProcessor.PushToBucket(content_card, trip_id);
       }
     } catch (err) {}
   }

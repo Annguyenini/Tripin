@@ -2,7 +2,7 @@ import MapBox from "@rnmapbox/maps";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { computeCluster } from "../../../../../backend/addition_functions/compute_cluster";
 import eventBus from "../../../../../backend/bridge/UI_event_bus";
-import { EVENT_COLORS } from "../utils/color_cycle";
+import { EDGEPOINT_COLORS, EVENT_COLORS } from "../utils/color_cycle";
 import ContentsDisplayFeatures from "../../../observers/current_contents/current_display_contents_features";
 import { MOCK_CONTENT_CARDS } from "../../../../utils/mock_contents";
 const CoordinateMarkers = ({ content_cards, ready }) => {
@@ -13,6 +13,22 @@ const CoordinateMarkers = ({ content_cards, ready }) => {
     type: "FeatureCollection",
     features: [],
   });
+  const DASH_CYCLE = [
+    [0, 2, 2],
+    // [0.5, 2, 1.5],
+    // [1, 2, 1],
+    [1.5, 2, 0.5],
+    [2, 2, 0],
+    [1.5, 0.5, 2, 1.5],
+  ];
+  const [frame, setFrame] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFrame((prev) => (prev + 1) % DASH_CYCLE.length);
+    }, 100); // lower = faster crawl
+    return () => clearInterval(interval);
+  }, []);
 
   // const [coordinatesObject,setCoordinatesObject]=useState({})
   //
@@ -42,6 +58,7 @@ const CoordinateMarkers = ({ content_cards, ready }) => {
         let current_event = content_cards.events[i];
         if (!current_event) continue;
         let color = EVENT_COLORS[event % EVENT_COLORS.length];
+        let edge_color = EDGEPOINT_COLORS[i % EVENT_COLORS.length];
         // structure for line string
         let geoLine = {
           type: "Feature",
@@ -78,7 +95,7 @@ const CoordinateMarkers = ({ content_cards, ready }) => {
             type: "Feature",
             properties: {
               //default color
-              stroke: color,
+              stroke: edge_color,
             },
             geometry: {
               type: "LineString",
@@ -119,7 +136,8 @@ const CoordinateMarkers = ({ content_cards, ready }) => {
         style={{
           lineWidth: 2,
           lineColor: ["get", "stroke"],
-          lineDasharray: [2, 2],
+          lineDasharray: DASH_CYCLE[frame],
+
           lineCap: "round",
         }}
       />

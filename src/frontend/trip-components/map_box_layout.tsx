@@ -61,8 +61,10 @@ export const MapBoxLayout = ({}) => {
         onTouchStart={() => {
           MapSharedConfig.setAndNotifyIsFollowingUser(false);
         }}
+        onPress={(e) => console.log(e)}
         styleURL={MapStyleUrls[styles]}
         onDidFinishLoadingMap={() => LoadingTracker.notifyReady("map")}
+        pitchEnabled={true}
       >
         <Mapbox.Camera
           ref={setCameraRef}
