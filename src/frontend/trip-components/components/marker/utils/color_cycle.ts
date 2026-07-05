@@ -6,11 +6,11 @@ export const EVENT_COLORS = [
   "rgba(138, 177, 125, 1)", // sage
   "rgba(214, 69, 90, 1)", // crimson
 ];
+
 export const EDGEPOINT_COLORS = [
-  "rgba(94, 129, 172, 1)", // slate blue
-  "rgba(191, 97, 106, 1)", // brick red
-  "rgba(163, 190, 140, 1)", // moss green
-  "rgba(208, 135, 112, 1)", // terracotta
-  "rgba(129, 161, 193, 1)", // steel blue
-  "rgba(180, 142, 173, 1)", // mauve
+  "rgba(157, 42, 56, 1)", // opposite of teal    -> deep red
+  "rgba(106, 143, 233, 1)", // opposite of gold    -> cornflower blue
+  "rgba(151, 147, 91, 1)", // opposite of indigo  -> olive/khaki
+  "rgba(164, 125, 177, 1)", // opposite of sage    -> lavender/purple
+  "rgba(69, 214, 193, 1)", // opposite of crimson -> teal/aqua
 ];

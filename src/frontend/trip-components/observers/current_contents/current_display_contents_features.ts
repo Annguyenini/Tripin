@@ -62,6 +62,10 @@ class LocationBaseContentsGraph {
   private _eventHead: LocationBaseContentsNode = null;
   private _eventTail: LocationBaseContentsNode = null;
   private _locaionTree: Map<string, LocationBaseContentsNode> = new Map();
+  private _displayList: ContentCard[] = [];
+  private _eventsMap: Map<number, ContentCard[]> = new Map();
+  private _locationsMap: Map<string, ContentCard[]> = new Map();
+
   insertIntoLocationTree(name: string, node: LocationBaseContentsNode) {
     let existing_node = this._locaionTree.get(name);
 
@@ -124,6 +128,43 @@ class LocationBaseContentsGraph {
       node.pushContent(card);
     });
   }
+  generateContentList(cards: ContentCard[]) {
+    let previousCard = null;
+    let event = 0;
+    //loop
+    for (let i = 0; i < cards.length; i++) {
+      // set current card
+      let currentCard = cards[i];
+
+      //if the start of a new event, increase the event var
+      //push into events map
+      if (currentCard.city !== previousCard?.city) {
+        event++;
+        this._eventsMap.set(event, []);
+      }
+      currentCard.render_event_id = event;
+      // push into render list
+      this._displayList.push(currentCard);
+      let current_event_array = this._eventsMap.get(event);
+      current_event_array.push(currentCard);
+
+      // push in to the location map
+      let location_array = this._locationsMap.get(currentCard.city);
+      if (!location_array || location_array.length <= 0) {
+        this._locationsMap.set(currentCard.city, []);
+        location_array = this._locationsMap.get(currentCard.city);
+      }
+      location_array.push(currentCard);
+
+      // set previous card = current card
+      previousCard = currentCard;
+    }
+    return {
+      event: this._eventsMap,
+      location: this._locationsMap,
+      display: this._displayList,
+    };
+  }
   addContentToList(card: ContentCard) {
     const city = card.city;
     //get node
@@ -168,7 +209,8 @@ class LocationBaseContentsGraph {
 
 interface ContentCardsFeatures {
   timestamp: Array<ContentCard[]>;
-  events: Array<ContentCard[]>;
+  events: Map<number, ContentCard[]>;
+  display: Array<ContentCard>;
   // location: Array<ContentCard[]>;
 }
 interface Observer {
@@ -182,17 +224,18 @@ class ContentsDisplayFeatures {
     try {
       if (contents.length <= 0) return null;
       let sorted_cards = contents.sort((a, b) => a.time_stamp - b.time_stamp);
-      console.log("new asset", sorted_cards);
+      // console.log("new asset", sorted_cards);
       this._ContentLocationGraph = new LocationBaseContentsGraph();
 
-      this._ContentLocationGraph.setContentList(sorted_cards);
-      console.log("event log", this._ContentLocationGraph.getEventTree());
+      const result =
+        this._ContentLocationGraph.generateContentList(sorted_cards);
+      // console.log("event log", this._ContentLocationGraph.getEventTree());
 
-      let cards_by_event = this._ContentLocationGraph.getContentByEvent();
-      console.log("event comntents", cards_by_event);
+      // console.log("event comntents", cards_by_event);
       return {
         timestamp: [sorted_cards],
-        events: cards_by_event,
+        events: result.event,
+        display: result.display,
       };
     } catch (err) {
       console.error(err);
@@ -200,4 +243,5 @@ class ContentsDisplayFeatures {
     }
   }
 }
+export { LocationBaseContentsGraph };
 export default ContentsDisplayFeatures;

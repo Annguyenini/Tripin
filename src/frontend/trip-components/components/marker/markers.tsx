@@ -10,12 +10,15 @@ import MediaMarkers from "./image_markers/media_markers";
 import CoordinateMarkers from "./coordinate_markers/coordinate_markers";
 import MapSharedConfig from "../../main_map/map_shared_config";
 import LoadingTracker from "../../observers/loading_tracker";
-import ContentsDisplayFeatures from "../../observers/current_contents/current_display_contents_features";
+import ContentsDisplayFeatures, {
+  LocationBaseContentsGraph,
+} from "../../observers/current_contents/current_display_contents_features";
 import { MOCK_CONTENT_CARDS } from "../../../utils/mock_contents";
 const image_icon = require("../../../../../assets/image/gallery_icon.png");
 
 export const Marker = ({}) => {
   const ContentsFeatures = new ContentsDisplayFeatures();
+  const Contents = new LocationBaseContentsGraph();
   const [currentDisplayTripData, setCurrentDisplayTripData] = useState(
     TripDisplayObserver.getTripNeedRender(),
   );
@@ -102,6 +105,7 @@ export const Marker = ({}) => {
       update(newAsset) {
         setContentCards(filterCards(newAsset));
         setContentsFeature(ContentsFeatures.generateContentsFeatures(newAsset));
+        console.log(Contents.generateContentList(newAsset));
       },
     };
     CurrentDisplayContentsObserver.attach(
@@ -145,7 +149,7 @@ export const Marker = ({}) => {
     <View>
       {currentDisplayTripData && (
         <CoordinateMarkers
-          content_cards={contentsFeature}
+          content_cards={contentsFeature?.display}
           ready={() => setCoordReady(true)}
         ></CoordinateMarkers>
       )}
