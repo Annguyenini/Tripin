@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import TripTimeline from "../timeline/timeline";
 import { View, Text } from "react-native";
 // import PolaroidGallery from "../memories/PolaroidGallery";
 import PolaroidGallery from "./memories";

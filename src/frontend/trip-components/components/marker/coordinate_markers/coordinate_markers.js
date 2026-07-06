@@ -60,7 +60,6 @@ const CoordinateMarkers = ({ content_cards, ready }) => {
             ];
           // get the last event
           let temp = eventLines[eventLines.length - 1];
-          console.log("temp", temp);
           ``;
           // if there are last event, get the last point of the last event and a first point of the next event to make an edge line
           if (temp) {

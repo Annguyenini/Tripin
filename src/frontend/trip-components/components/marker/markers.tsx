@@ -14,9 +14,11 @@ import ContentsDisplayFeatures, {
   LocationBaseContentsGraph,
 } from "../../observers/current_contents/current_display_contents_features";
 import { MOCK_CONTENT_CARDS } from "../../../utils/mock_contents";
+import UIEventBus from "../../../../backend/bridge/UI_event_bus";
+import ModifyingContentScreen from "./modifying_contents";
 const image_icon = require("../../../../../assets/image/gallery_icon.png");
 
-export const Marker = ({}) => {
+const Marker = ({}) => {
   const ContentsFeatures = new ContentsDisplayFeatures();
   const Contents = new LocationBaseContentsGraph();
   const [currentDisplayTripData, setCurrentDisplayTripData] = useState(
@@ -123,6 +125,7 @@ export const Marker = ({}) => {
       );
   }, [currentDisplayTripData]);
 
+  // listen on zoom level change
   useEffect(() => {
     const zoomLevelUpdate = {
       update(zoom) {
@@ -135,18 +138,20 @@ export const Marker = ({}) => {
     return () => MapSharedConfig.detach(zoomLevelUpdate, "zoom");
   }, []);
 
-  useEffect(() => {
-    // console.log(imagesReady, coordReady);
-    if (!imagesReady || !coordReady) {
-      Loading();
-    } else {
-      HideLoading();
-      LoadingTracker.notifyReady("marker");
-    }
-  }, [coordReady, imagesReady]);
+  // useEffect(() => {
+  //   // console.log(imagesReady, coordReady);
+  //   if (!imagesReady || !coordReady) {
+  //     Loading();
+  //   } else {
+  //     HideLoading();
+  //     LoadingTracker.notifyReady("marker");
+  //   }
+  // }, [coordReady, imagesReady]);
+
   if (!contentCards) return;
   return (
     <View>
+      {/*{isModifyingContent && <ModifyingContentScreen></ModifyingContentScreen>}*/}
       {currentDisplayTripData && (
         <CoordinateMarkers
           content_cards={contentsFeature?.display}
@@ -165,3 +170,5 @@ export const Marker = ({}) => {
     </View>
   );
 };
+
+export default Marker;

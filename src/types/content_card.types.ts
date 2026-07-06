@@ -7,11 +7,11 @@ export interface ContentCard {
   time_stamp: number;
   media_id: string;
   event: ContentCardEvent;
-  altitude: number;
-  latitude: number;
-  longitude: number;
-  speed: number;
-  heading: number;
+  altitude?: number;
+  latitude?: number;
+  longitude?: number;
+  speed?: number;
+  heading?: number;
   city: string;
   region: string;
   country: string;

@@ -29,6 +29,8 @@ import { TestScreen } from "../../../test_screen";
 import TripDashBoard from "./trip_dashboard/dashboard_manager";
 import TripStat from "./trip_dashboard/stat/stat";
 import TimeLineManager from "./trip_dashboard/timeline/timeline_manager";
+import UIeventbus from "../../../backend/bridge/UI_event_bus";
+import ModifyingContentScreen from "../components/marker/modifying_contents";
 // ─── Assets ───────────────────────────────────────────────────────────────────
 const default_image = require("../../../../assets/icon.png");
 
@@ -45,6 +47,7 @@ export const UserDataBottomSheet = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [status, setStatus] = useState("Current");
   const [secondTripDisplay, setSecondTripDisplay] = useState(null);
+  const [isModifying, setIsModifying] = useState(false);
   const [viewMode, setViewMode] = useState<"dash" | "timeline">("dash");
   const [displayTrip, setDisplayTrip] = useState(
     CurrentTripDataService.getCurrentTripStatus(),
@@ -52,38 +55,12 @@ export const UserDataBottomSheet = () => {
   const [trip, setTrip] = useState<Trip_Data | null>(
     CurrentTripDataService.getCurrentTripData(),
   );
-  const loadingRef = useRef(null);
-  // ── Overlay ───────────────────────────────────────────────────────────────
-  const { showLoading, hideLoading, showErrorBox } = UseOverlay();
 
-  const EndLoadingSteps = [
-    "Getting your trips...",
-    "Look like There are NOTHING",
-    "Unpacking the memories...",
-    "Dusting off the map...",
-    "Almost there...",
-  ];
+  const setModifyingTripContents = () => {
+    setIsModifying(true);
+  };
 
-  const TripLoading = () => {
-    if (loadingRef.current) return;
-    loadingRef.current = showLoading(HideTripLoading(), EndLoadingSteps);
-  };
-  const HideTripLoading = () => {
-    if (!loadingRef.current) return;
-    hideLoading();
-    loadingRef.current = null;
-  };
   // ── Handlers ──────────────────────────────────────────────────────────────
-  const goBack = () => {
-    TripDisplayObserver.deleteTripSelected();
-  };
-
-  const end_trip = async () => {
-    TripLoading();
-    const status = await TripActionsHandler.endTripHandler();
-    hideLoading();
-    await goBack();
-  };
 
   // ── Effects ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -130,7 +107,7 @@ export const UserDataBottomSheet = () => {
     <BottomSheet
       key={dataKey}
       ref={bottomSheetRef}
-      snapPoints={["20%", "50%"]}
+      snapPoints={["20%", "30%", "50%", "100%"]}
       index={snapIndex}
       backgroundStyle={BottomSheetSyle.sheetBg}
       handleIndicatorStyle={BottomSheetSyle.sheetHandle}
@@ -144,44 +121,73 @@ export const UserDataBottomSheet = () => {
             <TestScreen testScreenHandler={() => setTest(false)}></TestScreen>
           </Modal>
         </>*/}
-
-        {displayTrip && (
+        {isModifying && (
+          <ModifyingContentScreen
+            onClose={() => setIsModifying(false)}
+          ></ModifyingContentScreen>
+        )}
+        {displayTrip && !isModifying && (
           <>
             <View
               style={{
                 flexDirection: "row",
-                alignSelf: "center",
-                backgroundColor: "#2a2826",
-                borderRadius: 999,
-                marginBottom: 0,
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                paddingBottom: 10,
               }}
             >
-              <TouchableOpacity
-                onPress={() => setViewMode("dash")}
+              <View
                 style={{
-                  paddingHorizontal: 16,
-                  paddingVertical: 8,
+                  flexDirection: "row",
+                  backgroundColor: "#2a2826",
                   borderRadius: 999,
-                  backgroundColor:
-                    viewMode === "dash" ? "#4a4743" : "transparent",
+                  marginBottom: 0,
                 }}
               >
-                <Text style={{ color: "white" }}>Statistic</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setViewMode("dash")}
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 8,
+                    borderRadius: 999,
+                    backgroundColor:
+                      viewMode === "dash" ? "#4a4743" : "transparent",
+                  }}
+                >
+                  <Text style={{ color: "white" }}>Statistic</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setViewMode("timeline")}
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 8,
+                    borderRadius: 999,
+                    backgroundColor:
+                      viewMode === "timeline" ? "#4a4743" : "transparent",
+                  }}
+                >
+                  <Text style={{ color: "white" }}>Timeline</Text>
+                </TouchableOpacity>
+              </View>
 
               <TouchableOpacity
-                onPress={() => setViewMode("timeline")}
+                onPress={() => setModifyingTripContents()}
                 style={{
-                  paddingHorizontal: 16,
-                  paddingVertical: 8,
-                  borderRadius: 999,
-                  backgroundColor:
-                    viewMode === "timeline" ? "#4a4743" : "transparent",
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: "#2a2826",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <Text style={{ color: "white" }}>Timeline</Text>
+                <Text style={{ color: "white", fontSize: 18, lineHeight: 20 }}>
+                  +
+                </Text>
               </TouchableOpacity>
             </View>
+
             {viewMode === "dash" && <TripStat TripData={trip}></TripStat>}
             {viewMode === "timeline" && (
               <TimeLineManager trip_id={trip.trip_id}></TimeLineManager>

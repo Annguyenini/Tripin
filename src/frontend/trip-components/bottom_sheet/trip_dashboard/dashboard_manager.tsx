@@ -33,38 +33,65 @@ const TripDashBoard = () => {
     };
   }, []);
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        alignSelf: "center",
-        backgroundColor: "#2a2826",
-        borderRadius: 999,
-        marginBottom: 0,
-      }}
-    >
-      <TouchableOpacity
-        onPress={() => setViewMode("dash")}
+    <View>
+      <View
         style={{
-          paddingHorizontal: 16,
-          paddingVertical: 8,
-          borderRadius: 999,
-          backgroundColor: viewMode === "dash" ? "#4a4743" : "transparent",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          alignSelf: "stretch",
+          marginBottom: 0,
         }}
       >
-        <Text style={{ color: "white" }}>Gallery</Text>
-      </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: "row",
+            backgroundColor: "#2a2826",
+            borderRadius: 999,
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => setViewMode("dash")}
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              borderRadius: 999,
+              backgroundColor: viewMode === "dash" ? "#4a4743" : "transparent",
+            }}
+          >
+            <Text style={{ color: "white" }}>Gallery</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setViewMode("timeline")}
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              borderRadius: 999,
+              backgroundColor:
+                viewMode === "timeline" ? "#4a4743" : "transparent",
+            }}
+          >
+            <Text style={{ color: "white" }}>Timeline</Text>
+          </TouchableOpacity>
+        </View>
 
-      <TouchableOpacity
-        onPress={() => setViewMode("timeline")}
-        style={{
-          paddingHorizontal: 16,
-          paddingVertical: 8,
-          borderRadius: 999,
-          backgroundColor: viewMode === "timeline" ? "#4a4743" : "transparent",
-        }}
-      >
-        <Text style={{ color: "white" }}>Timeline</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          // onPress={onAddContent}
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            backgroundColor: "#2a2826",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={{ color: "white", fontSize: 18, lineHeight: 20 }}>
+            +
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {trip && (
         <>
           {viewMode === "dash" ? (
