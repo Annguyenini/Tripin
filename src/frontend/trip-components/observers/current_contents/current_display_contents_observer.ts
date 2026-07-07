@@ -34,6 +34,14 @@ class CurrentDisplayContentsObserver extends LocalStorage {
     this.watchArray[trip_id].push(data_object);
     this.notify(this.GENERATE_KEY(trip_id), this.watchArray[trip_id]);
   }
+  addTempAssetIntoArray(trip_id: number, data_object: ContentCard) {
+    if (!this.watchArray[trip_id]) {
+      this.watchArray[trip_id] = [];
+    }
+    let temp_object = [...this.watchArray[trip_id]];
+    temp_object.push(data_object);
+    this.notify(this.GENERATE_KEY(trip_id), temp_object);
+  }
   deleteAssestFromArray(trip_id: number, data_object: ContentCard) {
     if (!this.watchArray[trip_id]) {
       return;

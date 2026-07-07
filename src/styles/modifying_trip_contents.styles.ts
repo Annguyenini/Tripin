@@ -1,131 +1,197 @@
 import { StyleSheet, Dimensions } from "react-native";
-
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
+// Signature: a travel-journal ink palette — warm paper background,
+// deep teal for structure/actions, brass for the one accent (dates,
+// confirmations) — read as a postmark, not a template.
+const INK = "#2B2A28";
+const INK_SOFT = "rgba(43,42,40,0.55)";
+const PAPER = "#FAF6EE";
+const TEAL = "#1F5C56";
+const TEAL_DARK = "#163F3B";
+const BRASS = "#B8874B";
+const LINE = "rgba(43,42,40,0.10)";
+const ERROR = "#A3453A";
+
 export const ModifyingTripContent = StyleSheet.create({
-  sheetBg: { backgroundColor: "rgba(255, 252, 245, 0.95)" },
-  sheetHandle: { backgroundColor: "#3a3830", width: 40 },
+  sheetBg: { backgroundColor: "rgba(250, 246, 238, 0.97)" },
+  sheetHandle: { backgroundColor: INK_SOFT, width: 40, borderRadius: 2 },
 
   container: {
-    height: SCREEN_HEIGHT * 0.3,
-    paddingHorizontal: 12,
-    paddingBottom: 12,
-    paddingTop: 4,
+    height: SCREEN_HEIGHT * 0.55,
+    paddingHorizontal: 16,
+    paddingBottom: 14,
+    paddingTop: 6,
+    backgroundColor: PAPER,
   },
 
-  scrollContent: {
-    paddingBottom: 16,
-  },
   suggestList: {
-    maxHeight: SCREEN_HEIGHT * 0.5,
-    backgroundColor: "#2a2826",
-    borderRadius: 8,
-    marginTop: 4,
+    maxHeight: SCREEN_HEIGHT * 0.32,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    marginTop: 6,
+    borderWidth: 1,
+    borderColor: LINE,
     overflow: "hidden",
   },
   suggestItem: {
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255,255,255,0.06)",
+    borderBottomColor: LINE,
   },
   suggestItemName: {
-    color: "white",
-    fontSize: 12,
+    color: INK,
+    fontSize: 13,
+    fontWeight: "500",
   },
   suggestItemAddress: {
-    color: "rgba(255,255,255,0.4)",
-    fontSize: 10,
-    marginTop: 1,
+    color: INK_SOFT,
+    fontSize: 11,
+    marginTop: 2,
   },
-  // shared
-  phaseWrap: { gap: 10 },
-  phaseTitle: { color: "black", fontSize: 13, fontWeight: "600" },
+
+  phaseWrap: { gap: 12 },
+  phaseTitle: {
+    color: INK,
+    fontSize: 15,
+    fontWeight: "700",
+    letterSpacing: 0.2,
+  },
+
   closeRow: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    marginBottom: 4,
+    marginBottom: 2,
   },
   closeBtn: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#2a2826",
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: "rgba(43,42,40,0.08)",
     alignItems: "center",
     justifyContent: "center",
   },
   closeBtnTxt: {
-    color: "white",
-    fontSize: 12,
-    lineHeight: 14,
+    color: INK,
+    fontSize: 13,
+    lineHeight: 15,
   },
 
-  // phase 1 - media
+  // phase 1 — media
   mediaPreview: {
     width: "100%",
-    height: 80,
-    borderRadius: 10,
-    backgroundColor: "#2a2826",
+    height: 320,
+    borderRadius: 14,
+    backgroundColor: "#EFE9DA",
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
+    borderWidth: 1,
+    borderColor: LINE,
   },
-  mediaPreviewTxt: { color: "rgba(255,255,255,0.5)", fontSize: 12 },
+  mediaPreviewEmpty: {
+    width: "100%",
+    height: 160,
+    borderRadius: 14,
+    backgroundColor: "#EFE9DA",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: LINE,
+    borderStyle: "dashed",
+  },
+  media: {
+    width: "100%",
+    height: "100%",
+  },
+  mediaPreviewTxt: { color: INK_SOFT, fontSize: 12 },
 
   optionBtn: {
-    paddingVertical: 9,
-    borderRadius: 10,
-    backgroundColor: "#2a2826",
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: "#FFFFFF",
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: LINE,
   },
-  optionBtnTxt: { color: "white", fontSize: 12 },
+  optionBtnTxt: { color: INK, fontSize: 13, fontWeight: "500" },
 
   continueBtn: {
-    paddingVertical: 9,
-    borderRadius: 10,
+    paddingVertical: 12,
+    borderRadius: 12,
     alignItems: "center",
   },
-  continueBtnActive: { backgroundColor: "#4a4743", opacity: 1 },
-  continueBtnDisabled: { backgroundColor: "#2a2826", opacity: 0.5 },
-  continueBtnTxt: { color: "white", fontWeight: "600", fontSize: 12 },
+  continueBtnActive: { backgroundColor: TEAL },
+  continueBtnDisabled: { backgroundColor: "rgba(31,92,86,0.35)" },
+  continueBtnTxt: { color: "#FFFFFF", fontWeight: "700", fontSize: 13 },
 
-  // phase 2 - details
+  // phase 2 — details
   detailsHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  backTxt: { color: "rgba(255,255,255,0.6)", fontSize: 12 },
+  backTxt: { color: TEAL, fontSize: 13, fontWeight: "600" },
   detailsHeaderSpacer: { width: 28 },
 
-  fieldGroup: { gap: 4 },
-  fieldLabel: { color: "black", fontSize: 10 },
+  fieldGroup: { gap: 6 },
+  fieldLabel: {
+    color: INK_SOFT,
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 0.6,
+    textTransform: "uppercase",
+  },
+  errorTxt: {
+    color: ERROR,
+    fontSize: 11.5,
+  },
+  confirmTxt: {
+    color: TEAL_DARK,
+    fontSize: 12,
+    fontWeight: "500",
+  },
 
   input: {
-    backgroundColor: "#2a2826",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    color: "white",
-    fontSize: 12,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: LINE,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    color: INK,
+    fontSize: 13,
   },
 
-  dateTimeRow: { flexDirection: "row", gap: 6 },
+  // ticket-stub styling for date/time
+  dateTimeRow: { flexDirection: "row", gap: 8 },
   dateTimeBtn: {
     flex: 1,
-    backgroundColor: "#2a2826",
-    borderRadius: 8,
-    paddingVertical: 7,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    paddingVertical: 10,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: LINE,
+    borderLeftWidth: 3,
+    borderLeftColor: BRASS,
   },
-  dateTimeBtnTxt: { color: "white", fontSize: 11 },
+  dateTimeBtnLabel: {
+    color: INK_SOFT,
+    fontSize: 9,
+    fontWeight: "700",
+    letterSpacing: 0.8,
+    marginBottom: 2,
+  },
+  dateTimeBtnTxt: { color: INK, fontSize: 13, fontWeight: "600" },
 
   saveBtn: {
-    paddingVertical: 9,
-    borderRadius: 10,
-    backgroundColor: "#4a4743",
+    paddingVertical: 13,
+    borderRadius: 12,
+    backgroundColor: TEAL,
     alignItems: "center",
     marginTop: 4,
   },
-  saveBtnTxt: { color: "white", fontWeight: "600", fontSize: 12 },
+  saveBtnTxt: { color: "#FFFFFF", fontWeight: "700", fontSize: 13 },
 });

@@ -106,8 +106,10 @@ const Marker = ({}) => {
     const updateContentCards = {
       update(newAsset) {
         setContentCards(filterCards(newAsset));
-        setContentsFeature(ContentsFeatures.generateContentsFeatures(newAsset));
-        console.log(Contents.generateContentList(newAsset));
+        const feature = ContentsFeatures.generateContentsFeatures(newAsset);
+        console.log(feature);
+        setContentsFeature(feature);
+        // console.log(contentsFeature.display);
       },
     };
     CurrentDisplayContentsObserver.attach(

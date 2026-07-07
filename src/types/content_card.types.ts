@@ -12,15 +12,15 @@ export interface ContentCard {
   longitude?: number;
   speed?: number;
   heading?: number;
-  city: string;
-  region: string;
-  country: string;
-  iso_country_code: string;
+  city?: string;
+  region?: string;
+  country?: string;
+  iso_country_code?: string;
   filename?: string;
   minetype?: string;
   trip_name?: string;
   presign_url?: string;
   // for render purpose
-
+  glow?: boolean;
   render_event_id?: number;
 }
