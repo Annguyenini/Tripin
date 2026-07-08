@@ -21,8 +21,10 @@ import { Video } from "expo-av";
 import CurrentDisplayContents from "../../observers/current_contents/current_display_contents_observer";
 import MapSharedConfig from "../../main_map/map_shared_config";
 import LocationData from "../../../../app-core/local_data/local_location_data";
+import BottomSheetTransform from "../../bottom_sheet/bottom_sheet_transform";
 
 const ModifyingContentScreen = ({ onClose }) => {
+  console.log("render add");
   const [phase, setPhase] = useState<"media" | "details">("media");
 
   const [media, setMedia] = useState<{
@@ -33,6 +35,7 @@ const ModifyingContentScreen = ({ onClose }) => {
   useEffect(() => {
     mediaRef.current = media;
   }, [media]);
+
   const [location, setLocation] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -48,7 +51,14 @@ const ModifyingContentScreen = ({ onClose }) => {
   const [cardLocationData, setCardLocationData] = useState(null);
   const minTime = currentTrip.created_time;
   const maxTime = currentTrip.ended_time ?? Date.now();
-
+  const timeRef = useRef(timeStamp);
+  useEffect(() => {
+    timeRef.current = timeStamp;
+  }, [timeStamp]);
+  const locationRef = useRef(cardLocationData);
+  useEffect(() => {
+    locationRef.current = cardLocationData;
+  }, [cardLocationData]);
   const pickFromCamera = async () => {
     const result = await photoVideoCamera();
     if (!result.canceled && result.assets?.[0]) {
@@ -91,6 +101,7 @@ const ModifyingContentScreen = ({ onClose }) => {
   useEffect(() => {
     const updateSelectionLocation = {
       update(newCoords) {
+        console.log(newCoords);
         handleCoordsSelection(newCoords);
       },
     };
@@ -110,6 +121,7 @@ const ModifyingContentScreen = ({ onClose }) => {
   const handleCoordsSelection = async (coords_object) => {
     const lng = coords_object?.geometry?.coordinates?.[0];
     const lat = coords_object?.geometry?.coordinates?.[1];
+
     if (lng == null || lat == null) return; // FIX: guard malformed payload
 
     const reversed_location = await LocationData.reverseCoords(lng, lat);
@@ -121,9 +133,11 @@ const ModifyingContentScreen = ({ onClose }) => {
       country: reversed_location?.country,
       iso_country_code: reversed_location?.iso_country_code,
     };
-    setSearchValue(newLocation?.city ?? "");
+    console.log("new", lng, lat, newLocation);
+
+    setSearchValue(newLocation?.city ?? "unkown");
     setCardLocationData(newLocation);
-    handleTempRender(newLocation, timeStamp);
+    handleTempRender(newLocation, timeRef.current);
   };
 
   const handleSearchChange = (text: string) => {
@@ -155,7 +169,7 @@ const ModifyingContentScreen = ({ onClose }) => {
       setShowSuggestions(false);
 
       // FIX: pass the freshly computed location, not stale state
-      handleTempRender(newLocation, timeStamp);
+      handleTempRender(newLocation, timeRef.current);
 
       sessionToken.current = Crypto.randomUUID();
     } catch (err) {
@@ -164,6 +178,7 @@ const ModifyingContentScreen = ({ onClose }) => {
   };
 
   const handleTempRender = (locationData, time) => {
+    console.log("dsds", location, time);
     // FIX: guard on the argument, not the (possibly stale) state variable
     if (!locationData) return;
     // FIX: guard time before calling .getTime() on it below
@@ -175,7 +190,7 @@ const ModifyingContentScreen = ({ onClose }) => {
       console.log("media", media);
       return;
     }
-
+    console.log(time.getTime());
     const timestampMs = time.getTime();
 
     if (timestampMs < minTime || timestampMs > maxTime) {
@@ -183,7 +198,10 @@ const ModifyingContentScreen = ({ onClose }) => {
         `Invalid time, must be between ${new Date(minTime).toLocaleString()} and ${new Date(maxTime).toLocaleString()}`,
       );
       setFinalConfig("");
+      BottomSheetTransform.setBottomSheetPercentage("100%");
       return;
+    } else {
+      setFinalConfig(time.toLocaleString());
     }
 
     const tempContent = {
@@ -207,7 +225,6 @@ const ModifyingContentScreen = ({ onClose }) => {
       tempContent,
     );
     setPhase2Error("");
-    setFinalConfig(time.toLocaleString());
   };
 
   const handleTimeChange = (datetime) => {
@@ -227,9 +244,9 @@ const ModifyingContentScreen = ({ onClose }) => {
   const handleSubmit = () => {
     // FIX: payload was built but never used — wiring it to close for now.
     // Replace with your actual save/dispatch call when ready.
-    const payload = { media, location, timeStamp };
+    const payload = { mediaRef, locationRef, timeRef };
     console.log("submit payload", payload);
-    onClose?.();
+    // onClose?.();
   };
 
   const exit = () => {

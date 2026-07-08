@@ -56,7 +56,7 @@ export const CameraApp = ({ onClose }) => {
     useMicrophonePermissions();
   // camera device
   const RequestMicrophonePermission = async () => {
-    const request = await requestAlbumPermission();
+    const request = await requestMicrophonePermission();
     if (!request.canAskAgain) {
       Linking.openSettings();
     }

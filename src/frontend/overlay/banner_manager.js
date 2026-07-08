@@ -492,6 +492,7 @@ export const BannerManager = () => {
         {!foregroundGranted && <LocationBanner />}
         {/* {!backgroundGranted && <SatelliteOffBanner />}
       {backgroundGranted && <SatelliteOnBanner />}*/}
+        {sync && <SyncBanner></SyncBanner>}
       </View>
     </>
   );

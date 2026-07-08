@@ -31,6 +31,7 @@ import TripStat from "./trip_dashboard/stat/stat";
 import TimeLineManager from "./trip_dashboard/timeline/timeline_manager";
 import UIeventbus from "../../../backend/bridge/UI_event_bus";
 import ModifyingContentScreen from "../components/marker/modifying_contents";
+import BottomSheetTransform from "./bottom_sheet_transform";
 // ─── Assets ───────────────────────────────────────────────────────────────────
 const default_image = require("../../../../assets/icon.png");
 
@@ -106,7 +107,7 @@ export const UserDataBottomSheet = () => {
   return (
     <BottomSheet
       key={dataKey}
-      ref={bottomSheetRef}
+      ref={(ref) => BottomSheetTransform.setBottomSheetRef(ref)}
       snapPoints={["20%", "30%", "50%", "100%"]}
       index={snapIndex}
       backgroundStyle={BottomSheetSyle.sheetBg}

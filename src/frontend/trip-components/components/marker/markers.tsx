@@ -15,7 +15,6 @@ import ContentsDisplayFeatures, {
 } from "../../observers/current_contents/current_display_contents_features";
 import { MOCK_CONTENT_CARDS } from "../../../utils/mock_contents";
 import UIEventBus from "../../../../backend/bridge/UI_event_bus";
-import ModifyingContentScreen from "./modifying_contents";
 const image_icon = require("../../../../../assets/image/gallery_icon.png");
 
 const Marker = ({}) => {

@@ -1,5 +1,5 @@
-export const BASE_API = "https://tripping.live";
-// export const BASE_API = "http://192.168.0.111:8000";
+// export const BASE_API = "https://tripping.live";
+export const BASE_API = "http://192.168.0.111:8000";
 export const HEALTH = BASE_API + "/health";
 export const APP_VERSION = BASE_API + "/app-version";
 export const LOGIN_API = BASE_API + "/auth/login";
@@ -44,8 +44,8 @@ export const REQUEST_TRIP_COORDINATES = BASE_API + BASE_TRIP_CONTENTS_API;
 export const REQUEST_TRIP_MEDIAS = BASE_API + BASE_TRIP_CONTENTS_API;
 export const REQUEST_TRIP_CONTENTS =
   BASE_API + BASE_TRIP_CONTENTS_API + "/get-all-contents";
-export const REQUEST_TRIP_CONTENTS_HASH =
-  BASE_API + BASE_TRIP_CONTENTS_API + "/request-trip-contents-hash";
+export const REQUEST_TRIP_CONTENTS_VERSION =
+  BASE_API + BASE_TRIP_CONTENTS_API + "/request-trip-contents-version";
 export const REQUEST_TRIP_CONTENTS_METADATA =
   BASE_API + BASE_TRIP_CONTENTS_API + "/request-trip-contents-metadata";
 export const DELETE_TRIP_MEDIA =

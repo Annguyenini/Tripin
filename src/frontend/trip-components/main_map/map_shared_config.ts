@@ -40,6 +40,7 @@ class MapSharedConfig {
     value: MapConfigObserverCallbackValues,
   ) {
     const observers = this._observers.get(event);
+    if (!observers || observers.length <= 0) return;
     observers.forEach((obs) => obs.update(value));
   }
   //zoom

@@ -44,17 +44,18 @@ class TripContentService {
       headers: headers,
     });
   }
-  async requestTripContentsHash(trip_id) {
+  async requestTripContentsVersion(trip_id) {
     // console.log("request hashs", trip_id);
     const headers = { "Content-Type": "application/json" };
     // if (trip_media_hash) headers["If-None-Match"] = trip_media_hash;
-    return await fetchFunction(API.REQUEST_TRIP_CONTENTS_HASH, {
-      method: "POST",
-      body: JSON.stringify({
-        trip_id: trip_id,
-      }),
-      headers: headers,
-    });
+    return await fetchFunction(
+      `${API.REQUEST_TRIP_CONTENTS_VERSION}/${trip_id}`,
+      {
+        method: "GET",
+
+        headers: headers,
+      },
+    );
   }
   async requestTripContentsMetadata(trip_id) {
     const headers = { "Content-Type": "application/json" };
