@@ -72,59 +72,77 @@ class TripContentHandler {
       console.error(err);
       return null;
     }
+
   }
+
+
 
   async getTripContents(trip_id) {
     try {
       if (!trip_id) return [];
       const local_content =
         await TripContentsDatabase.getAssestsFromTripIdJoinTripData(trip_id);
-      async function compareVersion() {
-        const local_version =
-          await TripContentsDatabase.getTripContentsVersion(trip_id);
-        const server_version = await this.getTripContentsVersion(trip_id);
-        return local_version === server_version;
+      if (CurrentTripDataService.getCurrentTripId() === trip_id) {
+        TripContentsSync.syncTripContentsHandler(trip_id);
       }
 
-      async function forceMergeContent() {
+      if (!local_content || local_content.length <= 0) {
         const respond = await TripContents.requestTripMedias(trip_id);
         console.log("dsdsdsdsd");
-        const server_content = respond?.data?.content_cards;
-        if (!server_content) return local_content;
-        if (!local_content) return server_content;
-        let result = [...server_content];
-        local_content.forEach((local) => {
-          const duplicateIdx = result.findIndex(
-            (server) => local.uuid === server.uuid,
-          );
-          if (duplicateIdx !== -1) {
-            const duplicate = result[duplicateIdx];
-            if (local.modified_time > duplicate.mofified_time) {
-              result[duplicateIdx] = local;
-            }
-          } else {
-            result.push(local);
-          }
-        });
-        return result;
+        return respond?.data?.content_cards;
       }
-      if (!(await compareVersion())) {
-        const sync = await TripContentsSync.syncTripContentsHandler(trip_id);
-        if (!sync) {
-          return await forceMergeContent();
-        }
-        // compare the version second time
-        if (!(await compareVersion())) {
-          return await forceMergeContent();
-        }
-        // if match
-      }
-      return local_content;
-    } catch (err) {
-      console.error(err);
-      return [];
     }
-  }
+  // async getTripContents(trip_id) {
+  //   try {
+  //     if (!trip_id) return [];
+  //     const local_content =
+  //       await TripContentsDatabase.getAssestsFromTripIdJoinTripData(trip_id);
+  //     async function compareVersion() {
+  //       const local_version =
+  //         await TripContentsDatabase.getTripContentsVersion(trip_id);
+  //       const server_version = await this.getTripContentsVersion(trip_id);
+  //       return local_version === server_version;
+  //     }
+
+  //     async function forceMergeContent() {
+  //       const respond = await TripContents.requestTripMedias(trip_id);
+  //       console.log("dsdsdsdsd");
+  //       const server_content = respond?.data?.content_cards;
+  //       if (!server_content) return local_content;
+  //       if (!local_content) return server_content;
+  //       let result = [...server_content];
+  //       local_content.forEach((local) => {
+  //         const duplicateIdx = result.findIndex(
+  //           (server) => local.uuid === server.uuid,
+  //         );
+  //         if (duplicateIdx !== -1) {
+  //           const duplicate = result[duplicateIdx];
+  //           if (local.modified_time > duplicate.mofified_time) {
+  //             result[duplicateIdx] = local;
+  //           }
+  //         } else {
+  //           result.push(local);
+  //         }
+  //       });
+  //       return result;
+  //     }
+  //     if (!(await compareVersion())) {
+  //       const sync = await TripContentsSync.syncTripContentsHandler(trip_id);
+  //       if (!sync) {
+  //         return await forceMergeContent();
+  //       }
+  //       // compare the version second time
+  //       if (!(await compareVersion())) {
+  //         return await forceMergeContent();
+  //       }
+  //       // if match
+  //     }
+  //     return local_content;
+  //   } catch (err) {
+  //     console.error(err);
+  //     return [];
+  //   }
+  // }
 }
 
 export default new TripContentHandler();
