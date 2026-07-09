@@ -22,14 +22,16 @@ import CurrentDisplayContents from "../../observers/current_contents/current_dis
 import MapSharedConfig from "../../main_map/map_shared_config";
 import LocationData from "../../../../app-core/local_data/local_location_data";
 import BottomSheetTransform from "../../bottom_sheet/bottom_sheet_transform";
-
-const ModifyingContentScreen = ({ onClose }) => {
+import MediaStorageService from "../../../../backend/media/media_storage_service";
+import MediaService from "../../../../backend/media/media_service";
+import { UseOverlay } from "../../../overlay/overlay_main";
+const ModifyingContentScreen = ({ onClose,visible }) => {
   console.log("render add");
   const [phase, setPhase] = useState<"media" | "details">("media");
 
   const [media, setMedia] = useState<{
     uri: string;
-    type: "image" | "video";
+    type: "photo" | "video";
   } | null>(null);
   const mediaRef = useRef(media);
   useEffect(() => {
@@ -52,6 +54,7 @@ const ModifyingContentScreen = ({ onClose }) => {
   const minTime = currentTrip.created_time;
   const maxTime = currentTrip.ended_time ?? Date.now();
   const timeRef = useRef(timeStamp);
+  const { showLoading, hideLoading, showErrorBox } = UseOverlay();
   useEffect(() => {
     timeRef.current = timeStamp;
   }, [timeStamp]);
@@ -59,13 +62,14 @@ const ModifyingContentScreen = ({ onClose }) => {
   useEffect(() => {
     locationRef.current = cardLocationData;
   }, [cardLocationData]);
+
   const pickFromCamera = async () => {
     const result = await photoVideoCamera();
     if (!result.canceled && result.assets?.[0]) {
       const asset = result.assets[0];
       setMedia({
         uri: asset.uri,
-        type: asset.type === "video" ? "video" : "image",
+        type: asset.type === "video" ? "video" : "photo",
       });
     }
   };
@@ -76,7 +80,7 @@ const ModifyingContentScreen = ({ onClose }) => {
       const asset = result.assets[0];
       setMedia({
         uri: asset.uri,
-        type: asset.type === "video" ? "video" : "image",
+        type: asset.type === "video" ? "video" : "photo",
       });
     }
   };
@@ -227,6 +231,24 @@ const ModifyingContentScreen = ({ onClose }) => {
     setPhase2Error("");
   };
 
+  // const getContentCard = (media,time,location) => {
+  //   const tempContent = {
+  //     media_type: mediaRef.current.type,
+  //     uuid: "temp",
+  //     media_id: "temp",
+  //     event: "add",
+  //     media_path: mediaRef.current.uri,
+  //     longitude: locationData.longitude,
+  //     latitude: locationData.latitude,
+  //     city: locationData.city,
+  //     region: locationData.region,
+  //     country: locationData.country,
+  //     iso_country_code: locationData.iso_country_code,
+  //     glow: true,
+  //     time_stamp: timestampMs,
+  //   };
+  //   return tempContent
+  // }
   const handleTimeChange = (datetime) => {
     if (!datetime) return;
     setTimeStamp(datetime);
@@ -241,11 +263,30 @@ const ModifyingContentScreen = ({ onClose }) => {
     handleTempRender(cardLocationData, datetime);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
     // FIX: payload was built but never used — wiring it to close for now.
     // Replace with your actual save/dispatch call when ready.
-    const payload = { mediaRef, locationRef, timeRef };
-    console.log("submit payload", payload);
+    try {
+      const payload = { mediaRef, locationRef, timeRef };
+      // const localMediaUri = await MediaStorageService.saveMediaToLocalAlbum(mediaRef?.current?.uri, mediaRef?.current?.type)
+      if (!mediaRef.current || !locationRef.current || !timeRef.current) {
+        console.log('errrr')
+        setPhase2Error(`Missing ${mediaRef.current ? '' : 'media'} ${locationRef.current ? '' : 'location'} ${timeRef.current ? '' : 'time'}`)
+        BottomSheetTransform.setBottomSheetPercentage('100%')
+        return
+      }
+      const upload = await MediaService.saveMediaHandler(mediaRef?.current?.uri, mediaRef?.current?.type, timeRef?.current?.getTime(), currentTrip.trip_id,locationRef.current)
+      exit()
+
+    }
+    catch (err) {
+      showErrorBox('fail to insert', 'Failed to insert media to trip', 6000)
+      exit()
+
+    }
+    // finally {
+    //   exit()
+    // }
     // onClose?.();
   };
 
@@ -261,6 +302,7 @@ const ModifyingContentScreen = ({ onClose }) => {
     );
     onClose();
   };
+  if (!visible) return null
   return (
     <View style={s.container}>
       <View style={s.closeRow}>

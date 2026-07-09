@@ -34,7 +34,7 @@ class LocationData {
       const location_key = `${lat.toFixed(4)},${lng.toFixed(4)}`;
       if (this.Location[location_key]) {
         // console.log("cache", this.Location[location_key]);
-        return { ...coors["coords"], ...this.Location[location_key] };
+        return this.Location[location_key] ;
       }
       const city_object = await Location.reverseGeocodeAsync({
         accuracy: Location.Accuracy.High,

@@ -132,7 +132,7 @@ const TripStat = ({ TripData }) => {
           >
             <Text
               style={[
-                BottomSheetSyle.moreBtnText,
+                BottomSheetSyle.flyBtnText,
                 {
                   textShadowColor: "red", // glow color, pick to match your accent
                   textShadowOffset: { width: 0, height: 0 },
@@ -140,7 +140,7 @@ const TripStat = ({ TripData }) => {
                 },
               ]}
             >
-              ᯓ➤
+              Fly toᯓ➤
             </Text>
           </TouchableOpacity>
         </View>

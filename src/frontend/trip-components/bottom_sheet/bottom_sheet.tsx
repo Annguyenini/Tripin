@@ -123,7 +123,7 @@ export const UserDataBottomSheet = () => {
           </Modal>
         </>*/}
         {isModifying && (
-          <ModifyingContentScreen
+          <ModifyingContentScreen visible={isModifying}
             onClose={() => setIsModifying(false)}
           ></ModifyingContentScreen>
         )}
@@ -192,6 +192,12 @@ export const UserDataBottomSheet = () => {
             {viewMode === "dash" && <TripStat TripData={trip}></TripStat>}
             {viewMode === "timeline" && (
               <TimeLineManager trip_id={trip.trip_id}></TimeLineManager>
+
+            )}
+            {isModifying && (
+              <ModifyingContentScreen visible={isModifying}
+                onClose={() => setIsModifying(false)}
+              ></ModifyingContentScreen>
             )}
           </>
         )}

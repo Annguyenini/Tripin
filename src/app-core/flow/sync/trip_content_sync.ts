@@ -144,14 +144,14 @@ class TripContentsSync {
       );
 
       // download array  (see architecture/sync)
-      const download_array = server_contents.filter(
-        (server: ContentCard) =>
-          server.event === "add" &&
-          !local_trip_content_assets.find(
-            (local: ContentCard) => local.uuid === server.uuid,
-          ),
-      );
-      console.log(delete_array, upload_array);
+      // const download_array = server_contents.filter(
+      //   (server: ContentCard) =>
+      //     server.event === "add" &&
+      //     !local_trip_content_assets.find(
+      //       (local: ContentCard) => local.uuid === server.uuid,
+      //     ),
+      // );
+      // console.log(delete_array, upload_array,local_trip_content_assets,ser);
       if (upload_array.length >= 1 || delete_array.length >= 1) {
         for (const content_card of [...upload_array, ...delete_array]) {
           console.log("sync add", content_card);

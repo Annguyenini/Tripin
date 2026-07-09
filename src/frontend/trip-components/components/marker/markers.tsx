@@ -63,7 +63,7 @@ const Marker = ({}) => {
       const content_cards = await TripContentsHandler.getTripContents(
         currentDisplayTripData?.trip_id,
       );
-
+      console.log(content_cards)
       setContentCards(filterCards(content_cards));
       setContentsFeature(
         ContentsFeatures.generateContentsFeatures(content_cards),

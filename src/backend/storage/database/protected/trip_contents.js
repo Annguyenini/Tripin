@@ -133,10 +133,10 @@ class TripContents extends BaseDatabase {
     try {
       const DB = await SqliteService.connectDB();
       const row = await DB.getFirstAsync(
-        `SELECT COUNT(*), MAX(modified_time) FROM content_cards WHERE trip_id = ?`,
-        [trip_id],
+        `SELECT COUNT(*), MAX(modified_time) FROM content_cards WHERE trip_id = ? AND event = ?`,
+        [trip_id,'add'],
       );
-      return `trip:${trip_id}::${row["MAX(modified_time)"] ?? 0}::${row["COUNT(*)"]}`;
+      return `trip:${trip_id}::${row["MAX(modified_time)"] ?? 0}::${row["COUNT(*)"]??0}`;
     } catch (err) {
       return null;
       // throw new Error('Failed to get all assets: ' + err.message)

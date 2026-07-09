@@ -486,13 +486,15 @@ export const BannerManager = () => {
   return (
     <>
       <View style={styles.wrapper} pointerEvents="box-none">
-        <LoadingOverlay></LoadingOverlay>
+
+        {/* <LoadingOverlay></LoadingOverlay>*/}
 
         {!isOffline && <OfflineBanner />}
         {!foregroundGranted && <LocationBanner />}
+        <SyncBanner visible={sync}></SyncBanner>
+
         {/* {!backgroundGranted && <SatelliteOffBanner />}
       {backgroundGranted && <SatelliteOnBanner />}*/}
-        {sync && <SyncBanner></SyncBanner>}
       </View>
     </>
   );

@@ -192,4 +192,9 @@ export const BottomSheetSyle = StyleSheet.create({
     color: "#3a3830",
     letterSpacing: 2,
   },
+  flyBtnText: {
+    fontSize: 10,
+    color: "#3a3830",
+    letterSpacing: 2,
+  },
 });

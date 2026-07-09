@@ -72,8 +72,8 @@ const CoordinateMarkers = ({ content_cards, ready }) => {
               geometry: {
                 type: "LineString",
                 coordinates: [
-                  [previousCard.longitude, previousCard.latitude],
-                  [currentCard.longitude, currentCard.latitude],
+                  [previousCard.longitude?? 20, previousCard.latitude??20],
+                  [currentCard.longitude ??20, currentCard.latitude??20],
                 ],
               },
             });
@@ -94,8 +94,8 @@ const CoordinateMarkers = ({ content_cards, ready }) => {
         // put point into event line
         let currentStringLine = eventLines[eventLines.length - 1];
         currentStringLine.geometry.coordinates.push([
-          currentCard.longitude,
-          currentCard.latitude,
+          currentCard.longitude??20,
+          currentCard.latitude??20,
         ]);
         previousCard = currentCard;
       } catch (err) {

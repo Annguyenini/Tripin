@@ -38,6 +38,7 @@ class MediaService {
     type: string,
     time_stamp: number,
     trip_id: number,
+    location_data =null,
   ) {
     let content_card: ContentCard;
     let media_id: string;
@@ -46,7 +47,10 @@ class MediaService {
     // let time_stamp = Date.now();
 
     // get coordinate for image
-    const location_data = (await LocationData.getCurrentCoor()) ?? null;
+    if (!location_data) {
+      location_data = (await LocationData.getCurrentCoor()) ?? null;
+    }
+
 
     try {
       // save to camera roll, gallery
@@ -78,8 +82,9 @@ class MediaService {
         city: location_data?.city,
         region: location_data?.region,
         country: location_data?.country,
-        iso_country_code: location_data?.isoCountryCode,
+        iso_country_code: location_data?.isoCountryCode ?? location_data?.iso_country_code,
       };
+      console.log(content_card)
     } catch (err) {
       console.error("Failed to save media to local db", err);
       throw new Error("Failed to save image to local");
