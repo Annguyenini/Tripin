@@ -13,7 +13,8 @@ const MapManager = () => {
 
     const mapReady = {
       update(steps) {
-        if (steps.length === 3 && !initialFollowing) {
+        console.log(steps,initialFollowing)
+        if (steps.length === 2 && !initialFollowing) {
           initialFollowing = true;
           setTimeout(() => {
             MapTransform.followingUser();
