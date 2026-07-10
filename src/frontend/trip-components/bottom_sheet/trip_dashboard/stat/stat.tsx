@@ -51,7 +51,7 @@ const TripStat = ({ TripData }) => {
   const { showLoading, hideLoading, showErrorBox } = UseOverlay();
   const FlytoFirstStep = () => {
     const medias = CurrentDisplayTripObserver.getAssetArray(TripData.trip_id);
-    MapTransform.flyTo([medias[0].longitude, medias[0].latitude], 10);
+    MapTransform.flyTo([medias[0]?.longitude, medias[0]?.latitude], 10);
   };
   const EndLoadingSteps = [
     "Getting your trips...",

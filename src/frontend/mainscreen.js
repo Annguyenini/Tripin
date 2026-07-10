@@ -15,6 +15,8 @@ import {
   Dimensions,
   Modal,
 } from "react-native";
+import { Feather } from '@expo/vector-icons';
+
 import { mainScreenStyle, footer } from "../styles/main_screen_styles";
 import { navigate } from "./navigation/navigationService";
 import { UserDataBottomSheet } from "./trip-components/bottom_sheet/bottom_sheet";
@@ -39,10 +41,13 @@ import CurrentTripDataService from "../backend/storage/hot_data/current_trip";
 import { NewTripFiller } from "./trip-components/components/helpers/add_new_trip";
 import AlbumScreen from "./albums/album";
 import MapManager from "./trip-components/main_map/map_manager";
+import FriendsScreen from "./friends/friends_screen";
+import FriendsIcon from "./friends/icon/friend_icon";
 const Map = React.memo(({}) => {
   return <MapManager></MapManager>;
   // return <MapBoxLayout></MapBoxLayout>;
 });
+
 export const MainScreen = () => {
   // user profile state from local storage
 
@@ -50,6 +55,8 @@ export const MainScreen = () => {
   const [tripsListVisible, setTripsListVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
   const [albumVisible, setAlbumVisible] = useState(false);
+  const [friendVisible, setFriendVisible] = useState(false);
+
   // controls whether map renders — waits for trip data to be ready
   const [tripDataSuccess, setTripDataSuccess] = useState(false);
   const isUserDataReady = useRef(false);
@@ -156,6 +163,7 @@ export const MainScreen = () => {
     setCameraVisible(false);
     setSettingVisible(false);
     setTripsListVisible(false);
+    setFriendVisible(false)
   };
 
   return (
@@ -183,6 +191,12 @@ export const MainScreen = () => {
           <AlbumScreen onClose={() => setAlbumVisible(false)}></AlbumScreen>
         </View>
       )}
+      {friendVisible && (
+        <View style={styles.friendOverlay}>
+          <FriendsScreen onClose={() => setFriendVisible(false)}></FriendsScreen>
+        </View>
+
+      )}
       {/* show map once trip data is ready, otherwise show loading */}
       {/* {tripDataSuccess && RenderMap()}*/}
       <Map></Map>
@@ -195,13 +209,13 @@ export const MainScreen = () => {
       {/* bottom nav bar */}
       <View style={footer.footerContainer}>
         <View style={footer.fotterrow}>
-          {/* <TouchableOpacity
+          <TouchableOpacity
             style={footer.fotterbutton}
             onPress={() => hideAllScreen()}
           >
             <Ionicons name="home-outline" size={22} color="#888" />
             <Text style={footer.footerText}>Home</Text>
-          </TouchableOpacity>*/}
+          </TouchableOpacity>
           <TouchableOpacity
             style={footer.fotterbutton}
             onPress={() => setTripsListVisible((prev) => !prev)}
@@ -234,13 +248,13 @@ export const MainScreen = () => {
             )}
           </View>
 
-          {/* <TouchableOpacity
+          <TouchableOpacity
             style={footer.fotterbutton}
-            onPress={() => setAlbumVisible((prev) => !prev)}
+            onPress={() => setFriendVisible((prev) => !prev)}
           >
-            <Ionicons name="images-outline" size={22} color="#888" />
-            <Text style={footer.footerText}>Gallery</Text>
-          </TouchableOpacity>*/}
+            <Feather name="users" size={24} color="#1A1A18" />;
+            <Text style={footer.footerText}>Friend</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={footer.fotterbutton}
             onPress={() => setSettingVisible((prev) => !prev)}
@@ -299,6 +313,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#1a1917",
   },
   settingOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: Dimensions.get("window").height * 0.01, // adjust to clear your bottom sheet + bottom nav height
+    zIndex: 500,
+    backgroundColor: "#1a1917",
+  },
+  friendOverlay: {
     position: "absolute",
     top: 0,
     left: 0,

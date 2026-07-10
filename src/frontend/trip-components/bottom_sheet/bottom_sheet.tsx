@@ -9,6 +9,7 @@ import {
   Modal,
   Image,
 } from "react-native";
+import { Feather } from '@expo/vector-icons';
 
 // ─── Internal Services & Observers ───────────────────────────────────────────
 import CurrentTripDataService from "../../../backend/storage/hot_data/current_trip";
