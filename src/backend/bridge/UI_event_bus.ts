@@ -1,12 +1,8 @@
 import { EventEmitter } from "events";
-// const eventBus =new EventEmitter()
-// export default eventBus
 
 class UiEventBus {
-  constructor() {
-    this.observers = {};
-    this.items = {};
-  }
+  private observers = {};
+  private items = {};
   on(key, obs) {
     if (!this.observers[key]) {
       this.observers[key] = [];

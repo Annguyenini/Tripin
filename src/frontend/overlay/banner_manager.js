@@ -123,6 +123,7 @@ const OfflineBanner = () => {
 };
 
 // ── Location permission missing ───────────────────────────────────────────────
+// ── Location permission missing ───────────────────────────────────────────────
 const LocationBanner = () => {
   const pulseOpacity = useRef(new Animated.Value(1)).current;
   const pinScale = useRef(new Animated.Value(1)).current;
@@ -145,7 +146,7 @@ const LocationBanner = () => {
     Animated.loop(
       Animated.sequence([
         Animated.timing(pinScale, {
-          toValue: 1.2,
+          toValue: 1.15,
           duration: 500,
           useNativeDriver: true,
         }),
@@ -160,32 +161,37 @@ const LocationBanner = () => {
   }, []);
 
   return (
-    <View style={styles.banner}>
+    <View style={styles.bannerCompact}>
       <Animated.View
-        style={{ opacity: pulseOpacity, transform: [{ scale: pinScale }] }}
+        style={{
+          opacity: pulseOpacity,
+          transform: [{ scale: pinScale }, { scale: 0.75 }],
+        }}
       >
         <LocationOffIcon />
       </Animated.View>
       <View>
-        <Text style={styles.bannerTitle}>No location</Text>
-        <Text style={styles.bannerSub}>
-          Map can't place you{" "}
-          <Text style={styles.bannerSubAccent}>without permission.</Text>
+        <Text style={styles.bannerTitleSmall} numberOfLines={1}>
+          No location
+        </Text>
+        <Text style={styles.bannerSubSmall} numberOfLines={2}>
+          {"Map unavailable \nContent won't save"}
         </Text>
         <Pressable
           style={({ pressed }) => [
-            styles.retryBtn,
+            styles.retryBtnSmall,
             pressed && { opacity: 0.7 },
           ]}
-          onPress={() => Linking.openSettings()}
+          onPress={() => {
+            Linking.openSettings();
+          }}
         >
-          <Text style={styles.retryText}>Enable in settings</Text>
+          <Text style={styles.retryTextSmall}>Enable</Text>
         </Pressable>
       </View>
     </View>
   );
 };
-
 // ── Satellite OFF ─────────────────────────────────────────────────────────────
 const SatelliteOffBanner = () => {
   const iconOpacity = useRef(new Animated.Value(1)).current;
@@ -480,10 +486,13 @@ export const BannerManager = () => {
   return (
     <>
       <View style={styles.wrapper} pointerEvents="box-none">
-        <LoadingOverlay></LoadingOverlay>
+
+        {/* <LoadingOverlay></LoadingOverlay>*/}
 
         {!isOffline && <OfflineBanner />}
         {!foregroundGranted && <LocationBanner />}
+        <SyncBanner visible={sync}></SyncBanner>
+
         {/* {!backgroundGranted && <SatelliteOffBanner />}
       {backgroundGranted && <SatelliteOnBanner />}*/}
       </View>
@@ -515,7 +524,7 @@ const styles = StyleSheet.create({
     // borderRadius: 10,
     paddingVertical: 7,
     // paddingHorizontal: 12,
-    gap: 10,
+    gap: 5,
   },
   offlineBanner: {
     // flexDirection: "row",
@@ -604,5 +613,37 @@ const styles = StyleSheet.create({
     color: "#0d0c0a",
     fontWeight: "600",
     fontSize: 11,
+  },
+  bannerCompact: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 4,
+    gap: 6,
+  },
+  bannerTitleSmall: {
+    fontFamily: "DMMono",
+    fontSize: 10,
+    color: "#f0f0ec",
+    fontWeight: "600",
+  },
+  bannerSubSmall: {
+    fontFamily: "DMMono",
+    fontSize: 9,
+    color: "#6b6860",
+    marginTop: 1,
+  },
+  retryBtnSmall: {
+    marginTop: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#2e2c29",
+    alignSelf: "flex-start",
+  },
+  retryTextSmall: {
+    fontFamily: "DMMono",
+    fontSize: 9,
+    color: "#a09e99",
   },
 });

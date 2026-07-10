@@ -26,16 +26,16 @@ const STEPS = [
     emoji: "📍",
     title: "Where You At?",
     description:
-      "We're a map-based app — kinda useless without knowing where you are. Like a compass with no north.",
-    required: true,
-    skipLabel: null,
+      "We're a map-based app — kinda useless without knowing where you are. Like a compass with no north. \n**But it your call**",
+    required: false,
+    skipLabel: "Sure",
   },
   {
     emoji: "📸",
     title: "Say Cheese",
     description:
-      "No camera, no memories. Pretty hard to build a travel app without it. We promise not to photograph you mid-yawn.",
-    required: true,
+      "No camera, no memories. Pretty hard to build a travel app without it. We promise not to photograph you mid-yawn. \n**But again it your call**",
+    required: false,
     skipLabel: null,
   },
   {

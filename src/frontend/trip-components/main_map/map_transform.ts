@@ -34,7 +34,7 @@ class MapTransform {
         map_camera_ref.setCamera({
           centerCoordinate: coords,
           zoomLevel: zoom,
-          animationDuration: 1000,
+          animationDuration: 3000,
         });
       }
     } catch (err) {

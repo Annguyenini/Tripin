@@ -21,7 +21,7 @@ export const colors = {
 export const tripStyle = StyleSheet.create({
   imageFrame: {
     width: "100%",
-    height: 180,
+    height: 130,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.divider,
@@ -35,6 +35,17 @@ export const tripStyle = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
+  },
+  PermissionEnableButton: {
+    borderWidth: 2,
+    borderColor: "#000",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  PermissionEnableText: {
+    fontSize: 16,
+    fontWeight: "600",
   },
 
   placeholder: {

@@ -7,18 +7,20 @@ export interface ContentCard {
   time_stamp: number;
   media_id: string;
   event: ContentCardEvent;
-  altitude: number;
-  latitude: number;
-  longitude: number;
-  speed: number;
-  heading: number;
-  city: string;
-  region: string;
-  country: string;
-  iso_country_code: string;
+  altitude?: number;
+  latitude?: number;
+  longitude?: number;
+  speed?: number;
+  heading?: number;
+  city?: string;
+  region?: string;
+  country?: string;
+  iso_country_code?: string;
   filename?: string;
   minetype?: string;
   trip_name?: string;
   presign_url?: string;
-  render_event?: number;
+  // for render purpose
+  glow?: boolean;
+  render_event_id?: number;
 }

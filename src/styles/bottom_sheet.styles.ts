@@ -139,7 +139,7 @@ export const BottomSheetSyle = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    marginBottom: 16,
+    marginBottom: 0,
   },
   dividerLine: { flex: 1, height: 0.5, backgroundColor: "#3a3830" },
   dividerLabel: {
@@ -189,6 +189,11 @@ export const BottomSheetSyle = StyleSheet.create({
   },
   moreBtnText: {
     fontSize: 16,
+    color: "#3a3830",
+    letterSpacing: 2,
+  },
+  flyBtnText: {
+    fontSize: 10,
     color: "#3a3830",
     letterSpacing: 2,
   },

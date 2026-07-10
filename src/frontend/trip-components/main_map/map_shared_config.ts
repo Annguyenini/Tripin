@@ -1,6 +1,10 @@
 import Mapbox from "@rnmapbox/maps";
 //types
-type MapConfigObserverEvents = "zoom" | "mapStyle" | "isFollowingUser";
+type MapConfigObserverEvents =
+  | "zoom"
+  | "mapStyle"
+  | "isFollowingUser"
+  | "coordsSelection";
 type MapStyles = "street" | "satellite" | "dark";
 const MapStyleUrls = {
   street: "mapbox://styles/mapbox/streets-v12",
@@ -36,6 +40,7 @@ class MapSharedConfig {
     value: MapConfigObserverCallbackValues,
   ) {
     const observers = this._observers.get(event);
+    if (!observers || observers.length <= 0) return;
     observers.forEach((obs) => obs.update(value));
   }
   //zoom
@@ -85,6 +90,15 @@ class MapSharedConfig {
   }
   getMapRef() {
     return this._mapRef;
+  }
+  // coordsSelection
+  setAndNotifyCoordsSelection(value: boolean) {
+    if (!value || this._isFollowinguser === value) return;
+    this._isFollowinguser = value;
+    this.notify("coordsSelection", value);
+  }
+  getCoordsSelection(): boolean {
+    return this._isFollowinguser;
   }
 }
 export default new MapSharedConfig();

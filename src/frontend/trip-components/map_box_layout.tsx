@@ -11,7 +11,7 @@ import Mapbox from "@rnmapbox/maps";
 import { View } from "react-native";
 import { HelpBarMap } from "./help_bar_map";
 import mapData from "./map_data";
-import { Marker } from "./components/marker/markers";
+import Marker from "./components/marker/markers";
 import { setCameraMapRef } from "../utils/map_ref";
 import MapSharedConfig from "./main_map/map_shared_config";
 import LoadingTracker from "./observers/loading_tracker";
@@ -61,8 +61,10 @@ export const MapBoxLayout = ({}) => {
         onTouchStart={() => {
           MapSharedConfig.setAndNotifyIsFollowingUser(false);
         }}
+        onPress={(e) => MapSharedConfig.setAndNotifyCoordsSelection(e)}
         styleURL={MapStyleUrls[styles]}
         onDidFinishLoadingMap={() => LoadingTracker.notifyReady("map")}
+        pitchEnabled={true}
       >
         <Mapbox.Camera
           ref={setCameraRef}

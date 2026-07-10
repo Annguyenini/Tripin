@@ -20,7 +20,23 @@ const RenderImageLable = ({ clusters, mapKey, onClick }) => {
         <TouchableOpacity
           onPress={() => onClick(cluster.members[0], cluster.cluster_id)}
         >
-          <View style={{ width: 50, height: 50 }}>
+          <View
+            style={[
+              {
+                width: 50,
+                height: 50,
+                borderRadius: 15,
+              },
+              cluster.members[0]?.glow && {
+                shadowColor: "red",
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 1,
+                shadowRadius: 8,
+                // Android fallback — will be a plain dark shadow, not red
+                elevation: 8,
+              },
+            ]}
+          >
             <Image
               cachePolicy="memory-disk"
               source={{
@@ -29,7 +45,11 @@ const RenderImageLable = ({ clusters, mapKey, onClick }) => {
                     ? cluster.members[0]?.thumb_nail
                     : cluster.members[0]?.media_path,
               }}
-              style={{ width: 50, height: 50, borderRadius: 15 }}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 15,
+              }}
               resizeMode="cover"
             />
             {cluster.members[0].media_type === "video" && (

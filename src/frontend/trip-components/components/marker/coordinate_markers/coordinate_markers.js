@@ -1,10 +1,13 @@
 import MapBox from "@rnmapbox/maps";
+// import type { FeatureCollection, LineString, Point } from "geojson";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { computeCluster } from "../../../../../backend/addition_functions/compute_cluster";
 import eventBus from "../../../../../backend/bridge/UI_event_bus";
-import { EVENT_COLORS } from "../utils/color_cycle";
+import { EDGEPOINT_COLORS, EVENT_COLORS } from "../utils/color_cycle";
 import ContentsDisplayFeatures from "../../../observers/current_contents/current_display_contents_features";
 import { MOCK_CONTENT_CARDS } from "../../../../utils/mock_contents";
+import { ContentCard } from "../../../../../types/content_card.types";
 const CoordinateMarkers = ({ content_cards, ready }) => {
   const ContentsFeatures = new ContentsDisplayFeatures();
   const [radiusForGrouping, setRadiusForGrouping] = useState(0);
@@ -13,68 +16,70 @@ const CoordinateMarkers = ({ content_cards, ready }) => {
     type: "FeatureCollection",
     features: [],
   });
+  const DASH_CYCLE = [
+    [0, 2, 2],
+    // [0.5, 2, 1.5],
+    // [1, 2, 1],
+    [1.5, 2, 0.5],
+    [2, 2, 0],
+    [1.5, 0.5, 2, 1.5],
+  ];
+  const [frame, setFrame] = useState(0);
 
-  // const [coordinatesObject,setCoordinatesObject]=useState({})
-  //
-  // useEffect(() => {
-  //   const radiusListener = (val) => {
-  //     setRadiusForGrouping(val);
-  //   };
-  //   eventBus.on("RadiusChange", radiusListener);
-  //   ready();
-  //   return () => {
-  //     eventBus.off("RadiusChange", radiusListener);
-  //   };
-  // }, [content_cards]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFrame((prev) => (prev + 1) % DASH_CYCLE.length);
+    }, 100); // lower = faster crawl
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     let GEOJSON = {
       type: "FeatureCollection",
       features: [],
     };
-    let event = 0;
-    let PointMarker = {
-      type: "FeatureCollection",
-      features: [],
-    };
+    let previousCard = null;
+    let eventLines = [];
+    let edgeLines = [];
 
-    for (let i = 0; i < content_cards?.events?.length; i++) {
+    // loop
+    for (let i = 0; i < content_cards?.length; i++) {
+      const currentCard = content_cards[i];
+      // define color of the event
+      let color =
+        EVENT_COLORS[currentCard?.render_event_id % EVENT_COLORS.length];
+
       try {
-        let current_event = content_cards.events[i];
-        if (!current_event) continue;
-        let color = EVENT_COLORS[event % EVENT_COLORS.length];
-        // structure for line string
-        let geoLine = {
-          type: "Feature",
-          properties: {
-            //default color
-            stroke: color,
-          },
-          geometry: {
-            type: "LineString",
-            coordinates: [],
-          },
-        };
-        let edgeLines = [];
-        let edgeHeadCoords = null;
-        for (let feature of current_event) {
-          //point marker
-
-          geoLine.geometry.coordinates.push([
-            feature.longitude,
-            feature.latitude,
-          ]);
-          edgeHeadCoords = [feature.longitude, feature.latitude];
-        }
-        //temp fix for one that have single coor on line
-        if (geoLine.geometry.coordinates.length === 1) {
-          geoLine.geometry.coordinates.push(edgeHeadCoords);
-        }
-        const next_event = content_cards?.events[i + 1];
-        if (next_event) {
-          console.log("next_event", next_event, content_cards);
-          const edgeTail = next_event[0];
-          const edgeTailCoords = [edgeTail.longitude, edgeTail.latitude];
-          const edgeLine = {
+        // different event case
+        if (currentCard?.city !== previousCard?.city) {
+          // define the color of the edge
+          let edgecolor =
+            EDGEPOINT_COLORS[
+              (currentCard?.render_event_id + previousCard?.render_event_id) %
+                EDGEPOINT_COLORS.length
+            ];
+          // get the last event
+          let temp = eventLines[eventLines.length - 1];
+          ``;
+          // if there are last event, get the last point of the last event and a first point of the next event to make an edge line
+          if (temp) {
+            edgeLines.push({
+              type: "Feature",
+              properties: {
+                //default color
+                stroke: edgecolor,
+              },
+              geometry: {
+                type: "LineString",
+                coordinates: [
+                  [previousCard.longitude?? 20, previousCard.latitude??20],
+                  [currentCard.longitude ??20, currentCard.latitude??20],
+                ],
+              },
+            });
+          }
+          // create new event line
+          eventLines.push({
             type: "Feature",
             properties: {
               //default color
@@ -82,23 +87,43 @@ const CoordinateMarkers = ({ content_cards, ready }) => {
             },
             geometry: {
               type: "LineString",
-              coordinates: [edgeHeadCoords, edgeTailCoords],
+              coordinates: [],
             },
-          };
-          // edgeLine.geometry.coordinates.push(edgeHeadCoords);
-
-          // GEOJSON.features.push(edgeLine);
-          edgeLines.push(edgeLine);
+          });
         }
-        GEOJSON.features.push(geoLine);
-        GEOJSON.features.push(...edgeLines);
-
-        event++;
+        // put point into event line
+        let currentStringLine = eventLines[eventLines.length - 1];
+        currentStringLine.geometry.coordinates.push([
+          currentCard.longitude??20,
+          currentCard.latitude??20,
+        ]);
+        previousCard = currentCard;
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     }
-    console.log(GEOJSON, PointMarker);
+    const finalFeatures = [];
+    // loop through and check for single point in event and duplicate it
+    for (const line of eventLines) {
+      if (line.geometry.coordinates.length === 1) {
+        finalFeatures.push({
+          type: "Feature",
+          properties: line.properties,
+          geometry: {
+            type: "Point",
+            coordinates: line.geometry.coordinates[0],
+          },
+        });
+      } else if (line.geometry.coordinates.length > 1) {
+        finalFeatures.push(line);
+      }
+      // length === 0 shouldn't happen, but skip if it does
+    }
+    GEOJSON.features.push(...edgeLines);
+
+    GEOJSON.features.push(...finalFeatures);
+
+    console.log(GEOJSON);
     setGeoJson(GEOJSON);
   }, [content_cards]);
   if (!GeoJson) return null;
@@ -119,7 +144,8 @@ const CoordinateMarkers = ({ content_cards, ready }) => {
         style={{
           lineWidth: 2,
           lineColor: ["get", "stroke"],
-          lineDasharray: [2, 2],
+          lineDasharray: DASH_CYCLE[frame],
+
           lineCap: "round",
         }}
       />

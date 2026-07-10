@@ -6,6 +6,7 @@ import safeRun from "../../helpers/safe_run";
 import TripContentsHandler from "../handlers/trip_contents/trip_contents_handler";
 import TripContentsBucketProcessor from "../handlers/trip_contents/process_bucket";
 import { ContentCard } from "../../../types/content_card.types";
+import MediaService from "../../../backend/media/media_service";
 type CallBack = (value: boolean) => void;
 class TripContentsSync {
   private _pending: boolean = false;
@@ -33,83 +34,88 @@ class TripContentsSync {
 
     try {
       this.emit(true);
-      await this._getAndProcessTripContentsMetadata(trip_id);
+      const sync = await this._getAndProcessTripContentsMetadata(trip_id);
+      return sync;
     } catch (err) {
       console.error(err);
+      return false;
     } finally {
       this._pending = false;
       this.emit(false);
     }
   }
-  // async _downloadMedias(trip_id, download_array) {
-  //   if (!download_array) return;
+  async _downloadMedias(trip_id, download_array) {
+    if (!download_array) return;
 
-  //   let savedArray;
-  //   try {
-  //     savedArray = await Promise.all(
-  //       download_array.map(async (asset) => {
-  //         const localPath = await safeRun(
-  //           () =>
-  //             MediaService._saveMediaToLocalStorage(
-  //               asset.media_path,
-  //               asset.media_type,
-  //               "s3",
-  //             ),
-  //           "failed_to_download",
-  //         );
-  //         asset.media_path = localPath;
-  //         return asset;
-  //       }),
-  //     );
+    let savedArray;
+    try {
+      savedArray = await Promise.all(
+        download_array.map(async (asset) => {
+          if (asset.event === "add") {
+            const localPath = await safeRun(
+              () =>
+                MediaService.saveMediaToTrip(
+                  asset.media_path,
+                  asset.media_type,
+                  trip_id,
+                  asset.time_stamp,
+                ),
+              "failed_to_download",
+            );
+            if (localPath) asset.media_path = localPath;
+          }
+          return asset;
+        }),
+      );
 
-  //     await Promise.all(
-  //       savedArray.map(async (asset) => {
-  //         try {
-  //           const content_cards = TripContentsDatabase.createContentCard({
-  //             uuid: asset.uuid,
-  //             trip_id: asset.trip_id,
-  //             media_type: asset.media_type,
-  //             media_path: asset.media_path,
-  //             time_stamp: asset.time_stamp,
-  //             media_id: asset.media_id,
-  //             event: "add",
-  //             altitude: asset.altitude,
-  //             latitude: asset.latitude,
-  //             longitude: asset.longitude,
-  //             speed: asset.speed,
-  //             heading: asset.heading,
-  //             city: asset.city,
-  //             region: asset.region,
-  //             country: asset.country,
-  //             iso_country_code: asset.iso_country_code,
-  //             filename: asset.filename,
-  //             minetype: asset.minetype,
-  //           });
-  //           await safeRun(
-  //             () => TripContentsDatabase.addCardIntoDB(content_cards),
-  //             "failed to download medias",
-  //           );
-  //         } catch (err) {
-  //           console.error("failed at save medias to database", err);
-  //           throw err;
-  //         }
-  //       }),
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   } finally {
-  //     return;
-  //   }
-  // }
+      await Promise.all(
+        savedArray.map(async (asset) => {
+          try {
+            const content_cards = TripContentsDatabase.createContentCard({
+              uuid: asset.uuid,
+              trip_id: asset.trip_id,
+              media_type: asset.media_type,
+              media_path: asset.media_path,
+              time_stamp: asset.time_stamp,
+              media_id: asset.media_id,
+              event: "add",
+              altitude: asset.altitude,
+              latitude: asset.latitude,
+              longitude: asset.longitude,
+              speed: asset.speed,
+              heading: asset.heading,
+              city: asset.city,
+              region: asset.region,
+              country: asset.country,
+              iso_country_code: asset.iso_country_code,
+              filename: asset.filename,
+              minetype: asset.minetype,
+            });
+            await safeRun(
+              () => TripContentsDatabase.addCardIntoDB(content_cards),
+              "failed to download medias",
+            );
+          } catch (err) {
+            console.error("failed at save medias to database", err);
+            throw err;
+          }
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      return;
+    }
+  }
   async _getAndProcessTripContentsMetadata(trip_id: number) {
     try {
       //get the data
       const response = await safeRun(
-        () => TripContents.requestTripMedias(trip_id),
+        () => TripContents.requestTripContentsMetadata(trip_id),
         "failed_at_get_trip_media_metadata_from_server",
       );
 
-      if (!response.ok || response.status !== 200) return null;
+      if (!response.ok || response.status !== 200) return false;
       const server_contents = response.data.content_cards;
 
       // get the data from local
@@ -137,14 +143,15 @@ class TripContentsSync {
           ) && local.event === "add",
       );
 
-      // // download array  (see architecture/sync)
+      // download array  (see architecture/sync)
       // const download_array = server_contents.filter(
       //   (server: ContentCard) =>
+      //     server.event === "add" &&
       //     !local_trip_content_assets.find(
       //       (local: ContentCard) => local.uuid === server.uuid,
       //     ),
       // );
-      console.log(delete_array, upload_array);
+      // console.log(delete_array, upload_array,local_trip_content_assets,ser);
       if (upload_array.length >= 1 || delete_array.length >= 1) {
         for (const content_card of [...upload_array, ...delete_array]) {
           console.log("sync add", content_card);
@@ -152,10 +159,10 @@ class TripContentsSync {
         }
       }
       // await safeRun(() => this._downloadMedias(trip_id, download_array));
-      return;
+      return true;
     } catch (error) {
       console.error(error);
-      return;
+      return false;
     }
   }
 }

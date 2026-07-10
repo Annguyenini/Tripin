@@ -16,6 +16,10 @@ import { ContentCard } from "../../../../../types/content_card.types";
 import Video from "react-native-video";
 import MediaViewCard from "../../../../albums/viewer_card";
 import MapTransform from "../../../main_map/map_transform";
+import {
+  EDGEPOINT_COLORS,
+  EVENT_COLORS,
+} from "../../../components/marker/utils/color_cycle";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -103,9 +107,12 @@ function MemCard({
   onPressFullScreen: () => void;
 }) {
   const scale = useRef(new Animated.Value(isMain ? 1 : 0.95)).current;
-  const opacity = useRef(new Animated.Value(isMain ? 1 : 0.42)).current;
+  const opacity = useRef(new Animated.Value(isMain ? 1 : 0.1)).current;
   const footerY = useRef(new Animated.Value(isMain ? 0 : 20)).current;
   const footerOpacity = useRef(new Animated.Value(isMain ? 1 : 0)).current;
+
+  const borderColor = EVENT_COLORS[card?.render_event_id % EVENT_COLORS.length];
+
   useEffect(() => {
     Animated.parallel([
       Animated.spring(scale, {
@@ -130,12 +137,14 @@ function MemCard({
       }),
     ]).start();
   }, [isMain]);
+
   return (
     <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
       <Animated.View
         style={[
           s.memCard,
           isMain && s.memCardMain,
+          { borderColor, borderWidth: isMain ? 3 : 2 },
           { transform: [{ scale }], opacity },
         ]}
       >
@@ -187,7 +196,6 @@ function MemCard({
     </TouchableOpacity>
   );
 }
-
 function PlusButton({ onPress }: { onPress: () => void }) {
   return (
     <TouchableOpacity style={s.plusBtn} onPress={onPress} activeOpacity={0.7}>
@@ -210,11 +218,20 @@ function Connector() {
   return <View style={s.connLine} />;
 }
 
-function CityDivider({ cityName }: { cityName: string }) {
+function CityDivider({ cityName, color }: { cityName: string; color: string }) {
   return (
     <View style={s.sepWrap}>
       <View style={s.sepLine} />
-      <View style={s.sepPill}>
+      <View
+        style={[
+          s.sepPill,
+          {
+            borderColor: color,
+            shadowColor: color,
+          },
+        ]}
+      >
+        <View style={[s.sepDot, { backgroundColor: color }]} />
         <Text style={s.sepPillTxt} numberOfLines={1}>
           {cityName}
         </Text>
@@ -403,8 +420,17 @@ export default function TripTimeline({
   cards.forEach((card, i) => {
     if (i > 0 && card.city !== cards[i - 1].city) {
       trackItems.push(<Connector key={`c-sep-l-${i}`} />);
+      const edgecolor =
+        EDGEPOINT_COLORS[
+          (card.render_event_id + cards[i - 1]?.render_event_id) %
+            EDGEPOINT_COLORS.length
+        ];
       trackItems.push(
-        <CityDivider key={`sep-${i}`} cityName={card.city ?? ""} />,
+        <CityDivider
+          key={`sep-${i}`}
+          cityName={card.city ?? ""}
+          color={edgecolor}
+        />,
       );
       trackItems.push(<Connector key={`c-sep-r-${i}`} />);
       // trackItems.push(
@@ -677,20 +703,30 @@ const s = StyleSheet.create({
   },
   sepPill: {
     position: "absolute",
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#1c1b1a",
-    borderWidth: 0.5,
-    borderColor: "rgba(255,255,255,0.1)",
+    borderWidth: 1,
     borderRadius: 10,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    maxWidth: 68,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    maxWidth: 76,
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 4, // Android fallback
+  },
+  sepDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    marginRight: 4,
   },
   sepPillTxt: {
     fontFamily: MONO,
     fontSize: 8,
-    color: "rgba(255,255,255,0.3)",
+    color: "rgba(255,255,255,0.7)",
   },
-
   cap: {
     width: CAP_W,
     height: CARD_H,

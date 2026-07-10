@@ -15,6 +15,7 @@ import { Image } from "expo-image";
 import Video from "react-native-video";
 import setCoords from "../../../../utils/map_flyto";
 import { flyToMarker } from "../../../../utils/map_ref";
+import MapTransform from "../../../main_map/map_transform";
 
 const { width: SW, height: SH } = Dimensions.get("window");
 
@@ -28,8 +29,8 @@ const TAPE_COLOR = "#e8d5a8";
 const STRING_Y = 30;
 const CARD_W = 88;
 const CARD_H = 110;
-const HANG_LEN = 90;
-const SLOT_W = 160;
+const HANG_LEN = 50;
+const SLOT_W = 150;
 const GALLERY_H = SH * 0.3;
 const GALLERY_W = SW;
 
@@ -229,11 +230,11 @@ function PhotoSheet({ location, onClose }) {
 
   const mediaOnPress = (index) => {
     setSelectedIndex(index);
-
-    flyToMarker(
-      [location.medias[index]?.longitude, location.medias[index]?.latitude],
-      20,
-    );
+    const coords = [
+      location.medias[selectedIndex].longitude,
+      location.medias[selectedIndex].latitude,
+    ];
+    MapTransform.flyTo(coords, 10.5);
   };
 
   const selectedMedia = location.medias[selectedIndex];
@@ -250,6 +251,9 @@ function PhotoSheet({ location, onClose }) {
         <View style={styles.sheetHandle} />
 
         <View style={styles.sheetHeader}>
+          <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
+            <Text style={styles.closeTxt}>✕</Text>
+          </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <Text style={styles.sheetCity}>
               {location.city} - {location.region} -{" "}
@@ -269,10 +273,6 @@ function PhotoSheet({ location, onClose }) {
               </Text>
             )}
           </View>
-
-          <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-            <Text style={styles.closeTxt}>✕</Text>
-          </TouchableOpacity>
         </View>
 
         {/* <View style={styles.previewContainer}>
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
   timelineContainer: {
     paddingHorizontal: 24,
     paddingTop: 10,
-    paddingBottom: 30,
+    paddingBottom: 20,
     gap: 14,
   },
 
@@ -544,12 +544,16 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 0.5,
   },
-  overlay: { ...StyleSheet.absoluteFillObject, justifyContent: "flex-end" },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "flex-end",
+  },
   sheet: {
     backgroundColor: BG,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingBottom: 40,
+    paddingBottom: 0,
+    paddingTop: 0,
   },
   sheetHandle: {
     width: 34,
@@ -557,19 +561,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#ccc",
     borderRadius: 2,
     alignSelf: "center",
-    marginTop: 10,
-    marginBottom: 8,
+    marginTop: 0,
+    marginBottom: 0,
   },
   sheetHeader: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
     paddingHorizontal: 20,
-    paddingBottom: 10,
+    paddingTop: 0,
   },
   sheetCity: {
     fontFamily: serif,
-    fontSize: 22,
+    fontSize: 15,
     color: TEXT_PRIMARY,
   },
   sheetDate: {
@@ -579,8 +583,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   closeBtn: {
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
     backgroundColor: "#e0ddd6",
     borderRadius: 15,
     alignItems: "center",

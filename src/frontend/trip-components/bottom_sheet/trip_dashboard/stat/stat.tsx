@@ -25,6 +25,8 @@ import GalleryManager from "./memories_manage";
 import TripCustomCard from "../../trips_card/trip_custom_card";
 import { Trip_Data } from "../../../../../types/trip_data.types";
 import MemoryManager from "./memories_manage";
+import CurrentDisplayTripObserver from "../../../observers/current_contents/current_display_contents_observer";
+import MapTransform from "../../../main_map/map_transform";
 // ─── Assets ───────────────────────────────────────────────────────────────────
 const default_image = require("../../../../../../assets/icon.png");
 
@@ -47,7 +49,10 @@ const TripStat = ({ TripData }) => {
   const loadingRef = useRef(null);
   // ── Overlay ───────────────────────────────────────────────────────────────
   const { showLoading, hideLoading, showErrorBox } = UseOverlay();
-
+  const FlytoFirstStep = () => {
+    const medias = CurrentDisplayTripObserver.getAssetArray(TripData.trip_id);
+    MapTransform.flyTo([medias[0].longitude, medias[0].latitude], 10);
+  };
   const EndLoadingSteps = [
     "Getting your trips...",
     "Look like There are NOTHING",
@@ -121,6 +126,23 @@ const TripStat = ({ TripData }) => {
             <View style={BottomSheetSyle.statusDot} />
             <Text style={BottomSheetSyle.statusText}>{status}</Text>
           </View>
+          <TouchableOpacity
+            style={BottomSheetSyle.moreBtn}
+            onPress={() => FlytoFirstStep()}
+          >
+            <Text
+              style={[
+                BottomSheetSyle.flyBtnText,
+                {
+                  textShadowColor: "red", // glow color, pick to match your accent
+                  textShadowOffset: { width: 0, height: 0 },
+                  textShadowRadius: 8,
+                },
+              ]}
+            >
+              Fly toᯓ➤
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <View

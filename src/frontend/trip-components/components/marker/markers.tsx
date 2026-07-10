@@ -10,12 +10,16 @@ import MediaMarkers from "./image_markers/media_markers";
 import CoordinateMarkers from "./coordinate_markers/coordinate_markers";
 import MapSharedConfig from "../../main_map/map_shared_config";
 import LoadingTracker from "../../observers/loading_tracker";
-import ContentsDisplayFeatures from "../../observers/current_contents/current_display_contents_features";
+import ContentsDisplayFeatures, {
+  LocationBaseContentsGraph,
+} from "../../observers/current_contents/current_display_contents_features";
 import { MOCK_CONTENT_CARDS } from "../../../utils/mock_contents";
+import UIEventBus from "../../../../backend/bridge/UI_event_bus";
 const image_icon = require("../../../../../assets/image/gallery_icon.png");
 
-export const Marker = ({}) => {
+const Marker = ({}) => {
   const ContentsFeatures = new ContentsDisplayFeatures();
+  const Contents = new LocationBaseContentsGraph();
   const [currentDisplayTripData, setCurrentDisplayTripData] = useState(
     TripDisplayObserver.getTripNeedRender(),
   );
@@ -59,7 +63,7 @@ export const Marker = ({}) => {
       const content_cards = await TripContentsHandler.getTripContents(
         currentDisplayTripData?.trip_id,
       );
-
+      console.log(content_cards)
       setContentCards(filterCards(content_cards));
       setContentsFeature(
         ContentsFeatures.generateContentsFeatures(content_cards),
@@ -101,7 +105,10 @@ export const Marker = ({}) => {
     const updateContentCards = {
       update(newAsset) {
         setContentCards(filterCards(newAsset));
-        setContentsFeature(ContentsFeatures.generateContentsFeatures(newAsset));
+        const feature = ContentsFeatures.generateContentsFeatures(newAsset);
+        console.log(feature);
+        setContentsFeature(feature);
+        // console.log(contentsFeature.display);
       },
     };
     CurrentDisplayContentsObserver.attach(
@@ -119,6 +126,7 @@ export const Marker = ({}) => {
       );
   }, [currentDisplayTripData]);
 
+  // listen on zoom level change
   useEffect(() => {
     const zoomLevelUpdate = {
       update(zoom) {
@@ -131,21 +139,23 @@ export const Marker = ({}) => {
     return () => MapSharedConfig.detach(zoomLevelUpdate, "zoom");
   }, []);
 
-  useEffect(() => {
-    // console.log(imagesReady, coordReady);
-    if (!imagesReady || !coordReady) {
-      Loading();
-    } else {
-      HideLoading();
-      LoadingTracker.notifyReady("marker");
-    }
-  }, [coordReady, imagesReady]);
+  // useEffect(() => {
+  //   // console.log(imagesReady, coordReady);
+  //   if (!imagesReady || !coordReady) {
+  //     Loading();
+  //   } else {
+  //     HideLoading();
+  //     LoadingTracker.notifyReady("marker");
+  //   }
+  // }, [coordReady, imagesReady]);
+
   if (!contentCards) return;
   return (
     <View>
+      {/*{isModifyingContent && <ModifyingContentScreen></ModifyingContentScreen>}*/}
       {currentDisplayTripData && (
         <CoordinateMarkers
-          content_cards={contentsFeature}
+          content_cards={contentsFeature?.display}
           ready={() => setCoordReady(true)}
         ></CoordinateMarkers>
       )}
@@ -161,3 +171,5 @@ export const Marker = ({}) => {
     </View>
   );
 };
+
+export default Marker;
