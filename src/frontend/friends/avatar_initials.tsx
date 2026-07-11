@@ -21,7 +21,7 @@ export default function AvatarInitials({ username, color, size = 36 }: AvatarIni
     <View
       style={[
         styles.circle,
-        { width: size, height: size, borderRadius: size / 2, backgroundColor: color },
+        { width: size, height: size, borderRadius: size / 2, backgroundColor: '#D85A30' },
       ]}
     >
       <Text style={styles.initials}>{initials}</Text>

@@ -3,11 +3,11 @@ import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native
 import { Feather } from '@expo/vector-icons';
 import AvatarInitials from './avatar_initials';
 import { FriendRequest } from '../../types/friend.types';
-
+import { UserData } from '../../types/user_data.types';
 interface OutgoingRequestsProps {
-  requests: FriendRequest[];
+  requests: UserData[];
   loading?: boolean;
-  onCancel: (requestId: string) => void;
+  onCancel: (requestId: number) => void;
   onBack: () => void;
 }
 
@@ -33,15 +33,20 @@ export default function OutgoingRequests({
 
       <FlatList
         data={requests}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => `${item.user_id}`}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            <AvatarInitials username={item.username} color={item.avatarColor} />
+            <AvatarInitials username={item.display_name} color={item.avatarColor} />
             <View style={styles.info}>
-              <Text style={styles.username}>{item.username}</Text>
-              <Text style={styles.subtext}>pending</Text>
+              <Text style={styles.username}>{item.display_name}</Text>
+              <Text style={styles.subtext}>
+                <Text style={{fontWeight: "bold"}}>
+                  @{item.user_name}
+                </Text>
+                {" Pending"}
+              </Text>
             </View>
-            <TouchableOpacity onPress={() => onCancel(item.id)} style={styles.cancelButton}>
+            <TouchableOpacity onPress={() => onCancel(item.user_id)} style={styles.cancelButton}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>

@@ -1,14 +1,15 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+  import { Feather } from '@expo/vector-icons';
 import AvatarInitials from './avatar_initials';
 import { FriendRequest } from '../../types/friend.types';
+import { UserData } from '../../types/user_data.types';
 
 interface IncomingRequestsProps {
-  requests: FriendRequest[];
+  requests: UserData[];
   loading?: boolean;
-  onAccept: (requestId: string) => void;
-  onDecline: (requestId: string) => void;
+  onAccept: (requestId: number) => void;
+  onDecline: (requestId: number) => void;
   onBack: () => void;
 }
 
@@ -35,23 +36,28 @@ export default function IncomingRequests({
 
       <FlatList
         data={requests}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => `${item.user_id}`}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            <AvatarInitials username={item.username} color={item.avatarColor} />
+            <AvatarInitials username={item.display_name} color={item.avatarColor} />
             <View style={styles.info}>
-              <Text style={styles.username}>{item.username}</Text>
-              <Text style={styles.subtext}>wants to be friends</Text>
+              <Text style={styles.username}>{item.display_name}</Text>
+              <Text style={styles.subtext}>
+                <Text style={{fontWeight: "bold"}}>
+                  @{item.user_name}
+                </Text>
+                {" wants to be friends"}
+              </Text>              {/*<Text style={styles.subtext}>wants to be friends</Text>*/}
             </View>
             <TouchableOpacity
-              onPress={() => onAccept(item.id)}
+              onPress={() => onAccept(item.user_id)}
               style={styles.acceptButton}
               accessibilityLabel="Accept"
             >
               <Feather name="check" size={16} color="#fff" />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => onDecline(item.id)}
+              onPress={() => onDecline(item.user_id)}
               style={styles.declineButton}
               accessibilityLabel="Decline"
             >

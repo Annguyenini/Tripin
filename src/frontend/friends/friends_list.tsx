@@ -3,9 +3,10 @@ import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native
 import { Feather } from '@expo/vector-icons';
 import AvatarInitials from './avatar_initials';
 import { Friend } from '../../types/friend.types';
+import { UserData } from '../../types/user_data.types';
 
 interface FriendsListProps {
-  friends: Friend[];
+  friends: UserData[];
   loading?: boolean;
   onOpenChat: (friendId: string) => void;
 }
@@ -22,14 +23,14 @@ export default function FriendsList({ friends, loading, onOpenChat }: FriendsLis
   return (
     <FlatList
       data={friends}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => `${item.user_id}`}
       contentContainerStyle={styles.list}
       renderItem={({ item }) => (
         <View style={styles.row}>
-          <AvatarInitials username={item.username} color={item.avatarColor} />
+          <AvatarInitials username={item.display_name} color={item.avatarColor} />
           <View style={styles.info}>
-            <Text style={styles.username}>{item.username}</Text>
-            {!!item.location && <Text style={styles.subtext}>{item.location}</Text>}
+            <Text style={styles.username}>{item.display_name}</Text>
+            {!!!item.location && <Text style={styles.subtext}>@{item.user_name}</Text>}
           </View>
           {/*<TouchableOpacity onPress={() => onOpenChat(item.id)} accessibilityLabel="Message">
             <Feather name="message-circle" size={18} color="#8A8A86" />

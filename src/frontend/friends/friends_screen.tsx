@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
@@ -7,6 +7,8 @@ import FriendSearch from './friend_search';
 import IncomingRequests from './incoming_requests';
 import OutgoingRequests from './outgoing_requests';
 import { Friend, FriendRequest, FriendsView } from '../../types/friend.types';
+import FriendShipsService from '../../app-core/flow/handlers/friendships_handler';
+import { UserData } from '../../types/user_data.types';
 
 const ICONS: { view: FriendsView; name: keyof typeof Feather.glyphMap }[] = [
   { view: 'search', name: 'search' },
@@ -32,9 +34,10 @@ const MOCK_OUTGOING: FriendRequest[] = [
 export default function FriendsScreen({ onClose}) {
   const [activeView, setActiveView] = useState<FriendsView>('friends');
 
-  const [friends, setFriends] = useState<Friend[]>(MOCK_FRIENDS);
-  const [incoming, setIncoming] = useState<FriendRequest[]>(MOCK_INCOMING);
-  const [outgoing, setOutgoing] = useState<FriendRequest[]>(MOCK_OUTGOING);
+  const [friends, setFriends] = useState<UserData[]>([]);
+  const [incoming, setIncoming] = useState<UserData[]>([]);
+  const [outgoing, setOutgoing] = useState<UserData[]>([]);
+  const [error,setError]= useState<string>('')
 
   const toggleView = (view: FriendsView) => {
     setActiveView((current) => (current === view ? 'friends' : view));
@@ -43,27 +46,66 @@ export default function FriendsScreen({ onClose}) {
   // Each handler below just updates local UI state. Hook your backend
   // calls into these — optimistic update is already in place, so a
   // failed request just needs to revert the state on catch.
+  useEffect(() => {
+    FriendShipsService.getFriendsHandler().then((friends) => {
+      if (!friends) setError('Failed to get friends')
+      console.log(friends)
+     setFriends(friends)
+    }).catch((err) => { 'Failed to fetch friend' })
 
-  const handleAccept = (requestId: string) => {
-    const request = incoming.find((r) => r.id === requestId);
-    setIncoming((prev) => prev.filter((r) => r.id !== requestId));
-    if (request) {
-      setFriends((prev) => [
-        ...prev,
-        { id: request.id, username: request.username, avatarColor: request.avatarColor },
-      ]);
+    FriendShipsService.getIncomingFriendRequests().then((friends) => {
+      if (!friends) setError('Failed to get friends')
+      console.log(friends)
+
+     setIncoming(friends)
+    }).catch((err) => { 'Failed to fetch friend' })
+
+    FriendShipsService.getOutcomingFriendRequests().then((friends) => {
+      if (!friends) setError('Failed to get friends')
+      console.log(friends)
+
+     setOutgoing(friends)
+    }).catch((err)=>{'Failed to fetch friend'})
+  },[])
+  const handleAccept = async(requestId: number) => {
+    console.log(requestId)
+    const target = incoming.find((r)=>r.user_id ===requestId )
+    if(!target) return
+    const response = await FriendShipsService.acceptFriendRequest(requestId)
+    if (!response) {
+      setError('Failed to accept friend request! \nPlease try again later!')
+      return
     }
-    // TODO: POST /friends/requests/:id/accept
+    setError('')
+    setIncoming((prev)=>prev.filter((r)=>r.user_id !== requestId))
+    setFriends((prev) => [...prev, target])
+    return
   };
 
-  const handleDecline = (requestId: string) => {
-    setIncoming((prev) => prev.filter((r) => r.id !== requestId));
-    // TODO: POST /friends/requests/:id/decline
+  const handleDecline = async(requestId: number) => {
+    const target = incoming.find((r)=>r.user_id ===requestId )
+    if(!target) return
+    const response = await FriendShipsService.deleteRelationship(requestId)
+    if (!response) {
+      setError('Failed to delince friend request! \nPlease try again later! ')
+      return
+    }
+    setError('')
+    setIncoming((prev)=>prev.filter((r)=>r.user_id !== requestId))
+    return
   };
 
-  const handleCancel = (requestId: string) => {
-    setOutgoing((prev) => prev.filter((r) => r.id !== requestId));
-    // TODO: DELETE /friends/requests/:id
+  const handleCancel = async(requestId: number) => {
+    const target = outgoing.find((r)=>r.user_id ===requestId )
+    if(!target) return
+    const response = await FriendShipsService.deleteRelationship(requestId)
+    if (!response) {
+      setError('Failed to delince friend request! \nPlease try again later! ')
+      return
+    }
+    setError('')
+    setOutgoing((prev)=>prev.filter((r)=>r.user_id !== requestId))
+    return
   };
 
   const handleSearch = async (query: string): Promise<Friend[]> => {
@@ -82,6 +124,7 @@ export default function FriendsScreen({ onClose}) {
       <View style={styles.header}>
         <TouchableOpacity onPress={onClose}><Feather name="arrow-left" size={18} color="#5A5A56" /></TouchableOpacity>
         <Text style={styles.title}>Friends</Text>
+
         <View style={styles.iconRow}>
           {ICONS.map(({ view, name }) => {
             const active = activeView === view;
@@ -100,6 +143,8 @@ export default function FriendsScreen({ onClose}) {
       </View>
 
       <View style={styles.body}>
+        <Text style={styles.error}>{error}</Text>
+
         {activeView === 'friends' && (
           <FriendsList
             friends={friends}
@@ -155,6 +200,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     color: '#1A1A18',
+  },
+  error: {
+    paddingHorizontal: 10,
+
+    fontSize: 15,
+    fontWeight: '500',
+    color: 'red',
   },
   iconRow: {
     flexDirection: 'row',
