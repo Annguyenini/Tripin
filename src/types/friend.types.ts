@@ -11,4 +11,4 @@ export interface FriendRequest {
   avatarColor: string;
 }
 
-export type FriendsView = 'friends' | 'search' | 'incoming' | 'outgoing';
+export type FriendsView = 'friends' | 'search' | 'incoming' | 'outgoing' |'usercard';

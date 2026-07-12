@@ -8,10 +8,10 @@ import { UserData } from '../../types/user_data.types';
 interface FriendsListProps {
   friends: UserData[];
   loading?: boolean;
-  onOpenChat: (friendId: string) => void;
+  selectUserHandler:(userdata:UserData)=>void
 }
 
-export default function FriendsList({ friends, loading, onOpenChat }: FriendsListProps) {
+export default function FriendsList({ friends, loading,selectUserHandler }: FriendsListProps) {
   if (loading) {
     return <Text style={styles.hint}>Loading friends…</Text>;
   }
@@ -26,8 +26,9 @@ export default function FriendsList({ friends, loading, onOpenChat }: FriendsLis
       keyExtractor={(item) => `${item.user_id}`}
       contentContainerStyle={styles.list}
       renderItem={({ item }) => (
+        <TouchableOpacity onPress={()=>selectUserHandler(item)}>
         <View style={styles.row}>
-          <AvatarInitials username={item.display_name} color={item.avatarColor} />
+          <AvatarInitials target_user_data={item} />
           <View style={styles.info}>
             <Text style={styles.username}>{item.display_name}</Text>
             {!!!item.location && <Text style={styles.subtext}>@{item.user_name}</Text>}
@@ -35,7 +36,8 @@ export default function FriendsList({ friends, loading, onOpenChat }: FriendsLis
           {/*<TouchableOpacity onPress={() => onOpenChat(item.id)} accessibilityLabel="Message">
             <Feather name="message-circle" size={18} color="#8A8A86" />
           </TouchableOpacity>*/}
-        </View>
+          </View>
+        </TouchableOpacity>
       )}
     />
   );

@@ -1,9 +1,14 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet,TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { FriendActionButton, FriendStatus } from './FriendActionButton';
-import { TripsRow, TripSummary } from './TripsRow';
+// import { FriendActionButton, FriendStatus } from './FriendActionButton';
+// import { TripsRow, TripSummary } from './TripsRow';
+import UsersData from '../../../app-core/flow/handlers/users/users_handler';
+import FriendshipsHandler from '../../../app-core/flow/handlers/friendships_handler';
+import { UserData } from '../../../types/user_data.types';
+import { Feather } from '@expo/vector-icons';
 
+interface Params {target_user_data:UserData,onClose:()=>void}
 
 /**
  * Full profile card shown when a user is tapped (e.g. from search results,
@@ -12,17 +17,37 @@ import { TripsRow, TripSummary } from './TripsRow';
  * status-dependent friend action, and a horizontal trips summary.
  */
 export function UserCard({
-  target_user_id
-}) {
+  target_user_data,
+  onClose
+}:Params) {
   // const user_data = async () => {
-  //   const response
+  //   const userdata
   // }
+  const [error,setError] = useState('')
+  const [userData, setUserData] = useState(null)
+  const [relationship,setRelationship]= useState(null)
+
+  useEffect(() => {
+
+    const getRelationship = async () => {
+      const relationship = await FriendshipsHandler.getRelationship(target_user_data.user_id)
+      if (!relationship) {
+        setError('Failed to get relationship')
+        return
+      }
+      setRelationship(relationship)
+      setError('')
+    }
+    getRelationship()
+  }, [])
   return (
+
     <View style={styles.card}>
       <View style={styles.header}>
+
         <View style={styles.avatarWrap}>
-          {avatarUrl ? (
-            <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
+          {target_user_data.avatar ? (
+            <Image source={{ uri: target_user_data.avatar }} style={styles.avatarImage} />
           ) : (
             <View style={[styles.avatarImage, styles.avatarPlaceholder]}>
               <Ionicons name="person" size={28} color="#8A8A8E" />
@@ -32,12 +57,14 @@ export function UserCard({
 
         <View style={styles.identity}>
           <Text style={styles.displayName} numberOfLines={1}>
-            {displayName}
+            {target_user_data.display_name}
           </Text>
           <Text style={styles.username} numberOfLines={1}>
-            @{username}
+            @{target_user_data.user_name}
           </Text>
         </View>
+        <TouchableOpacity onPress={onClose}><Feather name="x" size={18} color="#5A5A56" /></TouchableOpacity>
+
       </View>
 
       {/*<FriendActionButton
@@ -52,7 +79,7 @@ export function UserCard({
 
       <View style={styles.divider} />
 
-      <Text style={styles.sectionLabel}>Trips</Text>
+      {/*<Text style={styles.sectionLabel}>Trips</Text>*/}
       {/*<TripsRow trips={trips} onPressTrip={onPressTrip} />*/}
     </View>
   );

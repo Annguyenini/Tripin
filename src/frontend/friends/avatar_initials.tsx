@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet,Image } from 'react-native';
+import { UserData } from '../../types/user_data.types';
 
 interface AvatarInitialsProps {
   username: string;
@@ -7,8 +8,8 @@ interface AvatarInitialsProps {
   size?: number;
 }
 
-export default function AvatarInitials({ username, color, size = 36 }: AvatarInitialsProps) {
-  const initials = username
+export default function AvatarInitials({target_user_data}:{target_user_data:UserData}) {
+  const initials = target_user_data.user_name
     .replace(/[._]/g, ' ')
     .trim()
     .split(' ')
@@ -18,13 +19,14 @@ export default function AvatarInitials({ username, color, size = 36 }: AvatarIni
     .join('');
 
   return (
-    <View
-      style={[
-        styles.circle,
-        { width: size, height: size, borderRadius: size / 2, backgroundColor: '#D85A30' },
-      ]}
-    >
-      <Text style={styles.initials}>{initials}</Text>
+    <View>
+      {target_user_data.avatar ? (<Image style={ {width: 36, height: 36, borderRadius: 36 / 2}} source={{uri:target_user_data?.avatar}}/>):(<View
+        style={[
+          styles.circle,
+          { width: 36, height: 36, borderRadius: 36 / 2, backgroundColor: '#D85A30' },
+        ]}
+      ><Text style={styles.initials}>{initials}</Text></View>)}
+
     </View>
   );
 }

@@ -11,6 +11,7 @@ interface IncomingRequestsProps {
   onAccept: (requestId: number) => void;
   onDecline: (requestId: number) => void;
   onBack: () => void;
+  selectUserHandler:(userdata:UserData)=>void
 }
 
 export default function IncomingRequests({
@@ -19,6 +20,7 @@ export default function IncomingRequests({
   onAccept,
   onDecline,
   onBack,
+  selectUserHandler
 }: IncomingRequestsProps) {
   return (
     <View>
@@ -39,7 +41,8 @@ export default function IncomingRequests({
         keyExtractor={(item) => `${item.user_id}`}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            <AvatarInitials username={item.display_name} color={item.avatarColor} />
+            <TouchableOpacity onPress={()=>selectUserHandler(item)}>
+            <AvatarInitials target_user_data={item} />
             <View style={styles.info}>
               <Text style={styles.username}>{item.display_name}</Text>
               <Text style={styles.subtext}>
@@ -62,6 +65,7 @@ export default function IncomingRequests({
               accessibilityLabel="Decline"
             >
               <Feather name="x" size={16} color="#5A5A56" />
+              </TouchableOpacity>
             </TouchableOpacity>
           </View>
         )}

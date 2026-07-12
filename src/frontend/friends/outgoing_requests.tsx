@@ -9,6 +9,8 @@ interface OutgoingRequestsProps {
   loading?: boolean;
   onCancel: (requestId: number) => void;
   onBack: () => void;
+  selectUserHandler:(userdata:UserData)=>void
+
 }
 
 export default function OutgoingRequests({
@@ -16,6 +18,7 @@ export default function OutgoingRequests({
   loading,
   onCancel,
   onBack,
+  selectUserHandler
 }: OutgoingRequestsProps) {
   return (
     <View>
@@ -35,8 +38,10 @@ export default function OutgoingRequests({
         data={requests}
         keyExtractor={(item) => `${item.user_id}`}
         renderItem={({ item }) => (
+          <TouchableOpacity onPress={()=>selectUserHandler(item)}>
+
           <View style={styles.row}>
-            <AvatarInitials username={item.display_name} color={item.avatarColor} />
+            <AvatarInitials target_user_data={item} />
             <View style={styles.info}>
               <Text style={styles.username}>{item.display_name}</Text>
               <Text style={styles.subtext}>
@@ -48,8 +53,10 @@ export default function OutgoingRequests({
             </View>
             <TouchableOpacity onPress={() => onCancel(item.user_id)} style={styles.cancelButton}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
+              </TouchableOpacity>
+
           </View>
+          </TouchableOpacity>
         )}
       />
     </View>

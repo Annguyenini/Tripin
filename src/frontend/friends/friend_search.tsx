@@ -1,29 +1,38 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, TextInput, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, FlatList, StyleSheet, Modal } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import AvatarInitials from './avatar_initials';
 import { Friend } from '../../types/friend.types';
+import UsersHandler from '../../app-core/flow/handlers/users/users_handler';
+import { UserData } from '../../types/user_data.types';
+import { UserCard } from './user/user_card';
+import { OverlayCard } from '../overlay/overlay_card';
 
 interface SearchResult extends Friend {
   requestSent?: boolean;
 }
 
 interface FriendSearchProps {
-  onSearch: (query: string) => Promise<SearchResult[]>;
   onSendRequest: (userId: string) => Promise<void>;
+  selectUserHandler:(userdata:UserData) =>void
   onBack: () => void;
 }
 
-export default function FriendSearch({ onSearch, onSendRequest, onBack }: FriendSearchProps) {
+export default function FriendSearch({ onSendRequest, onBack,selectUserHandler }: FriendSearchProps) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedUserData,setSelectedUserData] = useState<UserData>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const onSearch = async (keywords) => {
+    const result = await UsersHandler.searchUsers(keywords)
+    return result
+  }
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    if (query.trim().length === 0) {
+    if (query.trim().length < 3) {
       setResults([]);
       return;
     }
@@ -32,23 +41,19 @@ export default function FriendSearch({ onSearch, onSendRequest, onBack }: Friend
       setLoading(true);
       try {
         const data = await onSearch(query.trim());
+        if (!data) return
+        console.log(data)
         setResults(data);
       } finally {
         setLoading(false);
       }
-    }, 300);
+    }, 800);
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [query]);
 
-  const handleSend = async (userId: string) => {
-    setResults((prev) =>
-      prev.map((r) => (r.id === userId ? { ...r, requestSent: true } : r))
-    );
-    await onSendRequest(userId);
-  };
 
   return (
     <View>
@@ -73,7 +78,10 @@ export default function FriendSearch({ onSearch, onSendRequest, onBack }: Friend
       {!loading && query.trim().length === 0 && (
         <Text style={styles.hint}>Start typing to find people</Text>
       )}
-      {!loading && query.trim().length > 0 && results.length === 0 && (
+      {!loading && query.trim().length <3 && query.trim().length >0 && (
+        <Text style={styles.hint}>Need more than 3 letters</Text>
+      )}
+      {!loading && query.trim().length > 3 && results.length === 0 && (
         <Text style={styles.hint}>No matches for "{query}"</Text>
       )}
 
@@ -81,19 +89,12 @@ export default function FriendSearch({ onSearch, onSendRequest, onBack }: Friend
         data={results}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
+          <TouchableOpacity onPress={()=>selectUserHandler(item)}>
           <View style={styles.row}>
-            <AvatarInitials username={item.username} color={item.avatarColor} />
-            <Text style={styles.username}>{item.username}</Text>
-            <TouchableOpacity
-              disabled={item.requestSent}
-              onPress={() => handleSend(item.id)}
-              style={[styles.sendButton, item.requestSent && styles.sendButtonDisabled]}
-            >
-              <Text style={styles.sendButtonText}>
-                {item.requestSent ? 'Sent' : 'Add'}
-              </Text>
-            </TouchableOpacity>
-          </View>
+            <AvatarInitials target_user_data={item}/>
+            <Text style={styles.username}>@{item.user_name}</Text>
+            </View>
+          </TouchableOpacity>
         )}
       />
     </View>

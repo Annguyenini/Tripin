@@ -89,3 +89,8 @@ export const GET_RELATIONSHIP = FRIENDSHIPS_BASE_API+'/get-relationship'
 export const ACCEPT_FRIEND_REQUEST = FRIENDSHIPS_BASE_API+'/accept-friend-request'
 export const REQUEST_FRIEND = FRIENDSHIPS_BASE_API+'/request-friend'
 export const DELETE_RELATIONSHIP = FRIENDSHIPS_BASE_API+'/delete-relationship'
+
+// users
+export const USERS_BASE_API = BASE_API + '/users'
+export const SEARCH_USERS = USERS_BASE_API+'/search'
+export const GET_USERS_DATA = USERS_BASE_API+'/users'

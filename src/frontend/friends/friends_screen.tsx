@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView,Modal } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 import FriendsList from './friends_list';
@@ -9,6 +9,8 @@ import OutgoingRequests from './outgoing_requests';
 import { Friend, FriendRequest, FriendsView } from '../../types/friend.types';
 import FriendShipsService from '../../app-core/flow/handlers/friendships_handler';
 import { UserData } from '../../types/user_data.types';
+import { UserCard } from './user/user_card';
+import { useData } from '@shopify/react-native-skia';
 
 const ICONS: { view: FriendsView; name: keyof typeof Feather.glyphMap }[] = [
   { view: 'search', name: 'search' },
@@ -37,7 +39,8 @@ export default function FriendsScreen({ onClose}) {
   const [friends, setFriends] = useState<UserData[]>([]);
   const [incoming, setIncoming] = useState<UserData[]>([]);
   const [outgoing, setOutgoing] = useState<UserData[]>([]);
-  const [error,setError]= useState<string>('')
+  const [error, setError] = useState<string>('')
+  const [selectedUserData,setSelectedUserData] = useState<UserData>(null)
 
   const toggleView = (view: FriendsView) => {
     setActiveView((current) => (current === view ? 'friends' : view));
@@ -119,10 +122,14 @@ export default function FriendsScreen({ onClose}) {
     // TODO: POST /friends/requests
   };
 
+  const selectUserHandler = (userdata) => {
+    setSelectedUserData(userdata)
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onClose}><Feather name="arrow-left" size={18} color="#5A5A56" /></TouchableOpacity>
+        <TouchableOpacity onPress={onClose}><Feather name="x" size={18} color="#5A5A56" /></TouchableOpacity>
         <Text style={styles.title}>Friends</Text>
 
         <View style={styles.iconRow}>
@@ -147,16 +154,15 @@ export default function FriendsScreen({ onClose}) {
 
         {activeView === 'friends' && (
           <FriendsList
+          selectUserHandler={selectUserHandler}
             friends={friends}
-            onOpenChat={(friendId) => {
-              // navigation.navigate('Chat', { friendId })
-            }}
+
           />
         )}
 
         {activeView === 'search' && (
           <FriendSearch
-            onSearch={handleSearch}
+          selectUserHandler={selectUserHandler}
             onSendRequest={handleSendRequest}
             onBack={() => setActiveView('friends')}
           />
@@ -167,6 +173,7 @@ export default function FriendsScreen({ onClose}) {
             requests={incoming}
             onAccept={handleAccept}
             onDecline={handleDecline}
+            selectUserHandler={selectUserHandler}
             onBack={() => setActiveView('friends')}
           />
         )}
@@ -176,8 +183,12 @@ export default function FriendsScreen({ onClose}) {
             requests={outgoing}
             onCancel={handleCancel}
             onBack={() => setActiveView('friends')}
+            selectUserHandler={selectUserHandler}
+
           />
         )}
+        <Modal visible={!!selectedUserData}><UserCard target_user_data={selectedUserData} onClose={()=>setSelectedUserData(null)}></UserCard></Modal>
+
       </View>
     </SafeAreaView>
   );
