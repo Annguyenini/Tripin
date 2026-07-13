@@ -8,14 +8,18 @@ import IncomingRequests from './incoming_requests';
 import OutgoingRequests from './outgoing_requests';
 import { Friend, FriendRequest, FriendsView } from '../../types/friend.types';
 import FriendShipsService from '../../app-core/flow/handlers/friendships_handler';
-import { UserData } from '../../types/user_data.types';
+import { UserData, UserRelationship } from '../../types/user_data.types';
 import { UserCard } from './user/user_card';
 import { useData } from '@shopify/react-native-skia';
 
-const ICONS: { view: FriendsView; name: keyof typeof Feather.glyphMap }[] = [
+const ICONS: {
+  view: FriendsView;
+  name: keyof typeof Feather.glyphMap;
+  count?: number;
+}[] = [
   { view: 'search', name: 'search' },
-  { view: 'incoming', name: 'user-check' },
-  { view: 'outgoing', name: 'clock' },
+  { view: 'incoming', name: 'user-check', count: 0 },
+  { view: 'outgoing', name: 'clock', count: 0 },
 ];
 
 // Placeholder data — swap these useState initial values for whatever your
@@ -41,7 +45,7 @@ export default function FriendsScreen({ onClose}) {
   const [outgoing, setOutgoing] = useState<UserData[]>([]);
   const [error, setError] = useState<string>('')
   const [selectedUserData,setSelectedUserData] = useState<UserData>(null)
-
+  const [usercardRenderId,setUsercardRenderId]= useState(1)
   const toggleView = (view: FriendsView) => {
     setActiveView((current) => (current === view ? 'friends' : view));
   };
@@ -82,6 +86,7 @@ export default function FriendsScreen({ onClose}) {
     setError('')
     setIncoming((prev)=>prev.filter((r)=>r.user_id !== requestId))
     setFriends((prev) => [...prev, target])
+    setUsercardRenderId((prev)=>prev+1)
     return
   };
 
@@ -95,6 +100,7 @@ export default function FriendsScreen({ onClose}) {
     }
     setError('')
     setIncoming((prev)=>prev.filter((r)=>r.user_id !== requestId))
+    setUsercardRenderId((prev)=>prev+1)
     return
   };
 
@@ -103,11 +109,12 @@ export default function FriendsScreen({ onClose}) {
     if(!target) return
     const response = await FriendShipsService.deleteRelationship(requestId)
     if (!response) {
-      setError('Failed to delince friend request! \nPlease try again later! ')
+      setError('Failed to cancel friend request! \nPlease try again later! ')
       return
     }
     setError('')
     setOutgoing((prev)=>prev.filter((r)=>r.user_id !== requestId))
+    setUsercardRenderId((prev)=>prev+1)
     return
   };
 
@@ -118,10 +125,36 @@ export default function FriendsScreen({ onClose}) {
     );
   };
 
-  const handleSendRequest = async (userId: string) => {
+  const handleSendRequest = async (target: UserRelationship) => {
     // TODO: POST /friends/requests
-  };
+    // const target = outgoing.find((r) => r.user_id === requestId)
+    if (!target) return
+    const response = await FriendShipsService.requestFriend(target?.user_id)
+    if (!response) {
+      setError('Failed to request friend! \nPlease try again later! ')
+      return
+    }
+    setError('')
+    setOutgoing((prev)=> [...prev,target] )
+    setUsercardRenderId((prev)=>prev+1)
+    console.log(target,usercardRenderId)
 
+    return
+  };
+  const deleteFriend = async (requestId: number) => {
+    // TODO: POST /friends/requests
+    const target = friends.find((r)=>r.user_id ===requestId )
+    if(!target) return
+    const response = await FriendShipsService.deleteRelationship(requestId)
+    if (!response) {
+      setError('Failed to request friend! \nPlease try again later! ')
+      return
+    }
+    setError('')
+    setFriends((prev)=> prev.filter((r) => r.user_id !== requestId) )
+    setUsercardRenderId((prev)=>prev+1)
+    return
+  };
   const selectUserHandler = (userdata) => {
     setSelectedUserData(userdata)
   }
@@ -133,8 +166,17 @@ export default function FriendsScreen({ onClose}) {
         <Text style={styles.title}>Friends</Text>
 
         <View style={styles.iconRow}>
+
           {ICONS.map(({ view, name }) => {
+            const count =
+              view === 'incoming'
+                ? incoming.length
+                : view === 'outgoing'
+                ? outgoing.length
+                : 0;
+
             const active = activeView === view;
+
             return (
               <TouchableOpacity
                 key={view}
@@ -142,7 +184,19 @@ export default function FriendsScreen({ onClose}) {
                 style={[styles.iconButton, active && styles.iconButtonActive]}
                 accessibilityLabel={view}
               >
-                <Feather name={name} size={16} color={active ? '#fff' : '#5A5A56'} />
+                <Feather
+                  name={name}
+                  size={16}
+                  color={active ? '#fff' : '#5A5A56'}
+                />
+
+                {count > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>
+                      {count > 99 ? '99+' : count}
+                    </Text>
+                  </View>
+                )}
               </TouchableOpacity>
             );
           })}
@@ -187,7 +241,15 @@ export default function FriendsScreen({ onClose}) {
 
           />
         )}
-        <Modal visible={!!selectedUserData}><UserCard target_user_data={selectedUserData} onClose={()=>setSelectedUserData(null)}></UserCard></Modal>
+        <Modal visible={!!selectedUserData}> <UserCard
+          key ={usercardRenderId}
+          target_user_data={selectedUserData}
+          onClose={() => setSelectedUserData(null)}
+          onAcceptFriend={handleAccept}
+          onAddFriend={handleSendRequest}
+          onCancelFriendRequest={handleCancel}
+          onRefuseFriend={handleDecline}
+          onUnFriend={deleteFriend}></UserCard></Modal>
 
       </View>
     </SafeAreaView>
@@ -206,6 +268,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 25,
 
+  },
+  badge: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#D85A30',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+
+  badgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '700',
   },
   title: {
     fontSize: 18,

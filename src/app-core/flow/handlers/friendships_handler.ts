@@ -67,7 +67,8 @@ class FriendShipsHandler{
   async requestFriend(target_user_id) {
     try {
       const response = await FriendShips.requestFriend(target_user_id)
-      if (!response.ok || response.status !== 200||response?.data?.status !== 'REQ_1'||response?.data?.status !== 'REQ_2') return false
+      console.log(response)
+      if (!response.ok || response.status !== 200) return false
       return true
     }
     catch (err) {

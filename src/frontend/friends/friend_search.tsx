@@ -7,6 +7,7 @@ import UsersHandler from '../../app-core/flow/handlers/users/users_handler';
 import { UserData } from '../../types/user_data.types';
 import { UserCard } from './user/user_card';
 import { OverlayCard } from '../overlay/overlay_card';
+import UserDataService from '../../backend/storage/async_storage/user';
 
 interface SearchResult extends Friend {
   requestSent?: boolean;
@@ -24,7 +25,7 @@ export default function FriendSearch({ onSendRequest, onBack,selectUserHandler }
   const [loading, setLoading] = useState(false);
   const [selectedUserData,setSelectedUserData] = useState<UserData>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const user_id = UserDataService.getUserId()
   const onSearch = async (keywords) => {
     const result = await UsersHandler.searchUsers(keywords)
     return result
@@ -92,9 +93,21 @@ export default function FriendSearch({ onSendRequest, onBack,selectUserHandler }
           <TouchableOpacity onPress={()=>selectUserHandler(item)}>
           <View style={styles.row}>
             <AvatarInitials target_user_data={item}/>
-            <Text style={styles.username}>@{item.user_name}</Text>
+              <Text style={styles.username}>@{item.user_name}</Text>
+              {/*<TouchableOpacity
+                disabled={item.status}
+                onPress={() => handleSend(item.id)}
+                style={[styles.sendButton, item.status && styles.sendButtonDisabled]}
+              >
+                <Text style={styles.sendButtonText}>
+                  {item.status === 'FRIEND' ? 'friend' : ''}
+                  {(item.status === 'REQ_1' && item.user_i1 === user_id) ? 'sent' :''}
+                </Text>
+              </TouchableOpacity>*/}
             </View>
+
           </TouchableOpacity>
+
         )}
       />
     </View>

@@ -50,8 +50,11 @@ export default function IncomingRequests({
                   @{item.user_name}
                 </Text>
                 {" wants to be friends"}
-              </Text>              {/*<Text style={styles.subtext}>wants to be friends</Text>*/}
+                </Text>
+                {/*<Text style={styles.subtext}>wants to be friends</Text>*/}
             </View>
+
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => onAccept(item.user_id)}
               style={styles.acceptButton}
@@ -66,7 +69,6 @@ export default function IncomingRequests({
             >
               <Feather name="x" size={16} color="#5A5A56" />
               </TouchableOpacity>
-            </TouchableOpacity>
           </View>
         )}
       />

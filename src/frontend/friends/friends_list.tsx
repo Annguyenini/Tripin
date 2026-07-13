@@ -16,7 +16,7 @@ export default function FriendsList({ friends, loading,selectUserHandler }: Frie
     return <Text style={styles.hint}>Loading friends…</Text>;
   }
 
-  if (friends.length === 0) {
+  if (friends?.length === 0) {
     return <Text style={styles.hint}>No friends yet. Try the search icon above.</Text>;
   }
 

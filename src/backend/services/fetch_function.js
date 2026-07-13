@@ -49,7 +49,7 @@ async function _doFetch(url, options, retry) {
     NetworkObserver.setServerStatus(true);
     return { ok: true, status: respond.status, data: data };
   } catch (err) {
-    console.error("Failed to fetch", err);
+    console.error(`Failed to fetch ${url}`, err);
     if (err instanceof TypeError && err.message === "Network request failed") {
       NetworkObserver.setServerStatus(false);
       return { ok: false, code: "network_error" };

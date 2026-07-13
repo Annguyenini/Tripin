@@ -4,7 +4,7 @@ import * as API from '../../../config/config_api'
 class Users {
   async searchUsers(keywords: string) {
     try {
-      const response = await fetchFunction(API.SEARCH_USERS + `?keywords=${keywords}`, {
+      const response = await fetchFunction(API.SEARCH_USERS + `?keywords=${keywords}&with-relationship=true`, {
         method:'GET'
       })
       return response
