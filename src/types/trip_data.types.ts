@@ -10,4 +10,5 @@ export interface Trip_Data {
   modified_time?: number;
   trip_name: string;
   user_id: number;
+  author?: string
 }

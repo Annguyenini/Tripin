@@ -17,22 +17,16 @@ import TripDisplayObserver from "../observers/trip_display_observer";
 import TripActionsHandler from "../../../app-core/flow/handlers/trip_actions/trip_action_handler";
 
 // ─── UI / Overlay ─────────────────────────────────────────────────────────────
-import { UseOverlay } from "../../overlay/overlay_main";
 import { BottomSheetSyle } from "../../../styles/bottom_sheet.styles";
-import { TripStatCards } from "./compoments/trip_stat";
-// import PolaroidGallery from "./compoments/memories";\
-import GalleryManager from "./trip_dashboard/stat/memories_manage";
-import TripTimeline from "./trip_dashboard/timeline/timeline";
-import PolaroidGallery from "./compoments/memories/PolaroidGallery";
+
 import TripCustomCard from "./trips_card/trip_custom_card";
 import { Trip_Data } from "../../../types/trip_data.types";
-import { TestScreen } from "../../../test_screen";
-import TripDashBoard from "./trip_dashboard/dashboard_manager";
+
 import TripStat from "./trip_dashboard/stat/stat";
 import TimeLineManager from "./trip_dashboard/timeline/timeline_manager";
-import UIeventbus from "../../../backend/bridge/UI_event_bus";
 import ModifyingContentScreen from "../components/marker/modifying_contents";
 import BottomSheetTransform from "./bottom_sheet_transform";
+import UserDataService from "../../../backend/storage/async_storage/user";
 // ─── Assets ───────────────────────────────────────────────────────────────────
 const default_image = require("../../../../assets/icon.png");
 
@@ -47,7 +41,6 @@ export const UserDataBottomSheet = () => {
   const [snapIndex, setSnapIndex] = useState(0);
   const [dataKey, setDataKey] = useState(0);
   const [showEdit, setShowEdit] = useState(false);
-  const [status, setStatus] = useState("Current");
   const [secondTripDisplay, setSecondTripDisplay] = useState(null);
   const [isModifying, setIsModifying] = useState(false);
   const [viewMode, setViewMode] = useState<"dash" | "timeline">("dash");
@@ -73,23 +66,6 @@ export const UserDataBottomSheet = () => {
           return;
         }
 
-        if (new_data.trip_id === CurrentTripDataService.getCurrentTripId()) {
-          setSecondTripDisplay(false);
-          const formatted = new_data.created_time
-            ? new Date(Math.floor(new_data.created_time)).toLocaleString()
-            : "—";
-          setStatus(`${formatted} -> Current`);
-        } else {
-          const formatted_created = new_data.created_time
-            ? new Date(Math.floor(new_data.created_time)).toLocaleString()
-            : "—";
-          const formatted_ended = new_data.ended_time
-            ? new Date(Math.floor(new_data.ended_time)).toLocaleString()
-            : "—";
-          setStatus(`${formatted_created} - ${formatted_ended}`);
-          setSecondTripDisplay(true);
-        }
-
         setTrip(new_data);
         setDisplayTrip(true);
         setSnapIndex(0);
@@ -102,7 +78,6 @@ export const UserDataBottomSheet = () => {
       TripDisplayObserver.detach(updateTripData, TripDisplayObserver.EVENTS);
     };
   }, []);
-  console.log(trip);
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -172,8 +147,7 @@ export const UserDataBottomSheet = () => {
                   <Text style={{ color: "white" }}>Timeline</Text>
                 </TouchableOpacity>
               </View>
-
-              <TouchableOpacity
+              {trip?.user_id === UserDataService.getUserId()? (<TouchableOpacity
                 onPress={() => setModifyingTripContents()}
                 style={{
                   width: 36,
@@ -187,7 +161,11 @@ export const UserDataBottomSheet = () => {
                 <Text style={{ color: "white", fontSize: 18, lineHeight: 20 }}>
                   +
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity>) : (
+                <Text style={{ color: "black", fontSize: 15, lineHeight: 20 }}> By - @{trip.author}
+                </Text>
+              )}
+
             </View>
 
             {viewMode === "dash" && <TripStat TripData={trip}></TripStat>}

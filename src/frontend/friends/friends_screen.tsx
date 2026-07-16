@@ -245,6 +245,7 @@ export default function FriendsScreen({ onClose}) {
           key ={usercardRenderId}
           target_user_data={selectedUserData}
           onClose={() => setSelectedUserData(null)}
+          onCloseFriendScreen={onClose}
           onAcceptFriend={handleAccept}
           onAddFriend={handleSendRequest}
           onCancelFriendRequest={handleCancel}

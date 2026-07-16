@@ -104,13 +104,12 @@ class TripContentHandler {
         const local_version =
           await TripContentsDatabase.getTripContentsVersion(trip_id);
         const server_version = await this.getTripContentsVersion(trip_id);
-        console.log(local_version,server_version)
+        console.log(server_version,local_version)
         return local_version === server_version;
       }
 
       const forceMergeContent = async()=> {
         const respond = await TripContents.requestTripMedias(trip_id);
-        console.log("dsdsdsdsd");
         const server_content = respond?.data?.content_cards;
         if (!server_content) return local_content;
         if (!local_content) return server_content;

@@ -2,15 +2,21 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, Image, StyleSheet,TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { FriendActionButton, FriendStatus } from './relationship_action';
-// import { TripsRow, TripSummary } from './TripsRow';
+import { TripsRow, TripSummary } from './trips';
 import UsersData from '../../../app-core/flow/handlers/users/users_handler';
 import FriendshipsHandler from '../../../app-core/flow/handlers/friendships_handler';
 import { UserRelationship } from '../../../types/user_data.types';
 import { Feather } from '@expo/vector-icons';
 import UserDataService from '../../../backend/storage/async_storage/user';
+import UsersTripsHandler from '../../../app-core/flow/handlers/users/users_trips_handler';
+import { Trip_Data } from '../../../types/trip_data.types';
+import current_display_contents_observer from '../../trip-components/observers/current_contents/current_display_contents_observer';
+import TripDisplayObserver from '../../trip-components/observers/trip_display_observer';
 
 interface Params {
-  target_user_data: UserRelationship,  onClose: () => void,
+  target_user_data: UserRelationship,
+  onClose: () => void,
+  onCloseFriendScreen:()=>void,
   onAddFriend: (value:UserRelationship) => void,
   onAcceptFriend: (value:number) => void,
   onRefuseFriend: (value:number) => void,
@@ -26,6 +32,7 @@ interface Params {
 export function UserCard({
   target_user_data,
   onClose,
+  onCloseFriendScreen,
   onAcceptFriend,
   onAddFriend,
   onCancelFriendRequest,
@@ -38,13 +45,27 @@ export function UserCard({
   const [error,setError] = useState('')
   // const [relationshipStatus, setRelationshipStatus] = useState<FriendStatus>(null)
   const [relationship, setRelationship] = useState(null)
-  const user_id =UserDataService.getUserId()
+  const [trips,setTrips] = useState([])
+  const user_id = UserDataService.getUserId()
+  const tripSelectedHandler = (trip: Trip_Data) => {
+    if (!trip) return
+    //set the trip want to render
+    TripDisplayObserver.setTripSelected(trip)
+    //force close the friendships screen
+    onCloseFriendScreen()
+  }
   useEffect(() => {
     const relationship = async () => {
       if (!target_user_data) return
       const res = await FriendshipsHandler.getRelationship(target_user_data?.user_id)
       setRelationship (res)
     }
+    const fetchTrips = async() => {
+      if (!target_user_data) return
+      const res = await UsersTripsHandler.getUsersTrips(target_user_data?.user_id)
+      setTrips(res??[])
+    }
+    fetchTrips()
     relationship()
   }, [target_user_data?.user_id])
   const relationshipStatus:FriendStatus = useMemo(() => {
@@ -75,35 +96,7 @@ export function UserCard({
       return'not_friend'
     }
   }, [relationship])
-  // useEffect(() => {
-  //   console.log(relationship)
-  //   if (!relationship) {
-  //     setRelationshipStatus('not_friend')
-  //     return
-  //   }
-  //   if (target_user_data.status === 'FRIEND') {
-  //     setRelationshipStatus('friend')
-  //   }
-  //   else if (target_user_data.status === 'REQ_1') {
-  //     if (target_user_data.user_id1 === user_id) {
-  //       setRelationshipStatus('outgoing_request')
-  //     }
-  //     else if (target_user_data.user_id1 === target_user_data.user_id) {
-  //       setRelationshipStatus('incoming_request')
-  //     }
-  //   }
-  //   else if (target_user_data.status === 'REQ_2') {
-  //     if (target_user_data.user_id2 === user_id) {
-  //       setRelationshipStatus('outgoing_request')
-  //     }
-  //     else if (target_user_data.user_id2 === target_user_data.user_id) {
-  //       setRelationshipStatus('incoming_request')
-  //     }
-  //   }
-  //   else {
-  //     setRelationshipStatus('not_friend')
-  //   }
-  // },[relationship])
+
   if (!target_user_data) return null
   console.log(relationshipStatus,relationship)
 
@@ -146,8 +139,8 @@ export function UserCard({
 
       <View style={styles.divider} />
 
-      {/*<Text style={styles.sectionLabel}>Trips</Text>*/}
-      {/*<TripsRow trips={trips} onPressTrip={onPressTrip} />*/}
+      <Text style={styles.sectionLabel}>Trips</Text>
+      <TripsRow trips={trips} onPressTrip={tripSelectedHandler}/>
     </View>
   );
 }

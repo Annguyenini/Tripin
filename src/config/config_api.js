@@ -1,5 +1,5 @@
-export const BASE_API = "https://tripping.live";
-// export const BASE_API = "http://192.168.0.111:8000";
+// export const BASE_API = "https://tripping.live";
+export const BASE_API = "http://192.168.0.111:8000";
 export const HEALTH = BASE_API + "/health";
 export const APP_VERSION = BASE_API + "/app-version";
 export const LOGIN_API = BASE_API + "/auth/login";
@@ -94,3 +94,11 @@ export const DELETE_RELATIONSHIP = FRIENDSHIPS_BASE_API+'/delete-relationship'
 export const USERS_BASE_API = BASE_API + '/users'
 export const SEARCH_USERS = USERS_BASE_API+'/search'
 export const GET_USERS_DATA = USERS_BASE_API+'/users'
+
+// users trips
+export const USERS_TRIPS_BASE_API = BASE_API + '/users/trips'
+export const GET_USERS_TRIPS = BASE_API + '/users/trips'
+
+// user trips contents
+export const USERS_TRIP_CONTENTS_BASE_API = BASE_API + '/users/trips'
+export const GET_USERS_TRIP_CONTENTS = BASE_API + '/users/trip-contents'
