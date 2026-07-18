@@ -40,6 +40,19 @@ class FriendShipsHandler{
       return null
     }
   }
+  async getOverview() {
+    try {
+      const response = await FriendShips.getOverview()
+      if (!response.ok || response.status !== 200) return null
+
+      const friendlist = response?.data?.overview
+      return friendlist ??[]
+    }
+    catch (err) {
+      console.log(`failed to get friend handle: ${err}`)
+      return null
+    }
+  }
   async getRelationship(target_user_id:number) {
     try {
       const response = await FriendShips.getRelationship(target_user_id)

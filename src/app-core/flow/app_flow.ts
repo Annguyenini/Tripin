@@ -18,6 +18,8 @@ import migration from "../../backend/storage/database/migrations/migration";
 import Album from "../../backend/storage/album/album";
 import TripContentsSync from "./sync/trip_content_sync";
 import UserSettingsLoader from "./user_settings/user_setting";
+import SocketService from "./web_socket/socket";
+import tokenService from "../../backend/storage/tokens/token_service";
 
 // Applow architecture could be found in /architecture
 type Appstate =
@@ -29,6 +31,7 @@ type Appstate =
   | "migrationDatabases"
   | "initAlbum"
   | "userSettings"
+  | "socket"
   | "ready";
 
 class AppFlow {
@@ -54,6 +57,9 @@ class AppFlow {
       case "userdata":
         await this.userdataHandler();
         break;
+      case 'socket':
+        await this.initialSocket()
+        break
       case "initTripDatabase":
         await this.initTripDatabaseHandler();
         break;
@@ -122,7 +128,17 @@ class AppFlow {
       navigateToAuth();
       return;
     }
-    this.advance("initTripDatabase");
+    this.advance("socket");
+  }
+  async initialSocket() {
+    try {
+      const token = await tokenService.getToken('access_token')
+      SocketService.connect(token)
+      this.advance("initTripDatabase");
+    }
+    catch (error) {
+      console.error(`failed to load user setting ${error}`);
+    }
   }
 
   async initTripDatabaseHandler(): Promise<void> {
@@ -170,12 +186,14 @@ class AppFlow {
       const onUserSettingReady = () => {
         this.advance("ready");
       };
+      console.log('ready')
       await UserSettingsLoader.loadUserSettings(onUserSettingReady);
     } catch (error) {
       console.error(`failed to load user setting ${error}`);
       throw new Error(`failed to load user setting ${error}`);
     }
   }
+
 
   // ─── App Ready / Trip Sync ───────────────────────────────────────────────
 

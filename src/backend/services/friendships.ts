@@ -34,6 +34,17 @@ class FriendShips{
       throw new Error(`Fail to fetch outcoming requests: ${err}`)
     }
   }
+  async getOverview() {
+    try{
+    const response = await fetchFunction(API.GET_OVERVIEW, {
+      method:"GET"
+    })
+      return response
+    }
+    catch (err) {
+      throw new Error(`Fail to fetch outcoming requests: ${err}`)
+    }
+  }
   async getRelationship(target_user_id: number) {
     try{
     const response = await fetchFunction(API.GET_RELATIONSHIP+`/${target_user_id}`, {

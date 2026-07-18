@@ -13,12 +13,11 @@ const MAP_STYLES = [
   { style: "street", color: "#e8c9a0" },
 ];
 
-const BTN = 40; // button size
-const GAP = 6; // gap between buttons
+const BTN = 42; // button size, matches helpBarMapStyle.btn
+const GAP = 8; // gap between buttons
 const STEP = BTN + GAP;
 
 export const HelpBarMap = ({ setStyles }) => {
-  console.log("render bar");
   const navigation_icon = require("../../../assets/image/navigation_notoutline_icon.png");
   const navigation_outline_icon = require("../../../assets/image/navigation_outline_icon.png");
 
@@ -27,18 +26,16 @@ export const HelpBarMap = ({ setStyles }) => {
   const [isoCountryCode, setIsoCountryCode] = useState("");
   const [location, setLocation] = useState(null);
   const [isFollowingUser, setIsFollowingUser] = useState(false);
-  // style options: slide in from right (translateX: 80 → 0, opacity: 0 → 1)
   const styleAnim = useRef(new Animated.Value(0)).current; // 0=hidden 1=visible
-  // location pill: width 0 → 140
   const locationAnim = useRef(new Animated.Value(0)).current;
 
   const followingUser = async () => {
     await MapTransform.followingUser();
   };
   const setMapStyle = (style) => {
-    console.log(style);
     setStyles(style);
   };
+
   useEffect(() => {
     const initialFollowing = () => {
       const initial = MapSharedConfig.getIsFollowingUser();
@@ -113,45 +110,59 @@ export const HelpBarMap = ({ setStyles }) => {
 
   const locationWidth = locationAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 130],
+    outputRange: [0, 148],
   });
   const locationOpacity = locationAnim.interpolate({
     inputRange: [0, 0.3, 1],
     outputRange: [0, 0, 1],
   });
+
   LoadingTracker.notifyReady("help bar map");
+
+  const colors = helpBarMapStyle.colors;
+
   return (
     <View style={helpBarMapStyle.container}>
-      {/* ── Layer 1: recenter ── */}
+      {/* Layer 1: recenter — filled with primary when actively following the user */}
       <View style={{ position: "absolute", top: 0, right: 0 }}>
         <TouchableOpacity
-          style={helpBarMapStyle.btn}
+          style={[helpBarMapStyle.btn, isFollowingUser && helpBarMapStyle.btnActive]}
           onPress={() => followingUser()}
         >
           <Image
-            style={helpBarMapStyle.icon}
+            style={[
+              helpBarMapStyle.icon,
+              isFollowingUser && helpBarMapStyle.iconActive,
+            ]}
             source={isFollowingUser ? navigation_outline_icon : navigation_icon}
           />
         </TouchableOpacity>
       </View>
 
-      {/* ── Layer 2: style toggle ── */}
+      {/* Layer 2: style toggle */}
       <View style={{ position: "absolute", top: STEP, right: 0 }}>
-        <TouchableOpacity style={helpBarMapStyle.btn} onPress={toggleStyle}>
-          <Ionicons name="reorder-three-outline" size={22} color="#000" />
+        <TouchableOpacity
+          style={[helpBarMapStyle.btn, styleVisible && helpBarMapStyle.btnActive]}
+          onPress={toggleStyle}
+        >
+          <Ionicons
+            name="reorder-three-outline"
+            size={20}
+            color={styleVisible ? "#FFFDF8" : colors.ink}
+          />
         </TouchableOpacity>
       </View>
 
-      {/* ── Layer 3: style options (slide left from button) ── */}
+      {/* Layer 3: style options (slide left from toggle) */}
       <Animated.View
         pointerEvents={styleVisible ? "auto" : "none"}
         style={{
           position: "absolute",
-          top: STEP + 2,
-          right: BTN + 8, // sits to the left of the toggle button
+          top: STEP + 1,
+          right: BTN + 8,
           flexDirection: "row",
           alignItems: "center",
-          gap: 6,
+          gap: 8,
           opacity: styleOpacity,
           transform: [{ translateX: styleTranslateX }],
         }}
@@ -163,70 +174,52 @@ export const HelpBarMap = ({ setStyles }) => {
               setMapStyle(style);
               toggleStyle();
             }}
-            style={{
-              width: BTN,
-              height: BTN,
-              borderRadius: BTN / 2,
-              backgroundColor: "#fff",
-              justifyContent: "center",
-              alignItems: "center",
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.2,
-              shadowRadius: 2,
-              elevation: 3,
-            }}
+            style={helpBarMapStyle.styleOption}
           >
             <View
-              style={{
-                width: 26,
-                height: 26,
-                borderRadius: 13,
-                backgroundColor: color,
-              }}
+              style={[
+                helpBarMapStyle.styleOptionSwatch,
+                { backgroundColor: color },
+              ]}
             />
           </TouchableOpacity>
         ))}
       </Animated.View>
 
-      {/* ── Layer 4: location toggle button ── */}
+      {/* Layer 4: location toggle */}
       <View style={{ position: "absolute", top: STEP * 2, right: 0 }}>
-        <TouchableOpacity style={helpBarMapStyle.btn} onPress={toggleLocation}>
+        <TouchableOpacity
+          style={[
+            helpBarMapStyle.btn,
+            locationExpanded && helpBarMapStyle.btnActive,
+          ]}
+          onPress={toggleLocation}
+        >
           <Text style={{ fontSize: 16, lineHeight: 20 }}>
             {_getFlag(isoCountryCode) || "🌐"}
           </Text>
         </TouchableOpacity>
       </View>
 
-      {/* ── Layer 5: location pill (slides left from button) ── */}
+      {/* Layer 5: location pill — secondary tint, since secondary is reserved for place/location UI */}
       <Animated.View
         pointerEvents="none"
-        style={{
-          position: "absolute",
-          top: STEP * 2 + 2,
-          right: BTN + 8,
-          flexDirection: "row",
-          alignItems: "center",
-          overflow: "hidden",
-          width: locationWidth,
-          opacity: locationOpacity,
-          height: BTN,
-          borderRadius: BTN / 2,
-          backgroundColor: "#fff",
-          paddingHorizontal: 10,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.2,
-          shadowRadius: 2,
-          elevation: 3,
-        }}
+        style={[
+          {
+            position: "absolute",
+            top: STEP * 2 + 1,
+            right: BTN + 8,
+            width: locationWidth,
+            opacity: locationOpacity,
+          },
+          helpBarMapStyle.locationPill,
+        ]}
       >
-        <Ionicons name="location-outline" size={12} color="#555" />
-        <Text
-          numberOfLines={3}
-          style={{ fontSize: 11, color: "#1a1917", marginLeft: 4 }}
-        >
-          {`${location?.city} - ${location?.region} Tz: ${location?.timezone}`}
+        <Ionicons name="location-outline" size={13} color={colors.secondaryDark} />
+        <Text numberOfLines={2} style={helpBarMapStyle.locationPillText}>
+          {location?.city && location?.region
+            ? `${location.city}, ${location.region}`
+            : "Locating…"}
         </Text>
       </Animated.View>
     </View>

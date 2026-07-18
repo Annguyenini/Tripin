@@ -11,6 +11,8 @@ import FriendShipsService from '../../app-core/flow/handlers/friendships_handler
 import { UserData, UserRelationship } from '../../types/user_data.types';
 import { UserCard } from './user/user_card';
 import { useData } from '@shopify/react-native-skia';
+import SocketService from '../../app-core/flow/web_socket/socket';
+import FriendlistObservers from './observers/friendlist_observer';
 
 const ICONS: {
   view: FriendsView;
@@ -73,7 +75,20 @@ export default function FriendsScreen({ onClose}) {
 
      setOutgoing(friends)
     }).catch((err)=>{'Failed to fetch friend'})
+  }, [])
+
+  useEffect(() => {
+    const updateFriend = {
+      update(newfriend) {
+        // console.log(newfriend)
+      }
+    }
+    FriendlistObservers.attach('friend_request', updateFriend)
+    return ()=>    FriendlistObservers.detach('friend_request', updateFriend)
   },[])
+
+
+
   const handleAccept = async(requestId: number) => {
     console.log(requestId)
     const target = incoming.find((r)=>r.user_id ===requestId )
