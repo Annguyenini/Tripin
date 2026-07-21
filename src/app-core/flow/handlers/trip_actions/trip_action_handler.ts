@@ -36,6 +36,7 @@ class TripActionHandler {
   async requestNewTripHandler(
     trip_name: string,
     imageUri: string | null = null,
+    privacy:string = 'private'
   ): Promise<CreateNewTripHandler> {
     try {
       const created_time = Date.now();
@@ -45,6 +46,7 @@ class TripActionHandler {
         trip_name,
         created_time,
         imageUri,
+        privacy
       );
       const data: newTripData = respond.data;
 
@@ -102,6 +104,7 @@ class TripActionHandler {
         created_time: created_time,
         active: true,
         event: "add",
+        privacy:privacy
       };
       // console.log(trip_data);
       // save tripdata to local
@@ -133,7 +136,7 @@ class TripActionHandler {
    * @returns boolean of status
    */
 
-  async modifyTripDataHandler(trip_id, trip_name = null, image_uri = null) {
+  async modifyTripDataHandler(trip_id, trip_name = null, image_uri = null,privacy) {
     // ------------------------- Phase 1: update trip name -------------------------
     let respond = null;
     const phase1_modified_time = Date.now();
@@ -143,6 +146,7 @@ class TripActionHandler {
         trip_name,
         image_uri,
         phase1_modified_time,
+        privacy
       );
       if (!(respond.status === 201 || respond.status === 200)) {
         console.error("failed to save change in server", respond);
@@ -152,11 +156,19 @@ class TripActionHandler {
         if (!(await TripDataService.updateTripName(trip_name, trip_id))) {
           return { success: false, message: "fail to update trip name" };
         }
+      }
+      if (privacy) {
+        if (!(await TripDataService.updateTripPrivacy(privacy, trip_id))) {
+          return { success: false, message: "fail to update trip privacy" };
+        }
+      }
+      if (trip_name || privacy) {
         await TripDataService.updateTripDataModifiedTime(
           phase1_modified_time,
           trip_id,
         );
       }
+
     } catch (err) {
       return { success: false, message: `phase 1 failed: ${err}` };
     }
@@ -216,9 +228,14 @@ class TripActionHandler {
       }
     } else {
       // update hot data for name-only change
-      if (trip_name && trip_id === CurrentTripDataService.getCurrentTripId()) {
+      if (trip_id === CurrentTripDataService.getCurrentTripId()) {
         const old_trip_data = CurrentTripDataService.getCurrentTripData();
-        old_trip_data["trip_name"] = trip_name;
+        if (trip_name) {
+          old_trip_data["trip_name"] = trip_name;
+        }
+        if (privacy) {
+          old_trip_data['privacy']=privacy
+        }
         CurrentTripDataService.saveCurrentTripDataToLocal(old_trip_data);
       }
     }

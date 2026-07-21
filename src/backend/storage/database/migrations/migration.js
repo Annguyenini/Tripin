@@ -127,6 +127,29 @@ export default async function migration() {
         throw new Error(`Fail to update table content_cards: ${err}`);
       }
     }
+    if (user_version < 6) {
+      try {
+        const columns = await DB.getAllAsync(`
+          PRAGMA table_info(trips);
+        `);
+
+        const hasPrivacy = columns.some(
+          (column) => column.name === "privacy"
+        );
+
+        if (!hasPrivacy) {
+          await DB.execAsync(`
+            ALTER TABLE trips
+            ADD COLUMN privacy TEXT NOT NULL DEFAULT 'private';
+          `);
+        }
+
+        await DB.execAsync(`PRAGMA user_version = 6`);
+        user_version = 6;
+      } catch (err) {
+        throw new Error(`Fail to update table content_cards: ${err}`);
+      }
+    }
     console.log("finish migration");
   } catch (err) {
     throw new Error(`FAILED TO UPGRADE TABLE  ${(user_version, err.message)}`);

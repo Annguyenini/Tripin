@@ -14,11 +14,11 @@ export default {
       backgroundColor: "#ffffff",
     },
     ios: {
-      supportsTablet: false,
+      // supportsTablet: false,
       requireFullScreen: true,
       infoPlist: {
         // UIBackgroundModes: ["location"],
-        UIDeviceFamily: [1],
+        // UIDeviceFamily: [1],
         NSLocationWhenInUseUsageDescription:
           "Allow $(PRODUCT_NAME) to access your location while using the app to record trips and display your position on the map.",
 

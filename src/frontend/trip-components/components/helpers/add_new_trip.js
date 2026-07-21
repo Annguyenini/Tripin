@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, Text, TextInput, Image } from "react-native";
 import * as Location from "expo-location";
 
-import { tripStyle } from "../../../../styles/function/trip_style";
+import { tripStyle, colors } from "../../../../styles/function/trip_style";
 import { OverlayCard } from "../../../overlay/overlay_card";
 import {
   imagePicker,
@@ -15,11 +15,19 @@ import Setting from "../../../../app-core/setting";
 import { UseOverlay } from "../../../overlay/overlay_main";
 import TripActionsHandler from "../../../../app-core/flow/handlers/trip_actions/trip_action_handler";
 import { Linking } from "react-native";
+
+const PRIVACY_OPTIONS = [
+  { key: "private", label: "Private", bg: colors.rose, text: colors.roseDark },
+  { key: "friend", label: "Friends", bg: colors.sky, text: colors.skyDark },
+  { key: "public", label: "Public", bg: colors.sage, text: colors.sageDark },
+];
+
 export const NewTripFiller = ({ set_show_create_trip_filler }) => {
   const [tripName, setTripName] = useState(null);
   const [imageUri, setImageUri] = useState(null);
   const [fgStatus, setFgStatus] = useState(null);
   const [alert, setAlert] = useState(null);
+  const [privacy, setPrivacy] = useState("private");
   const { showLoading, hideLoading, showErrorBox } = UseOverlay();
   const loadingRef = useRef(null);
   const loadingSteps = ["Creating Trip", "Checking Data", "Nanana"];
@@ -65,6 +73,7 @@ export const NewTripFiller = ({ set_show_create_trip_filler }) => {
       res = await TripActionsHandler.requestNewTripHandler(
         tripName,
         imageUri ?? null,
+        privacy,
       );
     } catch (err) {
       console.error(err);
@@ -139,6 +148,35 @@ export const NewTripFiller = ({ set_show_create_trip_filler }) => {
             onChangeText={(text) => setTripName(text)}
             style={tripStyle.input}
           />
+
+          <Text style={tripStyle.privacyLabel}>Who can see this trip?</Text>
+          <View style={tripStyle.privacyToggle}>
+            {PRIVACY_OPTIONS.map(({ key, label, bg, text }) => {
+              const active = privacy === key;
+              return (
+                <TouchableOpacity
+                  key={key}
+                  style={[
+                    tripStyle.privacyOption,
+                    active && { backgroundColor: bg, borderColor: bg },
+                  ]}
+                  onPress={() => setPrivacy(key)}
+                >
+                  <Text
+                    style={[
+                      tripStyle.privacyOptionText,
+                      active && [
+                        tripStyle.privacyOptionTextActive,
+                        { color: text },
+                      ],
+                    ]}
+                  >
+                    {label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
 
           <TrackingModePicker
             value={"media_only"}

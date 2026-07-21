@@ -12,17 +12,20 @@ class SocketService {
   private pendingConnect:eventConnection[] =[]
   // inital connection
   connect(accessToken: string) {
-    this.socket = io(API.BASE_API, {
+    this.socket = io("http://192.168.0.111:8888", {
       auth: {
         access_token: accessToken,
       },
-      transports: ["websocket"],
+
+      // transports: ["polling", "websocket"]
     });
     this.registerEvents();
     const connect = (event_name, callback) => {
       console.log('connect',event_name,callback)
       this.socket.on(event_name, (data) => {
-        callback(event_name,data)
+
+
+        callback(event_name,data?.data)
       })
     }
     if (this.pendingConnect.length >= 1) {
@@ -71,7 +74,8 @@ class SocketService {
       return;
     }
     this.socket.on(event_name, (data) => {
-      callback(event_name,data)
+      console.log(event_name)
+      callback(event_name,data?.data)
     })
 
   }

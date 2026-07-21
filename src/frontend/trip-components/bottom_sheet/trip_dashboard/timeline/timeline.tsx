@@ -20,6 +20,7 @@ import {
   EDGEPOINT_COLORS,
   EVENT_COLORS,
 } from "../../../components/marker/utils/color_cycle";
+import { colors } from "../../../../../styles/function/trip_style";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -208,7 +209,7 @@ function ArrowConnector() {
   return (
     <View style={s.arrowWrap}>
       <View style={s.connLine} />
-      <Text style={s.arrowIcon}>→</Text>
+      <Text style={s.arrowIcon}>↝</Text>
       <View style={s.connLine} />
     </View>
   );
@@ -519,6 +520,11 @@ export default function TripTimeline({
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
+// Colors sourced from trip_style.js — same palette as NewTripFiller,
+// TripCustomCard, and the bottom sheet, so the timeline carousel reads as
+// part of the same object rather than a separately-designed screen.
+// EVENT_COLORS / EDGEPOINT_COLORS remain untouched — those are data-driven
+// per-event/per-city colors from color_cycle.js, not part of this theme.
 
 const s = StyleSheet.create({
   root: {
@@ -530,12 +536,12 @@ const s = StyleSheet.create({
     bottom: 0,
     width: "100%",
     padding: 10,
-    backgroundColor: "rgba(0,0,0,0.4)",
+    backgroundColor: "rgba(122,74,42,0.28)",
     alignItems: "center",
   },
 
   fullscreenBtn: {
-    color: "white",
+    color: colors.bg,
     fontSize: 10,
     fontWeight: "600",
   },
@@ -551,7 +557,7 @@ const s = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 3,
-    backgroundColor: "#e05a3a",
+    backgroundColor: colors.peachMid,
     flexShrink: 0,
   },
   cityFlag: {
@@ -560,21 +566,21 @@ const s = StyleSheet.create({
   },
   cityName: {
     flex: 1,
-    fontFamily: MONO,
-    fontSize: 12,
-    color: "#1a1917",
+    fontFamily: "Caveat-Bold",
+    fontSize: 20,
+    color: colors.text,
     letterSpacing: 0.2,
   },
   cityTime: {
     fontFamily: MONO,
     fontSize: 10,
-    color: "#1a1917",
+    color: colors.textMuted,
   },
 
   // ── Progress bar ───────────────────────────────────────────────────────────
   progressTrack: {
     height: 2,
-    backgroundColor: "rgba(255,255,255,0.07)",
+    backgroundColor: colors.divider,
     borderRadius: 2,
     marginHorizontal: 16,
     marginBottom: 10,
@@ -585,7 +591,7 @@ const s = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: "#e05a3a",
+    backgroundColor: colors.peachMid,
     borderRadius: 2,
   },
   progressDot: {
@@ -595,10 +601,10 @@ const s = StyleSheet.create({
     borderRadius: 3,
     top: -1.5,
     marginLeft: -2.5,
-    backgroundColor: "rgba(255,255,255,0.18)",
+    backgroundColor: colors.divider,
   },
   progressDotMain: {
-    backgroundColor: "#e05a3a",
+    backgroundColor: colors.peachDark,
   },
 
   track: {
@@ -612,29 +618,36 @@ const s = StyleSheet.create({
   },
   overlayFooter: {
     padding: 12,
-    // backgroundColor: "rgba(0,0,0,0.35)",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.2)",
+    backgroundColor: "rgba(122,74,42,0.28)",
   },
   memCard: {
     width: CARD_W,
     height: CARD_H,
-    borderRadius: 12,
+    borderRadius: 10,
     overflow: "hidden",
     position: "relative",
-    backgroundColor: "#252220",
-    borderWidth: 0.5,
-    borderColor: "rgba(255,255,255,0.08)",
+    backgroundColor: colors.surface,
+    shadowColor: "#2c2a25",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 5,
   },
   memCardMain: {
-    borderColor: "rgba(255,255,255,0.32)",
+    // borderColor here is always overridden by the inline EVENT_COLORS
+    // style applied downstream in the array, so this slot is used to give
+    // the focused card a stronger "lifted off the page" shadow instead.
+    shadowOpacity: 0.28,
+    shadowRadius: 12,
+    elevation: 8,
   },
   memPlaceholder: {
-    backgroundColor: "#252220",
+    backgroundColor: colors.surface,
   },
   memShade: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.15)",
+    backgroundColor: "rgba(122,74,42,0.15)",
   },
   memStamp: {
     position: "absolute",
@@ -642,14 +655,14 @@ const s = StyleSheet.create({
     left: 7,
     fontFamily: MONO,
     fontSize: 8,
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(255,255,255,0.8)",
   },
   memTypeIcon: {
     position: "absolute",
     top: 6,
     right: 7,
     fontSize: 10,
-    color: "rgba(255,255,255,0.4)",
+    color: "rgba(255,255,255,0.7)",
   },
 
   // ── Arrow connector (replaces plus between cards) ──────────────────────────
@@ -659,8 +672,8 @@ const s = StyleSheet.create({
   },
   arrowIcon: {
     width: ARROW_W,
-    fontSize: 20,
-    color: "#161514",
+    fontSize: 18,
+    color: colors.textHint,
     fontFamily: MONO,
     textAlign: "center",
   },
@@ -669,16 +682,16 @@ const s = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: "#161514",
+    backgroundColor: colors.peach,
     borderWidth: 0.5,
     borderStyle: "dashed",
-    borderColor: "rgba(255,255,255,0.18)",
+    borderColor: colors.peachMid,
     alignItems: "center",
     justifyContent: "center",
   },
   plusIcon: {
     fontSize: 13,
-    color: "rgba(255,255,255,0.28)",
+    color: colors.peachDark,
     lineHeight: 15,
     includeFontPadding: false,
   },
@@ -686,7 +699,7 @@ const s = StyleSheet.create({
   connLine: {
     width: CONN_W,
     height: 1,
-    backgroundColor: "rgba(255,255,255,0.07)",
+    backgroundColor: colors.divider,
   },
 
   sepWrap: {
@@ -699,19 +712,19 @@ const s = StyleSheet.create({
   sepLine: {
     width: 1,
     height: "100%",
-    backgroundColor: "rgba(255,255,255,0.06)",
+    backgroundColor: colors.divider,
   },
   sepPill: {
     position: "absolute",
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#1c1b1a",
+    backgroundColor: colors.bg,
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 6,
     paddingVertical: 3,
     maxWidth: 76,
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.25,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 0 },
     elevation: 4, // Android fallback
@@ -725,39 +738,39 @@ const s = StyleSheet.create({
   sepPillTxt: {
     fontFamily: MONO,
     fontSize: 8,
-    color: "rgba(255,255,255,0.7)",
+    color: colors.text,
   },
   cap: {
     width: CAP_W,
     height: CARD_H,
-    borderRadius: 12,
-    borderWidth: 0.5,
+    borderRadius: 10,
+    borderWidth: 1,
     borderStyle: "dashed",
-    borderColor: "rgba(255,255,255,0.14)",
-    backgroundColor: "#161514",
+    borderColor: colors.divider,
+    backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
     gap: 5,
   },
   capIcon: {
     fontSize: 14,
-    color: "rgba(255,255,255,1)",
+    color: colors.skyDark,
   },
   capLabel: {
     fontFamily: MONO,
     fontSize: 10,
-    color: "rgba(255,255,255,1)",
+    color: colors.textMuted,
     textAlign: "center",
     lineHeight: 15,
   },
   endCap: {
-    borderColor: "rgba(224,90,58,1)",
+    borderColor: colors.roseDark,
   },
   endCapIcon: {
-    color: "rgba(224,90,58,1)",
+    color: colors.roseDark,
   },
   endCapLabel: {
-    color: "rgba(224,90,58,1)",
+    color: colors.roseDark,
   },
 
   dotRow: {
@@ -769,7 +782,7 @@ const s = StyleSheet.create({
   dotLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "rgba(255,255,255,0.05)",
+    backgroundColor: colors.divider,
   },
   dotGroup: {
     flexDirection: "row",
@@ -780,10 +793,10 @@ const s = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "rgba(255,255,255,0.1)",
+    backgroundColor: colors.divider,
   },
   dotOn: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.peachMid,
     transform: [{ scale: 1.4 }],
   },
 });

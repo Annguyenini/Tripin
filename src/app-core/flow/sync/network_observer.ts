@@ -21,6 +21,9 @@ class NetworkObserver extends LocalStorage {
       });
     }
   }
+  getServerStatus() {
+    return this.isReachable
+  }
   async callServer() {
     try {
       const respone = await fetch(API.HEALTH, {

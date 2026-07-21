@@ -148,10 +148,11 @@ export function UserCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderWidth: 0.5,
-    borderColor: '#E4E2DA',
+    // borderRadius: 16,
+    // borderWidth: 0.5,
+    // borderColor: '#E4E2DA',
     padding: 16,
+    top:35,
   },
   header: {
     flexDirection: 'row',

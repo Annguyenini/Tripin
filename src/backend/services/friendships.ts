@@ -86,19 +86,19 @@ class FriendShips{
       throw new Error(`Fail to request friend: ${err}`)
     }
   }
-  async deleteRelationship(target_user_id: number) {
-    try{
-    const response = await fetchFunction(API.DELETE_RELATIONSHIP, {
-      method: "DELETE",
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        target_user_id:target_user_id
-      })
-    })
-      return response
-    }
-    catch (err) {
-      throw new Error(`Fail to accept request: ${err}`)
+  async deleteRelationship(target_user_id: number, endpoint: string) {
+    try {
+      const response = await fetchFunction(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          target_user_id: target_user_id
+        })
+      });
+
+      return response;
+    } catch (err) {
+      throw new Error(`Fail to delete relationship: ${err}`);
     }
   }
 }

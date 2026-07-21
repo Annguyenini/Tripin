@@ -1,4 +1,5 @@
 import FriendShips from "../../../backend/services/friendships";
+import * as API from '../../../config/config_api'
 
 class FriendShipsHandler{
   async getFriendsHandler() {
@@ -89,16 +90,51 @@ class FriendShipsHandler{
       return false
     }
   }
-  async deleteRelationship(target_user_id) {
-    try {
-      const response = await FriendShips.deleteRelationship(target_user_id)
-      if (!response.ok || response.status !== 200) return false
-      return true
+  private async handleDeleteRelationship(
+      target_user_id: number,
+      endpoint: string
+    ) {
+      try {
+        const response = await FriendShips.deleteRelationship(
+          target_user_id,
+          endpoint
+        );
+
+        if (!response.ok || response.status !== 200) return false;
+
+        return true;
+      } catch (err) {
+        console.log(`failed to delete relationship: ${err}`);
+        return false;
+      }
     }
-    catch (err) {
-      console.log(`failed to accept friend: ${err}`)
-      return false
+
+    async removeFriend(target_user_id: number) {
+      return this.handleDeleteRelationship(
+        target_user_id,
+        API.REMOVE_FRIEND
+      );
     }
-  }
+
+    async rejectFriendRequest(target_user_id: number) {
+      return this.handleDeleteRelationship(
+        target_user_id,
+        API.REJECT_FRIEND_REQUEST
+      );
+    }
+
+    async cancelFriendRequest(target_user_id: number) {
+      return this.handleDeleteRelationship(
+        target_user_id,
+        API.CANCEL_FRIEND_REQUEST
+      );
+    }
+
+    async deleteRelationship(target_user_id: number) {
+      return this.handleDeleteRelationship(
+        target_user_id,
+        API.DELETE_RELATIONSHIP
+      );
+    }
 }
 export default new FriendShipsHandler()

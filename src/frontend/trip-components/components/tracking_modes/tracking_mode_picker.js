@@ -66,19 +66,16 @@ export const TrackingModePicker = ({ value, onChange }) => {
       </View>
 
       {/* preview card */}
-      <View style={s.previewCard}>
-        {/* placeholder image — swap with real asset */}
+      {/* <View style={s.previewCard}>
         <View style={s.previewImageWrap}>
           <Text style={s.previewEmoji}>{active.emoji}</Text>
-          {/* once you have real assets: */}
-          {/* <Image source={active.preview} style={s.previewImage} resizeMode="cover" /> */}
+          <Image source={active.preview} style={s.previewImage} resizeMode="cover" />
         </View>
 
         <View style={s.previewInfo}>
           <Text style={s.previewTitle}>{active.label}</Text>
           <Text style={s.previewSub}>{active.sub}</Text>
 
-          {/* feature bullets */}
           {active.key === "normal" ? (
             <>
               <FeatureRow text="GPS coordinates logged" />
@@ -95,11 +92,11 @@ export const TrackingModePicker = ({ value, onChange }) => {
             </>
           )}
         </View>
-      </View>
-      <View style={s.featureRow}>
-        {/* <Text style={s.featureDot}>·</Text>
-        <Text style={s.noiceText}>You can change it later!</Text>*/}
-      </View>
+      </View>*/}
+      {/* <View style={s.featureRow}>
+        <Text style={s.featureDot}>·</Text>
+        <Text style={s.noiceText}>You can change it later!</Text>
+      </View>*/}
     </View>
   );
 };

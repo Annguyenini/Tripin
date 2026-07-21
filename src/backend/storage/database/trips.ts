@@ -110,6 +110,15 @@ class TripDataService extends TripLocalDataStorage {
     );
     return status;
   }
+  async updateTripPrivacy(privacy: string, trip_id: number) {
+    const status = await TripDatabaseService.updateValueInDatabase(
+      "privacy",
+      privacy,
+      "trip_id",
+      trip_id,
+    );
+    return status;
+  }
   async updateTripImage(image_uri: string, trip_id: number) {
     const status = await TripDatabaseService.updateValueInDatabase(
       "image",

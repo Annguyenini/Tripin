@@ -31,7 +31,6 @@ export const tripStyle = StyleSheet.create({
     backgroundColor: colors.surface,
     overflow: "hidden",
   },
-
   image: {
     width: "100%",
     height: "100%",
@@ -47,18 +46,15 @@ export const tripStyle = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-
   placeholder: {
     color: colors.textMuted,
   },
-
   imageButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 15,
     gap: 10,
   },
-
   secondaryButton: {
     flex: 1,
     borderWidth: 1,
@@ -68,13 +64,11 @@ export const tripStyle = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.peach,
   },
-
   secondaryButtonText: {
     color: colors.peachDark,
     fontFamily: "DMMono-Regular",
     fontWeight: "600",
   },
-
   input: {
     width: "100%",
     height: 45,
@@ -87,14 +81,44 @@ export const tripStyle = StyleSheet.create({
     color: colors.text,
     fontFamily: "DMMono-Regular",
   },
-
+  // Privacy toggle — base look is neutral surface, active state gets its
+  // color (bg/text) applied inline per-option from PRIVACY_OPTIONS since
+  // each of the three states (private/friend/public) uses a different token.
+  privacyLabel: {
+    fontSize: 12,
+    fontFamily: "DMMono-Regular",
+    color: colors.textMuted,
+    marginBottom: 6,
+  },
+  privacyToggle: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 15,
+  },
+  privacyOption: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.divider,
+  },
+  privacyOptionText: {
+    fontFamily: "DMMono-Regular",
+    fontWeight: "600",
+    fontSize: 13,
+    color: colors.textMuted,
+  },
+  privacyOptionTextActive: {
+    fontWeight: "700",
+  },
   submitButton: {
     backgroundColor: colors.peachMid,
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
   },
-
   submitButtonText: {
     color: colors.peachDark,
     fontFamily: "DMMono-Regular",

@@ -1,200 +1,224 @@
 import { StyleSheet } from "react-native";
+import { colors } from "./function/trip_style";
+
+// Bottom sheet + trip stat header styles — album theme.
+// NOTE: this file didn't exist in what was shared, so it's built fresh here
+// to satisfy every BottomSheetSyle.* key referenced by UserDataBottomSheet
+// and TripStat. If you already have a real bottom_sheet.styles.js, send it
+// over and this should be merged into it rather than replacing it outright.
 
 export const BottomSheetSyle = StyleSheet.create({
-  sheetBg: { backgroundColor: "rgba(255, 252, 245, 0.95)" },
-  sheetHandle: { backgroundColor: "#3a3830", width: 40 },
-  container: { paddingHorizontal: 16, paddingBottom: 40 },
+  // ── Sheet shell ──────────────────────────────────────────────────────────
+  sheetBg: {
+    backgroundColor: colors.bg,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  sheetHandle: {
+    backgroundColor: colors.divider,
+    width: 38,
+    height: 4,
+  },
+  container: {
+    paddingHorizontal: 20,
+    paddingTop: 6,
+    paddingBottom: 40,
+  },
 
-  // ── user card ──
-  userCard: {
+  // ── View-mode segmented control (Statistic / Timeline) ──────────────────
+  segmentGroup: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    padding: 14,
-    // backgroundColor: '#f9e5d3',
-    borderRadius: 14,
-    marginBottom: 16,
-    marginTop: 8,
-    borderWidth: 0.5,
-    borderColor: "rgba(255, 255, 255, 0.67)",
+    backgroundColor: colors.surface,
+    borderRadius: 999,
+    padding: 3,
+    borderWidth: 1,
+    borderColor: colors.divider,
   },
-  currentTripBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    marginBottom: 4,
+  segmentBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 999,
   },
-  currentTripLabel: {
-    fontSize: 9,
-    color: "#4caf50",
-    fontFamily: "DMMono",
-    letterSpacing: 1.5,
+  segmentBtnActive: {
+    backgroundColor: colors.peachMid,
   },
-  avatarWrap: { position: "relative" },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "#3a3830",
+  segmentBtnText: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: "600",
+    fontFamily: "DMMono-Regular",
   },
-  avatarEditBadge: {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: "#f0f0ec",
+  segmentBtnTextActive: {
+    color: colors.peachDark,
+    fontWeight: "700",
+  },
+
+  // ── Owner-only add button ────────────────────────────────────────────────
+  addBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.peachMid,
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarEditText: { fontSize: 9, color: "#1a1a1a" },
-  userInfo: { flex: 1, gap: 2 },
-  displayName: { fontSize: 15, color: "#000000", fontFamily: "DMMono" },
-  displaySub: {
-    fontSize: 10,
-    color: "#5a5550",
-    fontFamily: "DMMono",
-    fontStyle: "italic",
+  addBtnText: {
+    color: colors.peachDark,
+    fontSize: 18,
+    lineHeight: 20,
+    fontWeight: "700",
   },
-  iconBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: "#2a2826",
-    borderWidth: 0.5,
-    borderColor: "rgba(255,255,255,0.08)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  iconBtnPrimary: { backgroundColor: "#f0f0ec", borderColor: "transparent" },
-  iconBtnText: { fontSize: 16, color: "#888" },
-  iconBtnTextPrimary: { fontSize: 20, color: "#1a1a1a" },
-  loadingText: { fontSize: 9, color: "#5a5550", fontFamily: "DMMono" },
 
-  // ── title ──
+  // ── "By @author" byline for trips you don't own ─────────────────────────
+  byLine: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontFamily: "DMMono-Regular",
+    letterSpacing: 0.2,
+  },
+
+  // ── Trip header ──────────────────────────────────────────────────────────
   titleRow: {
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    marginBottom: 16,
+    gap: 14,
+    marginBottom: 18,
   },
-  titleBlock: { flex: 1 },
+  image: {
+    width: 78,
+    height: 94,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.divider,
+    backgroundColor: "#fff",
+  },
+  titleBlock: {
+    flex: 1,
+  },
+  tripNameRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: 8,
+  },
   tripName: {
-    fontSize: 22,
-    color: "#000000",
-    fontFamily: "DMMono",
-    marginBottom: 4,
+    fontFamily: "Caveat-Bold",
+    fontSize: 26,
+    color: colors.text,
+    flexShrink: 1,
   },
-  statusRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  statusRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 6,
+  },
   statusDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "#4caf50",
+    backgroundColor: colors.skyDark,
   },
   statusText: {
-    fontSize: 12,
-    color: "#a08060",
-    fontFamily: "DMMono",
-    fontStyle: "italic",
+    fontFamily: "DMMono-Regular",
+    fontSize: 10.5,
+    color: colors.textMuted,
   },
-  upBtn: {
-    fontSize: 10,
+
+  // ── Privacy badge (Private / Friends / Public) ──────────────────────────
+  // Colors are applied per-state at the call site using the same
+  // rose/sky/sage tokens as the privacy toggle in NewTripFiller and
+  // TripCustomCard, so a trip's privacy reads the same everywhere.
+  privacyBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  privacyBadgeText: {
+    fontSize: 11,
     fontWeight: "700",
-    color: "#000000",
-    fontFamily: "DMMono",
-    letterSpacing: 0.08,
+    fontFamily: "DMMono-Regular",
   },
-  endTripCover: {
-    backgroundColor: "#c03030",
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
+
+  // ── More (•••) menu button ───────────────────────────────────────────────
+  moreBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: colors.divider,
+    backgroundColor: colors.surface,
     alignItems: "center",
-    marginVertical: 4,
-    minWidth: 70,
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 0,
-    elevation: 3,
+    justifyContent: "center",
   },
-  upBtnText: { color: "#fff", fontSize: 16 },
-
-  // ── stats ──
-  statsRow: { flexDirection: "row", gap: 8, marginBottom: 20 },
-  statCard: { flex: 1, borderRadius: 12, borderWidth: 0.5, padding: 10 },
-  statEmoji: { fontSize: 18, marginBottom: 4 },
-  statLabel: {
-    fontSize: 10,
-    marginBottom: 2,
-    fontFamily: "DMMono",
-    letterSpacing: 0.4,
+  moreBtnText: {
+    color: colors.textMuted,
+    fontSize: 14,
+    fontWeight: "700",
   },
-  statValue: { fontSize: 22, color: "#3a2a18", fontFamily: "DMMono" },
 
-  // ── divider ──
+  // ── Fly to button ────────────────────────────────────────────────────────
+  flyToBtn: {
+    marginTop: 10,
+    alignSelf: "flex-start",
+    backgroundColor: colors.peach,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 999,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    borderWidth: 1,
+    borderColor: colors.peachMid,
+  },
+  flyToBtnText: {
+    color: colors.peachDark,
+    fontSize: 13,
+    fontWeight: "700",
+    fontFamily: "DMMono-Regular",
+  },
+
+  // ── End trip / Go back pill ──────────────────────────────────────────────
+  // Base (End trip) uses rose since ending the active trip is the
+  // higher-stakes action; the Go back state swaps to a neutral surface pill.
+  endTripCover: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: colors.rose,
+    borderWidth: 1,
+    borderColor: colors.roseDark,
+  },
+  endTripCoverGoBack: {
+    backgroundColor: colors.surface,
+    borderColor: colors.divider,
+  },
+  upBtnText: {
+    fontFamily: "DMMono-Regular",
+    fontSize: 12,
+    fontWeight: "700",
+    color: colors.text,
+    letterSpacing: 0.3,
+  },
+
+  // ── Memories divider ─────────────────────────────────────────────────────
   dividerRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    marginBottom: 0,
+    gap: 10,
+    marginVertical: 20,
   },
-  dividerLine: { flex: 1, height: 0.5, backgroundColor: "#3a3830" },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.divider,
+  },
   dividerLabel: {
-    fontSize: 9,
-    color: "#5a5550",
-    fontFamily: "DMMono",
-    letterSpacing: 2,
-  },
-
-  // ── memories ──
-  memoriesScroll: { paddingBottom: 8, gap: 10 },
-  memCard: {
-    width: 110,
-    backgroundColor: "#242220",
-    borderRadius: 8,
-    paddingTop: 6,
-    paddingHorizontal: 6,
-    paddingBottom: 22,
-  },
-  memCardFaded: { opacity: 0.45 },
-  memThumb: { width: "100%", height: 70, borderRadius: 6, marginBottom: 6 },
-  memLabel: {
-    fontSize: 10,
-    color: "#f0f0ec",
-    fontFamily: "DMMono",
-    fontStyle: "italic",
-    marginBottom: 2,
-  },
-  memSub: { fontSize: 9, color: "#5a5550", fontFamily: "DMMono" },
-  image: {
-    width: "14%",
-    height: "100%",
-    borderRadius: 10,
-    marginRight: 10,
-    marginBottom: 10,
-
-    backgroundColor: "#242220",
-  },
-  tripNameRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 4,
-  },
-  moreBtn: {
-    paddingHorizontal: 4,
-  },
-  moreBtnText: {
-    fontSize: 16,
-    color: "#3a3830",
-    letterSpacing: 2,
-  },
-  flyBtnText: {
-    fontSize: 10,
-    color: "#3a3830",
-    letterSpacing: 2,
+    fontFamily: "Caveat-Bold",
+    fontSize: 20,
+    color: colors.text,
   },
 });

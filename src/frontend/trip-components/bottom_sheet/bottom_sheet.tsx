@@ -18,7 +18,7 @@ import TripActionsHandler from "../../../app-core/flow/handlers/trip_actions/tri
 
 // ─── UI / Overlay ─────────────────────────────────────────────────────────────
 import { BottomSheetSyle } from "../../../styles/bottom_sheet.styles";
-
+import { TestScreen } from "../../../test_screen";
 import TripCustomCard from "./trips_card/trip_custom_card";
 import { Trip_Data } from "../../../types/trip_data.types";
 
@@ -61,6 +61,7 @@ export const UserDataBottomSheet = () => {
   useEffect(() => {
     const updateTripData = {
       update(new_data: Trip_Data) {
+        console.log(new_data)
         if (!new_data) {
           setDisplayTrip(false);
           return;
@@ -114,55 +115,49 @@ export const UserDataBottomSheet = () => {
                 paddingBottom: 10,
               }}
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  backgroundColor: "#2a2826",
-                  borderRadius: 999,
-                  marginBottom: 0,
-                }}
-              >
+              <View style={BottomSheetSyle.segmentGroup}>
                 <TouchableOpacity
                   onPress={() => setViewMode("dash")}
-                  style={{
-                    paddingHorizontal: 16,
-                    paddingVertical: 8,
-                    borderRadius: 999,
-                    backgroundColor:
-                      viewMode === "dash" ? "#4a4743" : "transparent",
-                  }}
+                  style={[
+                    BottomSheetSyle.segmentBtn,
+                    viewMode === "dash" && BottomSheetSyle.segmentBtnActive,
+                  ]}
                 >
-                  <Text style={{ color: "white" }}>Statistic</Text>
+                  <Text
+                    style={[
+                      BottomSheetSyle.segmentBtnText,
+                      viewMode === "dash" && BottomSheetSyle.segmentBtnTextActive,
+                    ]}
+                  >
+                    Statistic
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setViewMode("timeline")}
-                  style={{
-                    paddingHorizontal: 16,
-                    paddingVertical: 8,
-                    borderRadius: 999,
-                    backgroundColor:
-                      viewMode === "timeline" ? "#4a4743" : "transparent",
-                  }}
+                  style={[
+                    BottomSheetSyle.segmentBtn,
+                    viewMode === "timeline" && BottomSheetSyle.segmentBtnActive,
+                  ]}
                 >
-                  <Text style={{ color: "white" }}>Timeline</Text>
+                  <Text
+                    style={[
+                      BottomSheetSyle.segmentBtnText,
+                      viewMode === "timeline" && BottomSheetSyle.segmentBtnTextActive,
+                    ]}
+                  >
+                    Timeline
+                  </Text>
                 </TouchableOpacity>
               </View>
               {trip?.user_id === UserDataService.getUserId()? (<TouchableOpacity
                 onPress={() => setModifyingTripContents()}
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 18,
-                  backgroundColor: "#2a2826",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                style={BottomSheetSyle.addBtn}
               >
-                <Text style={{ color: "white", fontSize: 18, lineHeight: 20 }}>
+                <Text style={BottomSheetSyle.addBtnText}>
                   +
                 </Text>
               </TouchableOpacity>) : (
-                <Text style={{ color: "black", fontSize: 15, lineHeight: 20 }}> By - @{trip.author}
+                <Text style={BottomSheetSyle.byLine}> By - @{trip.author}
                 </Text>
               )}
 

@@ -10,7 +10,7 @@ import * as ImageManipulator from "expo-image-manipulator";
 
 class Trip {
   constructor() {}
-  async requestNewTrip(trip_name: string, created_time: number, image: string) {
+  async requestNewTrip(trip_name: string, created_time: number, image: string,privacy:string) {
     /**
      * request to create new trip
      * send via FORMDATA
@@ -25,6 +25,7 @@ class Trip {
         trip_name: trip_name,
         created_time: created_time,
         image: image,
+        privacy:privacy
       }),
     });
     return respond;
@@ -144,7 +145,7 @@ class Trip {
     });
     return respond;
   }
-  async requestTripDataChange(trip_id, trip_name, image_uri, modified_time) {
+  async requestTripDataChange(trip_id, trip_name, image_uri, modified_time,privacy) {
     // console.log(modified_time);
     try {
       const respond = await fetchFunction(API.MODIFY_TRIP_DATA, {
@@ -155,6 +156,7 @@ class Trip {
           trip_name: trip_name,
           image: image_uri,
           modified_time: modified_time,
+          privacy:privacy
         }),
       });
       return respond;

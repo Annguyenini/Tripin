@@ -85,11 +85,14 @@ export const FRIENDSHIPS_BASE_API = BASE_API+'/friend'
 export const GET_FRIENDS = FRIENDSHIPS_BASE_API+'/friends'
 export const GET_INCOMING_FRIEND_REQUESTS = FRIENDSHIPS_BASE_API+'/incoming-friend-requests'
 export const GET_OUTCOMING_FRIEND_REQUESTS = FRIENDSHIPS_BASE_API + '/outcoming-friend-requests'
-export const GET_OVERVIEW = FRIENDSHIPS_BASE_API+'/overview'
+export const GET_OVERVIEW = FRIENDSHIPS_BASE_API + '/overview'
+export const GET_RELATIONSHIP = FRIENDSHIPS_BASE_API + '/get-relationship'
 export const ACCEPT_FRIEND_REQUEST = FRIENDSHIPS_BASE_API+'/accept-friend-request'
 export const REQUEST_FRIEND = FRIENDSHIPS_BASE_API+'/request-friend'
 export const DELETE_RELATIONSHIP = FRIENDSHIPS_BASE_API+'/delete-relationship'
-
+export const REMOVE_FRIEND = FRIENDSHIPS_BASE_API + "/remove-friend";
+export const REJECT_FRIEND_REQUEST = FRIENDSHIPS_BASE_API + "/reject-friend-request";
+export const CANCEL_FRIEND_REQUEST = FRIENDSHIPS_BASE_API + "/cancel-friend-request";
 // users
 export const USERS_BASE_API = BASE_API + '/users'
 export const SEARCH_USERS = USERS_BASE_API+'/search'
@@ -102,3 +105,9 @@ export const GET_USERS_TRIPS = BASE_API + '/users/trips'
 // user trips contents
 export const USERS_TRIP_CONTENTS_BASE_API = BASE_API + '/users/trips'
 export const GET_USERS_TRIP_CONTENTS = BASE_API + '/users/trip-contents'
+
+
+
+// socket
+export const SOCKET_API = "http://192.168.0.111:8888"
+// export const SOCKET_API = "https://events.tripping.live"

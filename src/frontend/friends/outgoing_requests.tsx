@@ -30,7 +30,7 @@ export default function OutgoingRequests({
       </View>
 
       {loading && <Text style={styles.hint}>Loading…</Text>}
-      {!loading && requests.length === 0 && (
+      {!loading && requests?.length === 0 && (
         <Text style={styles.hint}>No pending requests</Text>
       )}
 
