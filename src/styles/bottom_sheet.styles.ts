@@ -217,8 +217,10 @@ export const BottomSheetSyle = StyleSheet.create({
     backgroundColor: colors.divider,
   },
   dividerLabel: {
-    fontFamily: "Caveat-Bold",
-    fontSize: 20,
+    // fontFamily: "Caveat-Bold",
+   fontFamily: "DMMono-Regular",
+
+    fontSize: 15,
     color: colors.text,
   },
 });
