@@ -1,5 +1,5 @@
-// export const BASE_API = "https://tripping.live";
-export const BASE_API = "http://192.168.0.111:8000";
+export const BASE_API = "https://tripping.live";
+// export const BASE_API = "http://192.168.0.111:8000";
 export const HEALTH = BASE_API + "/health";
 export const APP_VERSION = BASE_API + "/app-version";
 export const LOGIN_API = BASE_API + "/auth/login";
@@ -106,8 +106,10 @@ export const GET_USERS_TRIPS = BASE_API + '/users/trips'
 export const USERS_TRIP_CONTENTS_BASE_API = BASE_API + '/users/trips'
 export const GET_USERS_TRIP_CONTENTS = BASE_API + '/users/trip-contents'
 
-
+// device
+export const DEVICE_BASE_API = BASE_API+'/devices'
+export const SYNC_DEVICE = DEVICE_BASE_API+ '/sync-device'
 
 // socket
-export const SOCKET_API = "http://192.168.0.111:8888"
-// export const SOCKET_API = "https://events.tripping.live"
+// export const SOCKET_API = "http://192.168.0.111:8888"
+export const SOCKET_API = "https://events.tripping.live"

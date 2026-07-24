@@ -21,6 +21,9 @@ export const STORAGE_KEYS = {
     INITSETTINGS: "settings.init_setting",
     TRACKING_MODE: "settings.tracking_mode",
   },
+  DEVICE: {
+    DEVICE_INFO:'device.device'
+  }
 };
 
 export const DATA_KEYS = {

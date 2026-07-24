@@ -43,6 +43,7 @@ import AlbumScreen from "./albums/album";
 import MapManager from "./trip-components/main_map/map_manager";
 import FriendsScreen from "./friends/friends_screen";
 import FriendsIcon from "./friends/icon/friend_icon";
+import DeviceSync from "../backend/device_sync/device_sync";
 const Map = React.memo(({}) => {
   return <MapManager></MapManager>;
   // return <MapBoxLayout></MapBoxLayout>;
@@ -101,11 +102,17 @@ export const MainScreen = () => {
         console.error(`fail to start foreground GPS Tracker: ${err}`);
       }
     };
+    const initDevice = async () => {
+      await DeviceSync.checkAndUpdateDeviceHandler(true)
+    }
+    initDevice()
     initGps();
 
     const getState = AppState.addEventListener("change", async (nextState) => {
       setState(nextState);
       if (nextState === "active") {
+        await DeviceSync.checkAndUpdateDeviceHandler()
+
         if (!gpsTask.current) {
           try {
             gpsTask.current = await startForegroundGPSTracker();
@@ -213,14 +220,14 @@ export const MainScreen = () => {
             style={footer.fotterbutton}
             onPress={() => hideAllScreen()}
           >
-            <Ionicons name="home-outline" size={22} color="#888" />
+            <Ionicons name="home-outline" size={22} color="#0d0c0a" />
             <Text style={footer.footerText}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={footer.fotterbutton}
             onPress={() => setTripsListVisible((prev) => !prev)}
           >
-            <Ionicons name="map-outline" size={22} color="#888" />
+            <Ionicons name="map-outline" size={22} color="#0d0c0a" />
             <Text style={footer.footerText}>Trips</Text>
           </TouchableOpacity>
 
@@ -259,7 +266,7 @@ export const MainScreen = () => {
             style={footer.fotterbutton}
             onPress={() => setSettingVisible((prev) => !prev)}
           >
-            <Ionicons name="settings-outline" size={22} color="#888" />
+            <Ionicons name="settings-outline" size={22} color="#0d0c0a" />
             <Text style={footer.footerText}>Setting</Text>
           </TouchableOpacity>
         </View>

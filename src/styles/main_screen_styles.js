@@ -151,7 +151,7 @@ export const footer = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 60,
+    height: 50,
     backgroundColor: 'rgba(255,252,245,0.85)',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -178,7 +178,7 @@ export const footer = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     paddingHorizontal: 12,
-    gap: 20,
+    gap: 10,
   },
   settingIcon: {
     width: 30,  // adjust size
@@ -211,4 +211,3 @@ export const footer = StyleSheet.create({
     fontWeight: '500',
   },
 })
-

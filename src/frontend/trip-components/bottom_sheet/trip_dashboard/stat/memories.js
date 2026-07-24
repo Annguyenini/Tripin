@@ -145,6 +145,7 @@ function PolaroidCard({ location, index, onPress }) {
             <Video
               source={{ uri: location.medias[0].media_path }}
               style={styles.photoArea}
+              muted
             />
           ) : (
             <Image
