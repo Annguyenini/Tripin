@@ -44,7 +44,7 @@ export default {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/adaptive-icon.png",
+        foregroundImage: "./assets/icon.png",
         backgroundColor: "#ffffff",
       },
       package: "com.anonymous.tripin",
@@ -76,6 +76,16 @@ export default {
           },
           imageWidth: 200,
         },
+      ],
+      [
+              "expo-notifications",
+              {
+                "icon": "./assets/icon.png",
+                "color": "#ffffff",
+                "defaultChannel": "default",
+
+                "enableBackgroundRemoteNotifications": false
+              }
       ],
       [
         "@rnmapbox/maps",
