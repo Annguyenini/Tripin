@@ -28,6 +28,7 @@ const requestAppVersion = async () => {
 };
 
 function isOutdated(local, server) {
+  console.log(local,server)
   const l = local.split(".").map(Number);
   const s = server.split(".").map(Number);
   for (let i = 0; i < 3; i++) {
@@ -67,9 +68,9 @@ export default function AppVersionValidation() {
           <Text style={styles.message}>
             Please update the app to get the latest features and fixes.
           </Text>
-          {/* <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+          <TouchableOpacity style={styles.button} onPress={handleUpdate}>
             <Text style={styles.buttonText}>Update Now</Text>
-          </TouchableOpacity>*/}
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>

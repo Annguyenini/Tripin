@@ -51,7 +51,7 @@ export const TripCard = ({ trip, navigateMain, removeTripLabel }) => {
     const { url } = await TripHandler.requestSharedTripLink(trip.trip_id);
     console.log(url);
     await Share.share({
-      message: `Check out my trip!\n${url}`,
+      message: url,
     });
   };
   const requestRemove = async (trip) => {
