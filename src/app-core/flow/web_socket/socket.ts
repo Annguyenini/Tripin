@@ -12,7 +12,7 @@ class SocketService {
   private pendingConnect:eventConnection[] =[]
   // inital connection
   connect(accessToken: string) {
-    this.socket = io("http://192.168.0.111:8888", {
+    this.socket = io(API.SOCKET_API, {
       auth: {
         access_token: accessToken,
       },
