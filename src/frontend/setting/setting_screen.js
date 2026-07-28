@@ -9,6 +9,11 @@ import {
   PanResponder,
   Modal,
 } from "react-native";
+import {
+  Feather,
+  MaterialIcons,
+  Ionicons,
+} from "@expo/vector-icons";
 import { navigate, navigateToAuth } from "../navigation/navigationService";
 import { settingStyle } from "../../styles/setting_style";
 import CurrentTripDataService from "../../backend/storage/hot_data/current_trip";
@@ -74,7 +79,7 @@ export const SettingScreen = ({ onclose }) => {
         onPress={() => setProfileVisible(true)}
         icon="🪪"
         label="Profile"
-        sub="name, photo, bio"
+        sub="name, photo"
       />
 
       <Text style={settingStyle.sectionLabel}>NAVIGATION</Text>
@@ -130,18 +135,35 @@ export const SettingScreen = ({ onclose }) => {
   );
 };
 const SettingRow = ({ icon, label, sub, onPress }) => (
-  <TouchableOpacity style={settingStyle.row} onPress={onPress}>
-    <View style={settingStyle.rowLeft}>
-      <View style={settingStyle.iconBox}>
-        <Text style={settingStyle.iconText}>{icon}</Text>
-      </View>
-      <View>
-        <Text style={settingStyle.rowLabel}>{label}</Text>
-        <Text style={settingStyle.rowSub}>{sub}</Text>
-      </View>
-    </View>
-    <Text style={settingStyle.arrow}>›</Text>
-  </TouchableOpacity>
+    <TouchableOpacity
+        style={settingStyle.row}
+        onPress={onPress}
+        activeOpacity={0.8}
+    >
+        <View style={settingStyle.rowLeft}>
+
+            <View style={settingStyle.iconCircle}>
+                {icon}
+            </View>
+
+            <View>
+                <Text style={settingStyle.rowLabel}>
+                    {label}
+                </Text>
+
+                <Text style={settingStyle.rowSub}>
+                    {sub}
+                </Text>
+            </View>
+
+        </View>
+
+        <Feather
+            name="chevron-right"
+            size={18}
+            color="#999"
+        />
+    </TouchableOpacity>
 );
 
 const UserDataScreen = () => {

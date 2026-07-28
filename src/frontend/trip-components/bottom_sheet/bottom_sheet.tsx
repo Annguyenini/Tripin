@@ -64,12 +64,13 @@ export const UserDataBottomSheet = () => {
         console.log(new_data)
         if (!new_data) {
           setDisplayTrip(false);
+          setSnapIndex(0);
           return;
         }
 
         setTrip(new_data);
         setDisplayTrip(true);
-        setSnapIndex(0);
+        setSnapIndex(1);
         setDataKey((k) => k + 1);
       },
     };
@@ -85,7 +86,7 @@ export const UserDataBottomSheet = () => {
     <BottomSheet
       key={dataKey}
       ref={(ref) => BottomSheetTransform.setBottomSheetRef(ref)}
-      snapPoints={["20%", "30%", "50%", "100%"]}
+      snapPoints={['10%',"20%", "30%", "50%", "100%"]}
       index={snapIndex}
       backgroundStyle={BottomSheetSyle.sheetBg}
       handleIndicatorStyle={BottomSheetSyle.sheetHandle}

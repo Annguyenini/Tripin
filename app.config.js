@@ -14,7 +14,7 @@ export default {
       backgroundColor: "#ffffff",
     },
     ios: {
-      // supportsTablet: false,
+      supportsTablet: true,
       requireFullScreen: true,
       infoPlist: {
         // UIBackgroundModes: ["location"],
